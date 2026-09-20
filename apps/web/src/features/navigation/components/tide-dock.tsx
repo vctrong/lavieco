@@ -62,7 +62,7 @@ export function TideDock() {
 
           <nav
             aria-label={t.primaryNavLabel}
-            className="relative hidden items-center gap-6 text-[13.5px] font-medium text-charcoal/85 lg:flex"
+            className="relative hidden items-center gap-5 text-[13.5px] xl:gap-6 font-medium text-charcoal/85 lg:flex"
           >
             {NAV_ITEMS.map((item) => {
               const copy = t.items[item.id as keyof typeof t.items];

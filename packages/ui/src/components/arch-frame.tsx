@@ -24,7 +24,7 @@ export function ArchFrame({
   ...rest
 }: ArchFrameProps) {
   return (
-    <div className={cn("relative overflow-hidden", RADII[radius], className)} {...rest}>
+    <div className={cn("overflow-hidden", RADII[radius], className)} {...rest}>
       {mat ? (
         <div className="size-full overflow-hidden rounded-arch-mat">{children}</div>
       ) : (
