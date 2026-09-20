@@ -39,7 +39,7 @@
    * not sit under the fixed Tide Dock: dock offset (top-5 = 1.25rem) + dock
    * height (~3.2rem) + breathing room. Shared by navigation and sections.
    */
-  --spacing-dock-clearance: 6.5rem;
+  --spacing-dock-clearance: 5.75rem;
 
   /* Shadows: tinted Deep Blue, wide and soft (design.md §6.1) */
   --shadow-ambient: 0 16px 36px -12px rgba(32, 52, 95, 0.08);
