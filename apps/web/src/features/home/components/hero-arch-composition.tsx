@@ -12,15 +12,21 @@ export function HeroArchComposition() {
   const card = TEXT.vi.storyCard;
 
   return (
-    <div className="relative flex items-center justify-center overflow-visible lg:col-span-5 lg:justify-end">
+    // The whole cluster is authored on a fixed 460x560 canvas and scaled as one unit
+    // to the width of its column (container query units), so arches, cards and labels
+    // never drift apart. The width is also capped by viewport height (svh).
+    <div className="@container relative mx-auto aspect-[460/560] w-[min(100%,460px)] lg:ml-auto lg:mr-0 lg:w-[min(100%,calc(62svh*46/56))]">
       <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-10 -top-10 size-96 rounded-full bg-mint-mist/80 blur-3xl"
-      />
-      <div className="relative flex h-[560px] w-full max-w-[460px] items-center justify-end">
+        className="absolute left-0 top-0 h-[560px] w-[460px] origin-top-left"
+        style={{ scale: "tan(atan2(100cqw, 460px))" }}
+      >
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-10 -top-10 size-96 rounded-full bg-mint-mist/80 blur-3xl"
+        />
         <ArchFrame
           data-cursor="view"
-          className="group absolute right-0 top-0 z-10 h-[520px] w-[320px] border border-emerald-brand/30 bg-gradient-to-b from-mint-mist via-mint-mist to-emerald-brand/25 shadow-hero-arch sm:w-[340px]"
+          className="group absolute right-0 top-0 z-10 h-[520px] w-[340px] border border-emerald-brand/30 bg-gradient-to-b from-mint-mist via-mint-mist to-emerald-brand/25 shadow-hero-arch"
         >
           <WaveLines
             offsets={[540, 480, 420, 360, 300, 240, 180]}

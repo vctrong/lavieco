@@ -18,7 +18,7 @@ function WordItem({ word }: { word: string }) {
 export function LaviMarquee() {
   const t = TEXT.vi.marquee;
   return (
-    <div className="relative z-10 -mx-6 mt-12 h-11 overflow-hidden border-t border-hairline-light bg-deep-blue md:-mx-16 lg:-mx-24">
+    <div className="relative z-10 h-11 shrink-0 overflow-hidden border-t border-hairline-light bg-deep-blue">
       <p className="sr-only">{t.screenReaderText}</p>
       <Marquee repeat={MARQUEE_REPEAT} className="flex h-full items-center">
         {t.taglines.flatMap((tagline) => [
