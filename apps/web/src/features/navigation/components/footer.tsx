@@ -3,7 +3,9 @@ import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 
 import { Eyebrow, PearlDot } from "@lavieco/ui";
 
-import { CONTACT_INFO, FOOTER_LINKS, SOCIAL_LINKS } from "../constants/config";
+import { CONTACT_INFO } from "@/shared/constants/contact";
+
+import { FOOTER_LINKS, SOCIAL_LINKS } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { BrandLogo } from "./brand-logo";
 

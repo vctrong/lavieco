@@ -43,7 +43,7 @@ export function Hero() {
             >
               {t.watermark}
             </div>
-            <h1 className="relative z-10 max-w-3xl font-display text-[54px] font-light leading-[1.02] tracking-tight text-deep-blue sm:text-[80px] lg:text-[120px]">
+            <h1 className="relative z-10 max-w-3xl font-display text-[54px] font-light leading-[1.02] tracking-tight text-deep-blue sm:text-[80px] xl:text-[120px]">
               {t.titleLines.map((line) => (
                 <span key={line} className="block">
                   {line}

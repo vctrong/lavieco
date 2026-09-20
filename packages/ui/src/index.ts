@@ -10,3 +10,5 @@ export { ConcentricRings } from "./illustrations/concentric-rings";
 export { NestedShapes } from "./illustrations/nested-shapes";
 export { WaveLines } from "./illustrations/wave-lines";
 export { cn } from "./lib/cn";
+export { CheckboxField, SelectField, TextareaField, TextField } from "./components/form-fields";
+export { SectionHeader } from "./components/section-header";

@@ -101,7 +101,7 @@ export function TideDock() {
           </nav>
 
           <div className="flex items-center gap-2.5">
-            <Button as={Link} href={CTA_HREF} size="sm" className="hidden sm:inline-flex">
+            <Button as={Link} href={CTA_HREF} size="sm" className="max-sm:hidden">
               {t.cta}
             </Button>
             <button

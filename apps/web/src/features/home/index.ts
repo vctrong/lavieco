@@ -1,1 +1,9 @@
+export { CollectionSection } from "./components/collection-section";
+export { ContactSection } from "./components/contact-section";
+export { HandbookPreview } from "./components/handbook-preview";
 export { Hero } from "./components/hero";
+export { ImpactSection } from "./components/impact-section";
+export { JourneySection } from "./components/journey-section";
+export { Manifesto } from "./components/manifesto";
+export { ProgramsSection } from "./components/programs-section";
+export { RoadmapSection } from "./components/roadmap-section";
