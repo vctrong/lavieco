@@ -1,0 +1,13 @@
+{
+  "name": "@lavieco/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./eslint-next": "./eslint-next.mjs",
+    "./eslint-base": "./eslint-base.mjs"
+  },
+  "peerDependencies": {
+    "eslint": "^9"
+  }
+}
