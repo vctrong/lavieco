@@ -1,3 +1,4 @@
+// Alias resolution uses tsconfig.depcruise.json (depcruise mis-resolves the app tsconfig `extends`).
 // Enforces the import boundaries in docs/04 §4.1 and §5.2 (F1, F2). `npm run deps:check`.
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
@@ -30,7 +31,7 @@ module.exports = {
       name: "f1-features-only-through-index",
       comment: "F1: code outside a feature imports it through its index.ts only.",
       severity: "error",
-      from: { path: "^apps/([^/]+)/src/", pathNot: "^apps/$1/src/features/([^/]+)/" },
+      from: { path: "^apps/([^/]+)/src/(app|lib|shared|proxy\.ts)" },
       to: {
         path: "^apps/$1/src/features/[^/]+/",
         pathNot: "^apps/$1/src/features/[^/]+/index\\.ts$",
@@ -53,7 +54,7 @@ module.exports = {
   options: {
     doNotFollow: { path: "node_modules" },
     tsPreCompilationDeps: true,
-    tsConfig: { fileName: "apps/web/tsconfig.json" },
+    tsConfig: { fileName: "tsconfig.depcruise.json" },
     exclude: { path: "(^|/)(\\.next|node_modules|dist)/|\\.spec\\.tsx?$" },
   },
 };

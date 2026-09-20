@@ -50,9 +50,13 @@ export const ALL_SELECTOR_NAMES = Object.keys(SELECTORS);
 export const RESTRICTED_IMPORTS = [
   "error",
   {
+    paths: [
+      { name: "react-icons", message: "Import from react-icons/fi (Feather) only. docs/04 §5.4" },
+    ],
     patterns: [
       {
-        group: ["react-icons", "react-icons/*", "!react-icons/fi"],
+        // A parent excluded by a pattern cannot be re-included, hence no bare "react-icons" here.
+        group: ["react-icons/*", "!react-icons/fi"],
         message: "Only the Feather set is allowed: react-icons/fi. docs/04 §5.4",
       },
       {
