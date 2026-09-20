@@ -1,3 +1,4 @@
+export { Container } from "./components/container";
 export { ArchFrame } from "./components/arch-frame";
 export { Button } from "./components/button";
 export type { ButtonProps, ButtonSize, ButtonVariant } from "./components/button";
