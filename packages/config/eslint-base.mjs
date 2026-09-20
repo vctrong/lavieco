@@ -47,22 +47,40 @@ export function restrictedSyntax(names) {
 
 export const ALL_SELECTOR_NAMES = Object.keys(SELECTORS);
 
-export const RESTRICTED_IMPORTS = [
-  "error",
-  {
-    paths: [
-      { name: "react-icons", message: "Import from react-icons/fi (Feather) only. docs/04 §5.4" },
-    ],
-    patterns: [
-      {
-        // A parent excluded by a pattern cannot be re-included, hence no bare "react-icons" here.
-        group: ["react-icons/*", "!react-icons/fi"],
-        message: "Only the Feather set is allowed: react-icons/fi. docs/04 §5.4",
-      },
-      {
-        group: ["@lavieco/*/src", "@lavieco/*/src/*"],
-        message: "No deep imports into another package. Use its public entry points. C2",
-      },
-    ],
-  },
-];
+/**
+ * Import restrictions. Icons: Feather only (react-icons/fi) unless `brandIcons` is set,
+ * which additionally allows the brand-logo sets (docs/adr/0013). Deep imports into
+ * another package are always forbidden.
+ */
+export function restrictedImports({ brandIcons = false } = {}) {
+  return [
+    "error",
+    {
+      paths: [
+        {
+          name: "react-icons",
+          message: "Import from react-icons/fi (Feather) only. docs/04 §5.4",
+        },
+      ],
+      patterns: [
+        {
+          // A parent excluded by a pattern cannot be re-included, hence no bare "react-icons" here.
+          group: [
+            "react-icons/*",
+            "!react-icons/fi",
+            ...(brandIcons ? ["!react-icons/si", "!react-icons/fa6"] : []),
+          ],
+          message: brandIcons
+            ? "Only Feather (fi) and brand logos (si, fa6) are allowed. docs/adr/0013"
+            : "Only the Feather set is allowed: react-icons/fi. docs/04 §5.4",
+        },
+        {
+          group: ["@lavieco/*/src", "@lavieco/*/src/*"],
+          message: "No deep imports into another package. Use its public entry points. C2",
+        },
+      ],
+    },
+  ];
+}
+
+export const RESTRICTED_IMPORTS = restrictedImports();

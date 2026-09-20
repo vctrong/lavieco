@@ -2,7 +2,12 @@ import { defineConfig, globalIgnores } from "eslint/config";
 import nextVitals from "eslint-config-next/core-web-vitals";
 import nextTs from "eslint-config-next/typescript";
 
-import { ALL_SELECTOR_NAMES, RESTRICTED_IMPORTS, restrictedSyntax } from "./eslint-base.mjs";
+import {
+  ALL_SELECTOR_NAMES,
+  RESTRICTED_IMPORTS,
+  restrictedImports,
+  restrictedSyntax,
+} from "./eslint-base.mjs";
 
 const without = (...excluded) => ALL_SELECTOR_NAMES.filter((name) => !excluded.includes(name));
 
@@ -19,6 +24,11 @@ export const nextPreset = defineConfig([
       "no-restricted-imports": RESTRICTED_IMPORTS,
       "no-restricted-syntax": restrictedSyntax(ALL_SELECTOR_NAMES),
     },
+  },
+  {
+    // Brand logos (Facebook, Zalo...) have no Feather equivalent: docs/adr/0013.
+    files: ["src/features/team/**/*.{ts,tsx}"],
+    rules: { "no-restricted-imports": restrictedImports({ brandIcons: true }) },
   },
   {
     // Decorative graphics are not icons (docs/04 §5.4): inline <svg> is allowed here only.

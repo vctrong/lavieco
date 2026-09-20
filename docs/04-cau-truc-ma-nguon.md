@@ -357,9 +357,9 @@ export const TEXT = {
 | **Token** | Toàn bộ token ở **một tệp**: `packages/ui/src/styles/theme.css` (bên dưới). **Hex chỉ được xuất hiện trong tệp này.** |
 | **Cấm hex rời** | Không viết `#10B183`, `bg-[#...]`, `style={{ color: "#..." }}` trong component. Dùng lớp token (`bg-emerald-brand`, `text-deep-blue`). Có luật lint chặn (mục 10). |
 | **Font** | Fraunces (tiêu đề) và Be Vietnam Pro (nội dung) nạp bằng cơ chế tự lưu trữ của Next.js (`next/font`), chỉ bộ ký tự cần cho tiếng Việt; gán vào biến `--font-fraunces`, `--font-be-vietnam-pro`. |
-| **Icon** | Chỉ dùng bộ **Feather qua `react-icons`** (`react-icons/fi`) **[kế thừa]**. Không viết SVG inline cho icon. Cần icon Feather không có (ví dụ mã QR): xem PQ2. |
+| **Icon** | Chỉ dùng bộ **Feather qua `react-icons`** (`react-icons/fi`) **[kế thừa]**. Không viết SVG inline cho icon. Cần icon Feather không có (ví dụ mã QR): xem PQ2. **Ngoại lệ có quản lý (ADR-013):** logo thương hiệu (Facebook, Zalo, GitHub, LinkedIn, Behance) từ `react-icons/si` và `react-icons/fa6`, chỉ trong `src/features/team/`. |
 | **Hình minh họa/trang trí** | Sóng, hạt ngọc, sơ đồ vỏ sò... **không phải icon**; là tài sản đồ họa (tệp trong `public/images/illustrations/` hoặc component đồ họa chuyên biệt), có văn bản thay thế đúng nơi. |
-| **Chuyển động** | Mọi hiệu ứng (con trỏ tùy biến, thẻ lật, chạy chữ, thanh tiến trình) phải tắt/giảm khi `prefers-reduced-motion`. |
+| **Chuyển động** | Mọi hiệu ứng (con trỏ tùy biến, thẻ lật, chạy chữ, thanh tiến trình) phải tắt/giảm khi `prefers-reduced-motion`. Chuyển cảnh phức tạp (phần tử dùng chung, stagger, drag) dùng `motion` (ADR-013), chỉ trong client component. |
 | **Truy cập được** | Dùng `eslint-plugin-jsx-a11y`; `alt` bắt buộc cho ảnh; điều hướng bằng bàn phím; tương phản đạt chuẩn. |
 | **Không HTML thô** | Cấm `dangerouslySetInnerHTML` (P9 ở `02`); nội dung dạng khối được kết xuất bằng component. |
 
