@@ -60,6 +60,12 @@
   --shadow-glow-canary-lg: 0 0 12px var(--color-canary);
   --shadow-glow-emerald: 0 0 8px var(--color-emerald-brand);
   --shadow-cursor-halo: 0 0 0 2px var(--color-deep-blue);
+  --shadow-portrait-halo: 0 0 60px rgba(234, 248, 243, 0.12);
+  --drop-shadow-sticker: 0 18px 22px rgba(10, 16, 32, 0.45);
+
+  /* Modal scrim: deep navy, tune the alpha between 0.6 and 0.8 */
+  --color-modal-scrim: rgba(23, 34, 59, 0.74);
+  --color-modal-scrim-solid: rgba(23, 34, 59, 0.92);
 
   /* Motion */
   --animate-marquee: marquee 32s linear infinite;
@@ -71,6 +77,14 @@
       transform: translateX(-50%);
     }
   }
+}
+
+/*
+ * Handwritten notes. `inline` makes the utility resolve var(--font-handwriting-face)
+ * on the element itself, where next/font defines it (not at :root). Never falls back to serif.
+ */
+@theme inline {
+  --font-handwriting: var(--font-handwriting-face), cursive;
 }
 
 /* Textures */
@@ -95,6 +109,16 @@
 
 @utility film-grain {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Blurred, tinted backdrop behind modals; solid fallback without backdrop-filter. */
+@utility modal-scrim {
+  background: var(--color-modal-scrim-solid);
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    background: var(--color-modal-scrim);
+    -webkit-backdrop-filter: blur(18px);
+    backdrop-filter: blur(18px);
+  }
 }
 
 /* Hand-drawn Emerald underline, purely decorative */
