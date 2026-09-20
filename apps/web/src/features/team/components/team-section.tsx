@@ -3,7 +3,7 @@ import { Reveal, SectionHeader } from "@lavieco/ui";
 import { MEMBERS } from "../constants/members";
 import { TEAM_SECTION_ID } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { MemberCard } from "./member-card";
+import { TeamGrid } from "./team-grid";
 
 /** Section #9: the six storytellers (static data, docs/04 §5.3). */
 export function TeamSection() {
@@ -18,11 +18,7 @@ export function TeamSection() {
         <SectionHeader kicker={t.kicker} title={t.title} className="mb-16">
           <p className="mt-4 max-w-sm text-sm font-normal text-charcoal/70 md:mt-0">{t.intro}</p>
         </SectionHeader>
-        <ul className="grid grid-cols-1 items-start gap-8 md:grid-cols-3 lg:gap-10">
-          {MEMBERS.map((member, index) => (
-            <MemberCard key={member.id} member={member} index={index} />
-          ))}
-        </ul>
+        <TeamGrid members={MEMBERS} />
       </Reveal>
     </section>
   );
