@@ -1,0 +1,939 @@
+<!DOCTYPE html><html class="scroll-smooth" lang="vi" style=""><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>LAVIECO — The Living Gallery | Green Art Education</title>
+<!-- Google Fonts: Fraunces & Be Vietnam Pro -->
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&amp;family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,500&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<!-- Tailwind CDN -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            'emerald-brand': '#10B183',
+            'mint-mist': '#EAF8F3',
+            'deep-blue': '#20345F',
+            'canary': '#E7DD6A',
+            'soft-white': '#F8FAF6',
+            'charcoal': '#1E2A32',
+          },
+          fontFamily: {
+            display: ['Fraunces', 'serif'],
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          borderRadius: {
+            'arch': '160px 160px 24px 24px',
+            'arch-sm': '100px 100px 16px 16px',
+            'arch-lg': '220px 220px 32px 32px',
+          },
+          letterSpacing: {
+            'museum': '0.14em',
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Architectural Hairlines & Textures */
+    .hairline-subtle {
+      border-color: rgba(32, 52, 95, 0.12);
+    }
+    .hairline-white-subtle {
+      border-color: rgba(248, 250, 246, 0.15);
+    }
+    .scallop-pattern {
+      background-color: #EAF8F3;
+      background-image: radial-gradient(circle at 50% 0, transparent 18px, rgba(32, 52, 95, 0.04) 19px, rgba(32, 52, 95, 0.04) 20px, transparent 21px);
+      background-size: 40px 30px;
+    }
+    .deep-sea-pattern {
+      background-color: #20345F;
+      background-image: radial-gradient(circle at 100% 100%, rgba(16, 177, 131, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 0% 0%, rgba(231, 221, 106, 0.04) 0%, transparent 40%);
+    }
+    /* Film Grain Overlay */
+    .film-grain {
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+    }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #F8FAF6;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(32, 52, 95, 0.2);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #10B183;
+    }
+    /* Marquee animation */
+    @keyframes marquee {
+      0% { transform: translateX(0%); }
+      100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+      display: inline-flex;
+      white-space: nowrap;
+      animation: marquee 32s linear infinite;
+    }
+    /* Custom Cursor elements */
+    #cursor-pearl {
+      pointer-events: none;
+      transition: transform 0.12s ease-out, width 0.25s ease, height 0.25s ease, background-color 0.25s ease, border-radius 0.25s ease;
+      z-index: 9999;
+    }
+    /* Flip Card Styles */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .transform-style-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    .group:hover .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    /* Wave transitions */
+    .wave-edge {
+      mask-image: radial-gradient(ellipse 100% 50% at 50% 100%, black 70%, transparent 100%);
+    }
+  </style>
+</head>
+<body class="bg-soft-white text-charcoal font-sans antialiased selection:bg-mint-mist selection:text-deep-blue relative overflow-x-hidden film-grain">
+<!-- ========================================================
+       CUSTOM CURSOR (Canary Pearl + Deep Blue halo)
+  ======================================================== -->
+<div class="fixed top-0 left-0 w-3 h-3 bg-canary rounded-full shadow-[0_0_0_2px_#20345F] pointer-events-none -translate-x-1/2 -translate-y-1/2 hidden md:flex items-center justify-center text-[10px] font-sans font-medium text-deep-blue overflow-hidden tracking-wider" id="cursor-pearl" style="transform: translate(376px, 11188px); width: 12px; height: 12px; background-color: rgb(231, 221, 106); border-radius: 9999px;">
+<span class="opacity-0 transition-opacity duration-200 uppercase whitespace-nowrap" id="cursor-label" style="opacity: 0;">Xem</span>
+</div>
+<!-- ========================================================
+       TOP PROGRESS TIDE LINE
+  ======================================================== -->
+<div class="fixed top-0 left-0 w-full h-[2px] z-50 pointer-events-none bg-transparent">
+<div class="h-full bg-emerald-brand transition-all duration-75 ease-out w-0" id="scroll-tide-line"></div>
+</div>
+<!-- ========================================================
+       NAVBAR: "TIDE DOCK" (Floating Frosted Capsule)
+  ======================================================== -->
+<header class="fixed top-5 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[880px] transition-all duration-300" id="tide-dock-container">
+<div class="relative bg-soft-white/80 backdrop-blur-md rounded-full border hairline-subtle shadow-[0_8px_24px_rgba(32,52,95,0.06)] px-5 py-2.5 flex items-center justify-between transition-all duration-300" id="tide-dock">
+<!-- Brand Wordmark -->
+<a class="flex items-center gap-2 group cursor-pointer" href="#hero">
+<span class="font-display text-xl tracking-tight font-semibold text-deep-blue group-hover:text-emerald-brand transition-colors">LAVIECO</span>
+<!-- The Signature Pearl -->
+<span class="w-1.5 h-1.5 rounded-full bg-canary inline-block shadow-[0_0_6px_#e7dd6a]"></span>
+</a>
+<!-- Center Links & Gliding Pearl (Desktop) -->
+<nav class="hidden md:flex items-center gap-7 relative text-[13.5px] font-medium text-charcoal/85">
+<!-- Floating active indicator -->
+<div class="relative group/nav py-1 cursor-pointer">
+<a class="hover:text-deep-blue transition-colors flex items-center gap-1.5" href="#story">
+<span class="w-1 h-1 rounded-full bg-canary inline-block opacity-0 group-hover/nav:opacity-100 transition-opacity"></span>
+<span class="">Câu chuyện</span>
+</a>
+<span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-deep-blue text-soft-white text-[11px] font-display italic rounded-full shadow-lg opacity-0 group-hover/nav:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap">
+            Vì sao vỏ sò không phải rác
+          </span>
+</div>
+<div class="relative group/nav py-1 cursor-pointer">
+<a class="hover:text-deep-blue transition-colors flex items-center gap-1.5" href="#programs">
+<span class="w-1 h-1 rounded-full bg-canary inline-block opacity-0 group-hover/nav:opacity-100 transition-opacity"></span>
+<span class="">Chương trình</span>
+</a>
+<span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-deep-blue text-soft-white text-[11px] font-display italic rounded-full shadow-lg opacity-0 group-hover/nav:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap">
+            Học bằng đôi tay
+          </span>
+</div>
+<div class="relative group/nav py-1 cursor-pointer">
+<a class="hover:text-deep-blue transition-colors flex items-center gap-1.5" href="#collection">
+<span class="w-1 h-1 rounded-full bg-canary inline-block opacity-0 group-hover/nav:opacity-100 transition-opacity"></span>
+<span class="">Bộ sưu tập</span>
+</a>
+<span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-deep-blue text-soft-white text-[11px] font-display italic rounded-full shadow-lg opacity-0 group-hover/nav:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap">
+            Bằng chứng nhỏ, ý nghĩa lớn
+          </span>
+</div>
+<div class="relative group/nav py-1 cursor-pointer">
+<a class="hover:text-deep-blue transition-colors flex items-center gap-1.5" href="#impact">
+<span class="w-1 h-1 rounded-full bg-canary inline-block opacity-0 group-hover/nav:opacity-100 transition-opacity"></span>
+<span class="">Tác động</span>
+</a>
+<span class="absolute top-full left-1/2 -translate-x-1/2 mt-2 px-3 py-1 bg-deep-blue text-soft-white text-[11px] font-display italic rounded-full shadow-lg opacity-0 group-hover/nav:opacity-100 pointer-events-none transition-all duration-200 whitespace-nowrap">
+            Từ Cần Thơ ra biển lớn
+          </span>
+</div>
+</nav>
+<!-- Right Action & Catalogue Menu Trigger -->
+<div class="flex items-center gap-2.5">
+<a class="hidden sm:inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-emerald-brand text-deep-blue font-semibold text-[12.5px] hover:bg-emerald-brand/90 hover:scale-[1.02] transition-all shadow-[0_2px_8px_rgba(16,177,131,0.25)]" href="#contact">
+          Hợp tác cùng chúng tôi
+        </a>
+<button aria-label="Mở Mục Lục Triển Lãm" class="w-8 h-8 rounded-full border hairline-subtle bg-soft-white flex flex-col items-center justify-center gap-1 hover:border-deep-blue transition-colors cursor-pointer group" id="catalogue-open-btn">
+<span class="w-3.5 h-[1.5px] bg-deep-blue group-hover:w-4 transition-all"></span>
+<span class="w-2.5 h-[1.5px] bg-deep-blue group-hover:w-4 transition-all"></span>
+</button>
+</div>
+<!-- Dock Internal Tide Line (Bottom hairline filling on scroll) -->
+<div class="absolute bottom-0 left-0 right-0 h-[2px] bg-emerald-brand/30 rounded-b-full overflow-hidden"><div class="h-full bg-emerald-brand opacity-85 transition-all duration-100" id="dock-progress-bar" style="width: 25%;"></div></div>
+</div>
+</header>
+<!-- ========================================================
+       FULL-SCREEN CATALOGUE OVERLAY (Deep Blue Museum Index)
+  ======================================================== -->
+<div class="fixed inset-0 z-50 deep-sea-pattern text-soft-white hidden opacity-0 transition-opacity duration-300 flex-col justify-between p-8 md:p-14 overflow-y-auto" id="catalogue-overlay">
+<!-- Top Bar inside Catalogue -->
+<div class="flex items-center justify-between border-b hairline-white-subtle pb-6">
+<div class="flex items-center gap-2">
+<span class="font-display text-2xl font-bold tracking-tight">LAVIECO</span>
+<span class="w-2 h-2 rounded-full bg-canary shadow-[0_0_8px_#e7dd6a]"></span>
+<span class="text-xs uppercase tracking-museum text-mint-mist/70 ml-4 hidden sm:inline">Mục Lục Triển Lãm Số</span>
+</div>
+<button class="flex items-center gap-2 text-xs uppercase tracking-museum text-mint-mist hover:text-canary transition-colors border hairline-white-subtle rounded-full px-4 py-2 cursor-pointer" id="catalogue-close-btn">
+<span class="">Đóng lại</span>
+<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+</div>
+<!-- Middle Interactive Index with Arch Reveal -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 my-auto py-12 items-center">
+<div class="lg:col-span-7 flex flex-col space-y-3">
+<a class="catalogue-item group flex items-baseline gap-4 py-2 border-b hairline-white-subtle/40 hover:pl-3 transition-all" data-preview="img-cat-1" href="#hero">
+<span class="font-display text-canary text-sm tracking-museum">Nº 00</span>
+<span class="font-display text-3xl md:text-5xl font-light tracking-tight group-hover:text-emerald-brand transition-colors">Lời Tựa &amp; Triển Lãm</span>
+</a>
+<a class="catalogue-item group flex items-baseline gap-4 py-2 border-b hairline-white-subtle/40 hover:pl-3 transition-all" data-preview="img-cat-1" href="#story">
+<span class="font-display text-canary text-sm tracking-museum">Nº 01</span>
+<span class="font-display text-3xl md:text-5xl font-light tracking-tight group-hover:text-emerald-brand transition-colors">Câu Chuyện: Vỏ Sò &amp; Sinh Kế</span>
+</a>
+<a class="catalogue-item group flex items-baseline gap-4 py-2 border-b hairline-white-subtle/40 hover:pl-3 transition-all" data-preview="img-cat-2" href="#programs">
+<span class="font-display text-canary text-sm tracking-museum">Nº 02</span>
+<span class="font-display text-3xl md:text-5xl font-light tracking-tight group-hover:text-emerald-brand transition-colors">Bốn Nấc Thang Giáo Dục</span>
+</a>
+<a class="catalogue-item group flex items-baseline gap-4 py-2 border-b hairline-white-subtle/40 hover:pl-3 transition-all" data-preview="img-cat-3" href="#collection">
+<span class="font-display text-canary text-sm tracking-museum">Nº 03</span>
+<span class="font-display text-3xl md:text-5xl font-light tracking-tight group-hover:text-emerald-brand transition-colors">Bộ Sưu Tập Vật Phẩm Minh Chứng</span>
+</a>
+<a class="catalogue-item group flex items-baseline gap-4 py-2 border-b hairline-white-subtle/40 hover:pl-3 transition-all" data-preview="img-cat-4" href="#impact">
+<span class="font-display text-canary text-sm tracking-museum">Nº 04</span>
+<span class="font-display text-3xl md:text-5xl font-light tracking-tight group-hover:text-emerald-brand transition-colors">Tác Động Xã Hội &amp; Tiêu Dùng Xanh</span>
+</a>
+<a class="catalogue-item group flex items-baseline gap-4 py-2 border-b hairline-white-subtle/40 hover:pl-3 transition-all" data-preview="img-cat-5" href="#team">
+<span class="font-display text-canary text-sm tracking-museum">Nº 05</span>
+<span class="font-display text-3xl md:text-5xl font-light tracking-tight group-hover:text-emerald-brand transition-colors">Sáu Người Kể Chuyện</span>
+</a>
+<a class="catalogue-item group flex items-baseline gap-4 py-2 border-b hairline-white-subtle/40 hover:pl-3 transition-all" data-preview="img-cat-6" href="#contact">
+<span class="font-display text-canary text-sm tracking-museum">Nº 06</span>
+<span class="font-display text-3xl md:text-5xl font-light tracking-tight group-hover:text-emerald-brand transition-colors">Cánh Cửa Đồng Hành &amp; Liên Hệ</span>
+</a>
+</div>
+<!-- Right Arch Preview Container -->
+<div class="lg:col-span-5 hidden lg:flex flex-col items-center justify-center">
+<div class="w-[280px] h-[380px] rounded-arch border border-soft-white/20 p-2 shadow-2xl relative overflow-hidden bg-deep-blue/60 backdrop-blur-sm">
+<div class="w-full h-full rounded-[150px_150px_18px_18px] overflow-hidden relative"><div class="w-full h-full bg-gradient-to-b from-deep-blue via-[#20345F] to-[#10B183]/30 relative flex items-center justify-center p-6"><svg class="absolute inset-0 w-full h-full opacity-15 text-canary pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><circle cx="50%" cy="100%" r="50"></circle><circle cx="50%" cy="100%" r="90"></circle><circle cx="50%" cy="100%" r="130"></circle><circle cx="50%" cy="100%" r="170"></circle><circle cx="50%" cy="100%" r="210"></circle></svg><div class="text-center z-10"><span class="w-2.5 h-2.5 rounded-full bg-canary inline-block shadow-[0_0_10px_#e7dd6a] mb-3 animate-pulse"></span><p class="font-display text-base text-soft-white font-medium">The Living Gallery</p><span class="text-[10px] uppercase font-mono tracking-museum text-mint-mist/70 block mt-1">Cần Thơ · Mekong</span></div><div class="absolute bottom-4 left-4 right-4 bg-soft-white/10 backdrop-blur-md p-3 rounded-xl border border-white/10"><span class="text-[10px] uppercase font-sans tracking-museum text-canary">Nº 001 · Cần Thơ</span><p class="font-display text-xs text-soft-white mt-0.5 italic">“Vỏ sò qua nét nghệ thuật tái sinh”</p></div></div></div>
+</div>
+</div>
+</div>
+<!-- Bottom Row: Languages, Socials, Tagline -->
+<div class="flex flex-col sm:flex-row items-center justify-between border-t hairline-white-subtle pt-6 text-xs text-mint-mist/75 gap-4">
+<div class="flex items-center gap-3">
+<span class="text-canary font-semibold">VI</span>
+<span class="">/</span>
+<button class="hover:text-soft-white transition-colors cursor-pointer">EN</button>
+</div>
+<p class="font-display italic text-sm text-soft-white/90">“Make it your life, through art.”</p>
+<div class="flex items-center gap-6">
+<a class="hover:text-canary transition-colors" href="https://facebook.com" rel="noreferrer" target="_blank">Facebook ↗</a>
+<a class="hover:text-canary transition-colors" href="https://tiktok.com" rel="noreferrer" target="_blank">TikTok ↗</a>
+<span class="opacity-50">Can Tho · Vietnam</span>
+</div>
+</div>
+</div>
+<!-- ========================================================
+       SECTION 1: HERO (100vh) — The Living Gallery Entrance
+  ======================================================== -->
+<section class="relative min-h-screen pt-28 pb-16 flex flex-col justify-between px-6 md:px-16 lg:px-24 overflow-hidden border-b hairline-subtle" id="hero">
+<!-- Ambient Scallop subtle watermark background -->
+<div class="absolute inset-0 scallop-pattern opacity-30 pointer-events-none"></div>
+<div class="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center my-auto">
+<!-- Left Editorial Copy Block -->
+<div class="lg:col-span-7 flex flex-col items-start pr-0 lg:pr-8">
+<!-- Eyebrow with pilot indicator -->
+<div class="flex flex-wrap items-center gap-3 mb-6"><div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hairline-subtle bg-soft-white shadow-sm"><span class="w-2 h-2 rounded-full bg-canary shadow-[0_0_8px_#e7dd6a] animate-pulse"></span><span class="text-[11px] font-sans font-medium text-deep-blue">Đang thí điểm tại Cần Thơ</span></div><div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border hairline-subtle bg-mint-mist/70 shadow-sm"><span class="text-[11.5px] uppercase tracking-museum font-medium text-deep-blue">GREEN ART EDUCATION</span></div></div>
+<!-- Grand Display Headline (Fraunces) -->
+<div class="relative mb-7"><div class="absolute -top-16 -left-8 font-display text-[260px] sm:text-[320px] lg:text-[360px] font-light leading-none text-deep-blue/[0.06] select-none pointer-events-none -z-10">01</div><h1 class="font-display text-[54px] sm:text-[80px] lg:text-[120px] leading-[1.02] font-light tracking-tight text-deep-blue max-w-3xl relative z-10">Cuộc sống, qua từng nét <span class="italic font-normal relative inline-block text-emerald-brand">nghệ thuật<svg class="absolute -bottom-2 left-0 w-full h-3 text-emerald-brand overflow-visible" fill="none" viewBox="0 0 240 12"><path d="M2 9.5C65 2.5 170 1.5 238 8" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path></svg></span>.</h1></div>
+<!-- Core Philosophy Subtext -->
+<p class="text-[17px] sm:text-[18px] leading-[1.7] text-charcoal/85 max-w-xl font-normal mb-9">
+          “Giá trị của một thứ không nằm ở bản chất của nó, mà nằm ở cách con người trao ý nghĩa cho nó.” Chúng tôi không bán đồ thủ công tái chế — chúng tôi kiến tạo hành trình nhận thức thông qua nghệ thuật từ bột vỏ sò.
+        </p>
+<!-- CTA Actions -->
+<div class="flex flex-wrap items-center gap-5">
+<a class="px-7 py-3.5 rounded-full bg-emerald-brand text-deep-blue font-bold text-sm hover:bg-emerald-brand/90 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_4px_16px_rgba(16,177,131,0.28)] flex items-center gap-2 group" href="#story">
+<span class="">Bước vào triển lãm</span>
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+<svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</a>
+<a class="text-sm font-medium text-deep-blue hover:text-emerald-brand transition-colors inline-flex items-center gap-1.5 group py-2" href="#contact">
+<span class="">Dành cho trường học &amp; doanh nghiệp</span>
+<span class="transition-transform group-hover:translate-x-1 font-sans">→</span>
+</a>
+</div>
+<!-- Museum Gallery Stamp -->
+<div class="mt-12 pt-6 border-t hairline-subtle w-full flex items-center justify-between text-xs text-charcoal/60">
+<div class="flex items-center gap-3">
+<span class="font-display font-medium text-deep-blue">GALLERY Nº 2024</span>
+<span class="">·</span>
+<span class="">Mekong Estuary Pilot</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-brand"></span>
+<span class="text-[11px] font-sans">Vật liệu vỏ nghêu, sò, ốc Tây Đô</span>
+</div>
+</div>
+</div>
+<!-- Right Editorial Arch Composition -->
+<div class="lg:col-span-5 relative flex justify-center lg:justify-end items-center overflow-visible"><div class="absolute w-96 h-96 bg-mint-mist/80 rounded-full filter blur-3xl -top-10 -right-10 pointer-events-none"></div><div class="relative w-full max-w-[460px] h-[560px] flex items-center justify-end"><div class="absolute top-0 right-0 w-[320px] sm:w-[340px] h-[520px] rounded-t-full rounded-b-2xl overflow-hidden border border-emerald-brand/30 shadow-[0_24px_50px_rgba(32,52,95,0.14)] bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3] to-[#10B183]/25 z-10 group cursor-pointer"><svg class="absolute inset-0 w-full h-full opacity-10 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><path d="M-20 540 C 60 420, 260 420, 360 540 M-20 480 C 60 360, 260 360, 360 480 M-20 420 C 60 300, 260 300, 360 420 M-20 360 C 60 240, 260 240, 360 360 M-20 300 C 60 180, 260 180, 360 300 M-20 240 C 60 120, 260 120, 360 240 M-20 180 C 60 60, 260 60, 360 180"></path></svg><div class="absolute inset-0 bg-gradient-to-t from-deep-blue/40 via-transparent to-transparent"></div><div class="absolute top-8 left-1/2 -translate-x-1/2 flex flex-col items-center text-center"><span class="w-2.5 h-2.5 rounded-full bg-canary shadow-[0_0_8px_#e7dd6a] mb-2"></span><span class="text-[10px] uppercase tracking-museum font-mono text-deep-blue/70">Vật Phẩm Điển Hình</span></div><div class="absolute bottom-4 left-4 right-4 bg-soft-white/95 backdrop-blur-md p-3.5 rounded-xl border hairline-subtle shadow-md"><div class="flex items-center justify-between mb-1"><span class="text-[10px] uppercase tracking-museum font-semibold text-deep-blue">Nº 001 · Triển lãm</span><span class="w-1.5 h-1.5 rounded-full bg-canary"></span></div><p class="text-xs font-display font-medium text-deep-blue">Bột vỏ sò Cần Thơ ép mịn</p><p class="text-[11px] text-charcoal/70 mt-0.5">Xưởng thủ công cộng đồng · Cần Thơ</p></div></div><div class="absolute top-12 left-2 w-[220px] h-[340px] rounded-t-full rounded-b-2xl overflow-hidden border border-white/20 shadow-[0_20px_40px_rgba(32,52,95,0.18)] bg-deep-blue z-20 group cursor-pointer"><svg class="absolute inset-0 w-full h-full opacity-10 text-soft-white pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="110" cy="170" rx="90" ry="140"></ellipse><ellipse cx="110" cy="170" rx="60" ry="100"></ellipse><ellipse cx="110" cy="170" rx="30" ry="50"></ellipse></svg><div class="absolute top-6 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-canary shadow-[0_0_12px_#e7dd6a] animate-pulse"></div><div class="absolute bottom-3 left-3 right-3 bg-soft-white/10 text-soft-white backdrop-blur-md p-2.5 rounded-lg border hairline-white-subtle"><span class="text-[9px] uppercase tracking-museum text-canary block font-mono">Nº 002 · Biển sâu</span><p class="text-[10.5px] font-sans font-medium leading-tight mt-0.5 text-soft-white">Kết nối dòng chảy phù sa</p></div></div><div class="absolute bottom-0 -left-6 w-[180px] h-[260px] rounded-t-full rounded-b-2xl overflow-hidden border-2 border-soft-white shadow-[0_16px_32px_rgba(32,52,95,0.12)] bg-gradient-to-t from-mint-mist via-[#EAF8F3] to-soft-white z-30 group cursor-pointer"><svg class="absolute inset-0 w-full h-full opacity-15 text-emerald-brand pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 0 L180 260 M180 0 L0 260"></path></svg><div class="absolute bottom-3 left-3 right-3 bg-deep-blue/90 text-soft-white backdrop-blur-sm p-2 rounded-lg border hairline-white-subtle"><span class="text-[9px] uppercase tracking-museum text-canary block font-mono">Nº 003 · Thô mộc</span><p class="text-[10px] font-sans font-medium leading-tight mt-0.5">Vỏ điệp &amp; nghêu sông Hậu</p></div></div><div class="absolute -bottom-4 right-12 z-40 bg-soft-white border border-[#D7CEBA] p-3.5 rounded-2xl shadow-[0_12px_28px_rgba(32,52,95,0.15)] rotate-[-5deg] max-w-[210px] flex flex-col gap-2 backdrop-blur-md"><div class="flex items-center justify-between border-b border-[#D7CEBA] pb-1.5"><span class="text-[9px] font-mono uppercase tracking-museum text-deep-blue font-semibold">Story Card · Nº 001</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><p class="text-[11px] font-display text-deep-blue font-medium leading-snug">Vỏ điệp Bến Tre · Nghiền mịn 120 mesh</p><div class="flex items-center justify-between text-[9px] text-charcoal/70 pt-1"><div class="w-6 h-6 bg-deep-blue text-canary p-1 rounded flex items-center justify-center"><svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h6v6H3V3zm2 2v2h2V5H5zm6-2h6v6h-6V3zm2 2v2h2V5h-2zM3 11h6v6H3v-6zm2 2v2h2v-2H5zm10-2h2v2h-2v-2zm2 2h2v2h-2v-2zm-2 2h2v2h-2v-2zm-4-2h2v2h-2v-2zm0 4h2v2h-2v-2zm4 0h2v2h-2v-2z"></path></svg></div><span class="font-mono font-bold text-emerald-brand">100% Thu gom bản địa</span></div></div></div></div>
+</div>
+<!-- Bottom Edge: Signature LAVI Ticker -->
+<div class="relative z-10 -mx-6 md:-mx-16 lg:-mx-24 mt-12 bg-deep-blue py-3.5 overflow-hidden border-t hairline-white-subtle"><div class="flex items-center text-xs tracking-[0.2em] font-sans text-soft-white uppercase"><div class="animate-marquee flex items-center gap-8 whitespace-nowrap"><span class="font-bold text-soft-white"><span class="text-canary">L</span>IFE</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">A</span>RT</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">V</span>ALUE</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">I</span>NNOVATION</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">E</span>CO</span><span class="text-canary">✦</span><span class="text-mint-mist/80 font-medium">CUỘC SỐNG, QUA TỪNG NÉT NGHỆ THUẬT</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">L</span>IFE</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">A</span>RT</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">V</span>ALUE</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">I</span>NNOVATION</span><span class="text-canary">✦</span><span class="font-bold text-soft-white"><span class="text-canary">E</span>CO</span><span class="text-canary">✦</span><span class="text-mint-mist/80 font-medium">CAN THO ESTUARY PILOT</span><span class="text-canary">✦</span></div></div></div>
+</section>
+<!-- ========================================================
+       SECTION 2: MANIFESTO — Strike & Rewrite Centerpiece
+  ======================================================== -->
+<section class="relative py-32 md:py-44 px-6 md:px-16 lg:px-28 bg-soft-white border-b hairline-subtle overflow-hidden flex items-center justify-center text-center">
+<!-- Subtle Pearl watermark in background -->
+<div class="absolute w-[600px] h-[600px] rounded-full bg-mint-mist/40 filter blur-3xl pointer-events-none -z-0"></div>
+<div class="relative z-10 max-w-4xl mx-auto">
+<!-- Chapter tag -->
+<div class="inline-flex items-center gap-2 mb-8">
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+<span class="text-xs uppercase tracking-museum text-deep-blue/70 font-medium">Bản Tuyên Ngôn · The Manifesto</span>
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+</div>
+<!-- Monumental Fraunces Statement -->
+<h2 class="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-light leading-[1.3] text-deep-blue tracking-tight">
+        LAVIECO <span class="font-normal text-deep-blue">không bán</span> đồ thủ công tái chế thông thường. Sản phẩm chỉ là bằng chứng hữu hình.
+        <br class="hidden sm:inline">
+        Điều chúng tôi theo đuổi là để mỗi người nhìn thấy giá trị ở nơi người khác chỉ thấy 
+        <span class="inline-block relative px-2.5 mx-1.5">
+<!-- Struck out word 'rác' -->
+<span class="text-charcoal/40 line-through decoration-charcoal/50 decoration-2">rác</span>
+<!-- Hand-written rewrote 'chất liệu' in Emerald -->
+<span class="font-display italic font-semibold text-emerald-brand underline decoration-wavy decoration-canary/80 ml-2 text-4xl sm:text-5xl lg:text-[58px]">
+            chất liệu
+          </span>
+</span>.
+      </h2>
+<!-- Subtle museum signature caption -->
+<div class="mt-14 inline-flex items-center gap-3 py-2 px-5 rounded-full border hairline-subtle bg-soft-white/80 shadow-sm text-xs text-charcoal/75">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span>
+<span class="font-sans">Giá trị khởi sinh từ cách bạn trao gửi ý nghĩa</span>
+</div>
+</div>
+</section>
+<!-- ========================================================
+       SECTION 3: "TỪ VỎ ĐẾN TÁC PHẨM" (4 Stages Pinned Journey)
+  ======================================================== -->
+<section class="relative px-6 md:px-16 lg:px-24 bg-mint-mist border-b hairline-subtle scallop-pattern py-32" id="story"><div class="max-w-7xl mx-auto"><div class="flex flex-col md:flex-row md:items-end justify-between mb-20 pb-6 border-b hairline-subtle"><div><span class="text-xs uppercase tracking-museum text-emerald-brand font-semibold block mb-2">HÀNH TRÌNH TÁI SINH NGUYÊN BẢN</span><h2 class="font-display text-4xl md:text-6xl font-light text-deep-blue tracking-tight">Từ vỏ đến tác phẩm</h2></div><p class="text-sm md:text-base text-charcoal/80 max-w-md font-normal mt-4 md:mt-0 leading-relaxed">Bốn chặng biến đổi vật lý và ý niệm: đưa những mảnh vỏ vô tri từ bàn tiệc sông Hậu trở thành tác phẩm nghệ thuật đong đầy cảm xúc.</p></div><div class="relative rounded-3xl p-6 md:p-10 lg:p-12 overflow-hidden bg-gradient-to-r from-soft-white via-mint-mist to-deep-blue border hairline-subtle shadow-xl"><svg class="absolute inset-0 w-full h-full pointer-events-none z-0 hidden lg:block" preserveAspectRatio="none" viewBox="0 0 1200 620"><path d="M 40 420 C 180 390, 240 320, 360 330 C 480 340, 540 240, 680 230 C 820 220, 920 120, 1140 100" fill="none" stroke="#10B183" stroke-dasharray="6 6" stroke-width="2"></path><circle cx="120" cy="405" fill="#10B183" r="5"></circle><circle cx="420" cy="328" fill="#10B183" r="5"></circle><circle cx="720" cy="225" fill="#10B183" r="5"></circle><circle cx="1040" cy="108" fill="#E7DD6A" r="6"></circle></svg><div class="relative z-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 items-end"><div class="relative flex flex-col justify-end group"><div class="absolute -top-12 -left-4 font-display text-[140px] font-light leading-none text-deep-blue/15 select-none pointer-events-none -z-0">01</div><div class="relative z-10 w-full h-[340px] rounded-t-full rounded-b-2xl overflow-hidden border hairline-subtle bg-soft-white/90 p-3 shadow-md flex flex-col justify-between backdrop-blur-sm group-hover:-translate-y-2 transition-transform duration-300"><div class="w-full h-44 rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-mint-mist to-soft-white flex items-center justify-center"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><circle cx="50%" cy="100%" r="40"></circle><circle cx="50%" cy="100%" r="70"></circle><circle cx="50%" cy="100%" r="100"></circle><circle cx="50%" cy="100%" r="130"></circle></svg><div class="text-center z-10"><span class="w-2 h-2 rounded-full bg-canary inline-block shadow-[0_0_6px_#e7dd6a] mb-1.5"></span><span class="font-mono text-[9.5px] uppercase tracking-museum text-deep-blue/70 block">Tập kết vỏ thô</span><p class="font-display italic text-xs text-deep-blue">Bến Ninh Kiều</p></div><div class="absolute bottom-2 left-2 right-2 bg-soft-white/95 px-2 py-1 rounded text-[9.5px] text-deep-blue flex items-center justify-between border hairline-subtle"><span class="font-medium">Nº 01 · Thu gom</span><span class="text-emerald-brand font-bold">~350kg/th</span></div></div><div class="p-2"><div class="text-[10px] uppercase font-mono tracking-museum text-charcoal/50 mb-1">Giai đoạn 01</div><h4 class="font-display text-lg font-medium text-deep-blue leading-snug">Thu gom bản địa</h4><p class="text-[11.5px] leading-relaxed text-charcoal/80 mt-1.5">Nhà hàng hải sản, quán ăn &amp; chợ đầu mối Cần Thơ</p></div></div></div><div class="relative flex flex-col justify-end group"><div class="absolute -top-12 -left-4 font-display text-[140px] font-light leading-none text-deep-blue/15 select-none pointer-events-none -z-0">02</div><div class="relative z-10 w-full h-[420px] rounded-t-full rounded-b-2xl overflow-hidden border hairline-subtle bg-soft-white/95 p-3 shadow-lg flex flex-col justify-between backdrop-blur-sm group-hover:-translate-y-2 transition-transform duration-300"><div class="w-full h-64 rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-mint-mist via-[#EAF8F3] to-[#10B183]/20 flex items-center justify-center"><svg class="absolute inset-0 w-full h-full opacity-15 text-emerald-brand pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><path d="M0 40 Q 60 70 120 40 T 240 40 M0 90 Q 60 120 120 90 T 240 90 M0 140 Q 60 170 120 140 T 240 140 M0 190 Q 60 220 120 190 T 240 190"></path></svg><div class="text-center z-10"><span class="w-2 h-2 rounded-full bg-emerald-brand inline-block shadow-[0_0_6px_#10B183] mb-1.5"></span><span class="font-mono text-[9.5px] uppercase tracking-museum text-deep-blue/70 block">Khử khuẩn vi sinh</span><p class="font-display italic text-xs text-deep-blue">120 Mesh Canxi</p></div><div class="absolute bottom-2 left-2 right-2 bg-soft-white/95 px-2 py-1 rounded text-[9.5px] text-deep-blue flex items-center justify-between border hairline-subtle"><span class="font-medium">Nº 02 · Tinh khiết</span><span class="text-emerald-brand font-bold">100% An toàn</span></div></div><div class="p-2"><div class="text-[10px] uppercase font-mono tracking-museum text-charcoal/50 mb-1">Giai đoạn 02</div><h4 class="font-display text-lg font-medium text-deep-blue leading-snug">Nghiền mịn &amp; khử mùi</h4><p class="text-[11.5px] leading-relaxed text-charcoal/80 mt-1.5">Quy trình làm sạch nhiệt, nghiền mịn đa cấp độ giữ nguyên canxi tự nhiên</p></div></div></div><div class="relative flex flex-col justify-end group"><div class="absolute -top-12 -left-4 font-display text-[140px] font-light leading-none text-deep-blue/15 select-none pointer-events-none -z-0">03</div><div class="relative z-10 w-full h-[480px] rounded-t-full rounded-b-2xl overflow-hidden border border-emerald-brand/30 bg-soft-white p-3 shadow-xl flex flex-col justify-between backdrop-blur-sm group-hover:-translate-y-2 transition-transform duration-300"><div class="w-full h-80 rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-soft-white to-[#10B183]/25 flex items-center justify-center"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><rect height="160" rx="16" width="160" x="30" y="40"></rect><rect height="120" rx="12" width="120" x="50" y="60"></rect><rect height="80" rx="8" width="80" x="70" y="80"></rect></svg><div class="text-center z-10"><span class="w-2 h-2 rounded-full bg-canary inline-block shadow-[0_0_6px_#e7dd6a] mb-1.5"></span><span class="font-mono text-[9.5px] uppercase tracking-museum text-deep-blue/70 block">Khuôn điêu khắc</span><p class="font-display italic text-xs text-deep-blue">Vòm sóng phù sa</p></div><div class="absolute bottom-2 left-2 right-2 bg-soft-white/95 px-2 py-1 rounded text-[9.5px] text-deep-blue flex items-center justify-between border hairline-subtle"><span class="font-medium">Nº 03 · Đúc thủ công</span><span class="text-emerald-brand font-bold">Bio-resin gốc nước</span></div></div><div class="p-2"><div class="text-[10px] uppercase font-mono tracking-museum text-charcoal/50 mb-1">Giai đoạn 03</div><h4 class="font-display text-lg font-medium text-deep-blue leading-snug">Đúc &amp; tạo hình</h4><p class="text-[11.5px] leading-relaxed text-charcoal/80 mt-1.5">Khuôn nghệ thuật bản địa, pha kết dính sinh học thân thiện môi trường</p></div></div></div><div class="relative flex flex-col justify-end group"><div class="absolute -top-12 -left-4 font-display text-[140px] font-light leading-none text-canary/20 select-none pointer-events-none -z-0">04</div><div class="relative z-10 w-full h-[520px] rounded-t-full rounded-b-2xl overflow-hidden border border-canary/40 bg-deep-blue text-soft-white p-3.5 shadow-2xl flex flex-col justify-between group-hover:-translate-y-2 transition-transform duration-300"><div class="w-full h-96 rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-deep-blue via-[#20345F] to-[#10B183]/30 flex flex-col items-center justify-between p-3 border border-white/10"><svg class="absolute inset-0 w-full h-full opacity-20 text-canary pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><circle cx="50%" cy="50%" r="45"></circle><circle cx="50%" cy="50%" r="80"></circle><circle cx="50%" cy="50%" r="115"></circle></svg><div class="flex items-center justify-between w-full z-10"><span class="text-[9px] uppercase font-mono tracking-museum text-canary">Story Card</span><span class="w-2 h-2 rounded-full bg-canary shadow-[0_0_8px_#e7dd6a] animate-pulse"></span></div><div class="z-10 text-center my-auto"><div class="w-12 h-12 rounded-xl bg-soft-white/15 backdrop-blur-md p-2 mx-auto border border-white/20 mb-2 flex items-center justify-center text-canary"><svg class="w-full h-full" fill="currentColor" viewBox="0 0 24 24"><path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-5 0h2v3h-2v-3zm2 3h3v2h-3v-2zm3 2h3v4h-3v-4zm-5 2h2v2h-2v-2z"></path></svg></div><p class="font-display italic text-xs text-soft-white">Mã QR Tri Thức Xanh</p><span class="text-[9px] text-mint-mist/70 font-mono">Dẫn vào cẩm nang số</span></div><div class="w-full bg-[#F1ECE1] text-deep-blue p-2.5 rounded-lg border border-[#D7CEBA] shadow-md z-10 text-left"><div class="flex items-center justify-between text-[8.5px] font-mono mb-1"><span class="text-emerald-brand font-bold">LAVIECO ID #04</span><span class="text-charcoal/60">0.24kg vỏ</span></div><p class="text-[10.5px] font-display font-medium leading-snug">“Vỏ sò không phải rác — là câu chuyện tái sinh.”</p></div></div><div class="p-2 pt-3"><div class="flex items-center gap-1.5 text-[10px] uppercase font-mono tracking-museum text-canary mb-1"><span class="w-1.5 h-1.5 rounded-full bg-canary"></span><span class="">Giai đoạn 04 · Đích đến</span></div><h4 class="font-display text-lg font-medium text-soft-white leading-snug">Kể chuyện &amp; trao ý nghĩa</h4><p class="text-[11.5px] leading-relaxed text-mint-mist/80 mt-1.5">Mỗi tác phẩm mang một story card và mã QR dẫn vào hành trình sinh thái</p></div></div></div></div></div></div></section>
+<!-- ========================================================
+       SECTION 4: "BỐN NẤC THANG GIÁ TRỊ" (Education Programs)
+  ======================================================== -->
+<section class="relative px-6 md:px-16 lg:px-24 bg-soft-white border-b hairline-subtle py-32" id="programs">
+<div class="max-w-7xl mx-auto">
+<!-- Section Header -->
+<div class="text-center max-w-3xl mx-auto mb-20">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mint-mist border hairline-subtle text-xs uppercase tracking-museum text-deep-blue font-medium mb-4">
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+          LÕI GIÁ TRỊ CỦA LAVIECO
+        </div>
+<h2 class="font-display text-4xl md:text-6xl font-light text-deep-blue tracking-tight mb-6">Bốn nấc thang giá trị</h2>
+<p class="text-charcoal/80 text-base md:text-lg leading-relaxed font-normal">
+          Sản phẩm là vật chứng, giáo dục mới là tương lai. Chúng tôi thiết kế 4 tầng trải nghiệm giáo dục nghệ thuật xanh, từng bước chuyển hoá thói quen và nhận thức cộng đồng.
+        </p>
+</div>
+<!-- Staggered Tide Levels Container with Connecting Emerald Tide Line -->
+<div class="relative grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-7 pt-12 items-end">
+<!-- Background Tide Horizontal Guide Line -->
+<div class="hidden lg:block absolute top-24 left-8 right-8 h-[2px] bg-gradient-to-r from-mint-mist via-emerald-brand to-deep-blue z-0"></div>
+<!-- Level 1: Cẩm nang xanh số (Lowest Step) -->
+<div class="relative z-10 bg-mint-mist/60 rounded-3xl p-7 border hairline-subtle flex flex-col justify-between hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-lg min-h-[380px]">
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="w-8 h-8 rounded-full bg-emerald-brand text-deep-blue font-display font-semibold text-sm flex items-center justify-center">01</span>
+<span class="px-2.5 py-1 rounded-full bg-soft-white text-[10.5px] font-semibold text-emerald-brand border hairline-subtle">MIỄN PHÍ TRỌN ĐỜI</span>
+</div>
+<h3 class="font-display text-2xl font-medium text-deep-blue mb-3">Cẩm Nang Xanh Số</h3>
+<p class="text-xs leading-relaxed text-charcoal/75 mb-6">
+              Truy cập tức thì qua việc quét mã QR in trên đáy mỗi sản phẩm. Kho lưu trữ tranh vẽ, infographic kiến thức rác thải ven sông và bài học bảo tồn đa dạng sinh học ĐBSCL.
+            </p>
+</div>
+<div class="pt-4 border-t hairline-subtle">
+<span class="text-[11px] uppercase tracking-museum text-charcoal/60 font-semibold block mb-1">Hình thức</span>
+<p class="text-xs font-medium text-deep-blue">Trang tương tác trực tuyến · Quét mã QR</p>
+</div>
+</div>
+<!-- Level 2: Workshop trải nghiệm (Step 2 - Higher) -->
+<div class="relative z-10 bg-mint-mist/90 rounded-3xl p-7 border hairline-subtle flex flex-col justify-between hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-lg min-h-[420px]">
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="w-8 h-8 rounded-full bg-emerald-brand text-deep-blue font-display font-semibold text-sm flex items-center justify-center">02</span>
+<span class="px-2.5 py-1 rounded-full bg-deep-blue text-soft-white text-[10.5px] font-medium">2 - 3 GIỜ THỰC HÀNH</span>
+</div>
+<h3 class="font-display text-2xl font-medium text-deep-blue mb-3">Workshop Trải Nghiệm</h3>
+<p class="text-xs leading-relaxed text-charcoal/75 mb-6">
+              Dành cho bạn trẻ, gia đình và nhóm du khách tại Cần Thơ. Tận tay trộn bột vỏ sò hữu cơ, pha màu khoáng tự nhiên và đúc nên tác phẩm nghệ thuật mang về nhà.
+            </p>
+</div>
+<div class="pt-4 border-t hairline-subtle">
+<span class="text-[11px] uppercase tracking-museum text-charcoal/60 font-semibold block mb-1">Kỹ năng đạt được</span>
+<p class="text-xs font-medium text-deep-blue">Tư duy chất liệu tuần hoàn &amp; Tác phẩm thủ công cá nhân</p>
+</div>
+</div>
+<!-- Level 3: Gói ngoại khóa (Step 3 - Higher) -->
+<div class="relative z-10 bg-soft-white rounded-3xl p-7 border-2 border-emerald-brand/40 flex flex-col justify-between hover:-translate-y-2 transition-transform duration-300 shadow-md hover:shadow-xl min-h-[460px]">
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="w-8 h-8 rounded-full bg-deep-blue text-canary font-display font-semibold text-sm flex items-center justify-center">03</span>
+<span class="px-2.5 py-1 rounded-full bg-emerald-brand text-deep-blue text-[10.5px] font-bold">3 - 5 BUỔI / KHÓA</span>
+</div>
+<h3 class="font-display text-2xl font-medium text-deep-blue mb-3">Gói Ngoại Khóa Học Đường</h3>
+<p class="text-xs leading-relaxed text-charcoal/75 mb-6">
+              Tích hợp chặt chẽ vào chương trình Hoạt Động Trải Nghiệm và Mỹ Thuật tại các trường phổ thông và đại học. Học sinh đóng vai nhà sinh thái học nhí và nghệ sĩ sáng tạo.
+            </p>
+</div>
+<div class="pt-4 border-t hairline-subtle">
+<span class="text-[11px] uppercase tracking-museum text-charcoal/60 font-semibold block mb-1">Đối tượng ưu tiên</span>
+<p class="text-xs font-medium text-deep-blue">Trường công lập &amp; Quốc tế khu vực miền Tây</p>
+</div>
+</div>
+<!-- Level 4: Tài trợ giáo dục ESG (Step 4 - Highest Pinnacle) -->
+<div class="relative z-10 bg-deep-blue text-soft-white rounded-3xl p-7 border hairline-subtle flex flex-col justify-between hover:-translate-y-2 transition-transform duration-300 shadow-xl min-h-[500px]">
+<div>
+<div class="flex items-center justify-between mb-6">
+<span class="w-8 h-8 rounded-full bg-canary text-deep-blue font-display font-semibold text-sm flex items-center justify-center">04</span>
+<span class="px-2.5 py-1 rounded-full bg-soft-white/15 text-canary text-[10.5px] font-semibold border border-soft-white/20">DOANH NGHIỆP ESG</span>
+</div>
+<h3 class="font-display text-2xl font-medium text-soft-white mb-3">Tài Trợ Giáo Dục ESG</h3>
+<p class="text-xs leading-relaxed text-mint-mist/80 mb-6">
+              Đồng hành cùng tập đoàn kiến tạo các lớp học xanh cho trẻ em vùng chịu ảnh hưởng biến đổi khí hậu. Cung cấp báo cáo đo lường tác động xã hội và chỉ số rác thải được giải cứu.
+            </p>
+</div>
+<div class="pt-4 border-t hairline-white-subtle">
+<span class="text-[11px] uppercase tracking-museum text-canary/80 font-semibold block mb-1">Cam kết kết quả</span>
+<p class="text-xs font-medium text-soft-white">Báo cáo ESG tiêu chuẩn &amp; Quà tặng đối tác đúc biểu trưng</p>
+</div>
+</div>
+</div>
+<!-- Section Footer Action -->
+<div class="mt-16 text-center">
+<a class="inline-flex items-center gap-3 px-8 py-3.5 rounded-full bg-deep-blue text-soft-white hover:bg-deep-blue/90 hover:scale-[1.02] transition-all text-sm font-semibold shadow-md" href="#contact">
+<span class="">Nhận tư vấn chương trình chi tiết</span>
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+</a>
+</div>
+</div>
+</section>
+<!-- ========================================================
+       SECTION 5: "BẰNG CHỨNG NHỎ, Ý NGHĨA LỚN" (Flip Cards Collection)
+  ======================================================== -->
+<section class="relative px-6 md:px-16 lg:px-24 bg-mint-mist/40 border-b hairline-subtle overflow-hidden py-32" id="collection"><div class="max-w-7xl mx-auto"><div class="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b hairline-subtle"><div><span class="text-xs uppercase tracking-museum text-emerald-brand font-semibold block mb-2">VẬT PHẨM MINH CHỨNG</span><h2 class="font-display text-4xl md:text-6xl font-light text-deep-blue tracking-tight">Bằng chứng nhỏ, ý nghĩa lớn</h2></div><div class="flex items-center gap-3 mt-4 md:mt-0"><div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-soft-white border hairline-subtle shadow-sm text-xs text-deep-blue font-medium"><span class="w-2 h-2 rounded-full bg-canary shadow-[0_0_6px_#e7dd6a] animate-pulse"></span><span class="font-mono uppercase text-[10px] tracking-wider">Kéo / Lướt xem chi tiết</span><span class="text-emerald-brand font-bold">↔</span></div></div></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10 items-end"><div class="relative group flex flex-col justify-end"><div class="absolute -top-4 -right-3 z-0 w-44 bg-[#F1ECE1] p-3 rounded-2xl border border-[#D7CEBA] shadow-md rotate-[6deg] group-hover:rotate-[12deg] group-hover:-translate-y-2 transition-all duration-300"><div class="flex items-center justify-between border-b border-[#D7CEBA] pb-1 mb-1"><span class="text-[8.5px] font-mono uppercase text-deep-blue font-bold">Story Card Nº 01</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><p class="font-display italic text-[10px] text-charcoal/80 leading-snug">“Gom từ 4 chiếc vỏ sò bến Ninh Kiều, giảm 0.08kg rác thải hữu cơ.”</p></div><div class="relative z-10 w-full h-[420px] rounded-t-full rounded-b-2xl overflow-hidden border hairline-subtle bg-soft-white p-4 shadow-lg flex flex-col justify-between hover:shadow-xl transition-shadow"><div class="w-full h-[260px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3] to-[#10B183]/25 flex items-center justify-center"><svg class="absolute inset-0 w-full h-full opacity-10 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><circle cx="50%" cy="100%" r="50"></circle><circle cx="50%" cy="100%" r="90"></circle><circle cx="50%" cy="100%" r="130"></circle><circle cx="50%" cy="100%" r="170"></circle></svg><div class="absolute top-3 left-3 bg-deep-blue text-soft-white px-2.5 py-1 rounded-full text-[10px] font-mono font-medium shadow-sm">30.000đ – 100.000đ</div><div class="text-center z-10 px-4"><span class="w-2.5 h-2.5 rounded-full bg-canary inline-block shadow-[0_0_8px_#e7dd6a] mb-2"></span><h5 class="font-display text-base font-medium text-deep-blue">Charm Biển Vỗ</h5><p class="text-[11px] font-mono text-charcoal/60 mt-0.5">Bột vỏ sò mịn 120 mesh</p></div><div class="absolute bottom-2 left-2 right-2 bg-soft-white/95 px-2.5 py-1 rounded text-[9.5px] text-deep-blue flex items-center justify-between border hairline-subtle"><span class="font-mono">Nº 01 · Phụ kiện sinh thái</span><span class="text-emerald-brand font-bold">100% Tự nhiên</span></div></div><div class="pt-2"><h3 class="font-display text-xl font-medium text-deep-blue">Móc khóa nghệ thuật vỏ sò</h3><p class="text-xs text-charcoal/75 mt-1 leading-relaxed">Đúc từ bột canxi vỏ sò nghiền mịn, chạm khắc ký tự sóng phù sa và kèm mã QR định danh.</p></div><div class="pt-2 border-t hairline-subtle flex items-center justify-between text-xs text-emerald-brand font-medium"><span class="font-mono text-[10.5px]">Kèm Story Card riêng</span><span class="group-hover:translate-x-1 transition-transform">→</span></div></div></div><div class="relative group flex flex-col justify-end"><div class="absolute -top-6 -left-3 z-0 w-48 bg-[#F1ECE1] p-3.5 rounded-2xl border border-[#D7CEBA] shadow-md rotate-[-7deg] group-hover:rotate-[-12deg] group-hover:-translate-y-2 transition-all duration-300"><div class="flex items-center justify-between border-b border-[#D7CEBA] pb-1 mb-1"><span class="text-[8.5px] font-mono uppercase text-deep-blue font-bold">Story Card Nº 02</span><span class="w-1.5 h-1.5 rounded-full bg-canary"></span></div><p class="font-display italic text-[10px] text-charcoal/80 leading-snug">“Mặt mờ lì đánh bóng sáp ong hữu cơ, hơi thở cửa biển Định An.”</p></div><div class="relative z-10 w-full h-[500px] rounded-t-full rounded-b-2xl overflow-hidden border-2 border-emerald-brand/40 bg-soft-white p-4 shadow-xl flex flex-col justify-between hover:shadow-2xl transition-shadow"><div class="w-full h-[340px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-soft-white to-[#10B183]/30 flex items-center justify-center"><svg class="absolute inset-0 w-full h-full opacity-10 text-emerald-brand pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="50%" cy="50%" rx="100" ry="120"></ellipse><ellipse cx="50%" cy="50%" rx="70" ry="85"></ellipse><ellipse cx="50%" cy="50%" rx="40" ry="50"></ellipse></svg><div class="absolute top-3 left-3 bg-deep-blue text-soft-white px-2.5 py-1 rounded-full text-[10px] font-mono font-medium shadow-sm">100.000đ – 250.000đ</div><div class="text-center z-10 px-4"><span class="w-2.5 h-2.5 rounded-full bg-canary inline-block shadow-[0_0_8px_#e7dd6a] mb-2"></span><h5 class="font-display text-base font-medium text-deep-blue">Đĩa Décor Vòm Sò</h5><p class="text-[11px] font-mono text-charcoal/60 mt-0.5">Đánh bóng sáp ong hữu cơ</p></div><div class="absolute bottom-2 left-2 right-2 bg-soft-white/95 px-2.5 py-1 rounded text-[9.5px] text-deep-blue flex items-center justify-between border hairline-subtle"><span class="font-mono">Nº 02 · Điêu khắc ứng dụng</span><span class="text-emerald-brand font-bold">85% Vỏ nghêu Cần Thơ</span></div></div><div class="pt-2"><h3 class="font-display text-xl font-medium text-deep-blue">Décor để bàn từ bột vỏ sò</h3><p class="text-xs text-charcoal/75 mt-1 leading-relaxed">Khay cắm bút, đĩa trang sức hình vòm sóng biển, tối giản và bền chắc theo thời gian.</p></div><div class="pt-2 border-t hairline-subtle flex items-center justify-between text-xs text-emerald-brand font-medium"><span class="font-mono text-[10.5px]">Kèm Story Card &amp; Hộp kraft</span><span class="group-hover:translate-x-1 transition-transform">→</span></div></div></div><div class="relative group flex flex-col justify-end"><div class="absolute -top-5 -right-3 z-0 w-52 bg-[#F1ECE1] p-3 rounded-2xl border border-[#D7CEBA] shadow-md rotate-[5deg] group-hover:rotate-[10deg] group-hover:-translate-y-2 transition-all duration-300"><div class="flex items-center justify-between border-b border-[#D7CEBA] pb-1 mb-1"><span class="text-[8.5px] font-mono uppercase text-deep-blue font-bold">Tuyển tập Story Card &amp; QR</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><p class="font-display italic text-[10px] text-charcoal/80 leading-snug">“Đại diện cho sự cộng hưởng doanh nghiệp và tạo sinh kế tự trọng cho người thợ.”</p></div><div class="relative z-10 w-full h-[460px] rounded-t-full rounded-b-2xl overflow-hidden border hairline-subtle bg-soft-white p-4 shadow-lg flex flex-col justify-between hover:shadow-xl transition-shadow"><div class="w-full h-[300px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3] to-deep-blue/20 flex items-center justify-center"><svg class="absolute inset-0 w-full h-full opacity-10 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><rect height="240" rx="20" width="180" x="30" y="30"></rect><rect height="190" rx="14" width="140" x="50" y="55"></rect></svg><div class="absolute top-3 left-3 bg-deep-blue text-soft-white px-2.5 py-1 rounded-full text-[10px] font-mono font-medium shadow-sm">250.000đ – 500.000đ</div><div class="text-center z-10 px-4"><span class="w-2.5 h-2.5 rounded-full bg-canary inline-block shadow-[0_0_8px_#e7dd6a] mb-2"></span><h5 class="font-display text-base font-medium text-deep-blue">Hộp Quà Tặng Xanh</h5><p class="text-[11px] font-mono text-charcoal/60 mt-0.5">Bao bì kraft tái chế thủ công</p></div><div class="absolute bottom-2 left-2 right-2 bg-soft-white/95 px-2.5 py-1 rounded text-[9.5px] text-deep-blue flex items-center justify-between border hairline-subtle"><span class="font-mono">Nº 03 · Tuyển tập quà tặng</span><span class="text-emerald-brand font-bold">ESG Certified</span></div></div><div class="pt-2"><h3 class="font-display text-xl font-medium text-deep-blue">Bộ quà tặng xanh cao cấp</h3><p class="text-xs text-charcoal/75 mt-1 leading-relaxed">Combo hoàn chỉnh: sản phẩm + story card + hộp kraft + mã QR cá nhân hóa cho đối tác.</p></div><div class="pt-2 border-t hairline-subtle flex items-center justify-between text-xs text-emerald-brand font-medium"><span class="font-mono text-[10.5px]">Tùy biến logo cho sự kiện B2B</span><span class="group-hover:translate-x-1 transition-transform">→</span></div></div></div></div><div class="mt-16 text-center"><a class="inline-flex items-center gap-2 font-display text-base text-deep-blue hover:text-emerald-brand transition-colors group underline decoration-emerald-brand/40 decoration-2 underline-offset-8" href="#contact"><span class="font-sans text-sm font-semibold">Xem toàn bộ bộ sưu tập</span><span class="group-hover:translate-x-1 transition-transform">→</span></a></div></div></section>
+<!-- ========================================================
+       SECTION 6: QR -> CẨM NANG XANH SỐ (Phone Mockup + Scan Beam)
+  ======================================================== -->
+<section class="relative py-28 px-6 md:px-16 lg:px-24 bg-soft-white border-b hairline-subtle">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+<!-- Left Copy -->
+<div class="lg:col-span-6">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-mint-mist border hairline-subtle text-xs uppercase tracking-museum text-deep-blue font-medium mb-5">
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+          CÁNH CỬA SỐ HÓA TRI THỨC
+        </div>
+<h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light text-deep-blue tracking-tight mb-6">Từ một chiếc vỏ đến một hệ sinh thái</h2>
+<p class="text-charcoal/80 text-base md:text-lg leading-relaxed font-normal mb-8">
+          Quét mã QR để bước vào <span class="text-emerald-brand font-semibold">Cẩm nang xanh số</span>, nơi câu chuyện của vỏ sò tiếp tục sống động qua các mẩu truyện tương tác, thông số giảm thiểu rác thải và thư viện bài học giáo dục nghệ thuật mở.
+        </p>
+<!-- Feature Points -->
+<div class="space-y-4">
+<div class="flex items-start gap-3.5">
+<span class="w-5 h-5 rounded-full bg-canary/40 text-deep-blue flex items-center justify-center text-xs font-bold mt-0.5">✦</span>
+<div>
+<h4 class="text-sm font-semibold text-deep-blue">Không cần cài đặt ứng dụng</h4>
+<p class="text-xs text-charcoal/70 mt-0.5">Mở trực tiếp trên mọi trình duyệt điện thoại chỉ với 1 giây chạm camera.</p>
+</div>
+</div>
+<div class="flex items-start gap-3.5">
+<span class="w-5 h-5 rounded-full bg-canary/40 text-deep-blue flex items-center justify-center text-xs font-bold mt-0.5">✦</span>
+<div>
+<h4 class="text-sm font-semibold text-deep-blue">Chứng thư số định danh nghệ nhân</h4>
+<p class="text-xs text-charcoal/70 mt-0.5">Biết rõ câu chuyện của người thợ Cần Thơ đã hoàn thiện món đồ trên tay bạn.</p>
+</div>
+</div>
+<div class="flex items-start gap-3.5">
+<span class="w-5 h-5 rounded-full bg-canary/40 text-deep-blue flex items-center justify-center text-xs font-bold mt-0.5">✦</span>
+<div>
+<h4 class="text-sm font-semibold text-deep-blue">Kho tư liệu bài giảng cho giáo viên</h4>
+<p class="text-xs text-charcoal/70 mt-0.5">Tải miễn phí giáo án mẫu về bảo vệ môi trường nước cho học sinh tiểu học &amp; THCS.</p>
+</div>
+</div>
+</div>
+<div class="mt-10">
+<a class="inline-flex items-center gap-2 px-6 py-3 rounded-full border hairline-subtle hover:border-emerald-brand text-xs uppercase tracking-museum font-semibold text-deep-blue hover:bg-mint-mist transition-all" href="#programs">
+<span class="">Khám phá thử bản xem trước cẩm nang</span>
+<span class="">↗</span>
+</a>
+</div>
+</div>
+<!-- Right Interactive Phone & Scan Effect Visual -->
+<div class="lg:col-span-6 flex justify-center">
+<div class="relative w-[320px] sm:w-[340px]">
+<!-- Outer Phone Frame -->
+<div class="relative bg-deep-blue p-4 rounded-[48px] shadow-[0_24px_64px_rgba(32,52,95,0.2)] border-4 border-deep-blue/40">
+<!-- Phone Notch / Speaker -->
+<div class="absolute top-6 left-1/2 -translate-x-1/2 w-20 h-4 bg-deep-blue rounded-full z-30"></div>
+<!-- Phone Screen Surface -->
+<div class="relative bg-soft-white rounded-[36px] overflow-hidden p-5 h-[580px] flex flex-col justify-between border hairline-subtle">
+<!-- Screen Header Inside Mockup -->
+<div class="pt-4 text-center">
+<span class="text-[9px] uppercase tracking-museum font-semibold text-emerald-brand block">LAVIECO GREEN HANDBOOK</span>
+<p class="font-display text-sm font-semibold text-deep-blue mt-0.5">Cẩm Nang Xanh Số · Tập 01</p>
+<div class="w-8 h-[2px] bg-canary mx-auto mt-2"></div>
+</div>
+<!-- Animated Scan Area Mockup -->
+<div class="my-auto relative bg-mint-mist/80 rounded-2xl p-4 border hairline-subtle overflow-hidden">
+<!-- Glowing Scan Line -->
+<div class="absolute left-0 right-0 h-1 bg-emerald-brand shadow-[0_0_12px_#10B183] animate-pulse top-1/2"></div>
+<div class="flex items-center gap-3 mb-3">
+<div class="w-10 h-10 rounded-lg bg-soft-white p-1.5 border hairline-subtle">
+<!-- SVG QR Code Icon -->
+<svg class="w-full h-full text-deep-blue" fill="currentColor" viewBox="0 0 24 24">
+<path d="M3 3h8v8H3V3zm2 2v4h4V5H5zm8-2h8v8h-8V3zm2 2v4h4V5h-4zM3 13h8v8H3v-8zm2 2v4h4v-4H5zm13-2h3v2h-3v-2zm-5 0h2v3h-2v-3zm2 3h3v2h-3v-2zm3 2h3v4h-3v-4zm-5 2h2v2h-2v-2z"></path>
+</svg>
+</div>
+<div>
+<span class="text-[9px] font-mono uppercase text-charcoal/60">ID: LV-CT-089</span>
+<h5 class="text-xs font-bold text-deep-blue">Vật Phẩm Khay Sóng Biển</h5>
+</div>
+</div>
+<!-- Unfolded Digital Reading Preview -->
+<div class="bg-soft-white p-3 rounded-xl border hairline-subtle space-y-2 text-[10.5px]">
+<div class="flex items-center justify-between text-charcoal/70">
+<span class="">Nơi thu gom:</span>
+<span class="font-semibold text-deep-blue">Quận Ninh Kiều, Cần Thơ</span>
+</div>
+<div class="flex items-center justify-between text-charcoal/70">
+<span class="">Lượng vỏ tái chế:</span>
+<span class="font-semibold text-emerald-brand">0.24 kg</span>
+</div>
+<div class="flex items-center justify-between text-charcoal/70">
+<span class="">Người thợ tạo tác:</span>
+<span class="font-semibold text-deep-blue">Hợp tác xã Hoa Biển</span>
+</div>
+</div>
+</div>
+<!-- Screen Footer Button -->
+<div class="text-center pb-2">
+<button class="w-full py-2.5 rounded-full bg-emerald-brand text-deep-blue font-bold text-xs shadow-md">
+                  Đọc tiếp câu chuyện số hóa →
+                </button>
+<span class="text-[9px] text-charcoal/50 block mt-2">© 2024 Dự án Giáo Dục Nghệ Thuật Xanh</span>
+</div>
+</div>
+</div>
+<!-- Decorative Kraft Story Card Behind Mockup -->
+<div class="absolute -bottom-6 -left-8 -z-10 w-48 bg-[#F1ECE1] p-4 rounded-2xl border border-[#D7CEBA] shadow-xl rotate-[-6deg] hidden sm:block">
+<span class="text-[9px] font-mono text-deep-blue">Story Card Vật Lý</span>
+<p class="font-display italic text-xs text-charcoal/80 mt-1">“Được in trên giấy kraft từ xơ thực vật.”</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================
+       SECTION 7: TÁC ĐỘNG XÃ HỘI (Deep Sea Theme #20345F)
+  ======================================================== -->
+<section class="relative py-32 px-6 md:px-16 lg:px-24 deep-sea-pattern text-soft-white border-b hairline-white-subtle overflow-hidden" id="impact">
+<!-- Scallop subtle watermark in deep blue -->
+<div class="absolute inset-0 scallop-pattern opacity-5 pointer-events-none"></div>
+<div class="relative z-10 max-w-7xl mx-auto">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-20 pb-8 border-b hairline-white-subtle">
+<div>
+<div class="inline-flex items-center gap-2 mb-3">
+<span class="w-2 h-2 rounded-full bg-canary"></span>
+<span class="text-xs uppercase tracking-museum text-mint-mist font-semibold">TÁC ĐỘNG BỀN VỮNG</span>
+</div>
+<h2 class="font-display text-4xl md:text-6xl font-light text-soft-white tracking-tight">Từ Cần Thơ ra biển lớn</h2>
+</div>
+<p class="text-sm md:text-base text-mint-mist/80 max-w-md font-light mt-4 md:mt-0 leading-relaxed">
+          Chúng tôi kiến tạo mô hình tuần hoàn khép kín: trao cơ hội kinh tế chân chính cho cộng đồng địa phương và định hình thế hệ trẻ có trách nhiệm sinh thái.
+        </p>
+</div>
+<!-- Two Pillars of Impact -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-24">
+<!-- Column 1: Tạo Sinh Kế -->
+<div class="bg-soft-white/5 border hairline-white-subtle rounded-3xl p-8 md:p-10 backdrop-blur-sm relative flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-2xl bg-emerald-brand/20 border border-emerald-brand/40 flex items-center justify-center text-canary mb-6">
+<svg class="w-6 h-6 text-canary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg>
+</div>
+<h3 class="font-display text-2xl md:text-3xl font-normal text-soft-white mb-4">Tạo Sinh Kế Bền Vững &amp; Tự Trọng</h3>
+<p class="text-sm text-mint-mist/80 leading-relaxed font-light mb-6">
+              Nguyên liệu bột vỏ sò đã khử khuẩn được chuyển giao đến các hộ gia đình khó khăn và hội người khuyết tật tại địa phương Cần Thơ để thực hiện các công đoạn hoàn thiện thủ công. Chúng tôi chi trả thù lao thỏa đáng theo từng sản phẩm hoàn tất với tinh thần đối tác sáng tạo bình đẳng, không dùng hình ảnh thương hại để làm từ thiện.
+            </p>
+</div>
+<div class="pt-4 border-t hairline-white-subtle flex items-center justify-between text-xs text-mint-mist/70">
+<span class="">Đối tác thủ công: Hội Phụ nữ &amp; Hợp tác xã Cần Thơ</span>
+<span class="text-canary font-medium">Bảo trợ sinh kế</span>
+</div>
+</div>
+<!-- Column 2: Nâng Nhận Thức Ven Biển -->
+<div class="bg-soft-white/5 border hairline-white-subtle rounded-3xl p-8 md:p-10 backdrop-blur-sm relative flex flex-col justify-between">
+<div>
+<div class="w-12 h-12 rounded-2xl bg-emerald-brand/20 border border-emerald-brand/40 flex items-center justify-center text-emerald-brand mb-6">
+<svg class="w-6 h-6 text-emerald-brand" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg>
+</div>
+<h3 class="font-display text-2xl md:text-3xl font-normal text-soft-white mb-4">Nâng Nhận Thức Sinh Thái Ven Biển</h3>
+<p class="text-sm text-mint-mist/80 leading-relaxed font-light mb-6">
+              Vùng Đồng bằng sông Cửu Long là vựa hải sản lớn nhất nước nhưng cũng chịu sức ép rác thải canxi từ các cơ sở chế biến. Bằng cách tái định nghĩa vỏ sò thành "chất liệu mỹ thuật", LAVIECO kích hoạt niềm tự hào văn hóa sinh thái bản địa trong lòng thế hệ trẻ học đường.
+            </p>
+</div>
+<div class="pt-4 border-t hairline-white-subtle flex items-center justify-between text-xs text-mint-mist/70">
+<span class="">Không gian giáo dục: Lồng ghép mỹ thuật xanh</span>
+<span class="text-canary font-medium">Thí điểm tại Tây Đô</span>
+</div>
+</div>
+</div>
+<!-- Count-up Stats Grounded in Real Research Sources -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 pt-12 border-t hairline-white-subtle">
+<!-- Stat 1 -->
+<div class="border-l-2 border-emerald-brand pl-6">
+<div class="font-display text-5xl md:text-6xl font-light text-soft-white mb-2">
+            15%<span class="text-canary text-3xl font-sans font-light">/năm</span>
+</div>
+<p class="text-sm text-mint-mist font-medium leading-snug mb-1">
+            Tăng trưởng nhu cầu tiêu dùng sản phẩm xanh tại Việt Nam
+          </p>
+<span class="text-[11px] text-mint-mist/60 uppercase font-mono tracking-wider">Nguồn: Bộ Công Thương</span>
+</div>
+<!-- Stat 2 -->
+<div class="border-l-2 border-canary pl-6">
+<div class="font-display text-5xl md:text-6xl font-light text-soft-white mb-2">
+            72%
+          </div>
+<p class="text-sm text-mint-mist font-medium leading-snug mb-1">
+            Người tiêu dùng sẵn sàng chi trả nhiều hơn cho sản phẩm thân thiện môi trường
+          </p>
+<span class="text-[11px] text-mint-mist/60 uppercase font-mono tracking-wider">Nguồn: Báo cáo PwC Việt Nam, 2024</span>
+</div>
+<!-- Stat 3 -->
+<div class="border-l-2 border-emerald-brand pl-6">
+<div class="font-display text-5xl md:text-6xl font-light text-soft-white mb-2">
+            54%
+          </div>
+<p class="text-sm text-mint-mist font-medium leading-snug mb-1">
+            Chấp nhận mức giá cao hơn tới 10% cho các sản phẩm từ vật liệu tái chế
+          </p>
+<span class="text-[11px] text-mint-mist/60 uppercase font-mono tracking-wider">Nguồn: Báo cáo PwC Việt Nam, 2024</span>
+</div>
+</div>
+<!-- Small Survey Methodology Footnote -->
+<div class="mt-12 pt-6 border-t hairline-white-subtle/50 text-right">
+<p class="text-[11px] text-mint-mist/60 italic font-sans">
+          * Dữ liệu đối chiếu kết hợp khảo sát nội bộ LAVIECO (n = 99, đối tượng học sinh - sinh viên &amp; phụ huynh tại Cần Thơ / ĐBSCL, quý III/2024).
+        </p>
+</div>
+</div>
+</section>
+<!-- ========================================================
+       SECTION 8: LỘ TRÌNH — "Từ Một Chiếc Vỏ Đến Một Hệ Sinh Thái"
+  ======================================================== -->
+<section class="relative py-28 px-6 md:px-16 lg:px-24 bg-soft-white border-b hairline-subtle"><div class="max-w-7xl mx-auto"><div class="text-center max-w-3xl mx-auto mb-16"><span class="text-xs uppercase tracking-museum text-emerald-brand font-semibold block mb-2">TẦM NHÌN DÀI HẠN</span><h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light text-deep-blue tracking-tight mb-4">Từ một chiếc vỏ đến một hệ sinh thái</h2><p class="text-sm md:text-base text-charcoal/75 leading-relaxed">Ba con sóng dâng cao — xây dựng từng bước có đo lường từ vật phẩm minh chứng đến nền tảng cộng đồng xanh.</p></div><div class="relative pt-12 pb-6"><div class="absolute bottom-0 left-0 right-0 h-[2px] bg-deep-blue/15 hidden md:block z-0"></div><div class="grid grid-cols-1 md:grid-cols-3 gap-8 items-end relative z-10"><div class="relative flex flex-col justify-end"><div class="mb-6"><div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-brand/15 text-emerald-brand text-xs font-semibold uppercase tracking-museum mb-2"><span class="w-2 h-2 rounded-full bg-canary shadow-[0_0_8px_#e7dd6a] animate-ping"></span>Đang thực hiện</div><h3 class="font-display text-2xl font-medium text-deep-blue mb-2">Giai đoạn 1: Sản phẩm minh chứng, story card &amp; QR số</h3><p class="text-xs text-charcoal/75 leading-relaxed">Hoàn thiện công nghệ xử lý khử mùi bột vỏ sò an toàn, phát hành bộ sản phẩm minh chứng đầu tiên và thẻ Story Card định danh nghệ nhân Cần Thơ.</p></div><div class="w-full h-[140px] rounded-t-[48px] rounded-b-2xl bg-emerald-brand p-5 text-deep-blue relative overflow-hidden shadow-lg flex flex-col justify-between"><svg class="absolute -right-4 -bottom-4 w-32 h-32 opacity-20 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 120 C 30 60, 90 60, 120 120"></path><circle cx="60" cy="60" r="20"></circle></svg><div class="flex items-center justify-between"><span class="font-mono font-bold text-xs uppercase tracking-wider text-soft-white">Sóng khởi nguyên · GĐ 1</span><span class="w-3.5 h-3.5 rounded-full bg-canary shadow-[0_0_10px_#e7dd6a] inline-block"></span></div><div class="text-[11px] font-medium text-deep-blue bg-soft-white/80 backdrop-blur-sm px-3 py-1.5 rounded-xl self-start border border-soft-white/40">Nền tảng canxi tinh khiết &amp; định danh nguồn gốc</div></div></div><div class="relative flex flex-col justify-end"><div class="mb-6"><div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-deep-blue/10 text-deep-blue text-xs font-semibold uppercase tracking-museum mb-2"><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span>Quý 2 - 4 / 2025</div><h3 class="font-display text-2xl font-medium text-deep-blue mb-2">Giai đoạn 2: Mở rộng workshop, chương trình ngoại khóa &amp; combo quà B2B</h3><p class="text-xs text-charcoal/75 leading-relaxed">Tổ chức chuỗi workshop cố định tại Ninh Kiều, đưa gói giáo dục nghệ thuật xanh vào 5 trường học và triển khai giải pháp quà tặng ESG cho doanh nghiệp.</p></div><div class="w-full h-[220px] rounded-t-[56px] rounded-b-2xl bg-mint-mist border-2 border-emerald-brand p-5 text-deep-blue relative overflow-hidden shadow-lg flex flex-col justify-between"><svg class="absolute -right-6 -bottom-6 w-44 h-44 opacity-15 text-emerald-brand pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 160 C 40 80, 120 80, 160 160 M0 120 C 40 40, 120 40, 160 120"></path></svg><div class="flex items-center justify-between"><span class="font-mono font-bold text-xs uppercase tracking-wider text-emerald-brand">Sóng lan tỏa · GĐ 2</span><span class="w-2.5 h-2.5 rounded-full bg-emerald-brand shadow-[0_0_8px_#10B183] inline-block"></span></div><div class="space-y-1.5"><div class="text-[11px] font-medium text-deep-blue bg-soft-white px-3 py-1 rounded-lg border hairline-subtle">• 5 trường phổ thông &amp; ĐH tại Cần Thơ</div><div class="text-[11px] font-medium text-deep-blue bg-soft-white px-3 py-1 rounded-lg border hairline-subtle">• Chuỗi workshop trải nghiệm cuối tuần</div></div></div></div><div class="relative flex flex-col justify-end"><div class="mb-6"><div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-soft-white border hairline-subtle text-xs font-semibold uppercase tracking-museum text-charcoal/60 mb-2"><span class="w-1.5 h-1.5 rounded-full bg-charcoal/40"></span>Sắp tới · 2026 trở đi</div><h3 class="font-display text-2xl font-medium text-deep-blue mb-2">Giai đoạn 3: Cẩm nang xanh freemium, app cộng đồng tích điểm &amp; trạm thu gom phân loại</h3><p class="text-xs text-charcoal/75 leading-relaxed">Nâng cấp cẩm nang xanh số thành nền tảng giáo dục mở, ra mắt ứng dụng phân loại tích điểm đổi quà và mở rộng xưởng vệ tinh sang các tỉnh ven sông Mekong.</p></div><div class="w-full h-[300px] rounded-t-[64px] rounded-b-2xl bg-mint-mist/20 border-2 border-dashed border-emerald-brand p-5 text-deep-blue relative overflow-hidden flex flex-col justify-between"><svg class="absolute -right-8 -bottom-8 w-52 h-52 opacity-10 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M0 200 C 50 100, 150 100, 200 200 M0 150 C 50 50, 150 50, 200 150"></path></svg><div class="flex items-center justify-between"><span class="font-mono font-bold text-xs uppercase tracking-wider text-charcoal/70">Sóng đại dương · GĐ 3</span><span class="px-2.5 py-0.5 rounded-full bg-emerald-brand/20 text-emerald-brand font-mono text-[9.5px] font-bold">Dự phóng</span></div><div class="space-y-1.5"><div class="text-[11px] font-medium text-charcoal/80 bg-soft-white/80 px-3 py-1.5 rounded-lg border hairline-subtle">• Mạng lưới trạm thu gom An Giang, Kiên Giang</div><div class="text-[11px] font-medium text-charcoal/80 bg-soft-white/80 px-3 py-1.5 rounded-lg border hairline-subtle">• Nền tảng số hóa Freemium toàn vùng ĐBSCL</div></div></div></div></div></div></div></section>
+<!-- ========================================================
+       SECTION 9: ĐỘI NGŨ — "Sáu Người Kể Chuyện"
+  ======================================================== -->
+<section class="relative px-6 md:px-16 lg:px-24 bg-mint-mist/30 border-b hairline-subtle py-32" id="team">
+<div class="max-w-7xl mx-auto">
+<!-- Section Header -->
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-16 pb-6 border-b hairline-subtle">
+<div>
+<span class="text-xs uppercase tracking-museum text-emerald-brand font-semibold block mb-2">CON NGƯỜI ĐỒNG HÀNH</span>
+<h2 class="font-display text-4xl md:text-5xl lg:text-6xl font-light text-deep-blue tracking-tight">Sáu người kể chuyện</h2>
+</div>
+<p class="text-sm text-charcoal/70 max-w-sm font-normal mt-4 md:mt-0">
+          Những người trẻ gắn bó cùng Mekong, biến khoa học vật liệu và tư duy thẩm mỹ thành hành động thiết thực.
+        </p>
+</div>
+<!-- 6 Arch Portrait Cards Grid -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-10 items-start"><div class="flex flex-col gap-10"><div class="group relative bg-soft-white rounded-t-full rounded-b-2xl p-4 border hairline-subtle hover:border-emerald-brand hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden h-[420px]"><div class="w-full h-[280px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3]/90 to-[#10B183]/25 flex items-center justify-center p-4"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><circle cx="50%" cy="100%" r="50"></circle><circle cx="50%" cy="100%" r="90"></circle><circle cx="50%" cy="100%" r="130"></circle><path d="M50 280 C80 180, 140 180, 170 280"></path></svg><div class="relative z-10 flex flex-col items-center justify-center text-center"><div class="w-16 h-16 rounded-full bg-deep-blue/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-deep-blue/80 text-3xl font-light">biotech</span></div><span class="font-display text-base font-medium text-deep-blue">Võ Chí Trọng</span><span class="text-[10px] uppercase font-mono tracking-museum text-emerald-brand mt-0.5">CTO · Vật Liệu Xanh</span></div><span class="absolute top-4 right-4 w-3 h-3 rounded-full bg-canary opacity-0 group-hover:opacity-100 shadow-[0_0_10px_#e7dd6a] transition-all duration-300 scale-75 group-hover:scale-100"></span></div><div class="pt-3 pb-1 border-t hairline-subtle"><div class="flex items-center justify-between mb-1.5"><span class="font-mono text-[11px] font-semibold text-deep-blue">Nº 01 · Võ Chí Trọng · CTO</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><div class="overflow-hidden"><p class="text-xs text-charcoal/70 leading-relaxed max-h-0 opacity-0 group-hover:max-h-20 group-hover:opacity-100 transition-all duration-300 ease-out">Phụ trách hệ sinh thái công nghệ &amp; quy trình sản xuất tuần hoàn.</p><p class="text-[11px] text-charcoal/60 group-hover:hidden transition-all duration-200">Cần Thơ · Mekong Estuary</p></div></div></div><div class="group relative bg-soft-white rounded-t-full rounded-b-2xl p-4 border hairline-subtle hover:border-emerald-brand hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden h-[350px] md:mt-4"><div class="w-full h-[220px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3]/80 to-[#10B183]/20 flex items-center justify-center p-4"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><circle cx="50%" cy="100%" r="40"></circle><circle cx="50%" cy="100%" r="80"></circle><circle cx="50%" cy="100%" r="120"></circle></svg><div class="relative z-10 flex flex-col items-center justify-center text-center"><div class="w-14 h-14 rounded-full bg-deep-blue/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-deep-blue/80 text-2xl font-light">school</span></div><span class="font-display text-base font-medium text-deep-blue">Nguyễn Đình Xuân Anh</span><span class="text-[10px] uppercase font-mono tracking-museum text-emerald-brand mt-0.5">Edutainment Experience</span></div><span class="absolute top-4 right-4 w-3 h-3 rounded-full bg-canary opacity-0 group-hover:opacity-100 shadow-[0_0_10px_#e7dd6a] transition-all duration-300 scale-75 group-hover:scale-100"></span></div><div class="pt-3 pb-1 border-t hairline-subtle"><div class="flex items-center justify-between mb-1.5"><span class="font-mono text-[11px] font-semibold text-deep-blue">Nº 04 · Nguyễn Đình Xuân Anh · Head of Edutainment Experience</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><div class="overflow-hidden"><p class="text-xs text-charcoal/70 leading-relaxed max-h-0 opacity-0 group-hover:max-h-20 group-hover:opacity-100 transition-all duration-300 ease-out">Xây dựng giáo án ngoại khóa &amp; điều phối trải nghiệm workshop cho học sinh.</p><p class="text-[11px] text-charcoal/60 group-hover:hidden transition-all duration-200">Cần Thơ · Mekong Estuary</p></div></div></div></div><div class="flex flex-col gap-10 md:pt-10"><div class="group relative bg-soft-white rounded-t-full rounded-b-2xl p-4 border hairline-subtle hover:border-emerald-brand hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden h-[370px]"><div class="w-full h-[240px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3]/90 to-[#10B183]/25 flex items-center justify-center p-4"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><ellipse cx="50%" cy="50%" rx="70" ry="90"></ellipse><ellipse cx="50%" cy="50%" rx="40" ry="60"></ellipse></svg><div class="relative z-10 flex flex-col items-center justify-center text-center"><div class="w-14 h-14 rounded-full bg-deep-blue/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-deep-blue/80 text-2xl font-light">science</span></div><span class="font-display text-base font-medium text-deep-blue">Ngô Chúc Quỳnh</span><span class="text-[10px] uppercase font-mono tracking-museum text-emerald-brand mt-0.5">R&amp;D Lead</span></div><span class="absolute top-4 right-4 w-3 h-3 rounded-full bg-canary opacity-0 group-hover:opacity-100 shadow-[0_0_10px_#e7dd6a] transition-all duration-300 scale-75 group-hover:scale-100"></span></div><div class="pt-3 pb-1 border-t hairline-subtle"><div class="flex items-center justify-between mb-1.5"><span class="font-mono text-[11px] font-semibold text-deep-blue">Nº 02 · Ngô Chúc Quỳnh · Product &amp; R&amp;D Lead</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><div class="overflow-hidden"><p class="text-xs text-charcoal/70 leading-relaxed max-h-0 opacity-0 group-hover:max-h-20 group-hover:opacity-100 transition-all duration-300 ease-out">Nghiên cứu công thức vật liệu bột sò, thử nghiệm quy chuẩn an toàn cho sản phẩm.</p><p class="text-[11px] text-charcoal/60 group-hover:hidden transition-all duration-200">Cần Thơ · Mekong Estuary</p></div></div></div><div class="group relative bg-soft-white rounded-t-full rounded-b-2xl p-4 border hairline-subtle hover:border-emerald-brand hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden h-[410px] md:mt-2"><div class="w-full h-[270px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3]/80 to-[#10B183]/25 flex items-center justify-center p-4"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><path d="M20 100 Q 100 20 180 100 T 340 100"></path></svg><div class="relative z-10 flex flex-col items-center justify-center text-center"><div class="w-14 h-14 rounded-full bg-deep-blue/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-deep-blue/80 text-2xl font-light">auto_stories</span></div><span class="font-display text-base font-medium text-deep-blue">Trần Ngọc Thi</span><span class="text-[10px] uppercase font-mono tracking-museum text-emerald-brand mt-0.5">Storytelling &amp; Community</span></div><span class="absolute top-4 right-4 w-3 h-3 rounded-full bg-canary opacity-0 group-hover:opacity-100 shadow-[0_0_10px_#e7dd6a] transition-all duration-300 scale-75 group-hover:scale-100"></span></div><div class="pt-3 pb-1 border-t hairline-subtle"><div class="flex items-center justify-between mb-1.5"><span class="font-mono text-[11px] font-semibold text-deep-blue">Nº 05 · Trần Ngọc Thi · CCO, Storytelling Lead</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><div class="overflow-hidden"><p class="text-xs text-charcoal/70 leading-relaxed max-h-0 opacity-0 group-hover:max-h-20 group-hover:opacity-100 transition-all duration-300 ease-out">Chắp bút cho từng câu chuyện, kết nối truyền thông giáo dục với cộng đồng.</p><p class="text-[11px] text-charcoal/60 group-hover:hidden transition-all duration-200">Cần Thơ · Mekong Estuary</p></div></div></div></div><div class="flex flex-col gap-10"><div class="group relative bg-soft-white rounded-t-full rounded-b-2xl p-4 border hairline-subtle hover:border-emerald-brand hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden h-[430px]"><div class="w-full h-[290px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3]/90 to-[#10B183]/25 flex items-center justify-center p-4"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><rect x="25" y="25" width="150" height="180" rx="16"></rect><rect x="45" y="45" width="110" height="140" rx="10"></rect></svg><div class="relative z-10 flex flex-col items-center justify-center text-center"><div class="w-16 h-16 rounded-full bg-deep-blue/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-deep-blue/80 text-3xl font-light">palette</span></div><span class="font-display text-base font-medium text-deep-blue">Lê Đỗ Minh Vy</span><span class="text-[10px] uppercase font-mono tracking-museum text-emerald-brand mt-0.5">Brand &amp; Design</span></div><span class="absolute top-4 right-4 w-3 h-3 rounded-full bg-canary opacity-0 group-hover:opacity-100 shadow-[0_0_10px_#e7dd6a] transition-all duration-300 scale-75 group-hover:scale-100"></span></div><div class="pt-3 pb-1 border-t hairline-subtle"><div class="flex items-center justify-between mb-1.5"><span class="font-mono text-[11px] font-semibold text-deep-blue">Nº 03 · Lê Đỗ Minh Vy · Brand &amp; Design Manager</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><div class="overflow-hidden"><p class="text-xs text-charcoal/70 leading-relaxed max-h-0 opacity-0 group-hover:max-h-20 group-hover:opacity-100 transition-all duration-300 ease-out">Định hình ngôn ngữ thị giác The Living Gallery &amp; câu chuyện văn hóa bản địa.</p><p class="text-[11px] text-charcoal/60 group-hover:hidden transition-all duration-200">Cần Thơ · Mekong Estuary</p></div></div></div><div class="group relative bg-soft-white rounded-t-full rounded-b-2xl p-4 border hairline-subtle hover:border-emerald-brand hover:shadow-xl transition-all duration-300 flex flex-col justify-between overflow-hidden h-[360px] md:mt-4"><div class="w-full h-[230px] rounded-t-full rounded-b-xl overflow-hidden relative bg-gradient-to-b from-[#EAF8F3] via-[#EAF8F3]/80 to-[#10B183]/20 flex items-center justify-center p-4"><svg class="absolute inset-0 w-full h-full opacity-15 text-deep-blue pointer-events-none" fill="none" stroke="currentColor" stroke-width="1"><circle cx="50%" cy="50%" r="50"></circle><circle cx="50%" cy="50%" r="80"></circle></svg><div class="relative z-10 flex flex-col items-center justify-center text-center"><div class="w-14 h-14 rounded-full bg-deep-blue/10 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-deep-blue/80 text-2xl font-light">shield_lock</span></div><span class="font-display text-base font-medium text-deep-blue">Tiểu Phụng</span><span class="text-[10px] uppercase font-mono tracking-museum text-emerald-brand mt-0.5">CISO &amp; Data Security</span></div><span class="absolute top-4 right-4 w-3 h-3 rounded-full bg-canary opacity-0 group-hover:opacity-100 shadow-[0_0_10px_#e7dd6a] transition-all duration-300 scale-75 group-hover:scale-100"></span></div><div class="pt-3 pb-1 border-t hairline-subtle"><div class="flex items-center justify-between mb-1.5"><span class="font-mono text-[11px] font-semibold text-deep-blue">Nº 06 · Tiểu Phụng · CISO, Data &amp; Security Lead</span><span class="w-1.5 h-1.5 rounded-full bg-emerald-brand"></span></div><div class="overflow-hidden"><p class="text-xs text-charcoal/70 leading-relaxed max-h-0 opacity-0 group-hover:max-h-20 group-hover:opacity-100 transition-all duration-300 ease-out">Quản trị dữ liệu số của cẩm nang, kiểm soát an toàn thông tin hệ sinh thái.</p><p class="text-[11px] text-charcoal/60 group-hover:hidden transition-all duration-200">Cần Thơ · Mekong Estuary</p></div></div></div></div></div>
+</div>
+</section>
+<!-- ========================================================
+       SECTION 10: FINAL CTA — "Hai Cánh Cửa Đồng Hành" (#20345F)
+  ======================================================== -->
+<section class="relative py-32 px-6 md:px-16 lg:px-24 deep-sea-pattern text-soft-white border-b hairline-white-subtle" id="contact">
+<div class="max-w-6xl mx-auto">
+<!-- Center Callout -->
+<div class="text-center max-w-3xl mx-auto mb-16">
+<div class="inline-flex items-center gap-2 mb-4 px-4 py-1 rounded-full bg-soft-white/10 border hairline-white-subtle text-xs uppercase tracking-museum text-canary">
+<span class="w-1.5 h-1.5 rounded-full bg-canary animate-ping"></span>
+          ĐỒNG HÀNH CÙNG CHÚNG TÔI
+        </div>
+<h2 class="font-display text-3xl sm:text-5xl md:text-6xl font-light tracking-tight text-soft-white leading-tight">
+          Cùng nhìn thấy giá trị ở nơi người khác chỉ thấy <span class="italic text-emerald-brand font-normal">rác</span>.
+        </h2>
+<p class="text-mint-mist/80 text-sm md:text-base font-light mt-4 leading-relaxed">
+          Hãy chọn cánh cửa phù hợp với bạn để cùng viết tiếp hành trình giáo dục nghệ thuật xanh.
+        </p>
+</div>
+<!-- Two Doors Architecture -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+<!-- Door 1: Trường học & Doanh nghiệp (Form) -->
+<div class="lg:col-span-7 bg-soft-white/10 backdrop-blur-md rounded-3xl p-8 md:p-10 border hairline-white-subtle flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="text-xs uppercase font-mono tracking-museum text-canary">CÁNH CỬA 01 · TỔ CHỨC</span>
+<span class="w-2 h-2 rounded-full bg-emerald-brand"></span>
+</div>
+<h3 class="font-display text-2xl md:text-3xl text-soft-white font-normal mb-2">Tôi là Trường Học hoặc Doanh Nghiệp</h3>
+<p class="text-xs md:text-sm text-mint-mist/80 mb-8">
+              Chúng tôi muốn phối hợp tổ chức ngoại khóa, đặt quà tặng B2B hoặc tài trợ chương trình ESG tại địa phương.
+            </p>
+<!-- Contact Form -->
+<form class="space-y-4" onsubmit="event.preventDefault(); alert('Cảm ơn bạn đã quan tâm. Đội ngũ LAVIECO tại Cần Thơ sẽ liên hệ tư vấn trong 24h.');">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-[11px] uppercase tracking-museum text-mint-mist/70 mb-1.5 font-medium">Họ &amp; Tên *</label>
+<input class="w-full px-4 py-2.5 rounded-full bg-soft-white/10 border hairline-white-subtle text-soft-white placeholder:text-soft-white/30 text-xs focus:outline-none focus:border-emerald-brand transition-colors" placeholder="Nguyễn Văn A" required="" type="text">
+</div>
+<div>
+<label class="block text-[11px] uppercase tracking-museum text-mint-mist/70 mb-1.5 font-medium">Đơn vị / Tổ chức *</label>
+<input class="w-full px-4 py-2.5 rounded-full bg-soft-white/10 border hairline-white-subtle text-soft-white placeholder:text-soft-white/30 text-xs focus:outline-none focus:border-emerald-brand transition-colors" placeholder="Trường học / Công ty..." required="" type="text">
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div>
+<label class="block text-[11px] uppercase tracking-museum text-mint-mist/70 mb-1.5 font-medium">Số điện thoại / Zalo *</label>
+<input class="w-full px-4 py-2.5 rounded-full bg-soft-white/10 border hairline-white-subtle text-soft-white placeholder:text-soft-white/30 text-xs focus:outline-none focus:border-emerald-brand transition-colors" placeholder="0901 234 567" required="" type="tel">
+</div>
+<div>
+<label class="block text-[11px] uppercase tracking-museum text-mint-mist/70 mb-1.5 font-medium">Mục tiêu quan tâm *</label>
+<select class="w-full px-4 py-2.5 rounded-full bg-deep-blue border hairline-white-subtle text-soft-white text-xs focus:outline-none focus:border-emerald-brand transition-colors">
+<option value="ngoaikhoa">Gói ngoại khóa học đường</option>
+<option value="workshop">Workshop trải nghiệm tập thể</option>
+<option value="esg">Tài trợ giáo dục ESG</option>
+<option value="combo">Đặt combo quà tặng xanh</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block text-[11px] uppercase tracking-museum text-mint-mist/70 mb-1.5 font-medium">Lời nhắn bổ sung</label>
+<textarea class="w-full px-4 py-2 rounded-2xl bg-soft-white/10 border hairline-white-subtle text-soft-white placeholder:text-soft-white/30 text-xs focus:outline-none focus:border-emerald-brand transition-colors resize-none" placeholder="Chia sẻ số lượng học sinh/nhân sự dự kiến hoặc khu vực tổ chức..." rows="2"></textarea>
+</div>
+<button class="w-full py-3.5 rounded-full bg-emerald-brand text-deep-blue font-bold text-xs uppercase tracking-museum hover:bg-emerald-brand/90 transition-all shadow-lg flex items-center justify-center gap-2 mt-2" type="submit">
+<span class="">Gửi yêu cầu hợp tác</span>
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+</button>
+</form>
+</div>
+</div>
+<!-- Door 2: Cá nhân (Mang câu chuyện về nhà) -->
+<div class="lg:col-span-5 bg-gradient-to-b from-soft-white/15 to-soft-white/5 backdrop-blur-md rounded-3xl p-8 md:p-10 border hairline-white-subtle flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="text-xs uppercase font-mono tracking-museum text-canary">CÁNH CỬA 02 · CÁ NHÂN</span>
+<span class="w-2 h-2 rounded-full bg-canary"></span>
+</div>
+<h3 class="font-display text-2xl md:text-3xl text-soft-white font-normal mb-3">Tôi Muốn Mang Một Câu Chuyện Về Nhà</h3>
+<p class="text-xs md:text-sm text-mint-mist/80 mb-6 leading-relaxed">
+              Dành cho những người yêu nghệ thuật bền vững muốn sở hữu các vật phẩm minh chứng, tự tay trải nghiệm workshop cuối tuần hoặc đăng ký nhận cẩm nang xanh số.
+            </p>
+<div class="space-y-3 mb-8">
+<div class="p-3.5 rounded-2xl bg-soft-white/10 border hairline-white-subtle flex items-center justify-between">
+<div>
+<span class="text-xs font-semibold text-soft-white block">Bộ sưu tập vật phẩm minh chứng</span>
+<span class="text-[11px] text-mint-mist/70">Móc khóa, charm, khay để bàn kèm story card</span>
+</div>
+<a class="text-canary text-xs hover:underline" href="#collection">Xem ↗</a>
+</div>
+<div class="p-3.5 rounded-2xl bg-soft-white/10 border hairline-white-subtle flex items-center justify-between">
+<div>
+<span class="text-xs font-semibold text-soft-white block">Lịch Workshop tại Cần Thơ</span>
+<span class="text-[11px] text-mint-mist/70">Mỗi thứ Bảy &amp; Chủ Nhật hàng tuần</span>
+</div>
+<a class="text-canary text-xs hover:underline" href="#programs">Chi tiết ↗</a>
+</div>
+</div>
+</div>
+<div class="pt-6 border-t hairline-white-subtle flex items-center justify-between">
+<span class="text-xs text-mint-mist/70">Hotline / Zalo: 0939.LAVIECO</span>
+<a class="text-xs font-medium text-emerald-brand hover:underline" href="mailto:hello@lavieco.art">hello@lavieco.art</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================
+       SECTION 11: FOOTER (Oversized Cropped Typographic Fin)
+  ======================================================== -->
+<footer class="relative bg-soft-white pt-20 pb-12 px-6 md:px-16 lg:px-24 border-t hairline-subtle overflow-hidden">
+<div class="max-w-7xl mx-auto">
+<!-- Top Columns -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-12 pb-16 border-b hairline-subtle">
+<!-- Col 1: Brand & Core Philosophy -->
+<div class="md:col-span-5 space-y-4">
+<div class="flex items-center gap-2">
+<span class="font-display text-2xl font-bold tracking-tight text-deep-blue">LAVIECO</span>
+<span class="w-2 h-2 rounded-full bg-canary shadow-[0_0_8px_#e7dd6a]"></span>
+</div>
+<p class="text-xs leading-relaxed text-charcoal/80 max-w-sm">
+            Dự án Giáo Dục Nghệ Thuật Xanh (Green Art Education). Thí điểm tại Cần Thơ, tái định nghĩa phụ phẩm vỏ thủy hải sản ven sông Mekong thành tác phẩm nghệ thuật và bài học cộng đồng.
+          </p>
+<div class="pt-2">
+<span class="text-[11px] uppercase tracking-museum text-charcoal/60 font-semibold block mb-1">Phương châm</span>
+<p class="font-display italic text-sm text-deep-blue">“Cuộc sống, qua từng nét nghệ thuật” / “Make it your life, through art.”</p>
+</div>
+</div>
+<!-- Col 2: Navigation Links -->
+<div class="md:col-span-3 space-y-2.5 text-xs text-charcoal/80">
+<span class="text-[11px] uppercase tracking-museum text-deep-blue font-bold block mb-4">KHÔNG GIAN</span>
+<p class=""><a class="hover:text-emerald-brand transition-colors" href="#hero">Lời Tựa Triển Lãm</a></p>
+<p class=""><a class="hover:text-emerald-brand transition-colors" href="#story">Từ Vỏ Đến Tác Phẩm</a></p>
+<p class=""><a class="hover:text-emerald-brand transition-colors" href="#programs">Bốn Nấc Thang Giá Trị</a></p>
+<p class=""><a class="hover:text-emerald-brand transition-colors" href="#collection">Vật Phẩm Minh Chứng</a></p>
+<p class=""><a class="hover:text-emerald-brand transition-colors" href="#impact">Tác Động Bền Vững</a></p>
+<p class=""><a class="hover:text-emerald-brand transition-colors" href="#team">Sáu Người Kể Chuyện</a></p>
+</div>
+<!-- Col 3: Coordinates & Connect -->
+<div class="md:col-span-4 space-y-3 text-xs text-charcoal/80">
+<span class="text-[11px] uppercase tracking-museum text-deep-blue font-bold block mb-4">TỌA ĐỘ KẾT NỐI</span>
+<p class=""><span class="font-semibold text-deep-blue">Địa điểm thí điểm:</span> Quận Ninh Kiều, TP. Cần Thơ, Việt Nam</p>
+<p class=""><span class="font-semibold text-deep-blue">Email:</span> lienhe@lavieco.art / contact@lavieco.edu.vn</p>
+<div class="flex items-center gap-4 pt-3">
+<a class="px-3.5 py-1.5 rounded-full border hairline-subtle hover:border-deep-blue text-[11px] text-deep-blue font-medium transition-colors" href="https://facebook.com" rel="noreferrer" target="_blank">
+              Facebook ↗
+            </a>
+<a class="px-3.5 py-1.5 rounded-full border hairline-subtle hover:border-deep-blue text-[11px] text-deep-blue font-medium transition-colors" href="https://tiktok.com" rel="noreferrer" target="_blank">
+              TikTok ↗
+            </a>
+<span class="w-1.5 h-1.5 rounded-full bg-canary"></span>
+</div>
+</div>
+</div>
+<!-- Moving Tide hairline along footer -->
+<div class="w-full h-[1px] bg-emerald-brand/30 my-8 overflow-hidden relative">
+<div class="absolute inset-0 bg-emerald-brand animate-pulse"></div>
+</div>
+<!-- Monumental Oversized Cropped Wordmark -->
+<div class="relative select-none pointer-events-none text-center -mb-8 overflow-hidden">
+<div class="font-display font-black text-[96px] sm:text-[140px] md:text-[190px] lg:text-[230px] leading-none text-deep-blue/[0.04] tracking-tight">
+          LAVIECO
+        </div>
+</div>
+<!-- Bottom Legal Row -->
+<div class="flex flex-col sm:flex-row items-center justify-between text-[11px] text-charcoal/60 pt-4 gap-2">
+<p class="">© 2024 - 2025 LAVIECO — Green Art Education. Bản quyền được bảo lưu.</p>
+<p class="font-sans">Thiết kế theo định hướng triển lãm The Living Gallery · Can Tho, VN</p>
+</div>
+</div>
+</footer>
+<!-- ========================================================
+       JAVASCRIPT: TIDE DOCK, PROGRESS LINE, CATALOGUE OVERLAY, CURSOR
+  ======================================================== -->
+<script>
+    // 1. Scroll-driven Tide Line & Dock progress
+    window.addEventListener('scroll', () => {
+      const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      const scrolled = (winScroll / height) * 100;
+      
+      const topTide = document.getElementById('scroll-tide-line');
+      const dockTide = document.getElementById('dock-progress-bar');
+      const dock = document.getElementById('tide-dock');
+      const dockContainer = document.getElementById('tide-dock-container');
+
+      if (topTide) topTide.style.width = scrolled + '%';
+      if (dockTide) dockTide.style.width = scrolled + '%';
+
+      // On scroll down, shrink tide dock into sleeker capsule
+      if (winScroll > 120) {
+        dock.classList.add('shadow-[0_12px_32px_rgba(32,52,95,0.12)]', 'py-2');
+        dock.classList.remove('py-2.5');
+      } else {
+        dock.classList.remove('shadow-[0_12px_32px_rgba(32,52,95,0.12)]', 'py-2');
+        dock.classList.add('py-2.5');
+      }
+    });
+
+    // 2. Catalogue Overlay Toggle
+    const catOverlay = document.getElementById('catalogue-overlay');
+    const catOpenBtn = document.getElementById('catalogue-open-btn');
+    const catCloseBtn = document.getElementById('catalogue-close-btn');
+
+    function openCatalogue() {
+      catOverlay.classList.remove('hidden');
+      setTimeout(() => {
+        catOverlay.classList.remove('opacity-0');
+        catOverlay.classList.add('opacity-100');
+      }, 10);
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeCatalogue() {
+      catOverlay.classList.remove('opacity-100');
+      catOverlay.classList.add('opacity-0');
+      setTimeout(() => {
+        catOverlay.classList.add('hidden');
+        document.body.style.overflow = '';
+      }, 300);
+    }
+
+    if (catOpenBtn) catOpenBtn.addEventListener('click', openCatalogue);
+    if (catCloseBtn) catCloseBtn.addEventListener('click', closeCatalogue);
+
+    // Close catalogue on clicking any link inside
+    document.querySelectorAll('.catalogue-item').forEach(item => {
+      item.addEventListener('click', closeCatalogue);
+    });
+
+    // 3. Custom Cursor (Canary Pearl + expansion over visual cards)
+    const cursor = document.getElementById('cursor-pearl');
+    const cursorLabel = document.getElementById('cursor-label');
+
+    if (cursor) {
+      window.addEventListener('mousemove', (e) => {
+        cursor.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
+      });
+
+      // Hover on images or arch cards expands pearl to "Xem câu chuyện"
+      document.querySelectorAll('.group, img, .rounded-arch').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          cursor.style.width = '64px';
+          cursor.style.height = '64px';
+          cursor.style.backgroundColor = '#E7DD6A';
+          cursor.style.borderRadius = '9999px';
+          cursorLabel.textContent = 'Xem';
+          cursorLabel.style.opacity = '1';
+        });
+        el.addEventListener('mouseleave', () => {
+          cursor.style.width = '12px';
+          cursor.style.height = '12px';
+          cursor.style.backgroundColor = '#E7DD6A';
+          cursorLabel.style.opacity = '0';
+        });
+      });
+    }
+  </script>
+
+
+
+
+</body></html>
