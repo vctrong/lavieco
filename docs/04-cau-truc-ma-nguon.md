@@ -112,7 +112,7 @@ lavieco/
 | **Điều phối tác vụ** | **Turborepo**: chạy tác vụ theo đồ thị phụ thuộc, cache kết quả, chỉ chạy phần bị ảnh hưởng ở CI. |
 | **Tên gói** | `@lavieco/<tên-thư-mục>`: `@lavieco/web`, `@lavieco/content-service`, `@lavieco/shared`. |
 | **TypeScript** | Một `tsconfig.base.json` ở gốc (chế độ nghiêm ngặt: `strict`, `noUncheckedIndexedAccess`, `noImplicitOverride`, `verbatimModuleSyntax`); mỗi gói kế thừa và chỉ thêm khác biệt. |
-| **Định dạng module cho gói dùng chung** | Gói trong `packages/` **phát hành cả ESM lẫn CJS** (ví dụ bằng `tsup`) kèm `exports` map. Lý do: Next.js dùng ESM, NestJS mặc định CJS; chỉ phát ESM sẽ gây lỗi khó chịu ở service. Chốt ở ADR-012. |
+| **Định dạng module cho gói dùng chung** | Hai nhóm, chốt ở ADR-012 (`docs/adr/0012-dinh-dang-module-goi-dung-chung.md`). **(1) Gói mà service dùng** (`shared`, `api-clients`, `service-kit`, `observability`) **phát hành cả ESM lẫn CJS** (ví dụ bằng `tsup`) kèm `exports` map. Lý do: Next.js dùng ESM, NestJS mặc định CJS; chỉ phát ESM sẽ gây lỗi khó chịu ở service. **(2) `packages/ui` xuất thẳng mã nguồn TypeScript** và chỉ được dùng bởi các app Next.js, mỗi app khai báo `transpilePackages: ["@lavieco/ui"]` trong `next.config.ts`. `exports` map của `ui` trỏ tới `src` (`".": "./src/index.ts"`, `"./theme.css": "./src/styles/theme.css"`); service **không được** import `@lavieco/ui`. Luật cấm import sâu bên dưới vẫn áp dụng cho `ui`: chỉ dùng các điểm vào khai báo trong `exports`, không viết `@lavieco/ui/src/...`. |
 | **Import xuyên gói** | Chỉ qua tên gói (`@lavieco/shared`). **Cấm import sâu** vào `src/` của gói khác; chỉ dùng các điểm vào khai báo trong `exports`. |
 
 `package.json` (trường `workspaces`, thay cho `pnpm-workspace.yaml`):
@@ -661,7 +661,7 @@ flowchart LR
 | **ESLint** (preset ở `@lavieco/config`) | Luật chung + luật riêng của dự án (bên dưới) |
 | **Prettier** | Định dạng |
 | **TypeScript `tsc --noEmit`** | Kiểm tra kiểu |
-| **dependency-cruiser** (hoặc `eslint-plugin-boundaries`) | **Thực thi hướng phụ thuộc ở mục 4.1 và luật F1–F4, S1–S2**; `npm run deps:check` |
+| **dependency-cruiser** (hoặc `eslint-plugin-boundaries`) | **Thực thi hướng phụ thuộc ở mục 4.1 và luật F1–F4, S1–S2**; `npm run deps:check` (cấu hình ở `.dependency-cruiser.cjs`; xem 10.4) |
 | **Quét phụ thuộc** | `npm audit` + Dependabot/Renovate |
 | **Quét bí mật** | Ví dụ gitleaks, chạy ở CI và pre-commit (tùy chọn) |
 | **Husky + lint-staged + commitlint** | Pre-commit: lint/format tệp thay đổi; commit-msg: kiểm tra Conventional Commits |
@@ -695,6 +695,16 @@ Turborepo chạy `--filter="...[origin/main]"` để chỉ xử lý phần bị 
 
 - **CODEOWNERS** theo vai trò: `identity-service`, `packages/shared/permissions`, `infra/mongo` cần review của CISO; `packages/ui`, `docs/brand` cần review của người phụ trách thiết kế; `packages/shared` cần review của CTO.
 - **PR template** có checklist: liên kết `UC-`/`BR-`, có test, cập nhật `.env.example` nếu thêm biến, cập nhật tài liệu nếu đổi hợp đồng, xác nhận không rò PII trong log.
+
+### 10.4 `deps:check` và `tsconfig.depcruise.json`
+
+`npm run deps:check` chạy `depcruise apps packages --config .dependency-cruiser.cjs`. Hiện tại nó thực thi các luật: app không import service, gói không import app, F1 (tính năng chỉ import qua `index.ts`), F2 (tính năng không import tính năng khác), `src/shared` và `src/lib` không import `features`, và không có vòng phụ thuộc. Luật S1–S2 của service sẽ thêm khi có service.
+
+**Tệp `tsconfig.depcruise.json` (gốc repo)** tồn tại vì dependency-cruiser cần một tsconfig để phân giải alias `@/`, mà khi trỏ vào `apps/web/tsconfig.json` nó đọc sai `extends: "../../tsconfig.base.json"` (tìm `apps/web/tsconfig.base.json`) và báo lỗi TS5083/TS18003. Tệp này độc lập, không `extends`, chỉ khai báo những gì cần để phân giải import: `baseUrl`, `jsx`, `module`, `moduleResolution` và `paths`.
+
+**Phải đồng bộ với tsconfig chính.** Khi đổi `paths` (alias) hoặc `moduleResolution` ở `apps/web/tsconfig.json`, hoặc thêm ứng dụng mới (ví dụ `apps/admin` cần alias `@/*` riêng), phải cập nhật `tsconfig.depcruise.json` trong cùng PR; nếu không, import qua alias sẽ không được phân giải và luật ranh giới có thể bỏ sót vi phạm. Có thể bỏ tệp này nếu bản dependency-cruiser sau đọc đúng `extends`; khi đó trỏ `options.tsConfig` lại về tsconfig của app.
+
+**Cách tự kiểm tra:** thêm tạm một import vi phạm (ví dụ tệp trong `features/home` import `@/features/team`), chạy `npm run deps:check` và xác nhận mã thoát khác 0 (`f2-no-cross-feature-import`), rồi xóa tệp thử.
 
 ## 11. Hạ tầng cục bộ & Docker
 
@@ -881,4 +891,6 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 |---|---|---|---|
 | v0.1 | 20/09/2026 | Bản nháp đầu: cây thư mục, ranh giới gói, cấu trúc frontend/service, quy ước, kiểm thử, công thức thao tác, lộ trình dựng khung | V.C. Trọng |
 | v0.2 | 20/09/2026 | Đồng bộ với `01`–`03`: `NotifyModule`, module `idempotency` của `lead-service`, thêm `CLAUDE.md` vào cây thư mục và quy trình cập nhật tài liệu, quy ước mã câu hỏi | V.C. Trọng |
-| v0.3 | 20/09/2026 | Bố cục project (L1–L7): mã nằm gọn trong `src/` (kể cả test), `public/` cho tài sản tĩnh, `docs/` ở gốc, `.env.local`, `src/proxy.ts` thay `middleware.ts` (Next.js 16+); đội ngũ thành dữ liệu tĩnh (`features/team`) | V.C. Trọng || v0.3 | 20/09/2026 | Đổi công cụ quản lý gói từ pnpm sang npm workspaces (bỏ `pnpm-workspace.yaml`, dùng trường `workspaces`; lệnh `pnpm x` → `npm run x`) | V.C. Trọng |
+| v0.3 | 20/09/2026 | Bố cục project (L1–L7): mã nằm gọn trong `src/` (kể cả test), `public/` cho tài sản tĩnh, `docs/` ở gốc, `.env.local`, `src/proxy.ts` thay `middleware.ts` (Next.js 16+); đội ngũ thành dữ liệu tĩnh (`features/team`) | V.C. Trọng |
+| v0.3 | 20/09/2026 | Đổi công cụ quản lý gói từ pnpm sang npm workspaces (bỏ `pnpm-workspace.yaml`, dùng trường `workspaces`; lệnh `pnpm x` → `npm run x`) | V.C. Trọng |
+| v0.4 | 21/09/2026 | Chốt định dạng module: `packages/ui` xuất source (chỉ cho app Next.js, `transpilePackages`), các gói của service phát hành ESM+CJS (ADR-012); thêm mục 10.4 về `deps:check` và `tsconfig.depcruise.json` | V.C. Trọng |
