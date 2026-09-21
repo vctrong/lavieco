@@ -1,4 +1,4 @@
-import { Reveal, SectionHeader } from "@lavieco/ui";
+import { Eyebrow, Reveal } from "@lavieco/ui";
 
 import { SECTION_IDS } from "../constants/config";
 import { TEXT } from "../constants/text";
@@ -13,16 +13,22 @@ export function JourneySection() {
   return (
     <section
       id={SECTION_IDS.journey}
-      className="scallop-pattern relative border-b border-hairline bg-mint-mist px-6 py-32 md:px-16 lg:px-24"
+      className="scallop-pattern relative scroll-mt-dock-clearance border-b border-hairline bg-mint-mist px-6 py-[clamp(1.25rem,3svh,2rem)] [--journey-h:clamp(310px,calc(100svh-19rem),520px)] md:px-16 lg:px-24"
     >
       <Reveal className="mx-auto max-w-7xl">
-        <SectionHeader kicker={t.kicker} title={t.title} className="mb-20">
-          <p className="mt-4 max-w-md text-sm font-normal leading-relaxed text-charcoal/80 md:mt-0 md:text-base">
+        <div className="mb-[clamp(0.5rem,1.6svh,1.25rem)] flex flex-col justify-between gap-1 border-b border-hairline pb-[clamp(0.5rem,1.6svh,1rem)] md:flex-row md:items-end md:gap-8">
+          <div>
+            <Eyebrow className="mb-1">{t.kicker}</Eyebrow>
+            <h2 className="font-display text-[clamp(2.25rem,6svh,3rem)] font-light leading-[1.1] tracking-tight text-deep-blue">
+              {t.title}
+            </h2>
+          </div>
+          <p className="max-w-sm text-xs font-normal leading-relaxed text-charcoal/80 md:text-[13px]">
             {t.intro}
           </p>
-        </SectionHeader>
+        </div>
 
-        <div className="relative overflow-hidden rounded-3xl border border-hairline bg-gradient-to-r from-soft-white via-mint-mist to-deep-blue p-6 shadow-xl md:p-10 lg:p-12">
+        <div className="relative overflow-hidden rounded-3xl border border-hairline bg-gradient-to-r from-soft-white via-mint-mist to-deep-blue p-4 shadow-xl md:p-6 lg:p-8">
           <JourneyPath />
           <div className="relative z-10 grid grid-cols-1 items-end gap-8 md:grid-cols-2 lg:grid-cols-4">
             <JourneyStage stage={first} index={0} />

@@ -23,22 +23,23 @@ export const MARQUEE_REPEAT = 2;
 
 /**
  * Per-stage look of "Từ vỏ đến tác phẩm": card heights rise like a tide
- * (340 → 520px). Full class names are listed so Tailwind can see them.
+ * (88% → 100% of `--journey-h`, which follows the viewport height so the section fits one
+ * screen). Full class names are listed so Tailwind can see them.
  */
 export const JOURNEY_STAGE_STYLES = [
   {
-    card: "h-[340px] border-hairline shadow-md",
-    visual: "h-44 from-mint-mist to-soft-white",
+    card: "h-[calc(var(--journey-h)*0.88)] border-hairline shadow-md",
+    visual: "flex-1 from-mint-mist to-soft-white",
     tone: "text-deep-blue",
   },
   {
-    card: "h-[420px] border-hairline shadow-lg",
-    visual: "h-64 from-mint-mist via-mint-mist to-emerald-brand/20",
+    card: "h-[calc(var(--journey-h)*0.92)] border-hairline shadow-lg",
+    visual: "flex-1 from-mint-mist via-mint-mist to-emerald-brand/20",
     tone: "text-emerald-brand",
   },
   {
-    card: "h-[480px] border-emerald-brand/30 shadow-xl",
-    visual: "h-80 from-mint-mist via-soft-white to-emerald-brand/25",
+    card: "h-[calc(var(--journey-h)*0.96)] border-emerald-brand/30 shadow-xl",
+    visual: "flex-1 from-mint-mist via-soft-white to-emerald-brand/25",
     tone: "text-deep-blue",
   },
 ] as const;

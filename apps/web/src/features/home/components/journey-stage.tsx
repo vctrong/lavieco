@@ -9,7 +9,7 @@ type PlainStage = Extract<Stage, { visualKicker: string }>;
 type FinalStage = Extract<Stage, { qrTitle: string }>;
 
 const WATERMARK_CLASS =
-  "pointer-events-none absolute -left-4 -top-12 select-none font-display text-[140px] font-light leading-none";
+  "pointer-events-none absolute -left-3 -top-8 select-none font-display text-[104px] font-light leading-none";
 
 function StageIllustration({ index }: { index: number }) {
   if (index === 0) {
@@ -34,13 +34,13 @@ export function JourneyStage({ stage, index }: { stage: PlainStage; index: numbe
       <ArchFrame
         data-cursor="view"
         className={cn(
-          "relative z-10 flex w-full flex-col justify-between border bg-soft-white/90 p-3 backdrop-blur-sm transition-transform duration-300 group-hover:-translate-y-2",
+          "relative z-10 flex w-full flex-col gap-1 border bg-soft-white/90 p-3 backdrop-blur-sm transition-transform duration-300 group-hover:-translate-y-2",
           style.card,
         )}
       >
         <div
           className={cn(
-            "relative flex w-full items-center justify-center overflow-hidden rounded-t-full rounded-b-xl bg-gradient-to-b",
+            "relative flex min-h-24 w-full items-center justify-center overflow-hidden rounded-t-full rounded-b-xl bg-gradient-to-b",
             style.visual,
           )}
         >
@@ -82,9 +82,9 @@ export function JourneyFinalStage({ stage }: { stage: FinalStage }) {
       </div>
       <ArchFrame
         data-cursor="view"
-        className="relative z-10 flex h-[520px] w-full flex-col justify-between border border-canary/40 bg-deep-blue p-3.5 text-soft-white shadow-2xl transition-transform duration-300 group-hover:-translate-y-2"
+        className="relative z-10 flex h-[var(--journey-h)] w-full flex-col gap-1 border border-canary/40 bg-deep-blue p-3.5 text-soft-white shadow-2xl transition-transform duration-300 group-hover:-translate-y-2"
       >
-        <div className="relative flex h-96 w-full flex-col items-center justify-between overflow-hidden rounded-t-full rounded-b-xl border border-soft-white/10 bg-gradient-to-b from-deep-blue via-deep-blue to-emerald-brand/30 p-3">
+        <div className="relative flex min-h-24 w-full flex-1 flex-col items-center justify-between overflow-hidden rounded-t-full rounded-b-xl border border-soft-white/10 bg-gradient-to-b from-deep-blue via-deep-blue to-emerald-brand/30 p-3">
           <ConcentricRings radii={[45, 80, 115]} cy="50%" className="text-canary opacity-20" />
           <div className="z-10 flex w-full items-center justify-between">
             <span className="font-mono text-[9px] uppercase tracking-museum text-canary">
