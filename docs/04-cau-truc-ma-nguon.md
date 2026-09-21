@@ -424,6 +424,7 @@ export const TEXT = {
 
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).
 - Các đường dẫn tiếng Việt không dấu ở trên là đề xuất; tên URL chuẩn và chiến lược tiền tố ngôn ngữ chốt ở PQ3.
+- **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn Tide Dock, chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`not-found`, `error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
 - `src/proxy.ts` của `web`: cổng "sắp ra mắt" và header bảo mật (mục 5.1); không chứa logic nghiệp vụ.
 
 **Tính năng (`src/features/`):**
@@ -441,6 +442,7 @@ export const TEXT = {
 | `waitlist` | Form nhận tin |
 | `coming-soon` | Trang chờ ra mắt |
 | `not-found` | Trang 404 (bản dự phòng chữ trong constants) |
+| `server-error` | Trang 500 dùng chung cho `error.tsx` và `global-error.tsx` (chỉ hiện `digest`, không hiện `message`/stack) |
 | `qr-resolver` | Logic phân giải mã và ghi nhận lượt quét (`route.ts` chỉ gọi vào đây) |
 
 ### 5.7 Bản đồ `apps/admin`

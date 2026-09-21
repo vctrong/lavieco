@@ -14,15 +14,15 @@ Nếu phát hiện hai nguồn nói khác nhau, hoặc tài liệu sai so với 
 
 LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật xanh** (vỏ hải sản → sản phẩm mỹ thuật + chương trình giáo dục). Website công khai + **Cẩm nang xanh số** đọc qua **mã QR** trên sản phẩm + thu thập liên hệ hợp tác + quản trị nội bộ. Đang ở **Giai đoạn 1**, giai đoạn dựng khung repo.
 
-**Hai lớp giá trị (BR-01):** sản phẩm chỉ là *minh chứng*; thông điệp giáo dục đi trước. LAVIECO **không** phải cửa hàng đồ thủ công. Áp dụng cho mọi UI và nội dung bạn viết.
+**Hai lớp giá trị (BR-01):** sản phẩm chỉ là _minh chứng_; thông điệp giáo dục đi trước. LAVIECO **không** phải cửa hàng đồ thủ công. Áp dụng cho mọi UI và nội dung bạn viết.
 
 ## 2. Đọc tài liệu nào khi nào
 
-| Làm việc về... | Đọc |
-|---|---|
-| Hành vi, vai trò, use case, quy tắc nghiệp vụ, phân quyền | `docs/01-nghiep-vu.md` |
-| Ranh giới service, luồng, bảo mật, xác thực, triển khai, CI | `docs/02-kien-truc.md` |
-| Collection, trường, index, giao dịch, quyền riêng tư, migration | `docs/03-co-so-du-lieu.md` |
+| Làm việc về...                                                                                              | Đọc                            |
+| ----------------------------------------------------------------------------------------------------------- | ------------------------------ |
+| Hành vi, vai trò, use case, quy tắc nghiệp vụ, phân quyền                                                   | `docs/01-nghiep-vu.md`         |
+| Ranh giới service, luồng, bảo mật, xác thực, triển khai, CI                                                 | `docs/02-kien-truc.md`         |
+| Collection, trường, index, giao dịch, quyền riêng tư, migration                                             | `docs/03-co-so-du-lieu.md`     |
 | Đặt file ở đâu, đặt tên, tầng trong service, công thức thêm tính năng/endpoint/service, lộ trình dựng khung | `docs/04-cau-truc-ma-nguon.md` |
 
 Chỉ đọc **phần liên quan** (dùng mục lục), đừng nạp cả bốn file. Tên use case `UC-xx`, business rule `BR-xx` trỏ ngược về `docs/01`.
@@ -42,16 +42,16 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 
 ## 4. Lệnh (khi đã dựng khung)
 
-| Lệnh | Việc |
-|---|---|
-| `npm run env:init` | Tạo `.env.local` từ `.env.example` cho mọi project (không ghi đè) |
-| `npm run dev:infra` | MongoDB (replica set), MinIO, Mailpit bằng Docker |
-| `npm run dev` | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003) |
-| `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói |
-| `npm run test` · `npm run test:int` · `npm run e2e` | Đơn vị · tích hợp (MongoDB thật) · end-to-end |
-| `npm run build` | Build (Turborepo cache) |
-| `npm run db:migrate` · `npm run db:seed` | Migration · dữ liệu khởi tạo |
-| `npm run gen` · `npm run gen:openapi` | Generator khung · sinh OpenAPI vào `docs/api/` |
+| Lệnh                                                        | Việc                                                                            |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| `npm run env:init`                                          | Tạo `.env.local` từ `.env.example` cho mọi project (không ghi đè)               |
+| `npm run dev:infra`                                         | MongoDB (replica set), MinIO, Mailpit bằng Docker                               |
+| `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003) |
+| `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                   |
+| `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                   |
+| `npm run build`                                             | Build (Turborepo cache)                                                         |
+| `npm run db:migrate` · `npm run db:seed`                    | Migration · dữ liệu khởi tạo                                                    |
+| `npm run gen` · `npm run gen:openapi`                       | Generator khung · sinh OpenAPI vào `docs/api/`                                  |
 
 Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx turbo run test --filter=@lavieco/content-service`.
 
@@ -68,19 +68,19 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 
 ## 6. Quy tắc nghiệp vụ không được vi phạm
 
-| Mã | Quy tắc |
-|---|---|
-| BR-01 | Trang tác phẩm luôn có story card và liên kết về Cẩm nang; sản phẩm là minh chứng |
+| Mã    | Quy tắc                                                                                            |
+| ----- | -------------------------------------------------------------------------------------------------- |
+| BR-01 | Trang tác phẩm luôn có story card và liên kết về Cẩm nang; sản phẩm là minh chứng                  |
 | BR-02 | **Mã QR bất biến**; đích đến đổi ở server; mã bị thu hồi hiện trang thân thiện, không lỗi kỹ thuật |
-| BR-03 | Cẩm nang miễn phí lúc ra mắt nhưng nội dung có `accessLevel` ngay từ đầu |
-| BR-04 | Không mất lead; không xóa cứng, chỉ lưu trữ |
-| BR-05 | Nội dung: nháp → chờ duyệt → xuất bản; **người duyệt khác người soạn** |
-| BR-06 | Mọi form có ô đồng ý (lưu phiên bản + thời điểm); thu tối thiểu; có quy trình xóa/xuất |
-| BR-07 | Lead trùng (SĐT/email chuẩn hóa, trong cửa sổ thời gian) thì gộp, không tạo bản sao |
-| BR-08 | **Không thu thông tin cá nhân học sinh**, chỉ số lượng |
-| BR-09 | Số liệu tác động chỉ công bố khi có nguồn và được Super Admin duyệt |
-| BR-10 | Giá công khai là **khoảng giá niêm yết**, giá chốt do đội xác nhận |
-| BR-11 | Ghi chú cá nhân của người đọc chỉ chủ sở hữu thấy |
+| BR-03 | Cẩm nang miễn phí lúc ra mắt nhưng nội dung có `accessLevel` ngay từ đầu                           |
+| BR-04 | Không mất lead; không xóa cứng, chỉ lưu trữ                                                        |
+| BR-05 | Nội dung: nháp → chờ duyệt → xuất bản; **người duyệt khác người soạn**                             |
+| BR-06 | Mọi form có ô đồng ý (lưu phiên bản + thời điểm); thu tối thiểu; có quy trình xóa/xuất             |
+| BR-07 | Lead trùng (SĐT/email chuẩn hóa, trong cửa sổ thời gian) thì gộp, không tạo bản sao                |
+| BR-08 | **Không thu thông tin cá nhân học sinh**, chỉ số lượng                                             |
+| BR-09 | Số liệu tác động chỉ công bố khi có nguồn và được Super Admin duyệt                                |
+| BR-10 | Giá công khai là **khoảng giá niêm yết**, giá chốt do đội xác nhận                                 |
+| BR-11 | Ghi chú cá nhân của người đọc chỉ chủ sở hữu thấy                                                  |
 
 ## 7. QR: quy tắc riêng (dễ làm sai nhất)
 
@@ -95,6 +95,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 ## 8. Frontend (`apps/web`, `apps/admin`)
 
 - **`app/` mỏng**: chỉ định tuyến, ghép `features/*`. Không đặt logic/JSX phức tạp ở đó.
+- **Khung trang:** `app/layout.tsx` chỉ có html/body/font; dock + footer nằm ở `app/(site)/layout.tsx`. Trang tiện ích toàn màn hình (`not-found`, `error`, `global-error`, `sap-ra-mat`) ở ngoài `(site)`, dùng `shared/components/utility-page`. Error boundary Next 16.3 dùng `retry` (không phải `reset`); **không bao giờ hiện `error.message`/stack**, chỉ `digest`.
 - **Cấu trúc theo tính năng** `features/<tên>/{components,constants,hooks,server,actions,schemas.ts,types.ts,index.ts}`:
   - F1: import tính năng khác/`app` **chỉ qua `index.ts`**. F2: tính năng **không import tính năng khác** (dùng chung → `@lavieco/ui` hoặc `src/shared/`). F3: chỉ `server/`, `actions/` được gọi `@lavieco/api-clients` và `lib/env`. F4: file `server/` bắt đầu bằng `import "server-only"`.
 - **Chữ giao diện KHÔNG viết cứng trong JSX**: nằm ở `features/<tên>/constants/text.ts`, dạng `{ vi: {...} }` (sẵn sàng thêm `en`). Component đọc constants của chính tính năng, không truyền chữ xuống nhiều tầng props. **Nội dung biên tập** (cẩm nang, tác phẩm, trang giới thiệu) đến từ `content-service`; trang thiết yếu có bản chữ dự phòng trong constants.
@@ -159,7 +160,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Hậu tố:** `*.module.ts` `*.controller.ts` `*.use-case.ts` `*.repository.ts` · **`*.model.ts` = Mongoose**, **`*.schema.ts` = Zod** · `*.constants.ts`/`text.ts` · `*.spec.ts` (đơn vị, cạnh mã) · `*.int-spec.ts` (tích hợp, `src/test/integration/`) · `*.e2e.ts` (`e2e/src/`).
 - **Export:** named export; `default export` chỉ nơi Next.js bắt buộc. Alias `@/` trong ứng dụng; giữa gói dùng `@lavieco/*`; **cấm import sâu** vào `src/` của gói khác.
 - **TypeScript nghiêm ngặt:** không `any` (dùng `unknown` rồi thu hẹp); mọi dữ liệu từ ngoài vào **phải qua Zod**.
-- **Comment giải thích *vì sao***, kèm mã `// BR-05`, `// BR-02`... khi code thực thi quy tắc nghiệp vụ.
+- **Comment giải thích _vì sao_**, kèm mã `// BR-05`, `// BR-02`... khi code thực thi quy tắc nghiệp vụ.
 - **Commit:** Conventional Commits, phạm vi là tên gói/ứng dụng: `feat(content-service): ...`, `fix(web): ...`. Kiểu: `feat fix docs refactor test perf build ci chore revert`.
 - **Nhánh:** `feat/<phạm-vi>-<mô-tả>`, `fix/...`; PR nhỏ, một mục đích, ghi `UC-`/`BR-` liên quan. **Không force-push `main`/`develop`.**
 
@@ -188,21 +189,21 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 
 Dùng mặc định trong tài liệu nếu an toàn, ghi `TODO(<mã>)`, hoặc hỏi. **Không chọn thay đội.**
 
-| Mã | Chủ đề |
-|---|---|
-| Q1 | Người soạn có được tự duyệt? (mặc định: **không**, BR-05) |
-| Q2, Q3 | Tên gọi phụ của thương hiệu; có không gian trưng bày thật/đặt lịch tham quan |
-| Q4, DQ4 | Bộ nhóm đối tác cuối cùng (2 form đang khác nhau); chợ đầu mối thuộc nhóm nào |
-| Q5, DQ5 | Ý nghĩa `N°` (mã bộ sưu tập hay hàng độc bản) |
-| Q7, Q8, Q9 | Cam kết thời gian phản hồi lead; công khai bảng giá chương trình; cơ chế tích điểm |
-| AQ1 | Phương án hosting và ngân sách (mặc định đề xuất: một máy chủ + Docker Compose + Cloudflare) |
-| AQ2 | Email dự phòng khi `lead-service` lỗi (chứa PII) có chấp nhận không |
-| AQ3, DQ1, DQ2 | Thời hạn lưu giữ lead / audit |
-| AQ4 | Yêu cầu lưu trữ dữ liệu trong nước (cần tham vấn pháp lý) |
-| AQ5 | Tên miền chính thức và người đứng tên |
-| AQ6, AQ7, AQ8 | Người quản trị hạ tầng; IP allowlist/Cloudflare Access cho admin; nhà cung cấp email |
-| DQ3, DQ6, DQ7 | Xác nhận email 2 bước cho danh sách chờ; cửa sổ phát hiện trùng lead (mặc định 30 ngày, cấu hình được); nhập/xuất lead hàng loạt |
-| PQ1–PQ6 | Xác nhận quy ước kế thừa; ngoại lệ icon; chiến lược URL/ngôn ngữ; Testcontainers hay memory-server; thư viện trình soạn khối (ADR-008); công cụ generator |
+| Mã            | Chủ đề                                                                                                                                                    |
+| ------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Q1            | Người soạn có được tự duyệt? (mặc định: **không**, BR-05)                                                                                                 |
+| Q2, Q3        | Tên gọi phụ của thương hiệu; có không gian trưng bày thật/đặt lịch tham quan                                                                              |
+| Q4, DQ4       | Bộ nhóm đối tác cuối cùng (2 form đang khác nhau); chợ đầu mối thuộc nhóm nào                                                                             |
+| Q5, DQ5       | Ý nghĩa `N°` (mã bộ sưu tập hay hàng độc bản)                                                                                                             |
+| Q7, Q8, Q9    | Cam kết thời gian phản hồi lead; công khai bảng giá chương trình; cơ chế tích điểm                                                                        |
+| AQ1           | Phương án hosting và ngân sách (mặc định đề xuất: một máy chủ + Docker Compose + Cloudflare)                                                              |
+| AQ2           | Email dự phòng khi `lead-service` lỗi (chứa PII) có chấp nhận không                                                                                       |
+| AQ3, DQ1, DQ2 | Thời hạn lưu giữ lead / audit                                                                                                                             |
+| AQ4           | Yêu cầu lưu trữ dữ liệu trong nước (cần tham vấn pháp lý)                                                                                                 |
+| AQ5           | Tên miền chính thức và người đứng tên                                                                                                                     |
+| AQ6, AQ7, AQ8 | Người quản trị hạ tầng; IP allowlist/Cloudflare Access cho admin; nhà cung cấp email                                                                      |
+| DQ3, DQ6, DQ7 | Xác nhận email 2 bước cho danh sách chờ; cửa sổ phát hiện trùng lead (mặc định 30 ngày, cấu hình được); nhập/xuất lead hàng loạt                          |
+| PQ1–PQ6       | Xác nhận quy ước kế thừa; ngoại lệ icon; chiến lược URL/ngôn ngữ; Testcontainers hay memory-server; thư viện trình soạn khối (ADR-008); công cụ generator |
 
 ## 16. Không làm
 
