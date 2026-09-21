@@ -54,8 +54,7 @@ export const MEMBERS: readonly TeamMember[] = [
   {
     slug: "vo-chi-trong",
     no: "01",
-    firstName: "Võ Chí",
-    lastName: "Trọng",
+    nameLines: ["Võ Chí Trọng"],
     roleShort: "CTO",
     roleFull: "Giám đốc Công nghệ",
     summary: "Phụ trách hệ sinh thái công nghệ & quy trình sản xuất tuần hoàn.",
@@ -83,8 +82,7 @@ export const MEMBERS: readonly TeamMember[] = [
   {
     slug: "ngo-chuc-quynh",
     no: "02",
-    firstName: "Ngô Chúc",
-    lastName: "Quỳnh",
+    nameLines: ["Ngô Chúc Quỳnh"],
     roleShort: "Product & R&D Lead",
     roleFull: "Trưởng nhóm Sản phẩm & Nghiên cứu phát triển",
     summary: "Nghiên cứu công thức vật liệu bột sò, thử nghiệm quy chuẩn an toàn cho sản phẩm.",
@@ -107,8 +105,7 @@ export const MEMBERS: readonly TeamMember[] = [
   {
     slug: "le-do-minh-vy",
     no: "03",
-    firstName: "Lê Đỗ Minh",
-    lastName: "Vy",
+    nameLines: ["Lê Đỗ Minh Vy"],
     roleShort: "Brand & Design Manager",
     roleFull: "Quản lý Thương hiệu & Thiết kế",
     summary: "Định hình ngôn ngữ thị giác The Living Gallery & câu chuyện văn hóa bản địa.",
@@ -132,8 +129,7 @@ export const MEMBERS: readonly TeamMember[] = [
   {
     slug: "nguyen-dinh-xuan-anh",
     no: "04",
-    firstName: "Nguyễn Đình Xuân",
-    lastName: "Anh",
+    nameLines: ["Nguyễn Đình", "Xuân Anh"],
     roleShort: "Head of Edutainment Experience",
     roleFull: "Trưởng bộ phận Trải nghiệm Giáo dục giải trí",
     summary: "Xây dựng giáo án ngoại khóa & điều phối trải nghiệm workshop cho học sinh.",
@@ -157,8 +153,7 @@ export const MEMBERS: readonly TeamMember[] = [
   {
     slug: "tran-ngoc-thi",
     no: "05",
-    firstName: "Trần Ngọc",
-    lastName: "Thi",
+    nameLines: ["Trần Ngọc Thi"],
     roleShort: "CCO, Storytelling Lead",
     roleFull: "Giám đốc Nội dung, Trưởng nhóm Kể chuyện",
     summary: "Chắp bút cho từng câu chuyện, kết nối truyền thông giáo dục với cộng đồng.",
@@ -182,8 +177,7 @@ export const MEMBERS: readonly TeamMember[] = [
   {
     slug: "tieu-phung",
     no: "06",
-    firstName: "Tiểu",
-    lastName: "Phụng",
+    nameLines: ["Trần Nguyễn", "Tiểu Phụng"],
     roleShort: "CISO, Data & Security Lead",
     roleFull: "Giám đốc An toàn thông tin, Trưởng nhóm Dữ liệu & Bảo mật",
     summary: "Quản trị dữ liệu số của cẩm nang, kiểm soát an toàn thông tin hệ sinh thái.",
@@ -206,12 +200,10 @@ export const MEMBERS: readonly TeamMember[] = [
   },
 ];
 
-export function getPhotoAlt(
-  member: Pick<TeamMember, "firstName" | "lastName" | "roleShort">,
-): string {
+export function getPhotoAlt(member: Pick<TeamMember, "nameLines" | "roleShort">): string {
   return `${getFullName(member)}, ${member.roleShort} ${TEXT.vi.photoAltOrg}`;
 }
 
-export function getFullName(member: Pick<TeamMember, "firstName" | "lastName">): string {
-  return `${member.firstName} ${member.lastName}`;
+export function getFullName(member: Pick<TeamMember, "nameLines">): string {
+  return member.nameLines.join(" ");
 }

@@ -33,10 +33,8 @@ export type TeamMember = {
   slug: string;
   /** Catalogue number, e.g. "01" (shown as "Nº 01"). */
   no: string;
-  /** Regular-weight part of the name, e.g. "Võ Chí". */
-  firstName: string;
-  /** Italic part of the name, e.g. "Trọng". */
-  lastName: string;
+  /** Full name, one entry per line in the profile heading (so no single word is left alone). */
+  nameLines: readonly [string] | readonly [string, string];
   roleShort: string;
   roleFull: string;
   /** One-line summary shown on the grid card. */

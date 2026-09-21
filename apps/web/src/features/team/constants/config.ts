@@ -75,7 +75,6 @@ export const OPEN_MOTION = {
   textStart: 0.45,
   stagger: 0.07,
   item: 0.5,
-  lastNameExtraDelay: 0.08,
   underlineDuration: 0.9,
   notesStart: 1.0,
   noteWrite: 0.6,

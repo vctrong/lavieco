@@ -28,18 +28,6 @@ function buildVariants(reduced: boolean) {
     },
     exit: { opacity: 0, transition: { duration: CLOSE_MOTION.content } },
   };
-  const lastName: Variants = {
-    ...item,
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: reduced ? OPEN_MOTION.reduced : OPEN_MOTION.item,
-        ease: EASE,
-        delay: reduced ? 0 : OPEN_MOTION.lastNameExtraDelay,
-      },
-    },
-  };
   const container: Variants = {
     hidden: {},
     show: {
@@ -49,7 +37,7 @@ function buildVariants(reduced: boolean) {
     },
     exit: { transition: { staggerChildren: 0 } },
   };
-  return { item, lastName, container };
+  return { item, container };
 }
 
 const LABEL_CLASS = "text-[11px] font-medium uppercase tracking-widest text-mint-mist/70";
@@ -57,7 +45,7 @@ const LABEL_CLASS = "text-[11px] font-medium uppercase tracking-widest text-mint
 /** Right column: name, role, quote, bio, story, facts, skills, achievements, contacts. */
 export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetailsProps) {
   const t = TEXT.vi.profile;
-  const { item, lastName, container } = buildVariants(reduced);
+  const { item, container } = buildVariants(reduced);
 
   const quoteAt = member.quote.indexOf(member.quoteHighlight);
   const hasHighlight = member.quoteHighlight !== "" && quoteAt >= 0;
@@ -105,17 +93,17 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
         </motion.p>
         <h2
           id={nameId}
-          className="text-5xl leading-[1.08] text-soft-white md:text-6xl lg:text-[68px]"
+          className="text-balance text-5xl leading-[1.08] text-soft-white md:text-6xl lg:text-[68px]"
         >
-          <motion.span
-            variants={item}
-            className="inline-block font-sans font-medium tracking-tight"
-          >
-            {member.firstName}
-          </motion.span>{" "}
-          <motion.span variants={lastName} className="inline-block font-display font-normal italic">
-            {member.lastName}
-          </motion.span>
+          {member.nameLines.map((line) => (
+            <motion.span
+              key={line}
+              variants={item}
+              className="block font-display font-normal italic"
+            >
+              {line}
+            </motion.span>
+          ))}
         </h2>
         <motion.p
           variants={item}
