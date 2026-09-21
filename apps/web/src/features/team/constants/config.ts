@@ -72,31 +72,37 @@ export const TEAM_CARD_STYLES = [
     card: "",
     tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
     tone: "dark",
+    sparkle: "dark",
   },
   {
     card: "md:mt-[calc(var(--team-card-h)*0.06)]",
     tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
     tone: "light",
+    sparkle: "mid",
   },
   {
     card: "",
     tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
     tone: "light",
+    sparkle: "light",
   },
   {
     card: "md:mt-[calc(var(--team-card-h)*0.03)]",
     tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
     tone: "light",
+    sparkle: "mid",
   },
   {
     card: "md:mt-[calc(var(--team-card-h)*0.06)]",
     tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
     tone: "light",
+    sparkle: "light",
   },
   {
     card: "md:mt-[calc(var(--team-card-h)*0.03)]",
     tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
     tone: "dark",
+    sparkle: "dark",
   },
 ] as const;
 

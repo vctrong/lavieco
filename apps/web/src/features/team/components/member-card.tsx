@@ -1,9 +1,11 @@
 "use client";
 
 import Image from "next/image";
-import { useRef } from "react";
+import { useRef, type CSSProperties } from "react";
 
 import { PearlDot, cn } from "@lavieco/ui";
+
+import { SPARKLES, SPARKLE_COLORS } from "../constants/sparkles";
 
 import {
   CUTOUT_BLEED_PX,
@@ -21,6 +23,7 @@ import { getFullName, getPhotoAlt } from "../constants/members";
 import { TEXT } from "../constants/text";
 import type { TeamMember } from "../types";
 import { Backdrop } from "./illustrations/backdrops";
+import { Sparkle } from "./illustrations/sparkle";
 
 type MemberCardProps = {
   member: TeamMember;
@@ -127,6 +130,55 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
           />
 
           {/*
+           * Sparkles radiate from behind the figure (this layer is under it, so a star
+           * never covers a face or body). The layer fades in and out; each star runs
+           * its loop only while hovered (paused otherwise), so leaving the card fades
+           * them out instead of cutting them off. Hover-capable devices only.
+           */}
+          <span
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute inset-0 block opacity-0 transition-opacity motion-reduce:hidden",
+              "duration-[900ms] ease-in-out group-hover:opacity-100 group-hover:duration-[600ms] group-focus-visible:opacity-100 group-focus-visible:duration-[600ms]",
+            )}
+          >
+            {SPARKLES.map((star, index) => {
+              const rad = (star.angle * Math.PI) / 180;
+              const colors = SPARKLE_COLORS[style.sparkle];
+              return (
+                <span
+                  key={star.angle}
+                  className="absolute block"
+                  style={{
+                    left: `${(50 + Math.cos(rad) * star.radius * 100).toFixed(2)}%`,
+                    top: `${(50 + Math.sin(rad) * star.radius * 100).toFixed(2)}%`,
+                    width: `${star.size}px`,
+                    height: `${star.size}px`,
+                    marginLeft: `${-star.size / 2}px`,
+                    marginTop: `${-star.size / 2}px`,
+                  }}
+                >
+                  <Sparkle
+                    className={cn(
+                      "animate-sparkle-radiate [animation-play-state:paused] group-hover:[animation-play-state:running] group-focus-visible:[animation-play-state:running]",
+                      colors[index % 2],
+                    )}
+                    style={
+                      {
+                        "--sx": `${Math.round(Math.cos(rad) * star.travel)}px`,
+                        "--sy": `${Math.round(Math.sin(rad) * star.travel)}px`,
+                        "--srot": `${star.turn}deg`,
+                        "--sdur": `${star.duration}s`,
+                        "--sdelay": `${star.delay}s`,
+                      } as CSSProperties
+                    }
+                  />
+                </span>
+              );
+            })}
+          </span>
+
+          {/*
            * 3 · Figure. The window is a plain rectangle with `overflow: hidden` that
            * extends 25% beyond the arch on each side and 60% above it, so it trims only
            * the bottom (rectangular clip: no mask, cheap to animate). Inside it, a box
@@ -165,14 +217,6 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
             </span>
           </span>
 
-          <PearlDot
-            size="lg"
-            tone="canary"
-            className={cn(
-              "absolute left-[62%] top-0 -translate-y-3 scale-75 opacity-0 transition-[opacity,scale] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100",
-              TEAM_HOVER_TIMING,
-            )}
-          />
           <span
             className={cn(
               "absolute inset-x-0 bottom-3 mx-auto block w-fit rounded-full bg-deep-blue/90 px-3 py-1 text-[11px] font-medium text-soft-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
