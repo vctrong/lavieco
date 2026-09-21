@@ -103,7 +103,7 @@ export function ProfilePortrait({ member, phase, rect, reduced }: ProfilePortrai
           transition={{ layout: transition }}
         >
           <Image
-            src={member.photo.src}
+            src={member.sticker.src}
             alt={getPhotoAlt(member)}
             fill
             sizes="(min-width: 1024px) 500px, 70vw"

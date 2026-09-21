@@ -10,10 +10,18 @@ import type { TeamContacts, TeamImage, TeamMember } from "../types";
  * Sample text deliberately contains no figures, years, school or place names.
  *
  * TODO(consent): each person must consent to their photo being published (AC6, docs/04 §5.1).
- * Photos are white-outlined cutouts (`/images/team/<slug>-cutout.webp`, alpha, trimmed).
+ * Two alpha cutouts per person, both trimmed to 1400px tall:
+ * - `<slug>-cutout.webp`: borderless, used on the grid card (the card supplies the edge light).
+ * - `<slug>-sticker.webp`: white-outlined, used in the open profile only (loaded lazily).
  */
 const cutout = (slug: string, width: number): TeamImage => ({
   src: `/images/team/${slug}-cutout.webp`,
+  width,
+  height: 1400,
+});
+
+const sticker = (slug: string, width: number): TeamImage => ({
+  src: `/images/team/${slug}-sticker.webp`,
   width,
   height: 1400,
 });
@@ -75,7 +83,8 @@ export const MEMBERS: readonly TeamMember[] = [
       email: "#",
       github: "#",
     },
-    photo: cutout("vo-chi-trong", 822),
+    photo: cutout("vo-chi-trong", 807),
+    sticker: sticker("vo-chi-trong", 822),
     backdrop: "network",
     draft: true,
   },
@@ -98,7 +107,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: SAMPLE_CONTACTS,
-    photo: cutout("ngo-chuc-quynh", 1075),
+    photo: cutout("ngo-chuc-quynh", 1065),
+    sticker: sticker("ngo-chuc-quynh", 1075),
     backdrop: "particles",
     draft: true,
   },
@@ -121,7 +131,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", behance: "#" },
-    photo: cutout("le-do-minh-vy", 821),
+    photo: cutout("le-do-minh-vy", 801),
+    sticker: sticker("le-do-minh-vy", 821),
     backdrop: "palette",
     photoScale: 0.93,
     draft: true,
@@ -145,7 +156,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", zalo: "#", email: "#" },
-    photo: cutout("nguyen-dinh-xuan-anh", 753),
+    photo: cutout("nguyen-dinh-xuan-anh", 740),
+    sticker: sticker("nguyen-dinh-xuan-anh", 753),
     backdrop: "stairs",
     photoScale: 0.96,
     draft: true,
@@ -169,7 +181,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", linkedin: "#" },
-    photo: cutout("tran-ngoc-thi", 979),
+    photo: cutout("tran-ngoc-thi", 958),
+    sticker: sticker("tran-ngoc-thi", 979),
     backdrop: "story",
     photoScale: 0.86,
     draft: true,
@@ -193,7 +206,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", github: "#", linkedin: "#" },
-    photo: cutout("tieu-phung", 1327),
+    photo: cutout("tieu-phung", 1328),
+    sticker: sticker("tieu-phung", 1327),
     backdrop: "keyhole",
     photoScale: 0.88,
     draft: true,
