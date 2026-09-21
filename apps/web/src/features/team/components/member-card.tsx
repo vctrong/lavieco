@@ -21,14 +21,16 @@ import {
 } from "../constants/config";
 import { getFullName, getPhotoAlt } from "../constants/members";
 import { TEXT } from "../constants/text";
-import type { TeamMember } from "../types";
+import type { TeamMember, ZoomRect, ZoomSource } from "../types";
 import { Backdrop } from "./illustrations/backdrops";
 import { Sparkle } from "./illustrations/sparkle";
 
 type MemberCardProps = {
   member: TeamMember;
   index: number;
-  onOpen: (member: TeamMember, trigger: HTMLElement) => void;
+  /** True while this person's profile is open: the figure is hidden so it is not seen twice. */
+  active: boolean;
+  onOpen: (member: TeamMember, trigger: HTMLElement, getSource: () => ZoomSource | null) => void;
 };
 
 /**
@@ -39,13 +41,26 @@ type MemberCardProps = {
  * button is also the `group`: it never moves, so the hover hit area cannot flicker.
  * Only its inner layers animate, all by CSS (transform and opacity, never layout).
  */
-export function MemberCard({ member, index, onOpen }: MemberCardProps) {
+export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
   const t = TEXT.vi;
   const style = TEAM_CARD_STYLES[index] ?? TEAM_CARD_STYLES[0];
   const neon = TEAM_NEON[style.tone];
   const name = getFullName(member);
   const scale = member.photoScale ?? 1;
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const archRef = useRef<HTMLSpanElement>(null);
+
+  // Where the zoom starts and ends: the figure as it is drawn right now, and the arch.
+  const getSource = (): ZoomSource | null => {
+    const figure = buttonRef.current?.querySelector("img");
+    const arch = archRef.current;
+    if (!figure || !arch) return null;
+    const rectOf = (element: Element): ZoomRect => {
+      const box = element.getBoundingClientRect();
+      return { left: box.left, top: box.top, width: box.width, height: box.height };
+    };
+    return { figure: rectOf(figure), arch: rectOf(arch) };
+  };
 
   return (
     <li className={cn("relative", style.card)}>
@@ -53,11 +68,11 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
         ref={buttonRef}
         type="button"
         aria-label={`${t.openAriaPrefix} ${name}`}
-        onClick={() => buttonRef.current && onOpen(member, buttonRef.current)}
+        onClick={() => buttonRef.current && onOpen(member, buttonRef.current, getSource)}
         data-cursor="view"
         className={cn("group relative block w-full text-left outline-none", TEAM_HEADROOM_CLASS)}
       >
-        <span className={cn("relative block", TEAM_ARCH_CLASS)}>
+        <span ref={archRef} className={cn("relative block", TEAM_ARCH_CLASS)}>
           {/* Lift shadow and neon halo: separate layers that only fade in (nothing on the photo). */}
           <span
             aria-hidden="true"
@@ -186,7 +201,10 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
            */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute -inset-x-1/4 -top-3/5 bottom-0 block overflow-hidden"
+            className={cn(
+              "pointer-events-none absolute -inset-x-1/4 -top-3/5 bottom-0 block overflow-hidden",
+              active && "invisible",
+            )}
           >
             <span className="absolute inset-x-[16.6667%] bottom-0 top-[37.5%] block">
               <span

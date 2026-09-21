@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useLayoutEffect } from "react";
 
 /**
  * Locks page scroll while `active` without the page shifting sideways. With
@@ -8,7 +8,7 @@ import { useEffect } from "react";
  * included); browsers without it get padding that matches the scrollbar width.
  */
 export function useScrollLock(active: boolean) {
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!active) return;
     const root = document.documentElement;
     const previousOverflow = root.style.overflow;
@@ -16,10 +16,13 @@ export function useScrollLock(active: boolean) {
     const previousPadding = root.style.paddingRight;
     const scrollbarWidth = window.innerWidth - root.clientWidth;
 
-    if (CSS.supports("scrollbar-gutter", "stable")) {
-      root.style.scrollbarGutter = "stable";
-    } else if (scrollbarWidth > 0) {
-      root.style.paddingRight = `${scrollbarWidth}px`;
+    // Only reserve space when a scrollbar really takes some (overlay scrollbars take none).
+    if (scrollbarWidth > 0) {
+      if (CSS.supports("scrollbar-gutter", "stable")) {
+        root.style.scrollbarGutter = "stable";
+      } else {
+        root.style.paddingRight = `${scrollbarWidth}px`;
+      }
     }
     root.style.overflow = "hidden";
 

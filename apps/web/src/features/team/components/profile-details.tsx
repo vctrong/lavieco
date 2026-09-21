@@ -41,7 +41,7 @@ function buildVariants(reduced: boolean) {
 }
 
 const LABEL_CLASS = cn(
-  "font-medium uppercase tracking-widest text-mint-mist/70",
+  "font-medium uppercase tracking-widest text-deep-blue/60",
   PROFILE_SCALE.label,
 );
 
@@ -87,13 +87,13 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
       variants={container}
       initial="hidden"
       animate={phase === "closing" ? "exit" : "show"}
-      className={cn("flex min-h-full flex-col justify-center text-soft-white", PROFILE_SCALE.gap)}
+      className={cn("flex min-h-full flex-col justify-center text-deep-blue", PROFILE_SCALE.gap)}
     >
       <div className="flex flex-col gap-[clamp(0.15rem,0.8cqh,0.5rem)]">
         <motion.p
           variants={item}
           className={cn(
-            "font-semibold uppercase tracking-[0.24em] text-canary",
+            "font-semibold uppercase tracking-[0.24em] text-emerald-brand",
             PROFILE_SCALE.kicker,
           )}
         >
@@ -101,7 +101,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
         </motion.p>
         <h2
           id={nameId}
-          className={cn("text-balance leading-[1.08] text-soft-white", PROFILE_SCALE.name)}
+          className={cn("text-balance leading-[1.08] text-deep-blue", PROFILE_SCALE.name)}
         >
           {member.nameLines.map((line) => (
             <motion.span
@@ -116,7 +116,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
         <motion.p
           variants={item}
           className={cn(
-            "flex flex-wrap items-center gap-x-2 gap-y-0.5 uppercase tracking-wider text-mint-mist/80",
+            "flex flex-wrap items-center gap-x-2 gap-y-0.5 uppercase tracking-wider text-deep-blue/70",
             PROFILE_SCALE.role,
           )}
         >
@@ -140,7 +140,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
         <div className={cn("flex flex-col", PROFILE_SCALE.gap)}>
           <motion.blockquote
             variants={item}
-            className={cn("font-display italic leading-snug text-soft-white", PROFILE_SCALE.quote)}
+            className={cn("font-display italic leading-snug text-deep-blue", PROFILE_SCALE.quote)}
           >
             <p>
               {quoteBefore}
@@ -166,18 +166,18 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
 
           <motion.p
             variants={item}
-            className={cn("font-light leading-relaxed text-mint-mist/90", PROFILE_SCALE.body)}
+            className={cn("font-normal leading-relaxed text-charcoal/80", PROFILE_SCALE.body)}
           >
             {member.bio}
           </motion.p>
 
           <motion.div
             variants={item}
-            className="rounded-r-xl border border-l-4 border-soft-white/10 border-l-canary bg-soft-white/5 p-[clamp(0.6rem,1.9cqh,1.25rem)]"
+            className="rounded-r-xl border border-l-4 border-hairline border-l-canary bg-mint-mist/50 p-[clamp(0.6rem,1.9cqh,1.25rem)]"
           >
             <p
               className={cn(
-                "mb-1 font-bold uppercase tracking-[0.2em] text-canary",
+                "mb-1 font-bold uppercase tracking-[0.2em] text-emerald-brand",
                 PROFILE_SCALE.label,
               )}
             >
@@ -185,7 +185,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
             </p>
             <p
               className={cn(
-                "font-display italic leading-relaxed text-soft-white/95",
+                "font-display italic leading-relaxed text-charcoal/90",
                 PROFILE_SCALE.story,
               )}
             >
@@ -211,7 +211,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
           {facts.length > 0 ? (
             <motion.dl
               variants={item}
-              className="divide-y divide-soft-white/10 overflow-hidden rounded-xl border border-soft-white/15 bg-deep-blue/40"
+              className="divide-y divide-hairline overflow-hidden rounded-xl border border-hairline bg-mint-mist/40"
             >
               {facts.map((fact) => (
                 <div
@@ -219,10 +219,10 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
                   className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-baseline gap-x-3 px-3 py-[clamp(0.3rem,1cqh,0.6rem)]"
                 >
                   <dt className={LABEL_CLASS}>{fact.label}</dt>
-                  <dd className={cn("font-semibold text-soft-white", PROFILE_SCALE.chip)}>
+                  <dd className={cn("font-semibold text-deep-blue", PROFILE_SCALE.chip)}>
                     {fact.value}
                     {fact.sub ? (
-                      <span className="block font-light text-mint-mist/70">{fact.sub}</span>
+                      <span className="block font-light text-deep-blue/60">{fact.sub}</span>
                     ) : null}
                   </dd>
                 </div>
@@ -241,7 +241,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
                   key={skill.label}
                   data-achievement-id={skill.achievementId}
                   className={cn(
-                    "whitespace-nowrap rounded-full border border-soft-white/20 bg-deep-blue/50 px-3 py-[clamp(0.15rem,0.7cqh,0.375rem)] font-medium text-mint-mist",
+                    "whitespace-nowrap rounded-full border border-hairline bg-mint-mist/60 px-3 py-[clamp(0.15rem,0.7cqh,0.375rem)] font-medium text-deep-blue",
                     PROFILE_SCALE.chip,
                   )}
                 >
@@ -259,7 +259,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
               <p className={cn(LABEL_CLASS, "font-semibold")}>{t.achievementsTitle}</p>
               <ul
                 className={cn(
-                  "flex flex-col gap-[clamp(0.2rem,0.8cqh,0.5rem)] text-soft-white",
+                  "flex flex-col gap-[clamp(0.2rem,0.8cqh,0.5rem)] text-charcoal",
                   PROFILE_SCALE.chip,
                 )}
               >
@@ -295,7 +295,7 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
                       target="_blank"
                       rel="noopener noreferrer"
                       aria-label={TEXT.vi.contactLabels[channel]}
-                      className="grid size-[clamp(2rem,4.6cqh,2.75rem)] place-items-center rounded-full border border-soft-white/25 text-mint-mist transition-colors hover:border-canary hover:text-canary"
+                      className="grid size-[clamp(2rem,4.6cqh,2.75rem)] place-items-center rounded-full border border-hairline text-deep-blue transition-colors hover:border-emerald-brand hover:text-emerald-brand"
                     >
                       <Icon aria-hidden="true" size={16} />
                     </a>

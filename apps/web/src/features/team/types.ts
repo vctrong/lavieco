@@ -56,6 +56,8 @@ export type TeamMember = {
   portraitList: TeamImage;
   /** White-outlined cutout (alpha) shown in the open profile only. */
   portraitDetail: TeamImage;
+  /** Size of the person inside `portraitDetail` relative to `portraitList` (outline takes ~3%). */
+  stickerScale: number;
   /** Which illustrated backdrop sits behind the cutout on the grid card. */
   backdrop: Backdrop;
   /** Multiplies the cutout height on the card (1 = default overhang). Evens out framing. */
@@ -65,3 +67,9 @@ export type TeamMember = {
   /** True while the profile still holds placeholder content. */
   draft: boolean;
 };
+
+/** A box in viewport pixels. */
+export type ZoomRect = { left: number; top: number; width: number; height: number };
+
+/** Where a profile zooms from (and back to): the card's figure and its arch. */
+export type ZoomSource = { figure: ZoomRect; arch: ZoomRect };

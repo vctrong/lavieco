@@ -30,7 +30,7 @@ export function HandwrittenNote({ note, animated, closing }: HandwrittenNoteProp
       animate={{ opacity: closing ? 0 : 1 }}
       transition={{ duration: CLOSE_MOTION.content }}
       className={cn(
-        "font-handwriting leading-[1.5] tracking-wide text-canary transition-colors hover:text-emerald-brand",
+        "font-handwriting leading-[1.5] tracking-wide text-emerald-brand transition-colors hover:text-deep-blue",
         PROFILE_SCALE.note,
         !isLeft && "text-right",
       )}

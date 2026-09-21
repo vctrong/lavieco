@@ -154,22 +154,40 @@ export const PROFILE_SCALE = {
   note: "text-[clamp(0.85rem,2.1cqh,1.15rem)]",
 } as const;
 
-/** Timings in seconds. Opening ≈ 1s (usable from ≈ 0.4s); closing 0.5s. */
+/**
+ * The zoom: the person flies from the card to the profile (FLIP, Web Animations) while the
+ * backdrop opens out of the card's arch. Milliseconds; `easing` is `--ease-gallery`.
+ */
+export const ZOOM = {
+  openMs: 720,
+  closeMs: 620,
+  /** Wait before the flight back, so the text has faded out first. */
+  closeDelayMs: 100,
+  easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+  /** Share of the flight after which the outline swaps in (the last 40%). */
+  crossfadeAt: 0.6,
+  /** The backdrop fades in over the first quarter, to hide the seam with the card's arch. */
+  backdropFadeAt: 0.25,
+  reducedMs: 150,
+} as const;
+
+/** Timings in seconds for what surrounds the flight. Text starts ~40% into it. */
 export const OPEN_MOTION = {
   scrim: 0.5,
-  panel: 0.7,
-  textStart: 0.25,
-  stagger: 0.06,
+  panel: 0.5,
+  textStart: 0.3,
+  stagger: 0.07,
   item: 0.5,
   underlineDuration: 0.8,
-  notesStart: 0.7,
+  notesStart: 0.8,
   noteWrite: 0.6,
   noteArrow: 0.5,
-  reduced: 0.2,
+  reduced: 0.15,
 } as const;
 
 export const CLOSE_MOTION = {
   content: 0.15,
-  panel: 0.5,
+  panelDelay: 0.25,
+  panel: 0.35,
   scrim: 0.5,
 } as const;

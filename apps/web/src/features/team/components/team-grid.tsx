@@ -3,7 +3,7 @@
 import { useCallback, useState } from "react";
 
 import { TEAM_GRID_CLASS } from "../constants/config";
-import type { TeamMember } from "../types";
+import type { TeamMember, ZoomSource } from "../types";
 import { MemberCard } from "./member-card";
 import { ProfileModal, type ProfileSession } from "./profile-modal";
 
@@ -15,9 +15,12 @@ type TeamGridProps = {
 export function TeamGrid({ members }: TeamGridProps) {
   const [session, setSession] = useState<ProfileSession | null>(null);
 
-  const handleOpen = useCallback((member: TeamMember, trigger: HTMLElement) => {
-    setSession({ member, trigger });
-  }, []);
+  const handleOpen = useCallback(
+    (member: TeamMember, trigger: HTMLElement, getSource: () => ZoomSource | null) => {
+      setSession({ member, trigger, getSource });
+    },
+    [],
+  );
 
   const handleClosed = useCallback(() => {
     const trigger = session?.trigger;
@@ -30,7 +33,13 @@ export function TeamGrid({ members }: TeamGridProps) {
     <>
       <ul className={TEAM_GRID_CLASS}>
         {members.map((member, index) => (
-          <MemberCard key={member.slug} member={member} index={index} onOpen={handleOpen} />
+          <MemberCard
+            key={member.slug}
+            member={member}
+            index={index}
+            active={session?.member.slug === member.slug}
+            onOpen={handleOpen}
+          />
         ))}
       </ul>
       {session ? (
