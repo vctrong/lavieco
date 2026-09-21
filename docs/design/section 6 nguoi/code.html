@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lavieco - Sáu Người Kể Chuyện: Võ Chí Trọng</title>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Google Fonts: Fraunces, Be Vietnam Pro & Caveat for handwritten notes -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&amp;family=Caveat:wght@500;600;700&amp;family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500;1,9..144,700&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+            serif: ['"Fraunces"', 'serif'],
+            hand: ['"Caveat"', 'cursive']
+          },
+          colors: {
+            deepNavy: '#17223b',
+            deepCanvas: '#141d33',
+            canary: '#f3e37c',
+            mintMist: '#4ade80',
+            emeraldGlow: '#10b981',
+            softWhite: '#F8FAF6',
+            cardBg: 'rgba(25, 37, 63, 0.72)',
+            cardBorder: 'rgba(255, 255, 255, 0.08)'
+          }
+        }
+      }
+    }
+  </script>
+<!-- Custom CSS for Typography & Glow Effects -->
+<style data-purpose="typography">
+    .font-serif-fraunces {
+      font-family: 'Fraunces', serif;
+      font-optical-sizing: auto;
+    }
+    .font-handwriting {
+      font-family: 'Caveat', cursive;
+    }
+  </style>
+<style data-purpose="sticker-and-glow">
+    /* Sticker Contour: clean white die-cut contour filter */
+    .die-cut-sticker {
+      filter: drop-shadow(0 0 1px #ffffff) 
+              drop-shadow(0 0 2.5px #ffffff) 
+              drop-shadow(0 0 4.5px rgba(255, 255, 255, 0.95))
+              drop-shadow(0 14px 28px rgba(0, 0, 0, 0.45));
+      transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.4s ease;
+      will-change: transform;
+    }
+
+    /* Ambient halo behind portrait card */
+    .portrait-halo {
+      box-shadow: 0 0 50px 10px rgba(255, 255, 255, 0.12),
+                  inset 0 0 60px 15px rgba(255, 255, 255, 0.14);
+    }
+
+    /* Dynamic underlines and glows */
+    .quote-underline {
+      position: relative;
+      display: inline-block;
+      text-decoration: underline;
+      text-decoration-color: #f3e37c;
+      text-decoration-thickness: 2.5px;
+      text-underline-offset: 6px;
+      transition: all 0.3s ease;
+    }
+    .quote-underline.glow {
+      text-shadow: 0 0 12px rgba(243, 227, 124, 0.7);
+      text-decoration-thickness: 3.5px;
+    }
+
+    /* Floating handwritten note animations */
+    @keyframes subtleWiggle {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      50% { transform: translate(-2px, -3px) rotate(-1deg); }
+    }
+    .note-animate-1 {
+      animation: subtleWiggle 5s ease-in-out infinite;
+    }
+    .note-animate-2 {
+      animation: subtleWiggle 6s ease-in-out 1.5s infinite reverse;
+    }
+
+    /* Target highlight linking elements */
+    .achievement-highlight {
+      color: #f3e37c !important;
+      transform: translateX(4px);
+      transition: all 0.3s ease;
+    }
+    .achievement-highlight .bullet-dot {
+      background-color: #f3e37c !important;
+      box-shadow: 0 0 8px #f3e37c;
+    }
+    .box-spotlight {
+      border-color: #f3e37c !important;
+      box-shadow: 0 0 25px rgba(243, 227, 124, 0.22) !important;
+    }
+  </style>
+</head>
+<body class="bg-[#17223b] text-slate-200 min-h-screen flex items-center justify-center p-4 md:p-8 selection:bg-yellow-300 selection:text-slate-900">
+<!-- BEGIN: MainModalContainer -->
+<main class="relative w-full max-w-[1480px] bg-[#17223b] rounded-2xl overflow-hidden shadow-2xl p-6 md:p-12 lg:p-16 border border-slate-700/30">
+<!-- BEGIN: CloseButton -->
+<!-- Top-Right Close Button ✕ -->
+<div class="absolute top-6 right-6 md:top-10 md:right-10 z-50">
+<button aria-label="Đóng thông tin" class="w-11 h-11 rounded-full border border-slate-500/50 flex items-center justify-center text-slate-300 hover:text-white hover:border-slate-300 transition-colors bg-white/5 hover:bg-white/10 backdrop-blur-sm cursor-pointer" id="btn-close" type="button">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewbox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</button>
+</div>
+<!-- END: CloseButton -->
+<!-- BEGIN: ModalContentGrid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-10 xl:gap-16 items-start">
+<!-- BEGIN: LeftPortraitSection -->
+<section class="lg:col-span-6 relative flex flex-col items-center justify-center pt-8 pb-4" data-purpose="portrait-spotlight">
+<!-- Handwritten Note 1: Top Left -->
+<div class="absolute -top-3 left-4 md:left-8 z-20 max-w-[280px] font-handwriting text-canary text-xl md:text-2xl leading-snug tracking-wide note-animate-1 pointer-events-auto cursor-pointer select-none group" id="handwritten-note-top" title="Tâm sự nhỏ">
+<p class="group-hover:text-emerald-300 transition-colors">
+            một điều ít ai biết: thích nghe tiếng vỏ sò va vào nhau lúc nửa đêm
+          </p>
+<!-- Curved Arrow SVG pointing to the portrait -->
+<svg class="w-20 h-10 mt-1 text-mintMist transition-transform group-hover:scale-110" fill="none" viewbox="0 0 80 40" xmlns="http://www.w3.org/2000/svg">
+<path d="M4 8C18 20 42 26 68 12" stroke="currentColor" stroke-dasharray="3 3" stroke-linecap="round" stroke-width="1.8"></path>
+<path d="M62 6L72 11L64 18" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+<!-- Handwritten Note 2: Right Shoulder -->
+<div class="absolute top-28 right-0 md:right-4 z-20 max-w-[210px] text-right font-handwriting text-canary text-2xl md:text-3xl leading-tight tracking-wide note-animate-2 pointer-events-auto cursor-pointer select-none group" id="handwritten-note-right" title="Đam mê của Trọng">
+<p class="group-hover:text-emerald-300 transition-colors">
+            đang mê men vi sinh vỏ sò
+          </p>
+<!-- Arrow pointing to shell polo/sticker -->
+<div class="flex justify-end pr-3 mt-1">
+<svg class="w-16 h-8 text-canary transition-transform group-hover:scale-110" fill="none" viewbox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+<path d="M54 4C42 12 28 16 12 20" stroke="currentColor" stroke-dasharray="3 3" stroke-linecap="round" stroke-width="1.8"></path>
+<path d="M18 13L10 20L19 24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path>
+</svg>
+</div>
+</div>
+<!-- Central Glow Frame Box -->
+<div class="w-full max-w-[500px] aspect-[4/5] rounded-[36px] bg-[#162137] border-2 border-white/20 portrait-halo relative flex items-end justify-center overflow-hidden">
+<!-- Subtle inner soft radial backdrop illumination -->
+<div class="absolute inset-0 bg-radial from-white/10 via-transparent to-transparent pointer-events-none"></div>
+<!-- Die-cut Sticker Character Image -->
+<div class="relative z-10 w-[92%] h-full flex items-end justify-center">
+<img alt="Chân dung Võ Chí Trọng - CTO Lavieco" class="die-cut-sticker object-contain max-h-[96%] w-auto select-none pointer-events-auto transition-transform duration-300" id="portrait-sticker" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAC1DJBEvuDQWVrXS1dFVgkYwfco5xrPOnSYXsiplUZeDYCl6zw_rqc2OpLY2Gy1PnJu3wR3Xiq87ZnsSxOSOpaSTsf5Wh2B51r4XrmD9BSNga_E8CDn7u8vazNN8SXWp00tzytQekKGLKj0k5xg6VV2amRZsJe0P_AwEuzWJvKxDcYaevTT39IHMr3V1jCjpI1-jhikCksI8qe1iN1zEh8ahX2BMjG2vyLkxEpRrFSTqZlX5Ay_lel"/>
+</div>
+</div>
+</section>
+<!-- END: LeftPortraitSection -->
+<!-- BEGIN: RightDetailsSection -->
+<section class="lg:col-span-6 flex flex-col space-y-6 pt-2" data-purpose="profile-details">
+<!-- Category Subhead -->
+<div class="space-y-2">
+<p class="text-xs md:text-sm font-semibold tracking-[0.24em] text-canary uppercase">
+            LAVIECO  ·  SÁU NGƯỜI KỂ CHUYỆN
+          </p>
+<!-- Main Person Name with interactive hover glow -->
+<h1 class="text-5xl md:text-6xl lg:text-[68px] leading-[1.08] font-normal text-softWhite transition-all duration-300 cursor-pointer" id="person-name">
+<span class="font-sans font-medium tracking-tight">Võ Chí</span>
+<span class="font-serif-fraunces italic font-normal tracking-normal ml-1">Trọng</span>
+</h1>
+<!-- Role and Archive Metadata -->
+<div class="flex flex-wrap items-center gap-2.5 text-xs md:text-sm tracking-wider uppercase text-slate-300/80 pt-1">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-emeraldGlow shadow-[0_0_8px_#10b981]"></span>
+<span class="text-emerald-400 font-medium">CTO  ·  GIÁM ĐỐC CÔNG NGHỆ</span>
+<span class="text-slate-500">|</span>
+<span class="text-slate-400 font-light">LAVIECO ARCHIVE 2025</span>
+</div>
+</div>
+<!-- Big Core Quote -->
+<blockquote class="pt-1">
+<p class="font-serif-fraunces italic text-2xl md:text-3xl lg:text-[31px] leading-snug text-slate-100 transition-colors duration-300 cursor-pointer" id="main-quote">
+            “Mình tin một mảnh vỏ sò cũng biết <span class="quote-underline text-white font-medium" id="interactive-underline">kể chuyện</span>.”
+          </p>
+</blockquote>
+<!-- Role Bio Description -->
+<p class="text-slate-300/90 text-base md:text-[16.5px] leading-relaxed font-light">
+          Phụ trách kiến trúc số hoá di sản sinh thái, chuyển ngữ dữ liệu thực nghiệm vật liệu vỏ sò thành trải nghiệm học tương tác cho cộng đồng sáng tạo trẻ Cần Thơ.
+        </p>
+<!-- Highlight Callout Box: CÂU CHUYỆN VỎ SÒ CỦA MÌNH -->
+<div class="relative bg-[#1a2642]/80 border-l-4 border-canary rounded-r-xl p-5 md:p-6 transition-all duration-300 border-t border-r border-b border-white/5" id="story-box">
+<p class="text-[11px] md:text-xs font-bold tracking-[0.2em] uppercase text-canary mb-2">
+            CÂU CHUYỆN VỎ SÒ CỦA MÌNH
+          </p>
+<p class="font-serif-fraunces italic text-slate-200/95 text-base md:text-lg leading-relaxed">
+            “Tìm thấy mảnh vỏ điệp trôi dạt ở bãi bùn Cần Giờ năm 2024, mình nhận ra rác thải cũng có linh hồn nếu chạm vào bằng lòng trắc ẩn.”
+          </p>
+</div>
+<!-- Triple Info Columns: Học Tại / Đến Từ / Đang Ở -->
+<div class="grid grid-cols-1 md:grid-cols-3 rounded-xl border border-slate-700/60 bg-[#162137]/60 overflow-hidden divide-y md:divide-y-0 md:divide-x divide-slate-700/60 py-1">
+<!-- Column 1 -->
+<div class="p-4 flex flex-col justify-center">
+<span class="text-[11px] uppercase tracking-widest text-slate-400 font-medium mb-1">HỌC TẠI</span>
+<p class="text-sm font-semibold text-white">Đại học FPT Cần Thơ</p>
+<p class="text-xs text-slate-400 mt-0.5 font-light">Kỹ thuật phần mềm · K17</p>
+</div>
+<!-- Column 2 -->
+<div class="p-4 flex flex-col justify-center">
+<span class="text-[11px] uppercase tracking-widest text-slate-400 font-medium mb-1">ĐẾN TỪ</span>
+<p class="text-sm font-semibold text-white">Cần Thơ</p>
+</div>
+<!-- Column 3 -->
+<div class="p-4 flex flex-col justify-center">
+<span class="text-[11px] uppercase tracking-widest text-slate-400 font-medium mb-1">ĐANG Ở</span>
+<p class="text-sm font-semibold text-white">Sài Gòn</p>
+</div>
+</div>
+<!-- Tech Stack Pill Tags -->
+<div class="flex flex-wrap items-center gap-2.5 pt-1" data-purpose="tech-stack">
+<span class="tech-tag px-4 py-1.5 rounded-full text-xs font-medium bg-[#1a2744] border border-slate-600/60 text-slate-300 hover:border-slate-300 hover:text-white transition-all cursor-pointer select-none" data-target="achievement-1">
+            Next.js
+          </span>
+<span class="tech-tag px-4 py-1.5 rounded-full text-xs font-medium bg-[#1a2744] border border-slate-600/60 text-slate-300 hover:border-slate-300 hover:text-white transition-all cursor-pointer select-none" data-target="achievement-2">
+            Figma
+          </span>
+<span class="tech-tag px-4 py-1.5 rounded-full text-xs font-medium bg-[#1a2744] border border-slate-600/60 text-slate-300 hover:border-slate-300 hover:text-white transition-all cursor-pointer select-none" data-target="achievement-1">
+            MongoDB
+          </span>
+<span class="tech-tag px-4 py-1.5 rounded-full text-xs font-medium bg-[#1a2744] border border-slate-600/60 text-slate-300 hover:border-slate-300 hover:text-white transition-all cursor-pointer select-none" data-target="achievement-3">
+            Blender
+          </span>
+<!-- Highlighted green tag: Bio-composite -->
+<span class="tech-tag px-4 py-1.5 rounded-full text-xs font-semibold bg-[#0d2a33]/80 border border-teal-500/70 text-teal-300 hover:bg-teal-500/20 shadow-[0_0_10px_rgba(20,184,166,0.25)] transition-all cursor-pointer select-none" data-target="achievement-3">
+            Bio-composite
+          </span>
+</div>
+<!-- Accomplishments List: ĐÃ LÀM ĐƯỢC -->
+<div class="space-y-2.5 pt-1" data-purpose="accomplishments">
+<p class="text-[11px] uppercase tracking-widest text-slate-400 font-semibold">
+            ĐÃ LÀM ĐƯỢC
+          </p>
+<ul class="space-y-2 text-sm text-slate-200">
+<li class="flex items-start gap-3 transition-all duration-300" id="achievement-1">
+<span class="bullet-dot w-2 h-2 rounded-full bg-emerald-400 mt-1.5 shrink-0 transition-all"></span>
+<span>Số hoá thành công thư viện 120 mẫu men vỏ hải sản miền Tây</span>
+</li>
+<li class="flex items-start gap-3 transition-all duration-300" id="achievement-2">
+<span class="bullet-dot w-2 h-2 rounded-full bg-emerald-400 mt-1.5 shrink-0 transition-all"></span>
+<span>Đồng sáng lập workshop “Học bằng đôi tay” cho 350 học sinh Tây Đô</span>
+</li>
+<li class="flex items-start gap-3 transition-all duration-300" id="achievement-3">
+<span class="bullet-dot w-2 h-2 rounded-full bg-emerald-400 mt-1.5 shrink-0 transition-all"></span>
+<span>Tối ưu quy trình ép nguội composite vỏ sò giảm 40% năng lượng</span>
+</li>
+</ul>
+</div>
+<!-- Social and Interactive Actions Row -->
+<div class="flex items-center gap-3 pt-3" data-purpose="social-icons">
+<!-- Facebook -->
+<a aria-label="Facebook Profile" class="w-10 h-10 rounded-full border border-slate-600/70 flex items-center justify-center text-slate-300 hover:text-white hover:border-canary hover:shadow-[0_0_10px_rgba(243,227,124,0.3)] transition-all bg-white/5" href="#">
+<svg class="w-4 h-4 fill-current" viewbox="0 0 24 24">
+<path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"></path>
+</svg>
+</a>
+<!-- Chat / Messenger -->
+<a aria-label="Zalo hoặc Tin nhắn" class="w-10 h-10 rounded-full border border-slate-600/70 flex items-center justify-center text-slate-300 hover:text-white hover:border-canary hover:shadow-[0_0_10px_rgba(243,227,124,0.3)] transition-all bg-white/5" href="#">
+<svg class="w-4 h-4 fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+</svg>
+</a>
+<!-- Email -->
+<a aria-label="Gửi Email" class="w-10 h-10 rounded-full border border-slate-600/70 flex items-center justify-center text-slate-300 hover:text-white hover:border-canary hover:shadow-[0_0_10px_rgba(243,227,124,0.3)] transition-all bg-white/5" href="#">
+<svg class="w-4 h-4 fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+<polyline points="22,6 12,13 2,6"></polyline>
+</svg>
+</a>
+<!-- Code Repository -->
+<a aria-label="Source code / Tech" class="w-10 h-10 rounded-full border border-slate-600/70 flex items-center justify-center text-slate-300 hover:text-white hover:border-canary hover:shadow-[0_0_10px_rgba(243,227,124,0.3)] transition-all bg-white/5" href="#">
+<svg class="w-4 h-4 fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="16 18 22 12 16 6"></polyline>
+<polyline points="8 6 2 12 8 18"></polyline>
+</svg>
+</a>
+<!-- Archive / Portfolio -->
+<a aria-label="Archive &amp; Di sản" class="w-10 h-10 rounded-full border border-slate-600/70 flex items-center justify-center text-slate-300 hover:text-white hover:border-canary hover:shadow-[0_0_10px_rgba(243,227,124,0.3)] transition-all bg-white/5" href="#">
+<svg class="w-4 h-4 fill-none stroke-current" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24">
+<polyline points="21 8 21 21 3 21 3 8"></polyline>
+<rect height="5" width="22" x="1" y="3"></rect>
+<line x1="10" x2="14" y1="12" y2="12"></line>
+</svg>
+</a>
+</div>
+</section>
+<!-- END: RightDetailsSection -->
+</div>
+<!-- END: ModalContentGrid -->
+</main>
+<!-- END: MainModalContainer -->
+<!-- BEGIN: InteractiveScripts -->
+<script data-purpose="micro-interactions">
+    document.addEventListener('DOMContentLoaded', () => {
+      const portraitSticker = document.getElementById('portrait-sticker');
+      const personName = document.getElementById('person-name');
+      const mainQuote = document.getElementById('main-quote');
+      const interactiveUnderline = document.getElementById('interactive-underline');
+      const storyBox = document.getElementById('story-box');
+      const noteTop = document.getElementById('handwritten-note-top');
+      const noteRight = document.getElementById('handwritten-note-right');
+      const techTags = document.querySelectorAll('.tech-tag');
+      const btnClose = document.getElementById('btn-close');
+
+      // 1. Subtle parallax & tilt on portrait container
+      const portraitCard = portraitSticker.closest('section');
+      portraitCard.addEventListener('mousemove', (e) => {
+        const rect = portraitCard.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        portraitSticker.style.transform = `scale(1.03) translate(${x * 12}px, ${y * 12}px) rotate(${x * 3}deg)`;
+      });
+
+      portraitCard.addEventListener('mouseleave', () => {
+        portraitSticker.style.transform = 'scale(1) translate(0px, 0px) rotate(0deg)';
+      });
+
+      // 2. Hover Name -> Glow effect & highlight quote underline
+      personName.addEventListener('mouseenter', () => {
+        personName.style.textShadow = '0 0 25px rgba(255, 255, 255, 0.45)';
+        interactiveUnderline.classList.add('glow');
+        portraitSticker.style.filter = 'drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 4px #f3e37c) drop-shadow(0 0 12px rgba(243,227,124,0.6)) drop-shadow(0 16px 32px rgba(0,0,0,0.5))';
+      });
+
+      personName.addEventListener('mouseleave', () => {
+        personName.style.textShadow = 'none';
+        interactiveUnderline.classList.remove('glow');
+        portraitSticker.style.filter = '';
+      });
+
+      // 3. Hover Quote -> Highlight story box & sticker tilts gently
+      const triggerQuoteHover = (enter) => {
+        if (enter) {
+          storyBox.classList.add('box-spotlight');
+          interactiveUnderline.classList.add('glow');
+          portraitSticker.style.transform = 'scale(1.03) rotate(-1.5deg)';
+        } else {
+          storyBox.classList.remove('box-spotlight');
+          interactiveUnderline.classList.remove('glow');
+          portraitSticker.style.transform = 'scale(1) rotate(0deg)';
+        }
+      };
+
+      mainQuote.addEventListener('mouseenter', () => triggerQuoteHover(true));
+      mainQuote.addEventListener('mouseleave', () => triggerQuoteHover(false));
+
+      // 4. Hover Handwritten notes -> Wiggle sticker & spotlight quote
+      [noteTop, noteRight].forEach((note) => {
+        note.addEventListener('mouseenter', () => {
+          portraitSticker.style.transform = 'scale(1.04) rotate(1.2deg)';
+          interactiveUnderline.classList.add('glow');
+        });
+        note.addEventListener('mouseleave', () => {
+          portraitSticker.style.transform = 'scale(1) rotate(0deg)';
+          interactiveUnderline.classList.remove('glow');
+        });
+      });
+
+      // 5. Hover Tech Tags -> Highlight corresponding achievements
+      techTags.forEach(tag => {
+        tag.addEventListener('mouseenter', () => {
+          const targetId = tag.getAttribute('data-target');
+          if (targetId) {
+            const item = document.getElementById(targetId);
+            if (item) item.classList.add('achievement-highlight');
+          }
+          tag.style.transform = 'translateY(-2px)';
+        });
+
+        tag.addEventListener('mouseleave', () => {
+          const targetId = tag.getAttribute('data-target');
+          if (targetId) {
+            const item = document.getElementById(targetId);
+            if (item) item.classList.remove('achievement-highlight');
+          }
+          tag.style.transform = 'translateY(0)';
+        });
+      });
+
+      // 6. Close button click effect
+      btnClose.addEventListener('click', () => {
+        const modal = document.querySelector('main');
+        modal.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        modal.style.opacity = '0.7';
+        modal.style.transform = 'scale(0.98)';
+        setTimeout(() => {
+          modal.style.opacity = '1';
+          modal.style.transform = 'scale(1)';
+        }, 300);
+      });
+    });
+  </script>
+<!-- END: InteractiveScripts -->
+</body></html>
