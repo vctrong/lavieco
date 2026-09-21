@@ -1,4 +1,4 @@
-import { TEAM_BACKDROP_VIEWBOX } from "../../../constants/config";
+import { TEAM_BACKDROP_VIEWBOX, TEAM_HOVER_TIMING } from "../../../constants/config";
 import { TEXT } from "../../../constants/text";
 
 /** Deterministic scatter (no Math.random: the markup must match between renders). */
@@ -28,19 +28,24 @@ export function ParticlesBackdrop() {
       preserveAspectRatio="xMidYMid slice"
       className="absolute inset-0 size-full"
     >
-      {RINGS.map((r, index) => (
-        <circle
-          key={r}
-          cx="200"
-          cy="150"
-          r={r}
-          fill="none"
-          strokeWidth="1"
-          style={{ transitionDelay: `${index * 60}ms` }}
-          className="origin-center stroke-emerald-brand/25 transition-transform duration-700 ease-out [transform-box:fill-box] motion-safe:group-hover:scale-[1.14]"
-        />
-      ))}
-      <g className="transition-transform duration-700 ease-out motion-safe:group-hover:-translate-y-2">
+      <g
+        className={`origin-center transition-transform ${TEAM_HOVER_TIMING} [transform-box:fill-box] motion-safe:group-hover:scale-[1.1]`}
+      >
+        {RINGS.map((r) => (
+          <circle
+            key={r}
+            cx="200"
+            cy="150"
+            r={r}
+            fill="none"
+            strokeWidth="1"
+            className="stroke-emerald-brand/25"
+          />
+        ))}
+      </g>
+      <g
+        className={`transition-transform ${TEAM_HOVER_TIMING} motion-safe:group-hover:-translate-y-2`}
+      >
         {PARTICLES.map(({ cx, cy, r }) => (
           <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={r} className="fill-deep-blue/25" />
         ))}

@@ -1,4 +1,4 @@
-import { TEAM_BACKDROP_VIEWBOX } from "../../../constants/config";
+import { TEAM_BACKDROP_VIEWBOX, TEAM_HOVER_TIMING } from "../../../constants/config";
 
 const NODES = [
   [56, 70],
@@ -50,33 +50,33 @@ export function NetworkBackdrop() {
           strokeWidth="1"
         />
       ))}
-      {EDGES.map(([from, to], index) => (
-        <line
-          key={`draw-${from}-${to}`}
-          x1={NODES[from][0]}
-          y1={NODES[from][1]}
-          x2={NODES[to][0]}
-          y2={NODES[to][1]}
-          pathLength="100"
-          strokeWidth="1"
-          style={{ transitionDelay: `${index * 70}ms` }}
-          className="stroke-emerald-brand transition-[stroke-dashoffset] duration-700 ease-out [stroke-dasharray:100] [stroke-dashoffset:100] motion-safe:group-hover:[stroke-dashoffset:0]"
-        />
-      ))}
-      {NODES.map(([cx, cy], index) => (
-        <circle
-          key={`${cx}-${cy}`}
-          cx={cx}
-          cy={cy}
-          r={index === CANARY_NODE ? 4 : 3}
-          style={{ transitionDelay: `${index * 70}ms` }}
-          className={
-            index === CANARY_NODE
-              ? "fill-canary"
-              : "fill-soft-white/50 transition-colors duration-500 group-hover:fill-emerald-brand"
-          }
-        />
-      ))}
+      {NODES.map(([cx, cy], index) =>
+        index === CANARY_NODE ? null : (
+          <circle key={`${cx}-${cy}`} cx={cx} cy={cy} r={3} className="fill-soft-white/50" />
+        ),
+      )}
+      {/* Hover overlay: one group fades in, instead of animating each line and node. */}
+      <g
+        className={`opacity-0 transition-opacity ${TEAM_HOVER_TIMING} group-hover:opacity-100 group-focus-visible:opacity-100`}
+      >
+        {EDGES.map(([from, to]) => (
+          <line
+            key={`lit-${from}-${to}`}
+            x1={NODES[from][0]}
+            y1={NODES[from][1]}
+            x2={NODES[to][0]}
+            y2={NODES[to][1]}
+            className="stroke-emerald-brand"
+            strokeWidth="1"
+          />
+        ))}
+        {NODES.map(([cx, cy], index) =>
+          index === CANARY_NODE ? null : (
+            <circle key={`lit-${cx}-${cy}`} cx={cx} cy={cy} r={3} className="fill-emerald-brand" />
+          ),
+        )}
+      </g>
+      <circle cx={NODES[CANARY_NODE][0]} cy={NODES[CANARY_NODE][1]} r={4} className="fill-canary" />
     </svg>
   );
 }

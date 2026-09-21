@@ -1,4 +1,4 @@
-import { TEAM_BACKDROP_VIEWBOX } from "../../../constants/config";
+import { TEAM_BACKDROP_VIEWBOX, TEAM_HOVER_TIMING } from "../../../constants/config";
 import { TEXT } from "../../../constants/text";
 
 const PIVOT = "[transform-origin:200px_330px]";
@@ -64,7 +64,7 @@ export function PaletteBackdrop() {
       {CHIPS.map((chip) => (
         <g
           key={chip.fill}
-          className={`${PIVOT} ${chip.rest} ${chip.open} transition-transform duration-500 ease-out`}
+          className={`${PIVOT} ${chip.rest} ${chip.open} transition-transform ${TEAM_HOVER_TIMING}`}
         >
           <path
             d={"small" in chip ? SMALL_CHIP_PATH : CHIP_PATH}

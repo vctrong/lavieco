@@ -1,4 +1,4 @@
-import { TEAM_BACKDROP_VIEWBOX } from "../../../constants/config";
+import { TEAM_BACKDROP_VIEWBOX, TEAM_HOVER_TIMING } from "../../../constants/config";
 
 const RADAR = [52, 92, 132] as const;
 
@@ -33,29 +33,31 @@ export function KeyholeBackdrop() {
         </pattern>
       </defs>
       <rect width="400" height="340" fill="url(#team-hex-grid)" />
-      {LIT_HEXES.map(([cx, cy], index) => (
-        <polygon
-          key={`${cx}-${cy}`}
-          points={hexPoints(cx, cy)}
-          style={{ transitionDelay: `${index * 140}ms` }}
-          className="fill-emerald-brand opacity-0 transition-opacity duration-700 group-hover:opacity-25"
-        />
-      ))}
-      {RADAR.map((r, index) => (
-        <circle
-          key={r}
-          cx="200"
-          cy="170"
-          r={r}
-          fill="none"
-          strokeWidth="1"
-          style={{ animationDelay: `${index * 0.5}s` }}
-          className="origin-center stroke-emerald-brand/25 [transform-box:fill-box] motion-safe:group-hover:animate-cutout-ripple"
-        />
-      ))}
+      <g
+        className={`opacity-0 transition-opacity ${TEAM_HOVER_TIMING} group-hover:opacity-100 group-focus-visible:opacity-100`}
+      >
+        {LIT_HEXES.map(([cx, cy]) => (
+          <polygon
+            key={`${cx}-${cy}`}
+            points={hexPoints(cx, cy)}
+            className="fill-emerald-brand/25"
+          />
+        ))}
+        {RADAR.map((r) => (
+          <circle
+            key={r}
+            cx="200"
+            cy="170"
+            r={r}
+            fill="none"
+            strokeWidth="1"
+            className="stroke-emerald-brand/30"
+          />
+        ))}
+      </g>
       <g
         strokeWidth="1.5"
-        className="fill-soft-white/[0.04] stroke-soft-white/25 transition-colors duration-500 group-hover:stroke-emerald-brand"
+        className={`fill-soft-white/[0.04] stroke-soft-white/25 transition-colors ${TEAM_HOVER_TIMING} group-hover:stroke-emerald-brand`}
       >
         <circle cx="200" cy="150" r="30" />
         <path d="M188 172 L182 250 H218 L212 172 Z" />

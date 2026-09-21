@@ -62,9 +62,8 @@
   --shadow-cursor-halo: 0 0 0 2px var(--color-deep-blue);
   --shadow-portrait-halo: 0 0 60px rgba(234, 248, 243, 0.12);
   --drop-shadow-sticker: 0 18px 22px rgba(10, 16, 32, 0.45);
-  /* Team cutouts: follows the figure's alpha; the hover variant lifts further */
+  /* Team cutouts: follows the figure's alpha; static (never transitioned) */
   --drop-shadow-cutout: 0 14px 16px rgba(32, 52, 95, 0.22);
-  --drop-shadow-cutout-hover: 0 26px 24px rgba(32, 52, 95, 0.3);
 
   /*
    * Neon (team cards): a soft Emerald light, never a white core. Every layer is
@@ -92,17 +91,6 @@
   /* Motion */
   --ease-gallery: cubic-bezier(0.22, 1, 0.36, 1);
   --animate-marquee: marquee 32s linear infinite;
-  --animate-cutout-ripple: cutout-ripple 2.6s ease-out infinite;
-  @keyframes cutout-ripple {
-    0% {
-      transform: scale(0.85);
-      opacity: 0.45;
-    }
-    100% {
-      transform: scale(1.35);
-      opacity: 0;
-    }
-  }
   @keyframes marquee {
     0% {
       transform: translateX(0%);

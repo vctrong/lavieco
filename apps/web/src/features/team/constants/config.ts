@@ -1,40 +1,61 @@
 export const TEAM_SECTION_ID = "nguoi-ke-chuyen";
 
 /**
+ * Timing shared by every hover reaction inside a card (design.md §7.1: slow, soft, no
+ * overshoot). Engaging takes 700ms; releasing takes 900ms, so it settles more slowly
+ * than it lifted. Combine with an explicit `transition-[...]` property list.
+ */
+export const TEAM_HOVER_TIMING =
+  "duration-[900ms] ease-gallery group-hover:duration-[700ms] group-focus-visible:duration-[700ms] motion-reduce:transition-none";
+
+/** Small offsets between layers (figure 0ms) so the lift has depth without falling apart. */
+export const TEAM_LAYER_DELAY = {
+  art: "delay-[40ms]",
+  shadow: "delay-[60ms]",
+} as const;
+
+/**
  * Staggered card layout per member (in order), so the grid reads like uneven
  * steps (design.md §4.2). `arch` is the arch height (shorter on md, where the columns are narrow); `tilt` is the hover lean of the
- * cutout (odd cards left, even cards right). Full class names so Tailwind can see them.
+ * cutout (odd cards left, even cards right); `tone` is the backdrop brightness for the
+ * neon. Full class names so Tailwind can see them.
  */
 export const TEAM_CARD_STYLES = [
   {
     card: "",
     arch: "h-[320px] md:h-[230px] lg:h-[320px]",
-    tilt: "motion-safe:group-hover:-rotate-[1.5deg]",
+    tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
+    tone: "dark",
   },
   {
     card: "md:mt-10",
     arch: "h-[290px] md:h-[210px] lg:h-[290px]",
-    tilt: "motion-safe:group-hover:rotate-[1.5deg]",
+    tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
+    tone: "light",
   },
   {
     card: "",
     arch: "h-[340px] md:h-[245px] lg:h-[340px]",
-    tilt: "motion-safe:group-hover:-rotate-[1.5deg]",
+    tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
+    tone: "light",
   },
   {
     card: "md:mt-4",
     arch: "h-[280px] md:h-[200px] lg:h-[280px]",
-    tilt: "motion-safe:group-hover:rotate-[1.5deg]",
+    tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
+    tone: "light",
   },
   {
     card: "md:mt-12",
     arch: "h-[320px] md:h-[230px] lg:h-[320px]",
-    tilt: "motion-safe:group-hover:-rotate-[1.5deg]",
+    tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
+    tone: "light",
   },
   {
     card: "md:mt-4",
     arch: "h-[290px] md:h-[210px] lg:h-[290px]",
-    tilt: "motion-safe:group-hover:rotate-[1.5deg]",
+    tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
+    tone: "dark",
   },
 ] as const;
 

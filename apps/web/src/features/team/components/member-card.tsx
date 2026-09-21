@@ -10,6 +10,8 @@ import {
   CUTOUT_HEIGHT_PERCENT,
   TEAM_BACKDROP_BG,
   TEAM_CARD_STYLES,
+  TEAM_HOVER_TIMING,
+  TEAM_LAYER_DELAY,
 } from "../constants/config";
 import { getFullName, getPhotoAlt } from "../constants/members";
 import { TEXT } from "../constants/text";
@@ -27,8 +29,11 @@ type MemberCardProps = {
 
 /**
  * Portrait arch card. The cutout rises above the arch (head and shoulders break its
- * outline) while the lower body stays inside. The arch is a button that opens the
- * storyteller's profile. All hover reactions are CSS, driven by the `group` class.
+ * outline) while the lower body stays inside.
+ *
+ * The whole card is one `<button>` that opens the storyteller's profile, and that
+ * button is also the `group`: it never moves, so the hover hit area cannot flicker.
+ * Only its inner layers animate, all by CSS (transform and opacity, never layout).
  */
 export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
   const t = TEXT.vi;
@@ -36,7 +41,7 @@ export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
   const name = getFullName(member);
   const scale = member.photoScale ?? 1;
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const archRef = useRef<HTMLDivElement>(null);
+  const archRef = useRef<HTMLSpanElement>(null);
 
   const measure = (): Rect => {
     const box = archRef.current?.getBoundingClientRect();
@@ -46,101 +51,130 @@ export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
   };
 
   return (
-    <li className={cn("group relative flex flex-col pt-16", style.card)}>
+    <li className={cn("relative", style.card)}>
       <button
         ref={buttonRef}
         type="button"
         aria-label={`${t.openAriaPrefix} ${name}`}
         onClick={() => buttonRef.current && onOpen(member, buttonRef.current, measure)}
-        className="block w-full rounded-t-full text-left focus-visible:outline-offset-4"
+        className="group relative block w-full pt-16 text-left outline-none"
       >
-        <div
+        <span
           ref={archRef}
           style={{ visibility: active ? "hidden" : "visible" }}
-          className={cn("relative w-full", style.arch)}
+          className={cn("relative block w-full", style.arch)}
         >
-          {/* 1 · Arch base: gradient and backdrop art. The only layer that clips. */}
-          <div
+          {/* Lift shadow: a separate layer that fades in (no shadow transition on the photo). */}
+          <span
+            aria-hidden="true"
             className={cn(
-              "absolute inset-0 overflow-hidden rounded-t-full",
+              "pointer-events-none absolute inset-0 rounded-t-full opacity-0 shadow-ambient-hover transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+              TEAM_HOVER_TIMING,
+              TEAM_LAYER_DELAY.shadow,
+            )}
+          />
+
+          {/* 1 · Arch base: gradient and backdrop art. The only layer that clips. */}
+          <span
+            className={cn(
+              "absolute inset-0 block overflow-hidden rounded-t-full",
               TEAM_BACKDROP_BG[member.backdrop],
             )}
           >
             <Backdrop name={member.backdrop} />
-          </div>
-
-          {/* Ripple behind the figure, only while hovering. */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-t-full border border-emerald-brand/40 opacity-0 motion-safe:group-hover:animate-cutout-ripple"
-          />
+          </span>
 
           {/* 2 · Hairline and mat-board, over the base but under the figure. */}
           <span
             aria-hidden="true"
-            className="pointer-events-none absolute inset-0 rounded-t-full border border-hairline transition-colors duration-300 group-hover:border-emerald-brand/40"
+            className={cn(
+              "pointer-events-none absolute inset-0 rounded-t-full border border-hairline transition-colors group-hover:border-emerald-brand/40 group-focus-visible:border-emerald-brand/40",
+              TEAM_HOVER_TIMING,
+            )}
           />
           <span
             aria-hidden="true"
             className="pointer-events-none absolute inset-2 rounded-t-full border border-mint-mist/70"
           />
 
-          {/* 3–4 · Figure. Clip trims only the bottom, so the head and shoulders spill out. */}
-          <div className="pointer-events-none absolute inset-0 [clip-path:inset(-60%_-25%_0_-25%)]">
-            <div
-              style={{
-                height: `calc(${CUTOUT_HEIGHT_PERCENT * scale}% + ${CUTOUT_BLEED_PX}px)`,
-                bottom: -CUTOUT_BLEED_PX,
-                translate: member.photoOffsetY ? `0 ${member.photoOffsetY}%` : undefined,
-              }}
-              className={cn(
-                "absolute inset-x-0 flex origin-bottom justify-center drop-shadow-cutout transition-[transform,filter] duration-500 ease-out",
-                "motion-safe:group-hover:-translate-y-2 motion-safe:group-hover:scale-[1.04] group-hover:drop-shadow-cutout-hover",
-                style.tilt,
-              )}
-            >
-              <Image
-                src={member.photo.src}
-                width={member.photo.width}
-                height={member.photo.height}
-                alt={getPhotoAlt(member)}
-                sizes="(min-width: 768px) 30vw, 80vw"
-                className="h-full w-auto max-w-none"
-              />
-            </div>
-          </div>
+          {/*
+           * 3 · Figure. The window is a plain rectangle with `overflow: hidden` that
+           * extends 25% beyond the arch on each side and 60% above it, so it trims only
+           * the bottom (rectangular clip: no mask, cheap to animate). Inside it, a box
+           * mirrors the arch so the percentages below are relative to the arch.
+           */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-x-1/4 -top-3/5 bottom-0 block overflow-hidden"
+          >
+            <span className="absolute inset-x-[16.6667%] bottom-0 top-[37.5%] block">
+              <span
+                style={{
+                  height: `calc(${CUTOUT_HEIGHT_PERCENT * scale}% + ${CUTOUT_BLEED_PX}px)`,
+                  bottom: -CUTOUT_BLEED_PX,
+                  transform: member.photoOffsetY
+                    ? `translateY(${member.photoOffsetY}%)`
+                    : undefined,
+                }}
+                className={cn(
+                  "absolute inset-x-0 flex origin-bottom justify-center transition-[translate,scale,rotate] group-hover:will-change-transform",
+                  TEAM_HOVER_TIMING,
+                  "motion-safe:group-hover:-translate-y-[6px] motion-safe:group-hover:scale-[1.025] motion-safe:group-focus-visible:-translate-y-[6px] motion-safe:group-focus-visible:scale-[1.025]",
+                  style.tilt,
+                )}
+              >
+                <Image
+                  src={member.photo.src}
+                  width={member.photo.width}
+                  height={member.photo.height}
+                  alt={getPhotoAlt(member)}
+                  sizes="(min-width: 768px) 30vw, 80vw"
+                  draggable={false}
+                  className="h-full w-auto max-w-none drop-shadow-cutout"
+                />
+              </span>
+            </span>
+          </span>
 
           <PearlDot
             size="lg"
             tone="canary"
-            className="absolute left-[62%] top-0 -translate-y-3 scale-75 opacity-0 transition-all duration-300 group-hover:scale-100 group-hover:opacity-100"
+            className={cn(
+              "absolute left-[62%] top-0 -translate-y-3 scale-75 opacity-0 transition-[opacity,scale] group-hover:scale-100 group-hover:opacity-100 group-focus-visible:scale-100 group-focus-visible:opacity-100",
+              TEAM_HOVER_TIMING,
+            )}
           />
-          <span className="absolute inset-x-0 bottom-3 mx-auto w-fit rounded-full bg-deep-blue/90 px-3 py-1 text-[11px] font-medium text-soft-white opacity-0 shadow-md transition-opacity duration-300 group-focus-within:opacity-100 group-hover:opacity-100">
+          <span
+            className={cn(
+              "absolute inset-x-0 bottom-3 mx-auto block w-fit rounded-full bg-deep-blue/90 px-3 py-1 text-[11px] font-medium text-soft-white opacity-0 shadow-md transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+              TEAM_HOVER_TIMING,
+            )}
+          >
             {t.openPill}
           </span>
-        </div>
-      </button>
+        </span>
 
-      <div className="mt-3 border-t border-hairline pb-1 pt-3">
-        <div className="mb-1.5 flex items-center justify-between gap-2">
-          <span className="font-mono text-[11px] font-semibold text-deep-blue/80 transition-colors duration-300 group-hover:text-deep-blue">
-            {t.profile.catalogueNumber} {member.no} · {name}
+        <span className="mt-3 block border-t border-hairline pb-1 pt-3">
+          <span className="mb-1.5 flex items-center justify-between gap-2">
+            <span className="font-mono text-[11px] font-semibold text-deep-blue/80">
+              {t.profile.catalogueNumber} {member.no} · {name}
+            </span>
+            <PearlDot size="sm" tone="emerald-flat" />
           </span>
-          <PearlDot
-            size="sm"
-            tone="emerald-flat"
-            className="motion-safe:group-hover:animate-pulse"
-          />
-        </div>
-        <p className="mb-1 font-mono text-[10px] uppercase tracking-museum text-emerald-brand">
-          {member.roleShort}
-        </p>
-        <div className="overflow-hidden">
-          <p className="max-h-0 text-xs leading-relaxed text-charcoal/70 opacity-0 transition-all duration-300 ease-out group-focus-within:max-h-20 group-focus-within:opacity-100 group-hover:max-h-20 group-hover:opacity-100 [@media(hover:none)]:max-h-20 [@media(hover:none)]:opacity-100">
+          <span className="mb-1 block font-mono text-[10px] uppercase tracking-museum text-emerald-brand">
+            {member.roleShort}
+          </span>
+          {/* Fixed two-line slot: fades in, never changes the card's height (no layout shift). */}
+          <span
+            className={cn(
+              "line-clamp-2 block h-9 text-xs leading-relaxed text-charcoal/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100",
+              TEAM_HOVER_TIMING,
+            )}
+          >
             {member.summary}
-          </p>
-        </div>
-      </div>
+          </span>
+        </span>
+      </button>
     </li>
   );
 }
