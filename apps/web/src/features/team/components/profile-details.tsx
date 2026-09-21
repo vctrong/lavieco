@@ -1,14 +1,14 @@
 "use client";
 
 import { motion, type Variants } from "motion/react";
-import type { CSSProperties } from "react";
 
 import { cn } from "@lavieco/ui";
 
 import { CONTACT_ICONS } from "../constants/contact-channels";
-import { CLOSE_MOTION, EASE, OPEN_MOTION } from "../constants/config";
+import { CLOSE_MOTION, EASE, OPEN_MOTION, PROFILE_SCALE } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { CONTACT_CHANNELS, type TeamMember } from "../types";
+import { HandwrittenNote } from "./handwritten-note";
 import type { ProfilePhase } from "./profile-portrait";
 
 type ProfileDetailsProps = {
@@ -20,7 +20,7 @@ type ProfileDetailsProps = {
 
 function buildVariants(reduced: boolean) {
   const item: Variants = {
-    hidden: { opacity: 0, y: reduced ? 0 : 16 },
+    hidden: { opacity: 0, y: reduced ? 0 : 12 },
     show: {
       opacity: 1,
       y: 0,
@@ -40,9 +40,16 @@ function buildVariants(reduced: boolean) {
   return { item, container };
 }
 
-const LABEL_CLASS = "text-[11px] font-medium uppercase tracking-widest text-mint-mist/70";
+const LABEL_CLASS = cn(
+  "font-medium uppercase tracking-widest text-mint-mist/70",
+  PROFILE_SCALE.label,
+);
 
-/** Right column: name, role, quote, bio, story, facts, skills, achievements, contacts. */
+/**
+ * Text column: name, role, quote, bio, story, facts, skills, achievements, contacts.
+ * Two sub-columns when the column is wide enough (container query on `text`), so the
+ * profile stays short enough to fit the screen.
+ */
 export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetailsProps) {
   const t = TEXT.vi.profile;
   const { item, container } = buildVariants(reduced);
@@ -74,26 +81,27 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
     return href ? [{ channel, href }] : [];
   });
 
-  const columns = facts.map((fact) => (fact.key === "study" ? "1.4fr" : "1fr")).join(" ");
-
   return (
     <motion.div
       data-keep-open
       variants={container}
       initial="hidden"
       animate={phase === "closing" ? "exit" : "show"}
-      className="flex flex-col gap-6 pt-2 text-soft-white"
+      className={cn("flex min-h-full flex-col justify-center text-soft-white", PROFILE_SCALE.gap)}
     >
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-[clamp(0.15rem,0.8cqh,0.5rem)]">
         <motion.p
           variants={item}
-          className="text-xs font-semibold uppercase tracking-[0.24em] text-canary md:text-sm"
+          className={cn(
+            "font-semibold uppercase tracking-[0.24em] text-canary",
+            PROFILE_SCALE.kicker,
+          )}
         >
           {t.kicker}
         </motion.p>
         <h2
           id={nameId}
-          className="text-balance text-5xl leading-[1.08] text-soft-white md:text-6xl lg:text-[68px]"
+          className={cn("text-balance leading-[1.08] text-soft-white", PROFILE_SCALE.name)}
         >
           {member.nameLines.map((line) => (
             <motion.span
@@ -107,11 +115,14 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
         </h2>
         <motion.p
           variants={item}
-          className="flex flex-wrap items-center gap-x-2.5 gap-y-1 pt-1 text-xs uppercase tracking-wider text-mint-mist/80 md:text-sm"
+          className={cn(
+            "flex flex-wrap items-center gap-x-2 gap-y-0.5 uppercase tracking-wider text-mint-mist/80",
+            PROFILE_SCALE.role,
+          )}
         >
           <span
             aria-hidden="true"
-            className="size-2.5 rounded-full bg-emerald-brand shadow-glow-emerald"
+            className="size-2 rounded-full bg-emerald-brand shadow-glow-emerald"
           />
           <span className="font-medium text-emerald-brand">{member.roleShort}</span>
           <span aria-hidden="true">·</span>
@@ -119,127 +130,182 @@ export function ProfileDetails({ member, phase, reduced, nameId }: ProfileDetail
         </motion.p>
       </div>
 
-      <motion.blockquote
-        variants={item}
-        className="font-display text-2xl italic leading-snug text-soft-white md:text-3xl lg:text-[31px]"
+      <div
+        className={cn(
+          "grid grid-cols-1 @xl/text:grid-cols-2 @xl/text:items-start",
+          PROFILE_SCALE.gap,
+          "@xl/text:gap-x-[clamp(1rem,2.6cqh,2rem)]",
+        )}
       >
-        <p>
-          {quoteBefore}
-          {hasHighlight ? (
-            <span className="relative inline-block font-medium">
-              {member.quoteHighlight}
-              <motion.span
-                aria-hidden="true"
-                className="absolute inset-x-0 -bottom-0.5 h-[3px] origin-left rounded-full bg-canary"
-                initial={{ scaleX: reduced ? 1 : 0 }}
-                animate={{ scaleX: 1 }}
-                transition={{
-                  delay: reduced ? 0 : underlineDelay,
-                  duration: reduced ? OPEN_MOTION.reduced : OPEN_MOTION.underlineDuration,
-                  ease: EASE,
-                }}
-              />
-            </span>
-          ) : null}
-          {quoteAfter}
-        </p>
-      </motion.blockquote>
-
-      <motion.p
-        variants={item}
-        className="text-base font-light leading-relaxed text-mint-mist/90 md:text-[16.5px]"
-      >
-        {member.bio}
-      </motion.p>
-
-      <motion.div
-        variants={item}
-        className="rounded-r-xl border border-l-4 border-soft-white/10 border-l-canary bg-soft-white/5 p-5 md:p-6"
-      >
-        <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.2em] text-canary md:text-xs">
-          {t.storyTitle}
-        </p>
-        <p className="font-display text-base italic leading-relaxed text-soft-white/95 md:text-lg">
-          {member.story}
-        </p>
-      </motion.div>
-
-      {facts.length > 0 ? (
-        <motion.dl
-          variants={item}
-          style={{ "--facts-columns": columns } as CSSProperties}
-          className={cn(
-            "grid grid-cols-1 divide-y divide-soft-white/10 overflow-hidden rounded-xl border border-soft-white/15 bg-deep-blue/40",
-            "md:divide-x md:divide-y-0 md:[grid-template-columns:var(--facts-columns)]",
-          )}
-        >
-          {facts.map((fact) => (
-            <div key={fact.key} className="flex flex-col justify-center p-4">
-              <dt className={cn(LABEL_CLASS, "mb-1")}>{fact.label}</dt>
-              <dd className="text-sm font-semibold text-soft-white">{fact.value}</dd>
-              {fact.sub ? (
-                <dd className="mt-0.5 text-xs font-light text-mint-mist/70">{fact.sub}</dd>
+        <div className={cn("flex flex-col", PROFILE_SCALE.gap)}>
+          <motion.blockquote
+            variants={item}
+            className={cn("font-display italic leading-snug text-soft-white", PROFILE_SCALE.quote)}
+          >
+            <p>
+              {quoteBefore}
+              {hasHighlight ? (
+                <span className="relative inline-block font-medium">
+                  {member.quoteHighlight}
+                  <motion.span
+                    aria-hidden="true"
+                    className="absolute inset-x-0 -bottom-0.5 h-[3px] origin-left rounded-full bg-canary"
+                    initial={{ scaleX: reduced ? 1 : 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{
+                      delay: reduced ? 0 : underlineDelay,
+                      duration: reduced ? OPEN_MOTION.reduced : OPEN_MOTION.underlineDuration,
+                      ease: EASE,
+                    }}
+                  />
+                </span>
               ) : null}
-            </div>
-          ))}
-        </motion.dl>
-      ) : null}
+              {quoteAfter}
+            </p>
+          </motion.blockquote>
 
-      {member.skills && member.skills.length > 0 ? (
-        <motion.ul variants={item} aria-label={t.skillsLabel} className="flex flex-wrap gap-2.5">
-          {member.skills.map((skill) => (
-            <li
-              key={skill.label}
-              data-achievement-id={skill.achievementId}
-              className="whitespace-nowrap rounded-full border border-soft-white/20 bg-deep-blue/50 px-4 py-1.5 text-xs font-medium text-mint-mist"
+          <motion.p
+            variants={item}
+            className={cn("font-light leading-relaxed text-mint-mist/90", PROFILE_SCALE.body)}
+          >
+            {member.bio}
+          </motion.p>
+
+          <motion.div
+            variants={item}
+            className="rounded-r-xl border border-l-4 border-soft-white/10 border-l-canary bg-soft-white/5 p-[clamp(0.6rem,1.9cqh,1.25rem)]"
+          >
+            <p
+              className={cn(
+                "mb-1 font-bold uppercase tracking-[0.2em] text-canary",
+                PROFILE_SCALE.label,
+              )}
             >
-              {skill.label}
-            </li>
-          ))}
-        </motion.ul>
-      ) : null}
+              {t.storyTitle}
+            </p>
+            <p
+              className={cn(
+                "font-display italic leading-relaxed text-soft-white/95",
+                PROFILE_SCALE.story,
+              )}
+            >
+              {member.story}
+            </p>
+          </motion.div>
 
-      {member.achievements && member.achievements.length > 0 ? (
-        <motion.div variants={item} className="flex flex-col gap-2.5">
-          <p className={cn(LABEL_CLASS, "font-semibold")}>{t.achievementsTitle}</p>
-          <ul className="flex flex-col gap-2 text-sm text-soft-white">
-            {member.achievements.map((achievement) => (
-              <li
-                key={achievement.id}
-                data-achievement-id={achievement.id}
-                className="flex items-start gap-3"
-              >
-                <span
-                  aria-hidden="true"
-                  className="mt-1.5 size-2 shrink-0 rounded-full bg-emerald-brand"
+          {member.notes && member.notes.length > 0 ? (
+            <motion.div variants={item} className="flex flex-col gap-[clamp(0.25rem,1cqh,0.6rem)]">
+              {member.notes.slice(0, 2).map((note) => (
+                <HandwrittenNote
+                  key={note.side}
+                  note={note}
+                  animated={!reduced}
+                  closing={phase === "closing"}
                 />
-                <span>{achievement.text}</span>
-              </li>
-            ))}
-          </ul>
-        </motion.div>
-      ) : null}
+              ))}
+            </motion.div>
+          ) : null}
+        </div>
 
-      {contactLinks.length > 0 ? (
-        <motion.ul variants={item} aria-label={t.contactsLabel} className="flex flex-wrap gap-3">
-          {contactLinks.map(({ channel, href }) => {
-            const Icon = CONTACT_ICONS[channel];
-            return (
-              <li key={channel}>
-                <a
-                  href={href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label={TEXT.vi.contactLabels[channel]}
-                  className="grid size-11 place-items-center rounded-full border border-soft-white/25 text-mint-mist transition-colors hover:border-canary hover:text-canary"
+        <div className={cn("flex flex-col", PROFILE_SCALE.gap)}>
+          {facts.length > 0 ? (
+            <motion.dl
+              variants={item}
+              className="divide-y divide-soft-white/10 overflow-hidden rounded-xl border border-soft-white/15 bg-deep-blue/40"
+            >
+              {facts.map((fact) => (
+                <div
+                  key={fact.key}
+                  className="grid grid-cols-[4.5rem_minmax(0,1fr)] items-baseline gap-x-3 px-3 py-[clamp(0.3rem,1cqh,0.6rem)]"
                 >
-                  <Icon aria-hidden="true" size={18} />
-                </a>
-              </li>
-            );
-          })}
-        </motion.ul>
-      ) : null}
+                  <dt className={LABEL_CLASS}>{fact.label}</dt>
+                  <dd className={cn("font-semibold text-soft-white", PROFILE_SCALE.chip)}>
+                    {fact.value}
+                    {fact.sub ? (
+                      <span className="block font-light text-mint-mist/70">{fact.sub}</span>
+                    ) : null}
+                  </dd>
+                </div>
+              ))}
+            </motion.dl>
+          ) : null}
+
+          {member.skills && member.skills.length > 0 ? (
+            <motion.ul
+              variants={item}
+              aria-label={t.skillsLabel}
+              className="flex flex-wrap gap-[clamp(0.3rem,1cqh,0.6rem)]"
+            >
+              {member.skills.map((skill) => (
+                <li
+                  key={skill.label}
+                  data-achievement-id={skill.achievementId}
+                  className={cn(
+                    "whitespace-nowrap rounded-full border border-soft-white/20 bg-deep-blue/50 px-3 py-[clamp(0.15rem,0.7cqh,0.375rem)] font-medium text-mint-mist",
+                    PROFILE_SCALE.chip,
+                  )}
+                >
+                  {skill.label}
+                </li>
+              ))}
+            </motion.ul>
+          ) : null}
+
+          {member.achievements && member.achievements.length > 0 ? (
+            <motion.div
+              variants={item}
+              className="flex flex-col gap-[clamp(0.25rem,0.9cqh,0.6rem)]"
+            >
+              <p className={cn(LABEL_CLASS, "font-semibold")}>{t.achievementsTitle}</p>
+              <ul
+                className={cn(
+                  "flex flex-col gap-[clamp(0.2rem,0.8cqh,0.5rem)] text-soft-white",
+                  PROFILE_SCALE.chip,
+                )}
+              >
+                {member.achievements.map((achievement) => (
+                  <li
+                    key={achievement.id}
+                    data-achievement-id={achievement.id}
+                    className="flex items-start gap-2.5"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-[0.45em] size-1.5 shrink-0 rounded-full bg-emerald-brand"
+                    />
+                    <span>{achievement.text}</span>
+                  </li>
+                ))}
+              </ul>
+            </motion.div>
+          ) : null}
+
+          {contactLinks.length > 0 ? (
+            <motion.ul
+              variants={item}
+              aria-label={t.contactsLabel}
+              className="flex flex-wrap gap-2.5"
+            >
+              {contactLinks.map(({ channel, href }) => {
+                const Icon = CONTACT_ICONS[channel];
+                return (
+                  <li key={channel}>
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={TEXT.vi.contactLabels[channel]}
+                      className="grid size-[clamp(2rem,4.6cqh,2.75rem)] place-items-center rounded-full border border-soft-white/25 text-mint-mist transition-colors hover:border-canary hover:text-canary"
+                    >
+                      <Icon aria-hidden="true" size={16} />
+                    </a>
+                  </li>
+                );
+              })}
+            </motion.ul>
+          ) : null}
+        </div>
+      </div>
     </motion.div>
   );
 }

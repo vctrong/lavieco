@@ -18,14 +18,11 @@ import { getFullName, getPhotoAlt } from "../constants/members";
 import { TEXT } from "../constants/text";
 import type { TeamMember } from "../types";
 import { Backdrop } from "./illustrations/backdrops";
-import type { Rect } from "./profile-portrait";
 
 type MemberCardProps = {
   member: TeamMember;
   index: number;
-  /** True while this member's profile is open: the arch is hidden so it is not doubled. */
-  active: boolean;
-  onOpen: (member: TeamMember, trigger: HTMLElement, getOrigin: () => Rect) => void;
+  onOpen: (member: TeamMember, trigger: HTMLElement) => void;
 };
 
 /**
@@ -36,21 +33,13 @@ type MemberCardProps = {
  * button is also the `group`: it never moves, so the hover hit area cannot flicker.
  * Only its inner layers animate, all by CSS (transform and opacity, never layout).
  */
-export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
+export function MemberCard({ member, index, onOpen }: MemberCardProps) {
   const t = TEXT.vi;
   const style = TEAM_CARD_STYLES[index] ?? TEAM_CARD_STYLES[0];
   const neon = TEAM_NEON[style.tone];
   const name = getFullName(member);
   const scale = member.photoScale ?? 1;
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const archRef = useRef<HTMLSpanElement>(null);
-
-  const measure = (): Rect => {
-    const box = archRef.current?.getBoundingClientRect();
-    return box
-      ? { left: box.left, top: box.top, width: box.width, height: box.height }
-      : { left: 0, top: 0, width: 0, height: 0 };
-  };
 
   return (
     <li className={cn("relative", style.card)}>
@@ -58,15 +47,11 @@ export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
         ref={buttonRef}
         type="button"
         aria-label={`${t.openAriaPrefix} ${name}`}
-        onClick={() => buttonRef.current && onOpen(member, buttonRef.current, measure)}
+        onClick={() => buttonRef.current && onOpen(member, buttonRef.current)}
         data-cursor="view"
         className="group relative block w-full pt-16 text-left outline-none"
       >
-        <span
-          ref={archRef}
-          style={{ visibility: active ? "hidden" : "visible" }}
-          className={cn("relative block w-full", style.arch)}
-        >
+        <span className={cn("relative block w-full", style.arch)}>
           {/* Lift shadow and neon halo: separate layers that only fade in (nothing on the photo). */}
           <span
             aria-hidden="true"

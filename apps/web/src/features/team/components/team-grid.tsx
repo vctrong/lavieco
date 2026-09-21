@@ -5,7 +5,6 @@ import { useCallback, useState } from "react";
 import type { TeamMember } from "../types";
 import { MemberCard } from "./member-card";
 import { ProfileModal, type ProfileSession } from "./profile-modal";
-import type { Rect } from "./profile-portrait";
 
 type TeamGridProps = {
   members: readonly TeamMember[];
@@ -15,12 +14,9 @@ type TeamGridProps = {
 export function TeamGrid({ members }: TeamGridProps) {
   const [session, setSession] = useState<ProfileSession | null>(null);
 
-  const handleOpen = useCallback(
-    (member: TeamMember, trigger: HTMLElement, getOrigin: () => Rect) => {
-      setSession({ member, trigger, getOrigin });
-    },
-    [],
-  );
+  const handleOpen = useCallback((member: TeamMember, trigger: HTMLElement) => {
+    setSession({ member, trigger });
+  }, []);
 
   const handleClosed = useCallback(() => {
     const trigger = session?.trigger;
@@ -33,13 +29,7 @@ export function TeamGrid({ members }: TeamGridProps) {
     <>
       <ul className="grid grid-cols-1 items-start gap-8 md:grid-cols-3 lg:gap-10">
         {members.map((member, index) => (
-          <MemberCard
-            key={member.slug}
-            member={member}
-            index={index}
-            active={session?.member.slug === member.slug}
-            onOpen={handleOpen}
-          />
+          <MemberCard key={member.slug} member={member} index={index} onOpen={handleOpen} />
         ))}
       </ul>
       {session ? (

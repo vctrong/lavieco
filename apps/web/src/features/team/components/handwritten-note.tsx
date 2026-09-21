@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 
 import { cn } from "@lavieco/ui";
 
-import { CLOSE_MOTION, OPEN_MOTION } from "../constants/config";
+import { CLOSE_MOTION, OPEN_MOTION, PROFILE_SCALE } from "../constants/config";
 import type { TeamNote } from "../types";
 import { NoteArrow } from "./illustrations/note-arrow";
 
@@ -16,7 +16,7 @@ type HandwrittenNoteProps = {
 };
 
 /**
- * A handwritten margin note: the text is "written" left to right (clip-path), its
+ * A handwritten margin note (sits in the text column, on the dark panel): the text is "written" left to right (clip-path), its
  * arrow draws itself, then the whole note sways very slightly.
  */
 export function HandwrittenNote({ note, animated, closing }: HandwrittenNoteProps) {
@@ -30,10 +30,9 @@ export function HandwrittenNote({ note, animated, closing }: HandwrittenNoteProp
       animate={{ opacity: closing ? 0 : 1 }}
       transition={{ duration: CLOSE_MOTION.content }}
       className={cn(
-        "absolute z-20 font-handwriting leading-[1.7] tracking-wide text-canary transition-colors hover:text-emerald-brand",
-        isLeft
-          ? "-top-2 left-0 max-w-[15rem] text-base md:left-2 md:max-w-[17.5rem] md:text-lg"
-          : "right-0 top-24 max-w-[11rem] text-right text-lg md:right-2 md:top-28 md:max-w-[13rem] md:text-xl",
+        "font-handwriting leading-[1.5] tracking-wide text-canary transition-colors hover:text-emerald-brand",
+        PROFILE_SCALE.note,
+        !isLeft && "text-right",
       )}
     >
       <motion.div

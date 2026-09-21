@@ -97,26 +97,44 @@ export const CUTOUT_HEIGHT_PERCENT = 118;
 /** How far the cutout extends below the arch (clipped) so a hover lift never shows its bottom edge. */
 export const CUTOUT_BLEED_PX = 14;
 
-/** Bottom corner radius of the grid photo arch (top corners are a half circle). */
-export const GRID_PHOTO_BOTTOM_RADIUS = 0;
-
-/** Corner radius of the portrait frame inside the open profile. */
-export const PROFILE_FRAME_RADIUS = 36;
-
-/** Shared easing for every profile transition. */
+/** Shared easing for every profile transition (same curve as `--ease-gallery`). */
 export const EASE = [0.22, 1, 0.36, 1] as const;
 
-/** Timings in seconds. Opening ≈ 1.4s (usable from ≈ 0.6s); closing ≈ 0.45s. */
+/**
+ * Profile panel size. Height is definite (so the two columns can share it) and never
+ * exceeds the viewport minus a 1rem margin on each side; `svh` so mobile browser bars
+ * do not push it off screen.
+ */
+export const PROFILE_PANEL_SIZE =
+  "h-[min(calc(100svh-2rem),50rem)] w-[min(calc(100vw-2rem),76rem)]";
+
+/**
+ * Type and spacing of the profile scale with the height of the text column (`cqh`, a
+ * container query unit), so the whole profile fits without scrolling wherever it can. Full class names for Tailwind.
+ */
+export const PROFILE_SCALE = {
+  pad: "p-[clamp(1rem,3.4cqh,2.5rem)]",
+  gap: "gap-[clamp(0.5rem,1.9cqh,1.25rem)]",
+  kicker: "text-[clamp(0.6rem,1.4cqh,0.8rem)]",
+  name: "text-[clamp(1.6rem,5.4cqh,3.6rem)]",
+  role: "text-[clamp(0.6rem,1.4cqh,0.8rem)]",
+  quote: "text-[clamp(1rem,2.9cqh,1.9rem)]",
+  body: "text-[clamp(0.75rem,1.8cqh,1rem)]",
+  story: "text-[clamp(0.75rem,1.8cqh,1.05rem)]",
+  label: "text-[clamp(0.55rem,1.25cqh,0.7rem)]",
+  chip: "text-[clamp(0.65rem,1.45cqh,0.8rem)]",
+  note: "text-[clamp(0.85rem,2.1cqh,1.15rem)]",
+} as const;
+
+/** Timings in seconds. Opening ≈ 1s (usable from ≈ 0.4s); closing 0.5s. */
 export const OPEN_MOTION = {
-  scrim: 0.45,
-  frame: 0.65,
-  stickerDelay: 0.35,
-  stickerDuration: 0.4,
-  textStart: 0.45,
-  stagger: 0.07,
+  scrim: 0.5,
+  panel: 0.7,
+  textStart: 0.25,
+  stagger: 0.06,
   item: 0.5,
-  underlineDuration: 0.9,
-  notesStart: 1.0,
+  underlineDuration: 0.8,
+  notesStart: 0.7,
   noteWrite: 0.6,
   noteArrow: 0.5,
   reduced: 0.2,
@@ -124,7 +142,6 @@ export const OPEN_MOTION = {
 
 export const CLOSE_MOTION = {
   content: 0.15,
-  frameDelay: 0.1,
-  frame: 0.35,
-  scrim: 0.45,
+  panel: 0.5,
+  scrim: 0.5,
 } as const;
