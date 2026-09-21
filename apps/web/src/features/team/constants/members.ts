@@ -110,6 +110,7 @@ export const MEMBERS: readonly TeamMember[] = [
     photo: cutout("ngo-chuc-quynh", 1065),
     sticker: sticker("ngo-chuc-quynh", 1075),
     backdrop: "particles",
+    photoScale: 0.98,
     draft: true,
   },
   {
@@ -134,7 +135,7 @@ export const MEMBERS: readonly TeamMember[] = [
     photo: cutout("le-do-minh-vy", 801),
     sticker: sticker("le-do-minh-vy", 821),
     backdrop: "palette",
-    photoScale: 0.93,
+    photoScale: 0.97,
     draft: true,
   },
   {
@@ -159,7 +160,7 @@ export const MEMBERS: readonly TeamMember[] = [
     photo: cutout("nguyen-dinh-xuan-anh", 740),
     sticker: sticker("nguyen-dinh-xuan-anh", 753),
     backdrop: "stairs",
-    photoScale: 0.96,
+    photoScale: 0.98,
     draft: true,
   },
   {
@@ -184,7 +185,7 @@ export const MEMBERS: readonly TeamMember[] = [
     photo: cutout("tran-ngoc-thi", 958),
     sticker: sticker("tran-ngoc-thi", 979),
     backdrop: "story",
-    photoScale: 0.86,
+    photoScale: 0.97,
     draft: true,
   },
   {
@@ -209,7 +210,7 @@ export const MEMBERS: readonly TeamMember[] = [
     photo: cutout("tieu-phung", 1328),
     sticker: sticker("tieu-phung", 1327),
     backdrop: "keyhole",
-    photoScale: 0.88,
+    photoScale: 0.93,
     draft: true,
   },
 ];

@@ -8,8 +8,11 @@ import { PearlDot, cn } from "@lavieco/ui";
 import {
   CUTOUT_BLEED_PX,
   CUTOUT_HEIGHT_PERCENT,
+  TEAM_ARCH_CLASS,
   TEAM_BACKDROP_BG,
   TEAM_CARD_STYLES,
+  TEAM_HEADLIGHT_CLASS,
+  TEAM_HEADROOM_CLASS,
   TEAM_HOVER_TIMING,
   TEAM_LAYER_DELAY,
   TEAM_NEON,
@@ -49,9 +52,9 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
         aria-label={`${t.openAriaPrefix} ${name}`}
         onClick={() => buttonRef.current && onOpen(member, buttonRef.current)}
         data-cursor="view"
-        className="group relative block w-full pt-16 text-left outline-none"
+        className={cn("group relative block w-full text-left outline-none", TEAM_HEADROOM_CLASS)}
       >
-        <span className={cn("relative block w-full", style.arch)}>
+        <span className={cn("relative block", TEAM_ARCH_CLASS)}>
           {/* Lift shadow and neon halo: separate layers that only fade in (nothing on the photo). */}
           <span
             aria-hidden="true"
@@ -79,6 +82,12 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
             )}
           >
             <Backdrop name={member.backdrop} />
+            {style.tone === "dark" ? (
+              <span
+                aria-hidden="true"
+                className={cn("absolute inset-0 block", TEAM_HEADLIGHT_CLASS)}
+              />
+            ) : null}
           </span>
 
           {/* 2 · Hairline and mat-board, over the base but under the figure. */}
@@ -193,10 +202,10 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
           <span className="mb-1 block font-mono text-[10px] uppercase tracking-museum text-emerald-brand">
             {member.roleShort}
           </span>
-          {/* Fixed two-line slot: fades in, never changes the card's height (no layout shift). */}
+          {/* Fixed three-line slot: fades in, never changes the card's height (no layout shift). */}
           <span
             className={cn(
-              "line-clamp-2 block h-9 text-xs leading-relaxed text-charcoal/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100",
+              "line-clamp-3 block h-[2.9rem] text-[11px] leading-snug text-charcoal/70 opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100 [@media(hover:none)]:opacity-100",
               TEAM_HOVER_TIMING,
             )}
           >

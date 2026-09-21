@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react";
 
+import { TEAM_GRID_CLASS } from "../constants/config";
 import type { TeamMember } from "../types";
 import { MemberCard } from "./member-card";
 import { ProfileModal, type ProfileSession } from "./profile-modal";
@@ -27,7 +28,7 @@ export function TeamGrid({ members }: TeamGridProps) {
 
   return (
     <>
-      <ul className="grid grid-cols-1 items-start gap-8 md:grid-cols-3 lg:gap-10">
+      <ul className={TEAM_GRID_CLASS}>
         {members.map((member, index) => (
           <MemberCard key={member.slug} member={member} index={index} onOpen={handleOpen} />
         ))}

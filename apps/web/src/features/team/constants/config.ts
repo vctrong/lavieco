@@ -34,45 +34,67 @@ export const TEAM_NEON = {
 } as const;
 
 /**
+ * Card size follows the viewport HEIGHT so a title plus one row of three always fits
+ * one screen. `--team-card-h` is the arch height: what is left of `100svh` after the
+ * dock, title block and label (about 20rem), divided by 1.3 for the head overhang and
+ * the stagger, kept between 200px and 420px. The arch is square, so its width follows.
+ */
+export const TEAM_GRID_CLASS = [
+  "grid grid-cols-1 items-start justify-center",
+  "gap-x-[clamp(1.5rem,4vw,4rem)] gap-y-[clamp(1.25rem,4svh,3rem)]",
+  "[--team-card-h:clamp(200px,calc((100svh-20rem)/1.3),420px)]",
+  "sm:grid-cols-[repeat(2,minmax(0,var(--team-card-h)))]",
+  "md:grid-cols-[repeat(3,minmax(0,var(--team-card-h)))]",
+].join(" ");
+
+/**
+ * Dark backdrops (Deep Blue) swallow dark hair now that the cutouts have no white
+ * outline: a faint Mint light behind the head keeps the two apart. Static, not a border.
+ */
+export const TEAM_HEADLIGHT_CLASS =
+  "bg-[radial-gradient(ellipse_60%_48%_at_50%_26%,color-mix(in_srgb,var(--color-mint-mist)_30%,transparent),transparent)]";
+
+/** The arch: square (aspect-ratio), as wide as its column but never taller than `--team-card-h`. */
+export const TEAM_ARCH_CLASS = "mx-auto aspect-square w-full max-w-[var(--team-card-h)]";
+
+/** Room above the arch for the head that rises out of it (and the hover lift). */
+export const TEAM_HEADROOM_CLASS = "pt-[calc(var(--team-card-h)*0.24)]";
+
+/**
  * Staggered card layout per member (in order), so the grid reads like uneven
- * steps (design.md §4.2). `arch` is the arch height (shorter on md, where the columns are narrow); `tilt` is the hover lean of the
- * cutout (odd cards left, even cards right); `tone` is the backdrop brightness for the
- * neon. Full class names so Tailwind can see them.
+ * steps (design.md §4.2). `card` is the small step offset on md and up (a fraction of the
+ * arch height); `tilt` is the hover lean of the cutout (odd cards left, even cards
+ * right); `tone` is the backdrop brightness for the neon. Full class names so Tailwind
+ * can see them.
  */
 export const TEAM_CARD_STYLES = [
   {
     card: "",
-    arch: "h-[320px] md:h-[230px] lg:h-[320px]",
     tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
     tone: "dark",
   },
   {
-    card: "md:mt-10",
-    arch: "h-[290px] md:h-[210px] lg:h-[290px]",
+    card: "md:mt-[calc(var(--team-card-h)*0.06)]",
     tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
     tone: "light",
   },
   {
     card: "",
-    arch: "h-[340px] md:h-[245px] lg:h-[340px]",
     tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
     tone: "light",
   },
   {
-    card: "md:mt-4",
-    arch: "h-[280px] md:h-[200px] lg:h-[280px]",
+    card: "md:mt-[calc(var(--team-card-h)*0.03)]",
     tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
     tone: "light",
   },
   {
-    card: "md:mt-12",
-    arch: "h-[320px] md:h-[230px] lg:h-[320px]",
+    card: "md:mt-[calc(var(--team-card-h)*0.06)]",
     tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
     tone: "light",
   },
   {
-    card: "md:mt-4",
-    arch: "h-[290px] md:h-[210px] lg:h-[290px]",
+    card: "md:mt-[calc(var(--team-card-h)*0.03)]",
     tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
     tone: "dark",
   },
