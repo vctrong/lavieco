@@ -66,11 +66,31 @@
   --drop-shadow-cutout: 0 14px 16px rgba(32, 52, 95, 0.22);
   --drop-shadow-cutout-hover: 0 26px 24px rgba(32, 52, 95, 0.3);
 
+  /*
+   * Neon (team cards): a soft Emerald light, never a white core. Every layer is
+   * meant to be revealed by opacity only. The "soft" and "deep" variants are for
+   * light backdrops, where a bright glow would wash out.
+   */
+  --color-neon-emerald: color-mix(in srgb, var(--color-emerald-brand) 50%, transparent);
+  --color-neon-emerald-deep: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--color-emerald-brand) 65%, var(--color-deep-blue)) 60%,
+    transparent
+  );
+  --color-neon-glow: color-mix(in srgb, var(--color-emerald-brand) 24%, transparent);
+  --shadow-neon-emerald:
+    0 0 24px 0 color-mix(in srgb, var(--color-emerald-brand) 28%, transparent),
+    0 0 64px 6px color-mix(in srgb, var(--color-emerald-brand) 16%, transparent);
+  --shadow-neon-emerald-soft:
+    0 0 20px 0 color-mix(in srgb, var(--color-emerald-brand) 15%, transparent),
+    0 0 48px 4px color-mix(in srgb, var(--color-emerald-brand) 9%, transparent);
+
   /* Modal scrim: deep navy, tune the alpha between 0.6 and 0.8 */
   --color-modal-scrim: rgba(23, 34, 59, 0.74);
   --color-modal-scrim-solid: rgba(23, 34, 59, 0.92);
 
   /* Motion */
+  --ease-gallery: cubic-bezier(0.22, 1, 0.36, 1);
   --animate-marquee: marquee 32s linear infinite;
   --animate-cutout-ripple: cutout-ripple 2.6s ease-out infinite;
   @keyframes cutout-ripple {
