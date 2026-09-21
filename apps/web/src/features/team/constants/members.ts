@@ -1,3 +1,4 @@
+import { TEXT } from "./text";
 import type { TeamContacts, TeamImage, TeamMember } from "../types";
 
 /**
@@ -9,12 +10,13 @@ import type { TeamContacts, TeamImage, TeamMember } from "../types";
  * Sample text deliberately contains no figures, years, school or place names.
  *
  * TODO(consent): each person must consent to their photo being published (AC6, docs/04 §5.1).
- * To enable the full "step out of the photo" effect for a person, add
- * `sticker: { src: "/images/team/<slug>-sticker.png", width, height }`.
+ * Photos are white-outlined cutouts (`/images/team/<slug>-cutout.webp`, alpha, trimmed).
  */
-const PHOTO_SIZE = { width: 1500, height: 2000 } as const;
-
-const photo = (slug: string): TeamImage => ({ src: `/images/team/${slug}.jpg`, ...PHOTO_SIZE });
+const cutout = (slug: string, width: number): TeamImage => ({
+  src: `/images/team/${slug}-cutout.webp`,
+  width,
+  height: 1400,
+});
 
 const SAMPLE_CONTACTS: TeamContacts = { facebook: "#", email: "#" };
 
@@ -74,8 +76,8 @@ export const MEMBERS: readonly TeamMember[] = [
       email: "#",
       github: "#",
     },
-    photo: photo("vo-chi-trong"),
-    sticker: { src: "/images/team/vo-chi-trong-sticker.png", width: 1037, height: 1737 },
+    photo: cutout("vo-chi-trong", 822),
+    backdrop: "network",
     draft: true,
   },
   {
@@ -98,7 +100,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: SAMPLE_CONTACTS,
-    photo: photo("ngo-chuc-quynh"),
+    photo: cutout("ngo-chuc-quynh", 1075),
+    backdrop: "particles",
     draft: true,
   },
   {
@@ -121,7 +124,9 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", behance: "#" },
-    photo: photo("le-do-minh-vy"),
+    photo: cutout("le-do-minh-vy", 821),
+    backdrop: "palette",
+    photoScale: 0.93,
     draft: true,
   },
   {
@@ -144,7 +149,9 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", zalo: "#", email: "#" },
-    photo: photo("nguyen-dinh-xuan-anh"),
+    photo: cutout("nguyen-dinh-xuan-anh", 753),
+    backdrop: "stairs",
+    photoScale: 0.96,
     draft: true,
   },
   {
@@ -167,7 +174,9 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", linkedin: "#" },
-    photo: photo("tran-ngoc-thi"),
+    photo: cutout("tran-ngoc-thi", 979),
+    backdrop: "story",
+    photoScale: 0.86,
     draft: true,
   },
   {
@@ -190,10 +199,18 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", github: "#", linkedin: "#" },
-    photo: photo("tieu-phung"),
+    photo: cutout("tieu-phung", 1327),
+    backdrop: "keyhole",
+    photoScale: 0.88,
     draft: true,
   },
 ];
+
+export function getPhotoAlt(
+  member: Pick<TeamMember, "firstName" | "lastName" | "roleShort">,
+): string {
+  return `${getFullName(member)}, ${member.roleShort} ${TEXT.vi.photoAltOrg}`;
+}
 
 export function getFullName(member: Pick<TeamMember, "firstName" | "lastName">): string {
   return `${member.firstName} ${member.lastName}`;

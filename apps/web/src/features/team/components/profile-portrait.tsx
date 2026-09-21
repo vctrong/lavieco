@@ -12,8 +12,7 @@ import {
   OPEN_MOTION,
   PROFILE_FRAME_RADIUS,
 } from "../constants/config";
-import { TEXT } from "../constants/text";
-import { getFullName } from "../constants/members";
+import { getPhotoAlt } from "../constants/members";
 import type { TeamMember } from "../types";
 import { HandwrittenNote } from "./handwritten-note";
 
@@ -55,12 +54,8 @@ function radiiFor(rect: Rect, flying: boolean) {
  * the photo appears to fly up from the grid and back.
  */
 export function ProfilePortrait({ member, phase, rect, reduced }: ProfilePortraitProps) {
-  const t = TEXT.vi;
-  const name = getFullName(member);
   const flying = !reduced && phase !== "open";
   const closing = phase === "closing";
-  const hasSticker = Boolean(member.sticker);
-  const open = phase === "open";
 
   const duration = reduced ? OPEN_MOTION.reduced : closing ? CLOSE_MOTION.frame : OPEN_MOTION.frame;
   const delay = closing && !reduced ? CLOSE_MOTION.frameDelay : 0;
@@ -98,54 +93,23 @@ export function ProfilePortrait({ member, phase, rect, reduced }: ProfilePortrai
           aria-hidden="true"
           className={cn(
             "pointer-events-none absolute inset-0 bg-radial from-transparent to-transparent",
-            hasSticker ? "via-soft-white/10" : "via-soft-white/5",
+            "via-soft-white/10",
           )}
         />
 
         <motion.div
           layout={!reduced}
           className="absolute inset-0"
-          initial={false}
-          animate={{ opacity: hasSticker && open ? 0 : 1 }}
-          transition={{
-            duration: OPEN_MOTION.stickerDuration,
-            delay: hasSticker && open ? OPEN_MOTION.stickerDelay : 0,
-            ease: EASE,
-            // Same timing as the frame, so the photo keeps filling it during the flight.
-            layout: transition,
-          }}
+          transition={{ layout: transition }}
         >
           <Image
             src={member.photo.src}
-            alt={`${t.photoAltPrefix} ${name}`}
+            alt={getPhotoAlt(member)}
             fill
             sizes="(min-width: 1024px) 500px, 70vw"
-            className="object-cover object-top"
+            className="object-contain object-bottom px-3 pt-4 drop-shadow-sticker"
           />
         </motion.div>
-
-        {member.sticker ? (
-          <motion.div
-            aria-hidden="true"
-            className="absolute inset-0 flex items-end justify-center"
-            initial={{ opacity: 0, y: 16, scale: 0.94 }}
-            animate={open ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 16, scale: 0.94 }}
-            transition={{
-              duration: open ? OPEN_MOTION.stickerDuration : 0.2,
-              delay: open ? OPEN_MOTION.stickerDelay : 0,
-              ease: EASE,
-            }}
-          >
-            <Image
-              src={member.sticker.src}
-              alt=""
-              width={member.sticker.width}
-              height={member.sticker.height}
-              sizes="(min-width: 1024px) 480px, 70vw"
-              className="h-[96%] w-auto max-w-[92%] object-contain drop-shadow-sticker"
-            />
-          </motion.div>
-        ) : null}
       </motion.div>
     </section>
   );

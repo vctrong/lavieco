@@ -1,3 +1,7 @@
+export const BACKDROPS = ["network", "particles", "palette", "stairs", "story", "keyhole"] as const;
+
+export type Backdrop = (typeof BACKDROPS)[number];
+
 export type TeamImage = { src: string; width: number; height: number };
 
 export const CONTACT_CHANNELS = [
@@ -50,10 +54,14 @@ export type TeamMember = {
   /** At most two. */
   notes?: readonly TeamNote[];
   contacts?: TeamContacts;
-  /** Photo shown on the grid arch (and in the modal when there is no sticker). */
+  /** White-outlined cutout (alpha) shown on the grid arch and in the profile. */
   photo: TeamImage;
-  /** Optional die-cut PNG with a white outline baked in: public/images/team/{slug}-sticker.png. */
-  sticker?: TeamImage;
+  /** Which illustrated backdrop sits behind the cutout on the grid card. */
+  backdrop: Backdrop;
+  /** Multiplies the cutout height on the card (1 = default overhang). Evens out framing. */
+  photoScale?: number;
+  /** Shifts the cutout down by this percent of its own height. Evens out framing. */
+  photoOffsetY?: number;
   /** True while the profile still holds placeholder content. */
   draft: boolean;
 };

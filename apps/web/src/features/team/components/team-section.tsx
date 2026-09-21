@@ -12,7 +12,7 @@ export function TeamSection() {
   return (
     <section
       id={TEAM_SECTION_ID}
-      className="relative border-b border-hairline bg-mint-mist/30 px-6 py-32 md:px-16 lg:px-24"
+      className="relative overflow-x-clip border-b border-hairline bg-mint-mist/30 px-6 py-32 md:px-16 lg:px-24"
     >
       <Reveal className="mx-auto max-w-7xl">
         <SectionHeader kicker={t.kicker} title={t.title} className="mb-16">

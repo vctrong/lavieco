@@ -4,7 +4,13 @@ export const TEXT = {
     title: "Sáu người kể chuyện",
     intro:
       "Những người trẻ gắn bó cùng Mekong, biến khoa học vật liệu và tư duy thẩm mỹ thành hành động thiết thực.",
-    photoAltPrefix: "Chân dung",
+    photoAltOrg: "của LAVIECO",
+    backdrop: {
+      meshLabel: "120 MESH",
+      swatchGlyph: "Aa",
+      quoteMark: "“",
+      stampLabel: "Nº",
+    },
     defaultCaption: "Cần Thơ · Mekong Estuary",
     openAriaPrefix: "Xem câu chuyện của",
     openPill: "Xem câu chuyện",
