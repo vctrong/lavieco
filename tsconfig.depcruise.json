@@ -1,0 +1,21 @@
+// Used ONLY by dependency-cruiser (`npm run deps:check`, see .dependency-cruiser.cjs).
+//
+// Why it exists: pointing dependency-cruiser at apps/web/tsconfig.json fails,
+// because it resolves `extends: "../../tsconfig.base.json"` relative to the
+// wrong folder (TS5083 / TS18003). This file is standalone (no `extends`) and
+// only declares what is needed to resolve imports.
+//
+// KEEP IN SYNC with apps/web/tsconfig.json: whenever `paths` (the `@/*` alias),
+// `moduleResolution` or `jsx` change there, or a new app (e.g. apps/admin) with
+// its own alias is added, update this file in the same PR. Otherwise aliased
+// imports stop resolving and the F1/F2 boundary rules can miss violations.
+// See docs/04 section 10.4.
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "paths": { "@/*": ["apps/web/src/*"] }
+  }
+}

@@ -1,0 +1,193 @@
+export const TEAM_SECTION_ID = "nguoi-ke-chuyen";
+
+/**
+ * Timing shared by every hover reaction inside a card (design.md §7.1: slow, soft, no
+ * overshoot). Engaging takes 700ms; releasing takes 900ms, so it settles more slowly
+ * than it lifted. Combine with an explicit `transition-[...]` property list.
+ */
+export const TEAM_HOVER_TIMING =
+  "duration-[900ms] ease-gallery group-hover:duration-[700ms] group-focus-visible:duration-[700ms] motion-reduce:transition-none";
+
+/** Small offsets between layers (figure 0ms) so the lift has depth without falling apart. */
+export const TEAM_LAYER_DELAY = {
+  art: "delay-[40ms]",
+  rim: "delay-[60ms]",
+  glow: "delay-[80ms]",
+} as const;
+
+/**
+ * Neon strength per backdrop tone. Dark backdrops carry the full Emerald light; light
+ * ones get roughly half of it in a deeper Emerald so it does not wash out. Every layer
+ * fades in by opacity only. Full class names so Tailwind can see them.
+ */
+export const TEAM_NEON = {
+  dark: {
+    halo: "shadow-neon-emerald",
+    rim: "border-neon-emerald",
+    glowOn: "group-hover:opacity-100 group-focus-visible:opacity-100",
+  },
+  light: {
+    halo: "shadow-neon-emerald-soft",
+    rim: "border-neon-emerald-deep",
+    glowOn: "group-hover:opacity-55 group-focus-visible:opacity-55",
+  },
+} as const;
+
+/**
+ * Card size follows the viewport HEIGHT so a title plus one row of three always fits
+ * one screen. `--team-card-h` is the arch height: what is left of `100svh` after the
+ * dock, title block and label (about 20rem), divided by 1.3 for the head overhang and
+ * the stagger, kept between 200px and 420px. The arch is square, so its width follows.
+ */
+export const TEAM_GRID_CLASS = [
+  "grid grid-cols-1 items-start justify-center",
+  "gap-x-[clamp(1.5rem,4vw,4rem)] gap-y-[clamp(1.25rem,4svh,3rem)]",
+  "[--team-card-h:clamp(200px,calc((100svh-20rem)/1.3),420px)]",
+  "sm:grid-cols-[repeat(2,minmax(0,var(--team-card-h)))]",
+  "md:grid-cols-[repeat(3,minmax(0,var(--team-card-h)))]",
+].join(" ");
+
+/**
+ * Dark backdrops (Deep Blue) swallow dark hair now that the cutouts have no white
+ * outline: a faint Mint light behind the head keeps the two apart. Static, not a border.
+ */
+export const TEAM_HEADLIGHT_CLASS =
+  "bg-[radial-gradient(ellipse_60%_48%_at_50%_26%,color-mix(in_srgb,var(--color-mint-mist)_30%,transparent),transparent)]";
+
+/** The arch: square (aspect-ratio), as wide as its column but never taller than `--team-card-h`. */
+export const TEAM_ARCH_CLASS = "mx-auto aspect-square w-full max-w-[var(--team-card-h)]";
+
+/** Room above the arch for the head that rises out of it (and the hover lift). */
+export const TEAM_HEADROOM_CLASS = "pt-[calc(var(--team-card-h)*0.24)]";
+
+/**
+ * Staggered card layout per member (in order), so the grid reads like uneven
+ * steps (design.md §4.2). `card` is the small step offset on md and up (a fraction of the
+ * arch height); `tilt` is the hover lean of the cutout (odd cards left, even cards
+ * right); `tone` is the backdrop brightness for the neon. Full class names so Tailwind
+ * can see them.
+ */
+export const TEAM_CARD_STYLES = [
+  {
+    card: "",
+    tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
+    tone: "dark",
+    sparkle: "dark",
+  },
+  {
+    card: "md:mt-[calc(var(--team-card-h)*0.06)]",
+    tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
+    tone: "light",
+    sparkle: "mid",
+  },
+  {
+    card: "",
+    tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
+    tone: "light",
+    sparkle: "light",
+  },
+  {
+    card: "md:mt-[calc(var(--team-card-h)*0.03)]",
+    tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
+    tone: "light",
+    sparkle: "mid",
+  },
+  {
+    card: "md:mt-[calc(var(--team-card-h)*0.06)]",
+    tilt: "motion-safe:group-hover:-rotate-[0.75deg] motion-safe:group-focus-visible:-rotate-[0.75deg]",
+    tone: "light",
+    sparkle: "light",
+  },
+  {
+    card: "md:mt-[calc(var(--team-card-h)*0.03)]",
+    tilt: "motion-safe:group-hover:rotate-[0.75deg] motion-safe:group-focus-visible:rotate-[0.75deg]",
+    tone: "dark",
+    sparkle: "dark",
+  },
+] as const;
+
+/** Gradient behind the art of each backdrop. Full class names so Tailwind can see them. */
+export const TEAM_BACKDROP_BG = {
+  network: "bg-gradient-to-b from-deep-blue via-deep-blue to-emerald-brand/45",
+  particles: "bg-gradient-to-b from-mint-mist to-emerald-brand/25",
+  palette: "bg-gradient-to-b from-soft-white to-mint-mist",
+  stairs: "bg-gradient-to-b from-mint-mist to-emerald-brand/40",
+  story: "bg-paper",
+  keyhole: "bg-gradient-to-b from-deep-blue to-charcoal",
+} as const;
+
+/** Backdrop art is drawn on this canvas and sliced to the arch. */
+export const TEAM_BACKDROP_VIEWBOX = "0 0 400 340";
+
+/** Cutout height as a percent of the arch: the extra is how far the head rises above it. */
+export const CUTOUT_HEIGHT_PERCENT = 118;
+
+/** How far the cutout extends below the arch (clipped) so a hover lift never shows its bottom edge. */
+export const CUTOUT_BLEED_PX = 14;
+
+/** Shared easing for every profile transition (same curve as `--ease-gallery`). */
+export const EASE = [0.22, 1, 0.36, 1] as const;
+
+/**
+ * Profile panel size. Height is definite (so the two columns can share it) and never
+ * exceeds the viewport minus a 1rem margin on each side; `svh` so mobile browser bars
+ * do not push it off screen.
+ */
+export const PROFILE_PANEL_SIZE =
+  "h-[min(calc(100svh-2rem),50rem)] w-[min(calc(100vw-2rem),76rem)]";
+
+/**
+ * Type and spacing of the profile scale with the height of the text column (`cqh`, a
+ * container query unit), so the whole profile fits without scrolling wherever it can. Full class names for Tailwind.
+ */
+export const PROFILE_SCALE = {
+  pad: "p-[clamp(1rem,3.4cqh,2.5rem)]",
+  gap: "gap-[clamp(0.5rem,1.9cqh,1.25rem)]",
+  kicker: "text-[clamp(0.6rem,1.4cqh,0.8rem)]",
+  name: "text-[clamp(1.6rem,5.4cqh,3.6rem)]",
+  role: "text-[clamp(0.6rem,1.4cqh,0.8rem)]",
+  quote: "text-[clamp(1rem,2.9cqh,1.9rem)]",
+  body: "text-[clamp(0.75rem,1.8cqh,1rem)]",
+  story: "text-[clamp(0.75rem,1.8cqh,1.05rem)]",
+  label: "text-[clamp(0.55rem,1.25cqh,0.7rem)]",
+  chip: "text-[clamp(0.65rem,1.45cqh,0.8rem)]",
+  note: "text-[clamp(0.85rem,2.1cqh,1.15rem)]",
+} as const;
+
+/**
+ * The zoom: the person flies from the card to the profile (FLIP, Web Animations) while the
+ * backdrop opens out of the card's arch. Milliseconds; `easing` is `--ease-gallery`.
+ */
+export const ZOOM = {
+  openMs: 720,
+  closeMs: 620,
+  /** Wait before the flight back, so the text has faded out first. */
+  closeDelayMs: 100,
+  easing: "cubic-bezier(0.22, 1, 0.36, 1)",
+  /** Share of the flight after which the outline swaps in (the last 40%). */
+  crossfadeAt: 0.6,
+  /** The backdrop fades in over the first quarter, to hide the seam with the card's arch. */
+  backdropFadeAt: 0.25,
+  reducedMs: 150,
+} as const;
+
+/** Timings in seconds for what surrounds the flight. Text starts ~40% into it. */
+export const OPEN_MOTION = {
+  scrim: 0.5,
+  panel: 0.5,
+  textStart: 0.3,
+  stagger: 0.07,
+  item: 0.5,
+  underlineDuration: 0.8,
+  notesStart: 0.8,
+  noteWrite: 0.6,
+  noteArrow: 0.5,
+  reduced: 0.15,
+} as const;
+
+export const CLOSE_MOTION = {
+  content: 0.15,
+  panelDelay: 0.25,
+  panel: 0.35,
+  scrim: 0.5,
+} as const;

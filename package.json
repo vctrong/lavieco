@@ -2,13 +2,36 @@
   "name": "lavieco",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "npm@11.6.2",
+  "engines": {
+    "node": ">=24"
+  },
   "workspaces": [
-    "apps/web"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "dev": "npm run dev -w @lavieco/web",
-    "build": "npm run build -w @lavieco/web",
+    "env:init": "node infra/scripts/env-init.mjs",
+    "dev": "turbo run dev --filter=@lavieco/web",
+    "build": "turbo run build",
     "start": "npm run start -w @lavieco/web",
-    "lint": "npm run lint -w @lavieco/web"
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "test": "turbo run test",
+    "deps:check": "depcruise apps packages --config .dependency-cruiser.cjs",
+    "format": "prettier --write .",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,mjs,cjs,js,json,css,md}": "prettier --write"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.0",
+    "@commitlint/config-conventional": "^19.8.0",
+    "dependency-cruiser": "^16.10.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^15.5.0",
+    "prettier": "^3.5.3",
+    "turbo": "^2.5.0"
   }
 }

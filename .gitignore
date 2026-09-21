@@ -46,3 +46,6 @@ next-env.d.ts
 
 # original (unoptimized) source images, kept locally only
 docs/brand/originals/
+
+# turborepo
+.turbo/

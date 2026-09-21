@@ -1,0 +1,295 @@
+@import "tailwindcss";
+
+/* Tailwind does not scan symlinked workspace packages by itself. */
+@source "../";
+
+/*
+ * LAVIECO design tokens ("The Living Gallery", docs/design.md §2–§7).
+ * This is the ONLY file allowed to contain hex / rgba color values.
+ */
+@theme {
+  /* Brand palette */
+  --color-emerald-brand: #10b183;
+  --color-mint-mist: #eaf8f3;
+  --color-deep-blue: #20345f;
+  --color-canary: #e7dd6a;
+  --color-soft-white: #f8faf6;
+  --color-charcoal: #1e2a32;
+  /* Paper tones for story cards and stamps */
+  --color-paper: #f1ece1;
+  --color-paper-edge: #d7ceba;
+  /* Hairlines: light backgrounds / dark backgrounds */
+  --color-hairline: rgba(32, 52, 95, 0.12);
+  --color-hairline-light: rgba(248, 250, 246, 0.15);
+
+  /* Fonts are provided by next/font in each app */
+  --font-display: var(--font-fraunces), serif;
+  --font-sans: var(--font-be-vietnam-pro), sans-serif;
+
+  /* Arch shapes */
+  --radius-arch: 160px 160px 24px 24px;
+  --radius-arch-sm: 100px 100px 16px 16px;
+  --radius-arch-lg: 220px 220px 32px 32px;
+  --radius-arch-mat: 150px 150px 18px 18px;
+
+  --tracking-museum: 0.14em;
+
+  /*
+   * Space to keep clear at the top of a full-screen section so its content does
+   * not sit under the fixed Tide Dock: dock offset (top-5 = 1.25rem) + dock
+   * height (~3.2rem) + breathing room. Shared by navigation and sections.
+   */
+  --spacing-dock-clearance: 5.75rem;
+
+  /* Shadows: tinted Deep Blue, wide and soft (design.md §6.1) */
+  --shadow-ambient: 0 16px 36px -12px rgba(32, 52, 95, 0.08);
+  --shadow-ambient-hover: 0 28px 60px -16px rgba(32, 52, 95, 0.12);
+  --shadow-gallery: 0 24px 48px -12px rgba(32, 52, 95, 0.08);
+  --shadow-float-dock: 0 16px 36px -8px rgba(32, 52, 95, 0.12);
+  --shadow-dock: 0 8px 24px rgba(32, 52, 95, 0.06);
+  --shadow-dock-scrolled: 0 12px 32px rgba(32, 52, 95, 0.12);
+  --shadow-hero-arch: 0 24px 50px rgba(32, 52, 95, 0.14);
+  --shadow-hero-arch-deep: 0 20px 40px rgba(32, 52, 95, 0.18);
+  --shadow-hero-arch-soft: 0 16px 32px rgba(32, 52, 95, 0.12);
+  --shadow-emerald-cta: 0 4px 16px rgba(16, 177, 131, 0.28);
+  --shadow-emerald-cta-sm: 0 2px 8px rgba(16, 177, 131, 0.25);
+  --shadow-tem: 0 12px 28px rgba(32, 52, 95, 0.15);
+  --shadow-phone: 0 24px 64px rgba(32, 52, 95, 0.2);
+  --shadow-glow-canary-sm: 0 0 6px var(--color-canary);
+  --shadow-glow-canary: 0 0 8px var(--color-canary);
+  --shadow-glow-canary-lg: 0 0 12px var(--color-canary);
+  --shadow-glow-emerald: 0 0 8px var(--color-emerald-brand);
+  --shadow-cursor-halo: 0 0 0 2px var(--color-deep-blue);
+  --shadow-portrait-halo: 0 0 60px rgba(234, 248, 243, 0.12);
+  --drop-shadow-sticker: 0 18px 22px rgba(10, 16, 32, 0.45);
+  /* Team cutouts: follows the figure's alpha; static (never transitioned) */
+  --drop-shadow-cutout: 0 14px 16px rgba(32, 52, 95, 0.22);
+
+  /*
+   * Neon (team cards): a soft Emerald light, never a white core. Every layer is
+   * meant to be revealed by opacity only. The "soft" and "deep" variants are for
+   * light backdrops, where a bright glow would wash out.
+   */
+  --color-neon-emerald: color-mix(in srgb, var(--color-emerald-brand) 50%, transparent);
+  --color-neon-emerald-deep: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--color-emerald-brand) 65%, var(--color-deep-blue)) 60%,
+    transparent
+  );
+  --color-neon-glow: color-mix(in srgb, var(--color-emerald-brand) 24%, transparent);
+  --shadow-neon-emerald:
+    0 0 24px 0 color-mix(in srgb, var(--color-emerald-brand) 28%, transparent),
+    0 0 64px 6px color-mix(in srgb, var(--color-emerald-brand) 16%, transparent);
+  --shadow-neon-emerald-soft:
+    0 0 20px 0 color-mix(in srgb, var(--color-emerald-brand) 15%, transparent),
+    0 0 48px 4px color-mix(in srgb, var(--color-emerald-brand) 9%, transparent);
+
+  /*
+   * Modal scrim: a translucent Deep Blue veil (the page stays visible, blurred, behind
+   * it). The solid variant only serves browsers without backdrop-filter.
+   */
+  --color-scrim: color-mix(in srgb, var(--color-deep-blue) 40%, transparent);
+  --color-scrim-solid: color-mix(in srgb, var(--color-deep-blue) 75%, transparent);
+
+  /* Pearl sphere: the Canary lit from the top-left and shaded toward the bottom-right */
+  --color-pearl-light: color-mix(in srgb, var(--color-canary) 35%, var(--color-soft-white));
+  --color-pearl-shade: color-mix(in srgb, var(--color-canary) 70%, var(--color-charcoal));
+
+  /* Oversized ghost numeral behind utility pages (404 / 500) */
+  --text-ghost: clamp(11rem, 36vw, 28rem);
+
+  /* Motion */
+  --ease-gallery: cubic-bezier(0.22, 1, 0.36, 1);
+  --animate-marquee: marquee 32s linear infinite;
+  /*
+   * Sparkle that radiates from a point. Per-sparkle inline variables: --sx / --sy (travel),
+   * --srot (final turn, keep it at 45deg or less), --sdur and --sdelay.
+   */
+  --animate-sparkle-radiate: sparkle-radiate var(--sdur, 2.2s) ease-out var(--sdelay, 0s) infinite
+    both;
+  /* Utility pages (404 / 500 / coming soon): slow, ambient motion */
+  --animate-orbit-slow: orbit-slow 160s linear infinite;
+  --animate-tide-drift: tide-drift 7s ease-in-out infinite alternate;
+  --animate-tide-drift-reverse: tide-drift 9s ease-in-out -3s infinite alternate-reverse;
+  --animate-pearl-bob: pearl-bob 5s ease-in-out infinite;
+  --animate-pearl-breathe: pearl-breathe 4.5s ease-in-out infinite;
+  @keyframes orbit-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes tide-drift {
+    from {
+      transform: translate3d(-14px, 0, 0);
+    }
+    to {
+      transform: translate3d(14px, 3px, 0);
+    }
+  }
+  @keyframes pearl-bob {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-3px);
+    }
+  }
+  @keyframes pearl-breathe {
+    0%,
+    100% {
+      opacity: 0.7;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1.08);
+    }
+  }
+  @keyframes sparkle-radiate {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.4) rotate(0deg);
+    }
+    30% {
+      opacity: 0.9;
+      transform: translate(calc(var(--sx) * 0.3), calc(var(--sy) * 0.3)) scale(1)
+        rotate(calc(var(--srot, 30deg) * 0.3));
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--sx), var(--sy)) scale(0.7) rotate(var(--srot, 30deg));
+    }
+  }
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+}
+
+/*
+ * Handwritten notes. `inline` makes the utility resolve var(--font-handwriting-face)
+ * on the element itself, where next/font defines it (not at :root). Never falls back to serif.
+ */
+@theme inline {
+  --font-handwriting: var(--font-handwriting-face), cursive;
+}
+
+/* Textures */
+@utility scallop-pattern {
+  background-color: var(--color-mint-mist);
+  background-image: radial-gradient(
+    circle at 50% 0,
+    transparent 18px,
+    rgba(32, 52, 95, 0.04) 19px,
+    rgba(32, 52, 95, 0.04) 20px,
+    transparent 21px
+  );
+  background-size: 40px 30px;
+}
+
+@utility deep-sea-pattern {
+  background-color: var(--color-deep-blue);
+  background-image:
+    radial-gradient(circle at 100% 100%, rgba(16, 177, 131, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 0% 0%, rgba(231, 221, 106, 0.04) 0%, transparent 40%);
+}
+
+/* Faint ripple dots for utility pages, echoing water rings */
+@utility ripple-dots {
+  background-image:
+    radial-gradient(
+      circle at 50% 0,
+      rgba(32, 52, 95, 0.05) 0,
+      rgba(32, 52, 95, 0.05) 1px,
+      transparent 1px
+    ),
+    radial-gradient(
+      circle at 50% 0,
+      rgba(32, 52, 95, 0.04) 0,
+      rgba(32, 52, 95, 0.04) 2px,
+      transparent 2px
+    );
+  background-size:
+    48px 48px,
+    96px 96px;
+}
+
+@utility film-grain {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/*
+ * Translucent, blurred veil behind modals. The blur radius is fixed: fade the element's
+ * opacity, never the blur. Fallback without backdrop-filter is a slightly denser veil.
+ */
+@utility modal-scrim {
+  background: var(--color-scrim-solid);
+  @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
+    background: var(--color-scrim);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+  }
+}
+
+/* Hand-drawn Emerald underline, purely decorative */
+@utility drawn-underline {
+  position: relative;
+  display: inline-block;
+  white-space: nowrap;
+  &::after {
+    content: "";
+    position: absolute;
+    left: -4%;
+    bottom: 2px;
+    width: 108%;
+    height: 6px;
+    background: var(--color-emerald-brand);
+    border-radius: 999px;
+    opacity: 0.85;
+    transform: rotate(-0.7deg);
+    pointer-events: none;
+  }
+}
+
+@layer base {
+  ::selection {
+    background: var(--color-mint-mist);
+    color: var(--color-deep-blue);
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-soft-white);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(32, 52, 95, 0.2);
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-emerald-brand);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-emerald-brand);
+    outline-offset: 3px;
+  }
+}
+
+/* design.md §7.6: every motion is switched off or reduced */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
