@@ -53,9 +53,9 @@ export type TeamMember = {
   notes?: readonly TeamNote[];
   contacts?: TeamContacts;
   /** Borderless cutout (alpha) shown on the grid arch. */
-  photo: TeamImage;
+  portraitList: TeamImage;
   /** White-outlined cutout (alpha) shown in the open profile only. */
-  sticker: TeamImage;
+  portraitDetail: TeamImage;
   /** Which illustrated backdrop sits behind the cutout on the grid card. */
   backdrop: Backdrop;
   /** Multiplies the cutout height on the card (1 = default overhang). Evens out framing. */

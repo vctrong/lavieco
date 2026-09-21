@@ -153,9 +153,9 @@ export function MemberCard({ member, index, onOpen }: MemberCardProps) {
                 )}
               >
                 <Image
-                  src={member.photo.src}
-                  width={member.photo.width}
-                  height={member.photo.height}
+                  src={member.portraitList.src}
+                  width={member.portraitList.width}
+                  height={member.portraitList.height}
                   alt={getPhotoAlt(member)}
                   sizes="(min-width: 768px) 30vw, 80vw"
                   draggable={false}

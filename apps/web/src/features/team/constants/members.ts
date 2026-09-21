@@ -11,11 +11,11 @@ import type { TeamContacts, TeamImage, TeamMember } from "../types";
  *
  * TODO(consent): each person must consent to their photo being published (AC6, docs/04 §5.1).
  * Two alpha cutouts per person, both trimmed to 1400px tall:
- * - `<slug>-cutout.webp`: borderless, used on the grid card (the card supplies the edge light).
+ * - `<slug>-nobg.webp`: borderless, used on the grid card (the card supplies the edge light).
  * - `<slug>-sticker.webp`: white-outlined, used in the open profile only (loaded lazily).
  */
-const cutout = (slug: string, width: number): TeamImage => ({
-  src: `/images/team/${slug}-cutout.webp`,
+const nobg = (slug: string, width: number): TeamImage => ({
+  src: `/images/team/${slug}-nobg.webp`,
   width,
   height: 1400,
 });
@@ -83,8 +83,8 @@ export const MEMBERS: readonly TeamMember[] = [
       email: "#",
       github: "#",
     },
-    photo: cutout("vo-chi-trong", 807),
-    sticker: sticker("vo-chi-trong", 822),
+    portraitList: nobg("vo-chi-trong", 807),
+    portraitDetail: sticker("vo-chi-trong", 822),
     backdrop: "network",
     draft: true,
   },
@@ -107,8 +107,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: SAMPLE_CONTACTS,
-    photo: cutout("ngo-chuc-quynh", 1065),
-    sticker: sticker("ngo-chuc-quynh", 1075),
+    portraitList: nobg("ngo-chuc-quynh", 1065),
+    portraitDetail: sticker("ngo-chuc-quynh", 1075),
     backdrop: "particles",
     photoScale: 0.98,
     draft: true,
@@ -132,8 +132,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", behance: "#" },
-    photo: cutout("le-do-minh-vy", 801),
-    sticker: sticker("le-do-minh-vy", 821),
+    portraitList: nobg("le-do-minh-vy", 801),
+    portraitDetail: sticker("le-do-minh-vy", 821),
     backdrop: "palette",
     photoScale: 0.97,
     draft: true,
@@ -157,8 +157,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", zalo: "#", email: "#" },
-    photo: cutout("nguyen-dinh-xuan-anh", 740),
-    sticker: sticker("nguyen-dinh-xuan-anh", 753),
+    portraitList: nobg("nguyen-dinh-xuan-anh", 740),
+    portraitDetail: sticker("nguyen-dinh-xuan-anh", 753),
     backdrop: "stairs",
     photoScale: 0.98,
     draft: true,
@@ -182,8 +182,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", linkedin: "#" },
-    photo: cutout("tran-ngoc-thi", 958),
-    sticker: sticker("tran-ngoc-thi", 979),
+    portraitList: nobg("tran-ngoc-thi", 958),
+    portraitDetail: sticker("tran-ngoc-thi", 979),
     backdrop: "story",
     photoScale: 0.97,
     draft: true,
@@ -207,8 +207,8 @@ export const MEMBERS: readonly TeamMember[] = [
     achievements: SAMPLE_ACHIEVEMENTS,
     notes: SAMPLE_NOTES,
     contacts: { facebook: "#", email: "#", github: "#", linkedin: "#" },
-    photo: cutout("tieu-phung", 1328),
-    sticker: sticker("tieu-phung", 1327),
+    portraitList: nobg("tieu-phung", 1328),
+    portraitDetail: sticker("tieu-phung", 1327),
     backdrop: "keyhole",
     photoScale: 0.93,
     draft: true,

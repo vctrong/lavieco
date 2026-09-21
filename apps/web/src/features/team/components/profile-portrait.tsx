@@ -25,7 +25,7 @@ export function ProfilePortrait({ member }: ProfilePortraitProps) {
     <section className={cn("relative min-h-0 overflow-hidden", TEAM_BACKDROP_BG[member.backdrop])}>
       <Backdrop name={member.backdrop} />
       <Image
-        src={member.sticker.src}
+        src={member.portraitDetail.src}
         alt={getPhotoAlt(member)}
         fill
         sizes="(min-width: 1024px) 480px, 90vw"
