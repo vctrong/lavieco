@@ -84,13 +84,37 @@
     0 0 20px 0 color-mix(in srgb, var(--color-emerald-brand) 15%, transparent),
     0 0 48px 4px color-mix(in srgb, var(--color-emerald-brand) 9%, transparent);
 
-  /* Modal scrim: deep navy, tune the alpha between 0.6 and 0.8 */
-  --color-modal-scrim: rgba(23, 34, 59, 0.74);
-  --color-modal-scrim-solid: rgba(23, 34, 59, 0.92);
+  /*
+   * Modal scrim: a translucent Deep Blue veil (the page stays visible, blurred, behind
+   * it). The solid variant only serves browsers without backdrop-filter.
+   */
+  --color-scrim: color-mix(in srgb, var(--color-deep-blue) 40%, transparent);
+  --color-scrim-solid: color-mix(in srgb, var(--color-deep-blue) 75%, transparent);
 
   /* Motion */
   --ease-gallery: cubic-bezier(0.22, 1, 0.36, 1);
   --animate-marquee: marquee 32s linear infinite;
+  /*
+   * Sparkle that radiates from a point. Per-sparkle inline variables: --sx / --sy (travel),
+   * --srot (final turn, keep it at 45deg or less), --sdur and --sdelay.
+   */
+  --animate-sparkle-radiate: sparkle-radiate var(--sdur, 2.2s) ease-out var(--sdelay, 0s) infinite
+    both;
+  @keyframes sparkle-radiate {
+    0% {
+      opacity: 0;
+      transform: translate(0, 0) scale(0.4) rotate(0deg);
+    }
+    30% {
+      opacity: 0.9;
+      transform: translate(calc(var(--sx) * 0.3), calc(var(--sy) * 0.3)) scale(1)
+        rotate(calc(var(--srot, 30deg) * 0.3));
+    }
+    100% {
+      opacity: 0;
+      transform: translate(var(--sx), var(--sy)) scale(0.7) rotate(var(--srot, 30deg));
+    }
+  }
   @keyframes marquee {
     0% {
       transform: translateX(0%);
@@ -133,13 +157,16 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
-/* Blurred, tinted backdrop behind modals; solid fallback without backdrop-filter. */
+/*
+ * Translucent, blurred veil behind modals. The blur radius is fixed: fade the element's
+ * opacity, never the blur. Fallback without backdrop-filter is a slightly denser veil.
+ */
 @utility modal-scrim {
-  background: var(--color-modal-scrim-solid);
+  background: var(--color-scrim-solid);
   @supports (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px)) {
-    background: var(--color-modal-scrim);
-    -webkit-backdrop-filter: blur(18px);
-    backdrop-filter: blur(18px);
+    background: var(--color-scrim);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
   }
 }
 
