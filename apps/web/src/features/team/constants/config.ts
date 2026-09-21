@@ -11,7 +11,26 @@ export const TEAM_HOVER_TIMING =
 /** Small offsets between layers (figure 0ms) so the lift has depth without falling apart. */
 export const TEAM_LAYER_DELAY = {
   art: "delay-[40ms]",
-  shadow: "delay-[60ms]",
+  rim: "delay-[60ms]",
+  glow: "delay-[80ms]",
+} as const;
+
+/**
+ * Neon strength per backdrop tone. Dark backdrops carry the full Emerald light; light
+ * ones get roughly half of it in a deeper Emerald so it does not wash out. Every layer
+ * fades in by opacity only. Full class names so Tailwind can see them.
+ */
+export const TEAM_NEON = {
+  dark: {
+    halo: "shadow-neon-emerald",
+    rim: "border-neon-emerald",
+    glowOn: "group-hover:opacity-100 group-focus-visible:opacity-100",
+  },
+  light: {
+    halo: "shadow-neon-emerald-soft",
+    rim: "border-neon-emerald-deep",
+    glowOn: "group-hover:opacity-55 group-focus-visible:opacity-55",
+  },
 } as const;
 
 /**

@@ -12,6 +12,7 @@ import {
   TEAM_CARD_STYLES,
   TEAM_HOVER_TIMING,
   TEAM_LAYER_DELAY,
+  TEAM_NEON,
 } from "../constants/config";
 import { getFullName, getPhotoAlt } from "../constants/members";
 import { TEXT } from "../constants/text";
@@ -38,6 +39,7 @@ type MemberCardProps = {
 export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
   const t = TEXT.vi;
   const style = TEAM_CARD_STYLES[index] ?? TEAM_CARD_STYLES[0];
+  const neon = TEAM_NEON[style.tone];
   const name = getFullName(member);
   const scale = member.photoScale ?? 1;
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -57,6 +59,7 @@ export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
         type="button"
         aria-label={`${t.openAriaPrefix} ${name}`}
         onClick={() => buttonRef.current && onOpen(member, buttonRef.current, measure)}
+        data-cursor="view"
         className="group relative block w-full pt-16 text-left outline-none"
       >
         <span
@@ -64,13 +67,22 @@ export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
           style={{ visibility: active ? "hidden" : "visible" }}
           className={cn("relative block w-full", style.arch)}
         >
-          {/* Lift shadow: a separate layer that fades in (no shadow transition on the photo). */}
+          {/* Lift shadow and neon halo: separate layers that only fade in (nothing on the photo). */}
           <span
             aria-hidden="true"
             className={cn(
               "pointer-events-none absolute inset-0 rounded-t-full opacity-0 shadow-ambient-hover transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
               TEAM_HOVER_TIMING,
-              TEAM_LAYER_DELAY.shadow,
+              TEAM_LAYER_DELAY.rim,
+            )}
+          />
+          <span
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute inset-0 rounded-t-full opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+              neon.halo,
+              TEAM_HOVER_TIMING,
+              TEAM_LAYER_DELAY.rim,
             )}
           />
 
@@ -87,14 +99,37 @@ export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
           {/* 2 · Hairline and mat-board, over the base but under the figure. */}
           <span
             aria-hidden="true"
+            className="pointer-events-none absolute inset-0 rounded-t-full border border-hairline"
+          />
+          {/* Neon rim: 1px Emerald edge over the hairline. */}
+          <span
+            aria-hidden="true"
             className={cn(
-              "pointer-events-none absolute inset-0 rounded-t-full border border-hairline transition-colors group-hover:border-emerald-brand/40 group-focus-visible:border-emerald-brand/40",
+              "pointer-events-none absolute inset-0 rounded-t-full border opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+              neon.rim,
               TEAM_HOVER_TIMING,
+              TEAM_LAYER_DELAY.rim,
             )}
+          />
+          {/* Keyboard focus: a plain 2px Emerald outline, same as hover but explicit. */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -inset-1.5 rounded-t-full border-2 border-emerald-brand opacity-0 group-focus-visible:opacity-100"
           />
           <span
             aria-hidden="true"
             className="pointer-events-none absolute inset-2 rounded-t-full border border-mint-mist/70"
+          />
+
+          {/* Soft radial glow right behind the figure, so the person lifts off the backdrop. */}
+          <span
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute -inset-x-[12%] -top-[22%] bottom-0 block bg-[radial-gradient(ellipse_at_50%_46%,var(--color-neon-glow),transparent_66%)] opacity-0 transition-opacity",
+              neon.glowOn,
+              TEAM_HOVER_TIMING,
+              TEAM_LAYER_DELAY.glow,
+            )}
           />
 
           {/*
@@ -159,7 +194,16 @@ export function MemberCard({ member, index, active, onOpen }: MemberCardProps) {
             <span className="font-mono text-[11px] font-semibold text-deep-blue/80">
               {t.profile.catalogueNumber} {member.no} · {name}
             </span>
-            <PearlDot size="sm" tone="emerald-flat" />
+            <span className="relative block">
+              <PearlDot size="sm" tone="emerald-flat" />
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "absolute inset-0 rounded-full opacity-0 shadow-glow-emerald transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100",
+                  TEAM_HOVER_TIMING,
+                )}
+              />
+            </span>
           </span>
           <span className="mb-1 block font-mono text-[10px] uppercase tracking-museum text-emerald-brand">
             {member.roleShort}
