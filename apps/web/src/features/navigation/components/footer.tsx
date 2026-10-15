@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 
 import { Eyebrow, PearlDot } from "@lavieco/ui";
 
@@ -80,14 +80,6 @@ export function Footer() {
               <a href={`tel:${CONTACT_INFO.phoneE164}`} className="hover:text-emerald-brand">
                 {CONTACT_INFO.phone}
               </a>
-            </p>
-            <p className="flex items-start gap-2.5">
-              <FiClock
-                aria-hidden="true"
-                className="mt-0.5 shrink-0 text-emerald-brand"
-                size={14}
-              />
-              <span>{t.hours}</span>
             </p>
             <div className="flex items-center gap-4 pt-3">
               <span className="sr-only">{t.connectTitle}</span>

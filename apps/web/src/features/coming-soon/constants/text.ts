@@ -4,7 +4,7 @@ export const TEXT = {
     badge: "Nº 00 · ĐANG TÁC TẠO · 2026",
     title: { lead: "Câu chuyện này đang được kể ", emphasis: "dở" },
     subtitle: "Sắp ra mắt.",
-    progress: { label: "Tiến độ chuẩn bị ra mắt", start: "KHỞI NGUYÊN", end: "2026" },
+    progress: { label: "Tiến độ chuẩn bị ra mắt", start: "KHỞI NGUYÊN", end: "RA MẮT" },
     form: {
       emailLabel: "Địa chỉ email",
       emailPlaceholder: "Nhập email của bạn...",

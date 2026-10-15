@@ -10,7 +10,7 @@ type Backdrop = { kind: "numeral"; value: string } | { kind: "orbit" };
 
 type UtilityPageShellProps = {
   backdrop: Backdrop;
-  /** Museum-placard badge, e.g. "Nº 404 · LẠC LỐI BIỂN KHƠI · 2026". */
+  /** Museum-placard badge, e.g. "Nº 404 · LẠC DÒNG · 2026". */
   badge: string;
   badgeTone?: "muted" | "white";
   /** Rendered above the badge (the coming-soon pearl). */
