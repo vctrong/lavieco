@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 
-import { Button, Container, PearlDot } from "@lavieco/ui";
+import { BrushUnderline, Button, Container, PearlDot } from "@lavieco/ui";
 
 import { SECTION_IDS } from "../constants/config";
 import { TEXT } from "../constants/text";
@@ -63,8 +63,9 @@ export function Hero() {
                     </span>
                   ))}
                   <span className="block">
-                    <span className="drawn-underline font-normal italic text-emerald-brand">
+                    <span className="relative inline-block whitespace-nowrap font-normal italic text-emerald-brand">
                       {t.titleAccent}
+                      <BrushUnderline className="absolute -bottom-[0.3em] -left-[4%] h-[0.5em] w-[108%]" />
                     </span>
                     {t.titleEnd}
                   </span>
