@@ -103,10 +103,10 @@ export function ContactSection({ organizationForm, personalForm }: ContactSectio
                 {personal.hotlineLabel} {CONTACT_INFO.phone}
               </span>
               <a
-                href={`mailto:${CONTACT_INFO.emails[1]}`}
+                href={`mailto:${CONTACT_INFO.email}`}
                 className="text-xs font-medium text-emerald-brand hover:underline"
               >
-                {CONTACT_INFO.emails[1]}
+                {CONTACT_INFO.email}
               </a>
             </div>
           </div>

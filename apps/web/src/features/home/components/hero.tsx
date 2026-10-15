@@ -51,8 +51,12 @@ export function Hero() {
                 >
                   {t.watermark}
                 </div>
-                {/* 120px at 1440x900; shrinks with viewport height and (near lg) width. */}
-                <h1 className="relative z-10 max-w-3xl font-display text-[54px] font-light leading-[1.02] tracking-tight text-deep-blue sm:text-[80px] lg:text-[length:clamp(2.75rem,min(10vw,calc(26svh_-_114px)),7.5rem)]">
+                {/*
+                  Sized so the longest line ("Giáo dục sáng tạo xanh,", ~9.2-9.9em wide) fits the
+                  column on one line: ~30px at 360px wide, 62px at 1440x900; also shrinks with
+                  viewport height.
+                */}
+                <h1 className="relative z-10 max-w-3xl font-display text-[length:min(calc(9.6vw_-_5px),4.5rem)] font-light leading-[1.04] tracking-tight text-deep-blue lg:text-[length:clamp(2.5rem,min(4.3vw,calc(26svh_-_114px)),3.875rem)]">
                   {t.titleLines.map((line) => (
                     <span key={line} className="block">
                       {line}
@@ -65,6 +69,12 @@ export function Hero() {
                     {t.titleEnd}
                   </span>
                 </h1>
+                <p
+                  lang="en"
+                  className="relative z-10 mt-[clamp(0.375rem,1.2svh,0.875rem)] font-display text-[length:clamp(0.9375rem,min(2.2svh,1.6vw),1.25rem)] font-light italic tracking-wide text-deep-blue/70"
+                >
+                  {t.taglineEn}
+                </p>
               </div>
 
               <p className="max-w-xl text-[length:clamp(14px,min(2.3svh,1.7vw),18px)] leading-[1.7] text-charcoal/85">

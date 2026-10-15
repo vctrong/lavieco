@@ -57,7 +57,9 @@ function PhoneMockup() {
             <div className="w-full rounded-full bg-emerald-brand py-2.5 text-xs font-bold text-deep-blue shadow-md">
               {t.button} →
             </div>
-            <span className="mt-2 block text-[9px] text-charcoal/50">{t.copyright}</span>
+            <span className="mt-2 block text-[9px] text-charcoal/50">
+              {t.copyright(new Date().getFullYear())}
+            </span>
           </div>
         </div>
       </div>
