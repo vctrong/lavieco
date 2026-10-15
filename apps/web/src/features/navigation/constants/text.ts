@@ -7,8 +7,8 @@ export const TEXT = {
       story: { label: "Câu chuyện", hint: "Vì sao vỏ sò không phải rác" },
       programs: { label: "Chương trình", hint: "Học bằng đôi tay" },
       collection: { label: "Bộ sưu tập", hint: "Bằng chứng nhỏ, ý nghĩa lớn" },
-      handbook: { label: "Cẩm nang", hint: "Cẩm nang xanh số · miễn phí trọn đời" },
-      impact: { label: "Tác động", hint: "Từ Cần Thơ ra biển lớn" },
+      handbook: { label: "Cẩm nang", hint: "Cẩm nang xanh số · miễn phí giai đoạn ra mắt" },
+      impact: { label: "Tác động", hint: "Từ Cần Thơ, lan tỏa tư duy tuần hoàn" },
     },
     cta: "Hợp tác cùng chúng tôi",
     menu: {
@@ -20,7 +20,7 @@ export const TEXT = {
       previewPlace: "Cần Thơ · Mekong",
       previewNumber: "Nº 001 · Cần Thơ",
       previewQuote: "“Vỏ sò qua nét nghệ thuật tái sinh”",
-      quote: "“Make it your life, through art.”",
+      quote: "“Art to learn green. Art to create green”",
       place: "Can Tho · Vietnam",
       facebook: "Facebook ↗",
       tiktok: "TikTok ↗",
@@ -38,9 +38,10 @@ export const TEXT = {
     },
     footer: {
       description:
-        "Dự án Giáo dục Mỹ thuật Xanh (Green Art Education). Thí điểm tại Cần Thơ, tái định nghĩa phụ phẩm vỏ thủy hải sản ven sông Mekong thành tác phẩm nghệ thuật và bài học cộng đồng.",
+        "Giáo dục mỹ thuật xanh kết hợp truyền thông (Green Art Education & Communications). Biến phế liệu thành tác phẩm nghệ thuật và bài học cộng đồng, bắt đầu từ vỏ hải sản, thí điểm tại Cần Thơ.",
       mottoLabel: "Phương châm",
-      motto: "“Cuộc sống, qua từng nét nghệ thuật” / “Make it your life, through art.”",
+      motto:
+        "“Giáo dục sáng tạo xanh, thông qua nghệ thuật” / “Art to learn green. Art to create green”",
       catalogueNumber: "Nº 001 · Phù sa & lúa nước",
       spaceTitle: "Không gian",
       links: {
@@ -53,13 +54,13 @@ export const TEXT = {
         team: "Sáu người kể chuyện",
       },
       coordinatesTitle: "Tọa độ kết nối",
-      address: "Quận Ninh Kiều, TP. Cần Thơ, Việt Nam",
-      hours: "Thứ Ba – Chủ Nhật · 09:00–18:00",
+      address: "Cần Thơ",
       connectTitle: "Kết nối",
       facebook: "Facebook ↗",
       tiktok: "TikTok ↗",
       wordmark: "LAVIECO",
-      copyright: "© 2026 LAVIECO. Mọi tác quyền giáo dục và nghệ thuật được bảo lưu.",
+      copyright: (year: number) =>
+        `© ${year} LAVIECO. Mọi tác quyền giáo dục và nghệ thuật được bảo lưu.`,
       credit: "Thiết kế theo định hướng triển lãm The Living Gallery · Can Tho, VN",
     },
     languageSwitch: { vi: "VI", en: "EN" },

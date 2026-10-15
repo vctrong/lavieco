@@ -102,7 +102,7 @@ export function JourneyFinalStage({ stage }: { stage: FinalStage }) {
           <div className="z-10 w-full rounded-lg border border-paper-edge bg-paper p-2.5 text-left text-deep-blue shadow-md">
             <div className="mb-1 flex items-center justify-between font-mono text-[8.5px]">
               <span className="font-bold text-emerald-brand">{stage.cardId}</span>
-              <span className="text-charcoal/60">{stage.cardWeight}</span>
+              <span className="text-charcoal/60">{stage.cardNote}</span>
             </div>
             <p className="font-display text-[10.5px] font-medium leading-snug">{stage.cardQuote}</p>
           </div>

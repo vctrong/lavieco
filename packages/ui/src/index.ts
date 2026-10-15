@@ -7,6 +7,7 @@ export { Marquee } from "./components/marquee";
 export { PearlDot } from "./components/pearl-dot";
 export { Reveal } from "./components/reveal";
 export { useReveal } from "./hooks/use-reveal";
+export { BrushUnderline } from "./illustrations/brush-underline";
 export { ConcentricRings } from "./illustrations/concentric-rings";
 export { NestedShapes } from "./illustrations/nested-shapes";
 export { WaveLines } from "./illustrations/wave-lines";

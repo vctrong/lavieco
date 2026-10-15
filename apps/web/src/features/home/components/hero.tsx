@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FiArrowRight } from "react-icons/fi";
 
-import { Button, Container, PearlDot } from "@lavieco/ui";
+import { BrushUnderline, Button, Container, PearlDot } from "@lavieco/ui";
 
 import { SECTION_IDS } from "../constants/config";
 import { TEXT } from "../constants/text";
@@ -51,20 +51,42 @@ export function Hero() {
                 >
                   {t.watermark}
                 </div>
-                {/* 120px at 1440x900; shrinks with viewport height and (near lg) width. */}
-                <h1 className="relative z-10 max-w-3xl font-display text-[54px] font-light leading-[1.02] tracking-tight text-deep-blue sm:text-[80px] lg:text-[length:clamp(2.75rem,min(10vw,calc(26svh_-_114px)),7.5rem)]">
+                {/*
+                  Four lines below lg and from xl up, sized so "sáng tạo xanh," (~5.6-6em) fits
+                  the column: ~48px at 360px wide, ~89px at 1440x900. In the lg-only band the
+                  column is narrow, so the lead joins into one line ("Giáo dục sáng tạo xanh,",
+                  ~9.2-9.7em) and the title runs on three lines at ~44px. All sizes also shrink
+                  with viewport height so the hero fits one desktop screen. pb leaves room for
+                  the brush underline.
+                */}
+                <h1 className="relative z-10 max-w-3xl pb-[0.2em] font-display text-[length:min(calc(15.5vw_-_8px),6rem)] font-light leading-[1.04] tracking-tight text-deep-blue lg:text-[length:clamp(2.5rem,min(4.3vw,calc(26svh_-_114px)),3.875rem)] xl:text-[length:clamp(2.5rem,min(7.4vw,calc(19svh_-_82px)),6rem)]">
+                  <span className="block">
+                    {t.titleLead.map((part, index) => (
+                      <span key={part} className="block lg:inline xl:block">
+                        {index > 0 ? " " : null}
+                        {part}
+                      </span>
+                    ))}
+                  </span>
                   {t.titleLines.map((line) => (
                     <span key={line} className="block">
                       {line}
                     </span>
                   ))}
                   <span className="block">
-                    <span className="drawn-underline font-normal italic text-emerald-brand">
+                    <span className="relative inline-block whitespace-nowrap font-normal italic text-emerald-brand">
                       {t.titleAccent}
+                      <BrushUnderline className="absolute -bottom-[0.3em] -left-[4%] h-[0.5em] w-[108%]" />
                     </span>
                     {t.titleEnd}
                   </span>
                 </h1>
+                <p
+                  lang="en"
+                  className="relative z-10 mt-[clamp(0.375rem,1.2svh,0.875rem)] font-display text-[length:clamp(0.9375rem,min(2.2svh,1.6vw),1.25rem)] font-light italic tracking-wide text-deep-blue/70"
+                >
+                  {t.taglineEn}
+                </p>
               </div>
 
               <p className="max-w-xl text-[length:clamp(14px,min(2.3svh,1.7vw),18px)] leading-[1.7] text-charcoal/85">

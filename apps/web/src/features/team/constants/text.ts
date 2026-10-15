@@ -6,12 +6,12 @@ export const TEXT = {
       "Những người trẻ gắn bó cùng Mekong, biến khoa học vật liệu và tư duy thẩm mỹ thành hành động thiết thực.",
     photoAltOrg: "của LAVIECO",
     backdrop: {
-      meshLabel: "120 MESH",
+      meshLabel: "BỘT VỎ SÒ",
       swatchGlyph: "Aa",
       quoteMark: "“",
       stampLabel: "Nº",
     },
-    defaultCaption: "Cần Thơ · Mekong Estuary",
+    defaultCaption: "Cần Thơ · Thí điểm",
     openAriaPrefix: "Xem câu chuyện của",
     openPill: "Xem câu chuyện",
     profile: {

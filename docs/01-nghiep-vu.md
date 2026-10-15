@@ -2,11 +2,11 @@
 
 | | |
 |---|---|
-| **Phiên bản** | v0.3 (bản nháp, chờ duyệt) |
-| **Cập nhật** | 20/09/2026 |
+| **Phiên bản** | v0.4 (bản nháp, chờ duyệt) |
+| **Cập nhật** | 16/10/2026 |
 | **Phụ trách** | Võ Chí Trọng (CTO) |
 | **Đối tượng đọc** | Toàn bộ đội sáng lập, mentor, đối tác kỹ thuật |
-| **Tài liệu liên quan** | `README.md` · *Tài liệu định vị & hồ sơ dự án v1.1* · `02-kien-truc.md` · `03-co-so-du-lieu.md` · `04-cau-truc-ma-nguon.md` · `CLAUDE.md` (quy tắc cho Claude Code) |
+| **Tài liệu liên quan** | `README.md` · *Tài liệu định vị & hồ sơ dự án v1.3* · `02-kien-truc.md` · `03-co-so-du-lieu.md` · `04-cau-truc-ma-nguon.md` · `CLAUDE.md` (quy tắc cho Claude Code) |
 
 > **Phạm vi tài liệu:** mô tả **cái gì** và **vì sao** (nghiệp vụ, vai trò, use case, quy tắc). Tài liệu **không** mô tả cách xây dựng (công nghệ, schema, API, cây thư mục). Phần đó nằm ở các tài liệu `02`–`04`.
 
@@ -48,7 +48,7 @@ Nền tảng số của LAVIECO, thương hiệu giáo dục mỹ thuật xanh. 
 
 ### 1.3 Mục tiêu
 
-1. **Kết nối hai lớp giá trị:** khách quét QR là đọc được câu chuyện giáo dục ngay, không cần cài ứng dụng, không cần đăng nhập.
+1. **Kết nối lớp Chứng minh & Vốn với lớp Giáo dục:** khách quét QR là đọc được câu chuyện giáo dục ngay, không cần cài ứng dụng, không cần đăng nhập.
 2. **Tạo pipeline hợp tác:** mọi liên hệ từ trường học, doanh nghiệp, homestay, nhà hàng đều được ghi nhận, phân loại, theo dõi đến khi có kết quả.
 3. **Tự chủ nội dung:** đội không chuyên kỹ thuật tự soạn và xuất bản nội dung.
 4. **Nền tảng cho giai đoạn sau:** thiết kế để mở rộng sang đặt lịch workshop, đơn B2B, cộng đồng tích điểm mà không phải làm lại từ đầu.
@@ -64,15 +64,17 @@ Ngưỡng mục tiêu sẽ đặt sau khi có 1–2 tháng dữ liệu thực t�
 
 ## 2. Bối cảnh nghiệp vụ
 
-### 2.1 Hai lớp giá trị
+### 2.1 Ba lớp giá trị
 
-Nguyên tắc cốt lõi của thương hiệu, và là **nguyên tắc thiết kế xuyên suốt** hệ thống này:
+Nguyên tắc cốt lõi của thương hiệu (định vị v1.3: *giáo dục mỹ thuật xanh kết hợp truyền thông*), và là **nguyên tắc thiết kế xuyên suốt** hệ thống này:
 
-| | Lớp Chứng minh & Vốn | Lớp Giáo dục (cốt lõi) |
-|---|---|---|
-| Gồm | Móc khóa & charm, décor mini, combo quà tặng xanh | Cẩm nang xanh số, workshop, gói ngoại khóa, gói tài trợ giáo dục ESG |
-| Vai trò | Dòng tiền ngắn hạn, bằng chứng cho triết lý | Tài sản thương hiệu, doanh thu dài hạn |
-| Khách hàng | Cá nhân, người mua quà | Trường học, tổ chức giáo dục, doanh nghiệp CSR/ESG |
+| | Lớp Chứng minh & Vốn | Lớp Giáo dục (cốt lõi) | Lớp Truyền thông (mở rộng) |
+|---|---|---|---|
+| Gồm | Phụ kiện từ vỏ nguyên bản, gốm bột vỏ sò, combo quà tặng xanh | Cẩm nang xanh số, workshop, gói ngoại khóa, gói tài trợ giáo dục ESG | Hỗ trợ truyền thông và phân phối sản phẩm của các thương hiệu tái chế xanh, hưởng hoa hồng |
+| Vai trò | Dòng tiền ngắn hạn, bằng chứng cho triết lý | Tài sản thương hiệu, doanh thu dài hạn | Doanh thu hoa hồng song song, nhân rộng thông điệp |
+| Khách hàng | Cá nhân, người mua quà | Trường học, tổ chức giáo dục, doanh nghiệp CSR/ESG | Thương hiệu/startup tái chế xanh quy mô nhỏ |
+
+Lớp Truyền thông **chưa có tính năng trong Giai đoạn 1**; khi đưa vào hệ thống sẽ bổ sung use case và quy tắc riêng.
 
 **Hệ quả cho phần mềm:** sản phẩm luôn được trình bày như *minh chứng*; mọi trang sản phẩm phải dẫn được về nội dung giáo dục (xem BR-01).
 
@@ -712,13 +714,13 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 |---|---|
 | **Cẩm nang xanh số** | Nội dung giáo dục dạng sách số, truy cập qua QR |
 | **Story card** | Thẻ câu chuyện đi kèm mỗi tác phẩm, có mã QR |
-| **Tác phẩm** | Sản phẩm minh chứng (móc khóa, décor, combo) |
+| **Tác phẩm** | Sản phẩm minh chứng (phụ kiện từ vỏ nguyên bản, gốm bột vỏ sò, combo) |
 | **Combo quà tặng xanh** | Sản phẩm chính + story card + bao bì kraft + mã QR |
 | **Lead** | Một liên hệ/cơ hội hợp tác, chưa phải đối tác chính thức |
 | **Đối tác (Partner)** | Trường học, doanh nghiệp, khu du lịch đã được xác nhận |
 | **Nhà cung ứng (Supplier)** | Nguồn cung vỏ hải sản |
 | **ESG / CSR** | Tiêu chí môi trường–xã hội–quản trị / Trách nhiệm xã hội của doanh nghiệp |
-| **Lớp Chứng minh & Vốn / Lớp Giáo dục** | Hai lớp giá trị của thương hiệu (§2.1) |
+| **Lớp Chứng minh & Vốn / Lớp Giáo dục / Lớp Truyền thông** | Ba lớp giá trị của thương hiệu (§2.1) |
 | **GĐ** | Giai đoạn (1, 2, 3) |
 
 ## 12. Lịch sử phiên bản
@@ -728,3 +730,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.1 | 20/09/2026 | Bản nháp đầu: vai trò, module, 29 use case, quy tắc nghiệp vụ, giả định & câu hỏi mở | V.C. Trọng |
 | v0.2 | 20/09/2026 | Đồng bộ với `02`–`04`: thêm quyền xuất danh sách lead vào ma trận, sửa quan hệ Lead ↔ Yêu cầu quà tặng (1–nhiều), thống nhất quy ước mã câu hỏi | V.C. Trọng |
 | v0.3 | 20/09/2026 | Đội ngũ là nội dung tĩnh (UC-08, A8) | V.C. Trọng |
+| v0.4 | 16/10/2026 | Đồng bộ định vị v1.3: ba lớp giá trị (thêm Lớp Truyền thông, chưa có tính năng GĐ1), cập nhật nhóm sản phẩm minh chứng | V.C. Trọng |

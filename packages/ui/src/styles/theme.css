@@ -113,6 +113,27 @@
   --animate-tide-drift-reverse: tide-drift 9s ease-in-out -3s infinite alternate-reverse;
   --animate-pearl-bob: pearl-bob 5s ease-in-out infinite;
   --animate-pearl-breathe: pearl-breathe 4.5s ease-in-out infinite;
+  /* Brush underline: paints in once on load (stroke-dashoffset over pathLength=1, right to left) */
+  --animate-brush-draw-reverse: brush-draw-reverse 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
+  --animate-pearl-pop: pearl-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  @keyframes brush-draw-reverse {
+    from {
+      stroke-dashoffset: -1;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+  @keyframes pearl-pop {
+    from {
+      opacity: 0;
+      transform: scale(0.2);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
   @keyframes orbit-slow {
     to {
       transform: rotate(360deg);
@@ -233,26 +254,6 @@
     background: var(--color-scrim);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
-  }
-}
-
-/* Hand-drawn Emerald underline, purely decorative */
-@utility drawn-underline {
-  position: relative;
-  display: inline-block;
-  white-space: nowrap;
-  &::after {
-    content: "";
-    position: absolute;
-    left: -4%;
-    bottom: 2px;
-    width: 108%;
-    height: 6px;
-    background: var(--color-emerald-brand);
-    border-radius: 999px;
-    opacity: 0.85;
-    transform: rotate(-0.7deg);
-    pointer-events: none;
   }
 }
 

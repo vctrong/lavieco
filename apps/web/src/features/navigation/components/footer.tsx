@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FiClock, FiMail, FiMapPin, FiPhone } from "react-icons/fi";
+import { FiMail, FiMapPin, FiPhone } from "react-icons/fi";
 
 import { Eyebrow, PearlDot } from "@lavieco/ui";
 
@@ -67,15 +67,9 @@ export function Footer() {
             </p>
             <p className="flex items-start gap-2.5">
               <FiMail aria-hidden="true" className="mt-0.5 shrink-0 text-emerald-brand" size={14} />
-              <span>
-                {CONTACT_INFO.emails.map((email) => (
-                  <span key={email} className="block">
-                    <a href={`mailto:${email}`} className="hover:text-emerald-brand">
-                      {email}
-                    </a>
-                  </span>
-                ))}
-              </span>
+              <a href={`mailto:${CONTACT_INFO.email}`} className="hover:text-emerald-brand">
+                {CONTACT_INFO.email}
+              </a>
             </p>
             <p className="flex items-start gap-2.5">
               <FiPhone
@@ -83,20 +77,9 @@ export function Footer() {
                 className="mt-0.5 shrink-0 text-emerald-brand"
                 size={14}
               />
-              <a
-                href={`tel:${CONTACT_INFO.phone.replace(/[^+\d]/g, "")}`}
-                className="hover:text-emerald-brand"
-              >
+              <a href={`tel:${CONTACT_INFO.phoneE164}`} className="hover:text-emerald-brand">
                 {CONTACT_INFO.phone}
               </a>
-            </p>
-            <p className="flex items-start gap-2.5">
-              <FiClock
-                aria-hidden="true"
-                className="mt-0.5 shrink-0 text-emerald-brand"
-                size={14}
-              />
-              <span>{t.hours}</span>
             </p>
             <div className="flex items-center gap-4 pt-3">
               <span className="sr-only">{t.connectTitle}</span>
@@ -138,7 +121,7 @@ export function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-2 pt-4 text-[11px] text-charcoal/60 sm:flex-row">
-          <p>{t.copyright}</p>
+          <p>{t.copyright(new Date().getFullYear())}</p>
           <p>{t.credit}</p>
         </div>
       </div>

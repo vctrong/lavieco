@@ -4,7 +4,7 @@ export const TEXT = {
     badge: "Nº 00 · ĐANG TÁC TẠO · 2026",
     title: { lead: "Câu chuyện này đang được kể ", emphasis: "dở" },
     subtitle: "Sắp ra mắt.",
-    progress: { label: "Tiến độ chuẩn bị ra mắt", start: "KHỞI NGUYÊN", end: "2026" },
+    progress: { label: "Tiến độ chuẩn bị ra mắt", start: "KHỞI NGUYÊN", end: "RA MẮT" },
     form: {
       emailLabel: "Địa chỉ email",
       emailPlaceholder: "Nhập email của bạn...",
@@ -13,7 +13,7 @@ export const TEXT = {
       submit: "Nhận tin khi ra mắt",
       submitting: "Đang gửi...",
       done: "Đã ghi nhận",
-      note: "Chúng tôi sẽ gửi thông báo khi trang trưng bày chính thức mở cửa · 2026",
+      note: "Chúng tôi sẽ gửi thông báo khi trang trưng bày chính thức mở cửa.",
     },
     errors: {
       emailRequired: "Bạn vui lòng nhập địa chỉ email.",
@@ -21,7 +21,7 @@ export const TEXT = {
       consent: "Bạn vui lòng đồng ý để chúng tôi có thể gửi thông báo.",
     },
     status: {
-      success: "Địa chỉ lưu trữ thành công. Chúng tôi sẽ liên lạc vào 2026.",
+      success: "Địa chỉ lưu trữ thành công. Chúng tôi sẽ liên lạc khi trang ra mắt.",
       unavailable: "Chưa thể ghi nhận địa chỉ lúc này. Bạn vui lòng thử lại sau ít phút.",
       invalid: "Thông tin chưa hợp lệ. Bạn vui lòng kiểm tra lại email.",
     },

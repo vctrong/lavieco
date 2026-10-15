@@ -5,7 +5,6 @@ import { TEXT } from "../constants/text";
 
 /**
  * Section #8: three waves of rising height (design.md §9.2 #8).
- * TODO(content): phase dates come from the prototype ("Quý 2 - 4 / 2025") and are stale.
  */
 export function RoadmapSection() {
   const t = TEXT.vi.roadmap;

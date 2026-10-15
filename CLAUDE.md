@@ -12,9 +12,9 @@ Nếu phát hiện hai nguồn nói khác nhau, hoặc tài liệu sai so với 
 
 ## 1. Dự án
 
-LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật xanh** (vỏ hải sản → sản phẩm mỹ thuật + chương trình giáo dục). Website công khai + **Cẩm nang xanh số** đọc qua **mã QR** trên sản phẩm + thu thập liên hệ hợp tác + quản trị nội bộ. Đang ở **Giai đoạn 1**, giai đoạn dựng khung repo.
+LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật xanh kết hợp truyền thông** (định vị v1.3): biến phế liệu thành giá trị qua nghệ thuật; vỏ hải sản chỉ là chất liệu minh chứng đầu tiên, thí điểm tại Cần Thơ (không định vị "ven biển"). Tagline: "Giáo dục sáng tạo xanh, thông qua nghệ thuật". Website công khai + **Cẩm nang xanh số** đọc qua **mã QR** trên sản phẩm + thu thập liên hệ hợp tác + quản trị nội bộ. Đang ở **Giai đoạn 1**, giai đoạn dựng khung repo.
 
-**Hai lớp giá trị (BR-01):** sản phẩm chỉ là _minh chứng_; thông điệp giáo dục đi trước. LAVIECO **không** phải cửa hàng đồ thủ công. Áp dụng cho mọi UI và nội dung bạn viết.
+**Ba lớp giá trị (`docs/01` §2.1):** Chứng minh & Vốn · Giáo dục (cốt lõi) · Truyền thông (chưa làm ở GĐ1). **BR-01:** sản phẩm chỉ là _minh chứng_; thông điệp giáo dục đi trước. LAVIECO **không** phải cửa hàng đồ thủ công. Áp dụng cho mọi UI và nội dung bạn viết.
 
 ## 2. Đọc tài liệu nào khi nào
 
