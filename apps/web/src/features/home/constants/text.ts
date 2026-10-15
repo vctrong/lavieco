@@ -8,7 +8,9 @@ export const TEXT = {
       pilotBadge: "Đang thí điểm tại Cần Thơ",
       categoryBadge: "GREEN ART EDUCATION",
       watermark: "01",
-      titleLines: ["Giáo dục sáng tạo xanh,", "thông qua"],
+      /** Two lines below lg and from xl up; joined into one line in the lg-only band. */
+      titleLead: ["Giáo dục", "sáng tạo xanh,"],
+      titleLines: ["thông qua"],
       titleAccent: "nghệ thuật",
       titleEnd: ".",
       taglineEn: "Art to learn green. Art to create green",

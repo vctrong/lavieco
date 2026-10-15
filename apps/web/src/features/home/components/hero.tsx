@@ -52,11 +52,22 @@ export function Hero() {
                   {t.watermark}
                 </div>
                 {/*
-                  Sized so the longest line ("Giáo dục sáng tạo xanh,", ~9.2-9.9em wide) fits the
-                  column on one line: ~30px at 360px wide, 62px at 1440x900; also shrinks with
-                  viewport height.
+                  Four lines below lg and from xl up, sized so "sáng tạo xanh," (~5.6-6em) fits
+                  the column: ~48px at 360px wide, ~89px at 1440x900. In the lg-only band the
+                  column is narrow, so the lead joins into one line ("Giáo dục sáng tạo xanh,",
+                  ~9.2-9.7em) and the title runs on three lines at ~44px. All sizes also shrink
+                  with viewport height so the hero fits one desktop screen. pb leaves room for
+                  the brush underline.
                 */}
-                <h1 className="relative z-10 max-w-3xl font-display text-[length:min(calc(9.6vw_-_5px),4.5rem)] font-light leading-[1.04] tracking-tight text-deep-blue lg:text-[length:clamp(2.5rem,min(4.3vw,calc(26svh_-_114px)),3.875rem)]">
+                <h1 className="relative z-10 max-w-3xl pb-[0.2em] font-display text-[length:min(calc(15.5vw_-_8px),6rem)] font-light leading-[1.04] tracking-tight text-deep-blue lg:text-[length:clamp(2.5rem,min(4.3vw,calc(26svh_-_114px)),3.875rem)] xl:text-[length:clamp(2.5rem,min(7.4vw,calc(19svh_-_82px)),6rem)]">
+                  <span className="block">
+                    {t.titleLead.map((part, index) => (
+                      <span key={part} className="block lg:inline xl:block">
+                        {index > 0 ? " " : null}
+                        {part}
+                      </span>
+                    ))}
+                  </span>
                   {t.titleLines.map((line) => (
                     <span key={line} className="block">
                       {line}
