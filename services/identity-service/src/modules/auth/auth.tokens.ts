@@ -1,0 +1,2 @@
+export const STAFF_AUTH_SERVICE = Symbol("STAFF_AUTH_SERVICE");
+export const MEMBER_AUTH_SERVICE = Symbol("MEMBER_AUTH_SERVICE");
