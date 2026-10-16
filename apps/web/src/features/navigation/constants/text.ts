@@ -11,6 +11,7 @@ export const TEXT = {
       impact: { label: "Tác động", hint: "Từ Cần Thơ, lan tỏa tư duy tuần hoàn" },
     },
     cta: "Hợp tác cùng chúng tôi",
+    accountLabel: "Tài khoản của bạn",
     menu: {
       openLabel: "Mở Mục Lục Triển Lãm",
       closeLabel: "Đóng lại",

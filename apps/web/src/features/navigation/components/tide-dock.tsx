@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { FiUser } from "react-icons/fi";
 
 import { Button, PearlDot, cn } from "@lavieco/ui";
 
-import { CTA_HREF, DOCK_SHRINK_SCROLL_Y, NAV_ITEMS } from "../constants/config";
+import { ACCOUNT_HREF, CTA_HREF, DOCK_SHRINK_SCROLL_Y, NAV_ITEMS } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { subscribeScroll } from "../hooks/scroll-store";
 import { isNavItemActive } from "../utils/is-nav-item-active";
@@ -101,6 +102,14 @@ export function TideDock() {
           </nav>
 
           <div className="flex items-center gap-2.5">
+            <Link
+              href={ACCOUNT_HREF}
+              aria-label={t.accountLabel}
+              aria-current={pathname.startsWith(ACCOUNT_HREF) ? "page" : undefined}
+              className="flex size-8 items-center justify-center rounded-full border border-hairline bg-soft-white text-deep-blue transition-colors hover:border-deep-blue aria-[current=page]:border-emerald-brand"
+            >
+              <FiUser aria-hidden="true" size={15} />
+            </Link>
             <Button as={Link} href={CTA_HREF} size="sm" className="max-sm:hidden">
               {t.cta}
             </Button>
