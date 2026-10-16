@@ -1,0 +1,11 @@
+// Used ONLY by dependency-cruiser for apps/admin (see .dependency-cruiser.admin.cjs).
+// KEEP IN SYNC with apps/admin/tsconfig.json, like tsconfig.depcruise.json for apps/web.
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "jsx": "react-jsx",
+    "moduleResolution": "bundler",
+    "module": "esnext",
+    "paths": { "@/*": ["apps/admin/src/*"] }
+  }
+}

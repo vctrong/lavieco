@@ -1,0 +1,12 @@
+# Never ship environment files into an image (CLAUDE §11); only .env.example is allowed.
+**/.env*
+!**/.env.example
+**/node_modules
+**/dist
+**/.next
+**/.turbo
+**/coverage
+.git
+docs
+docs_temp
+e2e
