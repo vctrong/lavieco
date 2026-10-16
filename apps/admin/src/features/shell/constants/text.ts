@@ -1,0 +1,38 @@
+export const TEXT = {
+  vi: {
+    brand: "LAVIECO",
+    brandSub: "Quản trị nội bộ",
+    navLabel: "Điều hướng quản trị",
+    menu: "Menu",
+    soon: "Sắp có",
+    groups: {
+      operations: "Vận hành",
+      content: "Nội dung",
+      relations: "Đối tác",
+      system: "Hệ thống",
+    },
+    items: {
+      overview: "Tổng quan",
+      events: "Chương trình",
+      orders: "Đơn hàng & payOS",
+      checkin: "Quét check-in",
+      handbook: "Cẩm nang",
+      works: "Tác phẩm",
+      qr: "Mã QR",
+      programs: "Mô tả chương trình",
+      pages: "Trang giới thiệu",
+      media: "Thư viện ảnh",
+      leads: "Lead & hợp tác",
+      users: "Người dùng",
+      audit: "Nhật ký hoạt động",
+      site: "Cài đặt",
+    },
+    roles: {
+      super_admin: "Super Admin",
+      content_editor: "Content Editor",
+      coordinator: "Coordinator",
+      auditor: "Auditor",
+    },
+    logout: "Đăng xuất",
+  },
+} as const;
