@@ -1,0 +1,63 @@
+{
+  "name": "@lavieco/shared",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Contracts only: Zod schemas, permissions, error codes, pure helpers (docs/04 §4.2).",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./permissions": {
+      "import": {
+        "types": "./dist/permissions/index.d.ts",
+        "default": "./dist/permissions/index.js"
+      },
+      "require": {
+        "types": "./dist/permissions/index.d.cts",
+        "default": "./dist/permissions/index.cjs"
+      }
+    },
+    "./identity": {
+      "import": {
+        "types": "./dist/identity/index.d.ts",
+        "default": "./dist/identity/index.js"
+      },
+      "require": {
+        "types": "./dist/identity/index.d.cts",
+        "default": "./dist/identity/index.cjs"
+      }
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@lavieco/config": "*",
+    "@types/node": "^24",
+    "eslint": "^9",
+    "tsup": "^8",
+    "typescript": "^5",
+    "vitest": "^3.2.0"
+  }
+}
