@@ -2,11 +2,11 @@
 
 | | |
 |---|---|
-| **Phiên bản** | v0.4 (bản nháp, chờ duyệt) |
-| **Cập nhật** | 16/10/2026 |
+| **Phiên bản** | v0.5 (bản nháp, chờ duyệt) |
+| **Cập nhật** | 17/10/2026 |
 | **Phụ trách** | Võ Chí Trọng (CTO) |
 | **Đối tượng đọc** | Toàn bộ đội sáng lập, mentor, đối tác kỹ thuật |
-| **Tài liệu liên quan** | `README.md` · *Tài liệu định vị & hồ sơ dự án v1.3* · `02-kien-truc.md` · `03-co-so-du-lieu.md` · `04-cau-truc-ma-nguon.md` · `CLAUDE.md` (quy tắc cho Claude Code) |
+| **Tài liệu liên quan** | `README.md` · *Tài liệu định vị & hồ sơ dự án v1.3* · `02-kien-truc.md` · `03-co-so-du-lieu.md` · `04-cau-truc-ma-nguon.md` · `05-programs-module.md` (phân hệ Chương trình) · `CLAUDE.md` (quy tắc cho Claude Code) |
 
 > **Phạm vi tài liệu:** mô tả **cái gì** và **vì sao** (nghiệp vụ, vai trò, use case, quy tắc). Tài liệu **không** mô tả cách xây dựng (công nghệ, schema, API, cây thư mục). Phần đó nằm ở các tài liệu `02`–`04`.
 
@@ -124,8 +124,14 @@ Bám theo lộ trình 3 giai đoạn trong tài liệu định vị.
 - Form hợp tác, form đăng ký khóa học, form yêu cầu quà tặng, thu email "sắp ra mắt"
 - Quản trị nội bộ: lead, cẩm nang, sản phẩm & story card & QR, người dùng admin, cấu hình site
 - Ghi chú/đánh dấu cẩm nang lưu **trên thiết bị** (không cần tài khoản)
+- **Phân hệ Chương trình** (`05-programs-module.md`, quyết định 17/10/2026, ADR-014):
+  - Đăng sự kiện (workshop, talkshow, triển lãm).
+  - Đăng ký và mua vé: thanh toán payOS/VietQR; chương trình miễn phí vẫn phải xác thực email.
+  - Vé QR qua email, tra cứu vé, check-in tại cửa.
+  - Danh sách người đăng ký, xuất Excel, đối soát đơn.
+- **Tài khoản thành viên (Member)**: đăng ký bằng email + OTP hoặc Google, xem lại vé (UC-09, đưa lên từ GĐ2).
 
-**Ngoài phạm vi:** thanh toán online, tài khoản người dùng công khai, cổng đối tác, đặt lịch tự động, quản lý tồn kho, ứng dụng di động.
+**Ngoài phạm vi:** thanh toán online cho đơn combo/quà tặng (vẫn là yêu cầu, A1), cổng đối tác, đặt lịch tự động, quản lý tồn kho, ứng dụng di động, sơ đồ chỗ ngồi, SMS.
 
 ### 3.2 Giai đoạn 2: Thương mại hóa giáo dục
 
@@ -142,7 +148,7 @@ Cẩm nang freemium; tích điểm cộng đồng; cổng Supplier, lịch thu g
 | Vai trò | Là ai | Xác thực | Giai đoạn |
 |---|---|---|---|
 | **Khách (Guest)** | Bất kỳ ai truy cập website hoặc quét QR | Không | 1 |
-| **Thành viên (Member)** | Người dùng đã đăng ký tài khoản | Email/mật khẩu hoặc đăng nhập mạng xã hội | 2 |
+| **Thành viên (Member)** | Người dùng đã đăng ký tài khoản | Email/mật khẩu (sau OTP email) hoặc Google | 1 (tài khoản, vé của tôi) · 2 (đồng bộ ghi chú, yêu thích) |
 | **Đối tác (Partner)** | Đại diện trường học, doanh nghiệp ESG, khu du lịch/homestay, đã được LAVIECO xác nhận | Tài khoản do LAVIECO cấp/duyệt | 2 |
 | **Nhà cung ứng (Supplier)** | Đại diện nhà hàng, quán ăn, chợ đầu mối cung cấp vỏ hải sản | Tài khoản do LAVIECO cấp/duyệt | 3 |
 | **Admin** (4 mức) | Đội LAVIECO | Tài khoản nội bộ, **bắt buộc xác thực 2 lớp** | 1 |
@@ -155,7 +161,7 @@ Cẩm nang freemium; tích điểm cộng đồng; cổng Supplier, lịch thu g
 |---|---|---|
 | **Super Admin** | CTO | Toàn quyền; người dùng & phân quyền; cấu hình hệ thống; duyệt báo cáo tác động |
 | **Content Editor** | Truyền thông, thiết kế | Soạn và duyệt nội dung: cẩm nang, sản phẩm, story card, QR, banner |
-| **Coordinator** | Người điều phối vận hành | Xử lý lead, lịch chương trình, yêu cầu/đơn quà tặng, nhập số liệu tác động |
+| **Coordinator** | Người điều phối vận hành | Xử lý lead, chương trình & sự kiện, đơn vé, check-in tại cửa, yêu cầu/đơn quà tặng, nhập số liệu tác động |
 | **Auditor** | CISO | Chỉ đọc: nhật ký hoạt động, dữ liệu cá nhân, giám sát tuân thủ |
 
 > Ai giữ mức nào do đội quyết định (câu hỏi mở Q6). Một người có thể giữ nhiều mức.
@@ -190,6 +196,13 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Duyệt & xuất bản nội dung | — | — | — | — | ✓ | ✓ (*) | — | — |
 | Quản lý mã QR | — | — | — | — | ✓ | ✓ | đọc | đọc |
 | Chương trình, lịch, duyệt đăng ký | — | — | — | — | ✓ | đọc | ✓ | đọc |
+| Đăng ký chương trình, mua vé, tra cứu vé | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
+| Xem vé của tôi | — | ✓ | ✓ | ✓ | — | — | — | — |
+| Tạo/sửa/xuất bản sự kiện, loại vé, form | — | — | — | — | ✓ | — | ✓ | — |
+| Xem đơn vé, đối soát payOS | — | — | — | — | ✓ | — | ✓ | đọc |
+| Hoàn tiền, huỷ vé | — | — | — | — | ✓ | — | ✓ | — |
+| Xuất danh sách người đăng ký | — | — | — | — | ✓ | — | ✓ | — |
+| Check-in tại cửa | — | — | — | — | ✓ | — | ✓ | — |
 | Yêu cầu/đơn quà tặng | — | — | — | — | ✓ | — | ✓ | đọc |
 | Nhập số liệu tác động | — | — | — | — | ✓ | — | ✓ | đọc |
 | Duyệt & công bố báo cáo tác động | — | — | — | — | ✓ | — | — | đọc |
@@ -261,7 +274,7 @@ flowchart LR
 | UC-06 | Đăng ký khóa học cho trường | Guest | M3, M4 | 1 |
 | UC-07 | Đăng ký nhận tin khi ra mắt | Guest | M10 | 1 |
 | UC-08 | Xem trang giới thiệu (Câu chuyện, Tác động, Đội ngũ) | Guest | M10 | 1 |
-| UC-09 | Đăng ký, đăng nhập | Member | M7 | 2 |
+| UC-09 | Đăng ký, đăng nhập | Member | M7 | 1 |
 | UC-10 | Đồng bộ ghi chú, đánh dấu, tiến độ đọc | Member | M1 | 2 |
 | UC-11 | Lưu tác phẩm yêu thích | Member | M2 | 2 |
 | UC-12 | Xem lịch sử yêu cầu và đơn | Member | M5 | 2 |
@@ -282,6 +295,11 @@ flowchart LR
 | UC-27 | Quản lý người dùng & phân quyền | Admin | M7 | 1 |
 | UC-28 | Cấu hình site & chế độ "sắp ra mắt" | Admin | M10 | 1 |
 | UC-29 | Xem nhật ký hoạt động, xử lý yêu cầu xóa dữ liệu cá nhân | Admin | M10 | 2 |
+| UC-30 | Xem chương trình, đăng ký và mua vé (xác thực email bằng OTP) | Guest, Member | M4 | 1 |
+| UC-31 | Nhận vé QR qua email; xem lại vé (link ký số, tra cứu bằng email + OTP, Vé của tôi) | Guest, Member | M4 | 1 |
+| UC-32 | Tạo, xem trước, xuất bản, nhân bản sự kiện; loại vé; form đăng ký | Admin | M4 | 1 |
+| UC-33 | Người đăng ký, xuất Excel; đơn hàng, đối soát, hoàn tiền/huỷ vé | Admin | M4 | 1 |
+| UC-34 | Check-in tại cửa bằng quét QR | Admin | M4 | 1 |
 
 ### 6.2 Use case giai đoạn 1: Khách (công khai)
 
@@ -503,11 +521,23 @@ Vòng đời nội dung: xem §8.3.
 
 **Mục đích:** thông tin liên hệ không viết cứng trong giao diện, sửa được không cần triển khai lại (giải quyết vấn đề thông tin liên hệ chưa thống nhất giữa các bản thiết kế, xem A5).
 
+### 6.3b Use case phân hệ Chương trình (GĐ1, tóm tắt)
+
+Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định bổ sung".
+
+| Mã | Luồng chính tóm tắt | Quy tắc |
+|---|---|---|
+| UC-09 | Đăng ký tài khoản: tên, email, mật khẩu, ô đồng ý → mã 6 số qua email → tài khoản tạo xong và đăng nhập. Hoặc Google (chỉ Member). Quên mật khẩu bằng OTP email. | BR-06, BR-12 |
+| UC-30 | Chọn chương trình → chọn loại vé, số lượng → nhập thông tin người đặt, câu hỏi tuỳ chỉnh, tick ô đồng ý và ô đã đọc lưu ý an toàn → OTP email (bỏ qua nếu Member có email đã xác thực) → giữ chỗ 15 phút → thanh toán VietQR. Chương trình miễn phí thì phát vé ngay. | BR-06, BR-08, BR-12 → 15 |
+| UC-31 | Vé gửi qua email (mỗi vé một QR). Xem lại bằng link ký số, tra cứu bằng email + OTP, hoặc trong Vé của tôi. | BR-16 |
+| UC-32 | Soạn sự kiện → xem trước → tự xuất bản (không cần người duyệt thứ hai) → đóng/kết thúc. Gỡ xuất bản khi chưa có đăng ký; nhân bản sự kiện. | BR-17 |
+| UC-33 | Xem người đăng ký theo từng sự kiện, xuất Excel (step-up + audit). Xem đơn, đối soát payOS; hoàn tiền thủ công rồi cập nhật trạng thái. | BR-04, BR-06 |
+| UC-34 | Quét QR (hoặc nhập mã vé) → hợp lệ / đã dùng / không hợp lệ; hiện bộ đếm đã check-in / tổng. | BR-16 |
+
 ### 6.4 Use case giai đoạn 2–3 (tóm tắt)
 
 | Mã | Vai trò | Mô tả & luồng chính tóm tắt | Quy tắc |
 |---|---|---|---|
-| UC-09 | Member | Đăng ký/đăng nhập; quản lý hồ sơ; xóa tài khoản. | BR-06 |
 | UC-10 | Member | Khi đăng nhập, ghi chú/đánh dấu/tiến độ trên thiết bị được **gộp** vào tài khoản và đồng bộ giữa các thiết bị. | BR-11 |
 | UC-11 | Member | Lưu tác phẩm yêu thích; xem lại trong hồ sơ. | |
 | UC-12 | Member | Xem danh sách yêu cầu quà tặng, đăng ký và trạng thái xử lý. | |
@@ -546,6 +576,12 @@ Vòng đời nội dung: xem §8.3.
 | **BR-09** | Số liệu tác động chỉ được công bố công khai hoặc đưa vào báo cáo ESG khi đã **có nguồn và được Super Admin duyệt.** | Tránh cường điệu (greenwashing), bảo vệ uy tín với đối tác ESG |
 | **BR-10** | Giá hiển thị công khai là **khoảng giá niêm yết** (30.000đ – 500.000đ tùy nhóm). Giá chốt do đội xác nhận khi liên hệ, đến khi có đơn hàng ở GĐ2. | Khớp với thực tế chưa có thanh toán online ở GĐ1 |
 | **BR-11** | Ghi chú và đánh dấu cá nhân **chỉ chủ sở hữu thấy**; admin không truy cập nội dung ghi chú. | Riêng tư của người đọc |
+| **BR-12** | Email người đặt vé và người đăng ký tài khoản phải **xác thực bằng OTP** trước khi tạo đơn/tài khoản, kể cả chương trình miễn phí. | Chống đăng ký ảo, vé gửi đúng người |
+| **BR-13** | Chỉ thu thông tin **người đặt** (họ tên, email, SĐT) và số lượng vé. **Không** thu tên từng người tham dự, dữ liệu sức khoẻ, cân nặng, CCCD. Chương trình cho trẻ em: người đặt là phụ huynh/người giám hộ. | Thu tối thiểu (BR-06), bảo vệ trẻ vị thành niên (BR-08) |
+| **BR-14** | Giữ chỗ **15 phút**, chỉ bắt đầu sau khi OTP thành công; không bán vượt số lượng. | Công bằng, không bán vượt |
+| **BR-15** | Thanh toán chỉ được xác nhận bằng **webhook đã xác minh chữ ký**, không bao giờ bằng trang quay về. Hoàn tiền làm thủ công, hệ thống chỉ cập nhật trạng thái. | An toàn tiền |
+| **BR-16** | Mỗi vé có **mã QR riêng, ngẫu nhiên**, chỉ check-in được **một lần**. | Chống dùng lại vé |
+| **BR-17** | Sự kiện do người có quyền tự xuất bản, không cần người duyệt thứ hai (khác BR-05). Chỉ gỡ xuất bản khi chưa có người đăng ký. Form đã có người trả lời chỉ được thêm hoặc ẩn câu hỏi. | Không làm mất dữ liệu người đăng ký |
 
 ## 8. Thực thể khái niệm & vòng đời
 
@@ -685,9 +721,10 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 
 | Mã | Giả định |
 |---|---|
-| **A1** | Giai đoạn 1 **chưa có thanh toán online.** "Chọn quà này" = gửi yêu cầu; đội liên hệ xác nhận. |
+| **A1** | Đơn quà tặng ở GĐ1 **chưa thanh toán online**: "Chọn quà này" = gửi yêu cầu; đội liên hệ xác nhận. Thanh toán online ở GĐ1 **chỉ dành cho vé chương trình** (payOS, ADR-015). |
 | **A2** | Ghi chú/đánh dấu dùng được **không cần tài khoản** (lưu trên thiết bị), có tài khoản thì đồng bộ (GĐ2). |
-| **A3** | Partner **chưa có cổng đăng nhập ở GĐ1**; mọi thứ đi qua form, admin xử lý. |
+| **A3** | Partner **chưa có cổng đăng nhập ở GĐ1**; mọi thứ đi qua form, admin xử lý. Member có tài khoản từ GĐ1 (vé của tôi). |
+| **A9** | LAVIECO chỉ hoạt động ở **Cần Thơ**, không có khái niệm chi nhánh. Không có sơ đồ chỗ ngồi, không gửi SMS. |
 | **A4** | "N° 001…" trên sản phẩm là **mã số bộ sưu tập**, chưa phải hàng độc bản (tồn kho không quản lý ở GĐ1). |
 | **A5** | Thông tin liên hệ trong các bản thiết kế (email, địa chỉ, hotline, giờ mở cửa) là **placeholder**; quản lý qua cấu hình site (UC-28). |
 | **A6** | Học sinh **không** có tài khoản hay vai trò riêng. |
@@ -731,3 +768,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.2 | 20/09/2026 | Đồng bộ với `02`–`04`: thêm quyền xuất danh sách lead vào ma trận, sửa quan hệ Lead ↔ Yêu cầu quà tặng (1–nhiều), thống nhất quy ước mã câu hỏi | V.C. Trọng |
 | v0.3 | 20/09/2026 | Đội ngũ là nội dung tĩnh (UC-08, A8) | V.C. Trọng |
 | v0.4 | 16/10/2026 | Đồng bộ định vị v1.3: ba lớp giá trị (thêm Lớp Truyền thông, chưa có tính năng GĐ1), cập nhật nhóm sản phẩm minh chứng | V.C. Trọng |
+| v0.5 | 17/10/2026 | Phân hệ Chương trình vào GĐ1 (ADR-014): Member (UC-09 lên GĐ1), UC-30 → 34, BR-12 → 17, quyền mới trong ma trận, A1 cập nhật, A9 | V.C. Trọng |

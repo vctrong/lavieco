@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Phiên bản** | v0.3 (bản nháp, chờ duyệt) |
-| **Cập nhật** | 20/09/2026 |
+| **Phiên bản** | v0.5 (bản nháp, chờ duyệt) |
+| **Cập nhật** | 17/10/2026 |
 | **Phụ trách** | Võ Chí Trọng (CTO) |
 | **Đối tượng đọc** | Mọi người viết code trong repo |
 | **Tài liệu liên quan** | `02-kien-truc.md` · `03-co-so-du-lieu.md` (đầu vào) · `README.md` |
@@ -58,9 +58,10 @@ lavieco/
 │   ├── web/                     # Next.js: site công khai, Cẩm nang, phân giải QR, BFF   (src/, public/)
 │   └── admin/                   # Next.js: quản trị nội bộ, BFF                            (src/, public/)
 ├── services/
-│   ├── identity-service/        # NestJS: tài khoản admin, vai trò, 2FA, audit
+│   ├── identity-service/        # NestJS: staff (2FA) + member (OTP, Google), phiên, OTP email, audit
 │   ├── content-service/         # NestJS: cẩm nang, tác phẩm, QR, media, cấu hình site
-│   └── lead-service/            # NestJS: lead, yêu cầu quà, danh sách chờ
+│   ├── lead-service/            # NestJS: lead, yêu cầu quà, danh sách chờ
+│   └── program-service/         # NestJS: sự kiện (`events`), vé, check-in, payOS (ADR-014, từ Phase 2)
 ├── packages/
 │   ├── shared/                  # @lavieco/shared         hợp đồng: Zod schema, permission, enum, sự kiện
 │   ├── ui/                      # @lavieco/ui             design token + component nguyên thủy
@@ -172,6 +173,7 @@ flowchart TB
     idn["identity-service"]
     cnt["content-service"]
     led["lead-service"]
+    prg["program-service"]
   end
   subgraph packages["packages"]
     ui["ui"]
@@ -199,6 +201,9 @@ flowchart TB
   led --> kit
   led --> obs
   led --> shr
+  prg --> kit
+  prg --> obs
+  prg --> shr
 
   ui -. "chỉ type" .-> shr
   cli --> shr
@@ -418,6 +423,11 @@ export const TEXT = {
 | `/cam-nang/[chapterSlug]` | Đọc chương (tùy chọn `?trang=<pageId>`) | ISR + client | `handbook` |
 | `/hop-tac` | Form hợp tác, 5 nhóm đối tác | ISR + form | `contact` |
 | `/sap-ra-mat` | Trang chờ + nhận tin | ISR + form | `coming-soon` |
+| `/dang-ky` · `/dang-nhap` · `/quen-mat-khau` | Tài khoản Member: đăng ký (OTP), đăng nhập, Google, đặt lại mật khẩu | Động | `auth` |
+| `/tai-khoan` | Không gian thành viên (hồ sơ; Vé của tôi từ Phase 6) | Động | `account` |
+| `/api/auth/google/start` · `/api/auth/google/callback` · `/api/auth/refresh` | Google OAuth (PKCE), làm mới phiên | Động | `auth` |
+| `/chuong-trinh/[slug]`, `/chuong-trinh/[slug]/dang-ky`, `/chuong-trinh/thanh-toan/...`, `/ve/[token]`, `/tra-cuu-ve`, `/chuong-trinh/truong-hoc` | Phân hệ Chương trình (Phase 2 → 6, `05-programs-module.md`) | Động | `events`, `checkout`, `tickets`, `ticket-lookup` |
+| `/api/payments/payos/webhook` | Webhook payOS, chuyển raw body sang `program-service` (ADR-015) | Động | `checkout` |
 | **`/c/[code]`** | **Phân giải QR, trả `302`** | Động | `qr-resolver` |
 | `/api/leads` · `/api/waitlist` · `/api/handbook-stats` | BFF cho form và thống kê | Động | trong tính năng tương ứng |
 | `/api/revalidate` | Webhook làm mới cache (HMAC) | Động | `lib` |
@@ -425,7 +435,9 @@ export const TEXT = {
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).
 - Các đường dẫn tiếng Việt không dấu ở trên là đề xuất; tên URL chuẩn và chiến lược tiền tố ngôn ngữ chốt ở PQ3.
 - **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn Tide Dock, chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`not-found`, `error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
-- `src/proxy.ts` của `web`: cổng "sắp ra mắt" và header bảo mật (mục 5.1); không chứa logic nghiệp vụ.
+- `src/proxy.ts` của `web`: cổng "sắp ra mắt" (TODO UC-28), chuyển hướng UX theo cookie phiên member (`/tai-khoan` → `/dang-nhap?tiep=...`, đã đăng nhập thì rời `/dang-nhap`, `/dang-ky`) và header bảo mật; không chứa logic nghiệp vụ, không phải hàng rào bảo mật.
+- **Phiên member** (`lib/session.ts`): cookie httpOnly `lv_member_at`, `lv_member_rt`, `SameSite=Lax`. Server Component không ghi cookie được, nên khi access token hết hạn thì chuyển sang `/api/auth/refresh?tiep=...`. Tham số `tiep` chỉ nhận đường dẫn tương đối (`safeNextPath`, chống open redirect).
+- **Form công khai:** Zod ở client và Server Action, honeypot `website`, Turnstile chuẩn bị sẵn (`TURNSTILE_ENABLED`, `shared/components/turnstile-widget.tsx`, `lib/turnstile.ts`).
 
 **Tính năng (`src/features/`):**
 
@@ -450,29 +462,34 @@ export const TEXT = {
 ```
 apps/admin/src/
 ├── app/
-│   ├── (auth)/login/  (auth)/2fa/  (auth)/accept-invite/
+│   ├── (auth)/login/  (auth)/2fa/  (auth)/accept-invite/      # đã dựng (Phase 1)
+│   ├── api/auth/refresh/                                    # làm mới phiên staff
 │   └── (dashboard)/
+│       ├── layout.tsx               # requireStaff() + AdminShell (khung gộp chung)
 │       ├── page.tsx                 # tổng quan
+│       ├── events/  orders/  checkin/   # phân hệ Chương trình (Phase 2 → 6); UI ghi "Chương trình"
 │       ├── leads/                   # danh sách, chi tiết
 │       ├── handbook/                # chương, soạn, duyệt
 │       ├── works/                   # tác phẩm, story card
 │       ├── qr/                      # mã QR, thống kê
-│       ├── programs/  pages/        # mô tả chương trình, trang tĩnh
+│       ├── programs/  pages/        # mô tả chương trình công khai (program_pages), trang tĩnh
 │       ├── media/
-│       ├── site/                    # cấu hình site, "sắp ra mắt", nội dung đồng ý
+│       ├── site/                    # cấu hình site, "sắp ra mắt", nội dung đồng ý, loại chương trình
 │       ├── users/                   # người dùng, vai trò, lời mời
 │       └── audit/                   # nhật ký hoạt động
 ├── features/
-│   auth · leads · handbook · works · qr · programs · pages · media · site-settings · users · audit · dashboard
+│   auth · shell (khung, điều hướng theo quyền) · dashboard · events · orders · checkin
+│   leads · handbook · works · qr · programs · pages · media · site-settings · users · audit
 │   editor/                          # trình soạn thảo dạng khối dùng chung (ADR-008)
-├── lib/                             # session, kiểm tra quyền phía admin, khởi tạo api-clients
-└── proxy.ts                         # chuyển hướng UX tới /login khi chưa có phiên; header bảo mật (KHÔNG phải hàng rào bảo mật)
+├── lib/                             # env, session (cookie staff SameSite=Strict), khởi tạo api-clients
+└── proxy.ts                         # chuyển hướng UX tới /login khi chưa có phiên; noindex; header bảo mật (KHÔNG phải hàng rào bảo mật)
 ```
 
 `apps/admin/public/` chỉ chứa logo và tài sản tối thiểu của giao diện quản trị.
 
 - **Ẩn/hiện theo quyền chỉ để trải nghiệm.** Hàng rào thật nằm ở service (P5 ở `02`). Dùng `can(user, "lead:write")` từ `@lavieco/shared/permissions` để ẩn nút; **không** dựa vào đó để bảo vệ.
-- Các thao tác nhạy cảm (xuất lead, đổi vai trò, thu hồi QR) đi qua bước xác thực lại (step-up, `02` §9.2).
+- Các thao tác nhạy cảm (xuất lead, xuất người đăng ký, hoàn tiền, đổi vai trò, thu hồi QR) đi qua bước xác thực lại (step-up, `02` §9.2).
+- Đăng nhập staff 2 bước: mật khẩu → `mfaToken` trong cookie httpOnly 5 phút → TOTP hoặc mã khôi phục. Mục điều hướng chưa có màn hình hiện "Sắp có" (`features/shell/constants/nav.ts`), không để link chết.
 
 ## 6. Service backend
 
@@ -537,6 +554,9 @@ flowchart LR
 | S5 | Ghi dữ liệu kèm việc bất đồng bộ (audit, email, làm mới cache) → **ghi vào outbox trong cùng giao dịch** (`03` §7.2). Không gọi thẳng dịch vụ ngoài trong giao dịch. |
 | S6 | Lỗi nghiệp vụ là kiểu lỗi có mã (định nghĩa ở `shared`), ném từ `domain`/`application`; bộ lọc chung ở `service-kit` chuyển thành Problem Details. Không ném `HttpException` từ tầng dưới `api`. |
 | S7 | Không ghi log dữ liệu cá nhân; dùng logger của `@lavieco/observability` (đã che trường nhạy cảm). |
+| S8 | Mỗi route khai báo **đúng một** quy tắc truy cập của `@lavieco/service-kit` (ADR-018): `@RequirePermission(...)` (staff có đủ permission), `@RequireStaff()` (staff bất kỳ), `@RequireMember()` (member; lọc theo `userId`), `@AllowServices("web", ...)` (service token từ đúng bên gọi), `@PublicEndpoint()` (chỉ health, JWKS). Đây là cách hiện thực S4. |
+| S9 | `application/` không import Nest/Mongoose: use case là class thuần, nối bằng `useFactory` trong `<module>.module.ts`; port giao dịch/outbox/email lấy từ `@lavieco/service-kit/ports` (chỉ kiểu). Đăng ký model (`MongooseModule.forFeature`) đặt trong `infrastructure/*.model.ts`. Luật ESLint `serviceLayerRules` kiểm tra. |
+| S10 | Request/response khai báo bằng `@ZodBody(schema)` và `@ApiZodResponse(status, schema)`: vừa kiểm tra đầu vào, vừa sinh OpenAPI từ cùng schema Zod trong `shared`. |
 
 ### 6.4 Endpoint và tài liệu API
 
@@ -549,7 +569,8 @@ flowchart LR
 
 | Service | Module (`src/modules/`) |
 |---|---|
-| `identity-service` | `auth` · `users` · `invitations` · `sessions` · `signing-keys` · `audit` |
+| `identity-service` | `auth` (staff 2 bước, member, Google) · `users` · `invitations` · `sessions` · `otp` · `security` · `signing-keys` · `audit` · `outbox` (đã dựng, Phase 1) |
+| `program-service` | `events` · `event-types` · `ticketing` · `orders` · `tickets` · `checkin` · `registrations` · `payments` · `outbox` · `idempotency` · `jobs` (ADR-014, dựng từ Phase 2) |
 | `content-service` | `handbook` · `catalog` (tác phẩm, nhóm, story card) · `qr` · `programs-public` · `pages` · `site-settings` · `media` · `consent` · `outbox` |
 | `lead-service` | `leads` · `gift-requests` · `waitlist` · `internal-notes` · `idempotency` · `outbox` |
 
@@ -613,7 +634,7 @@ flowchart LR
 | **`.env.local`** | Mỗi project có `.env.local` (**gitignore**) chứa giá trị thật **chỉ cho máy dev**; tạo bằng `npm run env:init` (không ghi đè). Next.js tự nạp `.env.local`; service NestJS nạp qua module cấu hình của `service-kit` (chỉ khi chạy dev/test). **Staging/production không dùng tệp `.env*`**: biến do nền tảng chạy container cấp từ kho bí mật. |
 | **Không commit bí mật** | `.gitignore` chặn `.env*` trừ `.env.example`; `.dockerignore` loại `.env*` khỏi ảnh Docker. Giá trị thật ở kho bí mật của CI/hosting (`02` §9.6). Có quét bí mật trong CI. |
 | **Next.js** | Biến có tiền tố `NEXT_PUBLIC_` là **công khai** và được nhúng vào bundle lúc **build**, tuyệt đối không chứa bí mật (khi build Docker phải truyền lúc build). Tách `lib/env.ts` (server) và `lib/env.public.ts` (client). |
-| **Nhóm biến** | Kết nối DB (`MONGODB_URI`, mỗi service một tài khoản riêng); xác thực (`JWT_ISSUER`, `JWT_AUDIENCE`, JWKS URL, khóa ký service token); object storage; email; webhook (`REVALIDATE_SECRET`); quan sát (DSN Sentry, OTLP endpoint). |
+| **Nhóm biến** | Kết nối DB (`MONGODB_URI`, `MONGODB_DB`, mỗi service một tài khoản riêng); xác thực (`JWT_SIGNING_KEYS` chỉ ở identity, `IDENTITY_JWKS_URL` ở service khác, `SERVICE_TOKEN_PRIVATE_JWK` ở bên gọi, `SERVICE_TOKEN_TRUSTED_KEYS` ở bên được gọi, ADR-018); OTP/TOTP (`OTP_PEPPER`, `TOTP_ENCRYPTION_KEY`); Google (`GOOGLE_CLIENT_ID`; secret chỉ ở identity); Turnstile; object storage; email (`SMTP_*`, `MAIL_FROM`); payOS (Phase 5); webhook (`REVALIDATE_SECRET`); quan sát. Sinh khóa: `npm run keys:generate -w @lavieco/identity-service`. |
 | **Cờ hành vi** | Cấu hình nghiệp vụ đổi được lúc chạy (ví dụ "sắp ra mắt") lấy từ `site_settings`, **không** làm biến môi trường. Biến môi trường chỉ cho thứ gắn với hạ tầng/bí mật. |
 
 ## 9. Kiểm thử
@@ -622,9 +643,9 @@ flowchart LR
 
 | Tầng | Công cụ đề xuất | Đặt ở đâu | Chạy khi |
 |---|---|---|---|
-| **Đơn vị** | Vitest (hoặc Jest với Nest) | Cạnh mã (`*.spec.ts`) | Mỗi commit/PR |
+| **Đơn vị** | Vitest; service và `service-kit` dùng `unplugin-swc` để có decorator metadata (ADR-019) | Cạnh mã (`*.spec.ts`) | Mỗi commit/PR |
 | **Component** | Vitest + Testing Library | Cạnh component | Mỗi PR |
-| **Tích hợp (service + MongoDB thật)** | Vitest/Jest + Testcontainers (MongoDB replica set) | `services/*/src/test/integration/` | Mỗi PR |
+| **Tích hợp (service + MongoDB thật)** | Vitest + Testcontainers (`mongo:8.0` replica set, `npm run test:int`, cần Docker); app dựng bằng chính `AppModule.forRoot(env, overrides)` với email giả và outbox chạy tay | `services/*/src/test/integration/*.int-spec.ts` | Mỗi PR |
 | **Hợp đồng** | Test phân tích phản hồi bằng schema của `shared`; fixture chung | `services/*/src/test/contract/`, `packages/api-clients/src` | Mỗi PR |
 | **End-to-end** | Playwright, chạy trên compose đầy đủ | `e2e/src/` | Trước phát hành + sau triển khai (smoke) |
 
@@ -833,6 +854,9 @@ Làm khi thỏa điều kiện ở `02` §14.1. Checklist:
 | UC-23 Tác phẩm, story card, QR | `admin`: `works`, `qr`, `media` | `content-service`: `catalog`, `qr`, `media` |
 | UC-27 Người dùng & phân quyền | `admin`: `auth`, `users` | `identity-service`: `auth`, `users`, `invitations`, `sessions` |
 | UC-28 Cấu hình site | `admin`: `site-settings` | `content-service`: `site-settings`, `consent` |
+| UC-09 Tài khoản Member | `web`: `auth`, `account` | `identity-service`: `auth`, `otp`, `sessions`, `users` |
+| UC-30, 31 Đăng ký chương trình, vé | `web`: `events`, `checkout`, `tickets`, `ticket-lookup` | `program-service`; OTP qua `identity-service` |
+| UC-32 → 34 Quản trị sự kiện, đơn, check-in | `admin`: `events`, `orders`, `checkin` | `program-service` |
 
 ## 15. Lộ trình dựng khung
 
@@ -849,6 +873,8 @@ Thứ tự khuyến nghị để có thứ chạy được sớm và ít làm l�
 | 7 | **`lead-service`** + `web` form hợp tác/quà tặng/nhận tin + `admin` quản lý lead + outbox email (Mailpit) | Gửi form → lead vào admin → email thông báo |
 | 8 | Hoàn thiện `web` theo landing đã chốt (các tính năng còn lại), SEO, hiệu năng, truy cập được | Đạt ngưỡng Core Web Vitals ở `01` §9 |
 | 9 | Staging: Docker, CI/CD, giám sát QR, sao lưu + diễn tập khôi phục | Smoke QR sau triển khai chạy tự động |
+
+**Trạng thái (17/10/2026):** bước 1–4 xong trong Phase 1 của phân hệ Chương trình (`05-programs-module.md` §9). `identity-service` đã có cả Member/OTP/Google; `apps/admin` có đăng nhập 2 bước và khung chung. `content-service`, `lead-service` vẫn là khung rỗng. Lộ trình tiếp theo do `05` §9 dẫn (Phase 2: `program-service` + CRUD sự kiện), bước 5–9 ở trên làm song song khi cần.
 
 **Định nghĩa "khung xong" (sau bước 5):** `npm run dev:infra && npm run dev` chạy đủ 5 thành phần; quét một QR mẫu ra đúng nội dung; CI xanh; đã có ít nhất một ADR được duyệt.
 
@@ -896,3 +922,4 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.3 | 20/09/2026 | Bố cục project (L1–L7): mã nằm gọn trong `src/` (kể cả test), `public/` cho tài sản tĩnh, `docs/` ở gốc, `.env.local`, `src/proxy.ts` thay `middleware.ts` (Next.js 16+); đội ngũ thành dữ liệu tĩnh (`features/team`) | V.C. Trọng |
 | v0.3 | 20/09/2026 | Đổi công cụ quản lý gói từ pnpm sang npm workspaces (bỏ `pnpm-workspace.yaml`, dùng trường `workspaces`; lệnh `pnpm x` → `npm run x`) | V.C. Trọng |
 | v0.4 | 21/09/2026 | Chốt định dạng module: `packages/ui` xuất source (chỉ cho app Next.js, `transpilePackages`), các gói của service phát hành ESM+CJS (ADR-012); thêm mục 10.4 về `deps:check` và `tsconfig.depcruise.json` | V.C. Trọng |
+| v0.5 | 17/10/2026 | Phase 1: `program-service` trong bảng 6.5; quyền truy cập endpoint qua `@RequirePermission`/`@RequireStaff`/`@RequireMember`/`@AllowServices`/`@PublicEndpoint` (ADR-018); `application/` không import Nest/Mongoose, nối bằng `useFactory`, port từ `@lavieco/service-kit/ports`; model đăng ký trong `infrastructure` (S1); công cụ test Vitest + swc + Testcontainers (ADR-019); `deps:check` thêm luật service và cấu hình riêng cho admin; cây thư mục, bản đồ route `web`/`admin`, S8–S10, biến môi trường, use case → nơi viết code, trạng thái lộ trình | V.C. Trọng |

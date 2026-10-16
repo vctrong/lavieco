@@ -42,22 +42,24 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 
 ## 4. Lệnh (khi đã dựng khung)
 
-| Lệnh                                                        | Việc                                                                            |
-| ----------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| `npm run env:init`                                          | Tạo `.env.local` từ `.env.example` cho mọi project (không ghi đè)               |
-| `npm run dev:infra`                                         | MongoDB (replica set), MinIO, Mailpit bằng Docker                               |
-| `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003) |
-| `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                   |
-| `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                   |
-| `npm run build`                                             | Build (Turborepo cache)                                                         |
-| `npm run db:migrate` · `npm run db:seed`                    | Migration · dữ liệu khởi tạo                                                    |
-| `npm run gen` · `npm run gen:openapi`                       | Generator khung · sinh OpenAPI vào `docs/api/`                                  |
+| Lệnh                                                        | Việc                                                                                            |
+| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
+| `npm run env:init`                                          | Tạo `.env.local` từ `.env.example` cho mọi project (không ghi đè)                               |
+| `npm run dev:infra`                                         | MongoDB (replica set), MinIO, Mailpit bằng Docker                                               |
+| `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003), program (4004) |
+| `npm run admin:create -- --email … --name "…"`              | Tạo Super Admin đầu tiên (link kích hoạt một lần, bắt buộc cài 2FA)                             |
+| `npm run keys:generate -w @lavieco/identity-service`        | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)               |
+| `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                                   |
+| `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                                   |
+| `npm run build`                                             | Build (Turborepo cache)                                                                         |
+| `npm run db:migrate` · `npm run db:seed`                    | Migration · dữ liệu khởi tạo                                                                    |
+| `npm run gen` · `npm run gen:openapi`                       | Generator khung · sinh OpenAPI vào `docs/api/`                                                  |
 
 Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx turbo run test --filter=@lavieco/content-service`.
 
 ## 5. Kiến trúc: luật cứng
 
-1. **5 thành phần GĐ1:** `apps/web`, `apps/admin` (Next.js) + `services/identity-service`, `content-service`, `lead-service` (NestJS). Không thêm service/gateway/broker khi chưa thỏa điều kiện ở `docs/02` §14.1 và chưa có ADR.
+1. **6 thành phần GĐ1:** `apps/web`, `apps/admin` (Next.js) + `services/identity-service`, `content-service`, `lead-service`, `program-service` (NestJS; sự kiện/vé/payOS, miền `events` trong code, ADR-014/015). Member + Google + OTP ở `identity` (ADR-016). Service token Ed25519 theo bên gọi, mỗi route khai báo đúng một quy tắc truy cập (ADR-018). Không thêm service/gateway/broker khi chưa thỏa điều kiện ở `docs/02` §14.1 và chưa có ADR.
 2. **Service không mở ra Internet.** Chỉ `web` và `admin` nhận lưu lượng ngoài. Trình duyệt **không bao giờ** gọi thẳng service; đi qua BFF (Route Handlers/Server Actions).
 3. **Mỗi service một database** (`lavieco_identity` / `_content` / `_lead`), tài khoản DB riêng. **Cấm** đọc/ghi DB của service khác và cấm `$lookup` chéo DB. Tham chiếu chéo = ID + bản chụp (snapshot).
 4. **Hướng phụ thuộc** (`docs/04` §4.1): apps → packages; services → packages; **không** apps ↔ services, **không** service → service (gọi nhau qua HTTP bằng `@lavieco/api-clients`).
@@ -81,6 +83,12 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 | BR-09 | Số liệu tác động chỉ công bố khi có nguồn và được Super Admin duyệt                                |
 | BR-10 | Giá công khai là **khoảng giá niêm yết**, giá chốt do đội xác nhận                                 |
 | BR-11 | Ghi chú cá nhân của người đọc chỉ chủ sở hữu thấy                                                  |
+| BR-12 | Email người đặt vé / người đăng ký tài khoản phải xác thực OTP (kể cả chương trình miễn phí)       |
+| BR-13 | Chỉ thu thông tin **người đặt** + số lượng vé; không tên người tham dự, sức khoẻ, cân nặng, CCCD   |
+| BR-14 | Giữ chỗ 15 phút, chỉ sau khi OTP thành công; không bán vượt                                        |
+| BR-15 | Thanh toán chỉ xác nhận bằng webhook đã xác minh chữ ký; hoàn tiền thủ công                        |
+| BR-16 | Mỗi vé một QR ngẫu nhiên, check-in một lần                                                         |
+| BR-17 | Sự kiện tự xuất bản (không duyệt 2 người); form đã có người trả lời chỉ thêm/ẩn câu hỏi            |
 
 ## 7. QR: quy tắc riêng (dễ làm sai nhất)
 
@@ -108,6 +116,8 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Dữ liệu:** lấy ở `server/` qua `api-clients` → ánh xạ sang view model. Cache tag: `content:<thực-thể>` và `content:<thực-thể>:<slug|id>`; webhook `/api/revalidate` (HMAC) gọi `revalidateTag` đúng các tag này.
 - **Form:** Zod ở client (trải nghiệm) **và** ở Route Handler (an toàn); sinh `Idempotency-Key` (UUID) khi mở form; Turnstile + honeypot.
 - **Ghi chú/đánh dấu Cẩm nang (GĐ1):** IndexedDB sau module `features/handbook/storage`, ID UUID, `updatedAt`, xóa mềm. Không rải truy cập IndexedDB khắp nơi.
+- **Phiên:** member ở `web` (`lib/session.ts`, cookie httpOnly `SameSite=Lax`), staff ở `admin` (`SameSite=Strict`). Server Component không ghi cookie: token hết hạn thì chuyển qua `/api/auth/refresh?tiep=…` (web) hoặc `?next=…` (admin). Đường dẫn quay lại luôn qua `safeNextPath`. Form công khai có honeypot `website` + Turnstile (bật bằng `TURNSTILE_ENABLED`).
+- **Phân hệ Chương trình** (`docs/05`, ADR-014): miền tên `events` trong code (admin `/events`); `programs`/`program_pages` là mô tả công khai của `content-service`. Chỉ thu thông tin người đặt (BR-13), không dữ liệu sức khoẻ/CCCD.
 - **Env:** `NEXT_PUBLIC_*` là công khai (nhúng vào bundle lúc build), **không chứa bí mật**. Đọc env qua `lib/env.ts` (server) / `lib/env.public.ts`. Giá trị thật chỉ ở `.env.local`.
 - **`src/proxy.ts`:** chỉ điều hướng và gắn header nhẹ. `web`: cổng "sắp ra mắt" (rewrite tới `/sap-ra-mat` khi cờ bật và không có Draft Mode), i18n nếu cần, header bảo mật. `admin`: chuyển hướng `/login` khi chưa có phiên, `noindex`, header bảo mật. **Không** logic nghiệp vụ, không DB, không gọi service nặng. **Không phải hàng rào bảo mật**: Route Handler/Server Action/service vẫn tự kiểm tra xác thực và quyền.
 - **Ảnh tĩnh (`public/images/...`):** tên `kebab-case` không dấu (vd `team/vo-chi-trong.jpg`); đường dẫn khai báo ở constants (`src/shared/constants/assets.ts` hoặc `constants/` của tính năng), `alt` ở `text.ts`, không viết đường dẫn trong JSX; hiển thị bằng `next/image`; đổi ảnh thì đổi tên tệp. Favicon/OG/`robots`/`sitemap` dùng tệp quy ước trong `src/app/`, không để ở `public/`.
@@ -121,7 +131,10 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
   - `domain`: quy tắc **thuần TypeScript** (máy trạng thái, người duyệt khác người soạn, điều kiện xuất bản, phát hiện trùng). **Không import Nest/Mongoose.**
   - `infrastructure`: model Mongoose, repository, client ngoài.
 - S1: **chỉ `infrastructure` được import `mongoose`**; repository trả kiểu thuần, không trả tài liệu Mongoose. S2: module khác chỉ import `modules/<tên>/index.ts`. S3: truy vấn công khai có repository/projection riêng, **chỉ lấy `published`**. S4: mọi endpoint khai báo `@RequirePermission`; thiếu → từ chối mặc định. S6: lỗi nghiệp vụ là kiểu lỗi có mã (ở `shared`), không ném `HttpException` từ tầng dưới `api`. S7: log qua `@lavieco/observability`, **không PII**.
-- **Permission** (`packages/shared/permissions`, kiểm tra permission chứ không kiểm tra tên vai trò): `content:read|write|publish`, `qr:read|manage`, `site:read|write|system`, `lead:read|write|export`, `user:read|manage`, `audit:read`, `privacy:process`. Vai trò & permission là **hằng số trong code**, không phải dữ liệu DB. Thêm permission: theo `docs/04` §13.5 và cập nhật `docs/01` §4.4 + `docs/02` §9.3.
+- **Permission** (`packages/shared/permissions`, kiểm tra permission chứ không kiểm tra tên vai trò): `content:read|write|publish`, `qr:read|manage`, `site:read|write|system`, `lead:read|write|export`, `user:read|manage`, `audit:read`, `privacy:process`, `program:read|write`, `order:read|refund`, `registration:export`, `checkin:perform`. Vai trò & permission là **hằng số trong code**, không phải dữ liệu DB. Thêm permission: theo `docs/04` §13.5 và cập nhật `docs/01` §4.4 + `docs/02` §9.3.
+- **Quyền truy cập route** (ADR-018, S8): mỗi route dùng đúng một decorator của `@lavieco/service-kit`: `@RequirePermission(...)`, `@RequireStaff()`, `@RequireMember()` (lọc theo `userId`), `@AllowServices("web"|"admin"...)`, `@PublicEndpoint()` (chỉ health/JWKS). Không dùng bí mật dùng chung; service token Ed25519 theo bên gọi.
+- **`application/` không import Nest/Mongoose** (S9): use case là class thuần, nối bằng `useFactory`; port từ `@lavieco/service-kit/ports`. `MongooseModule.forFeature` đặt trong `infrastructure/*.model.ts`. Đầu vào/ra khai báo bằng `@ZodBody` + `@ApiZodResponse` (S10).
+- **Phiên bản:** NestJS 11 (CJS), Mongoose 8, jose 5, Vitest + `unplugin-swc`, Testcontainers (ADR-019).
 - **Endpoint mới:** theo `docs/04` §13.2 (hợp đồng Zod trong `shared` trước → use case → repository → controller → test → `npm run gen:openapi` → thêm vào `api-clients`).
 - **Không viết tay OpenAPI.** Sinh từ code.
 - Controller chia theo người gọi: `*-public.controller.ts` (cho `web`, quyền tối thiểu) và `*-admin.controller.ts` (cho `admin`, token người dùng).
@@ -140,6 +153,10 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Bí mật trong DB:** chỉ lưu **băm** cho mật khẩu (Argon2id), refresh token, mã khôi phục 2FA, token mời. Bí mật TOTP mã hóa cấp ứng dụng. **Khóa ký JWT không nằm trong DB.**
 - **`audit_events` chỉ thêm**, tài khoản DB chỉ `find`+`insert`. Ứng dụng **không** dùng vai trò `readWrite` dựng sẵn.
 - `outbox.payload` **chỉ chứa ID, không chứa PII**.
+- **Lưu giữ đơn/vé (DQ8, đã chốt; `docs/03` §8.1):**
+  - PII (họ tên, email, SĐT người đặt, câu trả lời form, ghi chú) giữ **24 tháng kể từ khi chương trình kết thúc**, rồi **ẩn danh** bằng job định kỳ. Job làm ở phase có đơn hàng.
+  - Dữ liệu tài chính không chứa PII (`orderCode`, `amount`, `paidAt`, mã đối soát payOS, trạng thái hoàn tiền, `refundedAt`) giữ **tối thiểu 10 năm**.
+  - Thiết kế schema để PII tách khỏi trường tài chính. Cần xác nhận lại với kế toán khi LAVIECO có pháp nhân.
 
 ## 11. Bảo mật & dữ liệu cá nhân: KHÔNG bao giờ
 
@@ -200,7 +217,7 @@ Dùng mặc định trong tài liệu nếu an toàn, ghi `TODO(<mã>)`, hoặc 
 | AQ2           | Email dự phòng khi `lead-service` lỗi (chứa PII) có chấp nhận không                                                                                       |
 | AQ3, DQ1, DQ2 | Thời hạn lưu giữ lead / audit                                                                                                                             |
 | AQ4           | Yêu cầu lưu trữ dữ liệu trong nước (cần tham vấn pháp lý)                                                                                                 |
-| AQ5           | Tên miền chính thức và người đứng tên                                                                                                                     |
+| AQ5           | Người đứng tên miền (tên miền đã chốt: `lavieco.io.vn`)                                                                                                   |
 | AQ6, AQ7, AQ8 | Người quản trị hạ tầng; IP allowlist/Cloudflare Access cho admin; nhà cung cấp email                                                                      |
 | DQ3, DQ6, DQ7 | Xác nhận email 2 bước cho danh sách chờ; cửa sổ phát hiện trùng lead (mặc định 30 ngày, cấu hình được); nhập/xuất lead hàng loạt                          |
 | PQ1–PQ6       | Xác nhận quy ước kế thừa; ngoại lệ icon; chiến lược URL/ngôn ngữ; Testcontainers hay memory-server; thư viện trình soạn khối (ADR-008); công cụ generator |

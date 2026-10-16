@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Phiên bản** | v0.3 (bản nháp, chờ duyệt) |
-| **Cập nhật** | 20/09/2026 |
+| **Phiên bản** | v0.4 (bản nháp, chờ duyệt) |
+| **Cập nhật** | 17/10/2026 |
 | **Phụ trách** | Võ Chí Trọng (CTO) |
 | **Đối tượng đọc** | Đội phát triển, CISO |
 | **Tài liệu liên quan** | `01-nghiep-vu.md` · `02-kien-truc.md` (đầu vào) · `04-cau-truc-ma-nguon.md` |
@@ -68,7 +68,10 @@
 
 | Database | Collection | Vai trò | Ước lượng quy mô* |
 |---|---|---|---|
-| **identity** | `users` | Tài khoản (GĐ1: admin) | chục |
+| **identity** | `users` | Tài khoản (GĐ1: staff + member) | chục staff, nghìn member |
+| | `otp_codes` | Mã OTP email dùng chung (chỉ lưu HMAC) | tạm thời (TTL) |
+| | `rate_limit_buckets` | Bộ đếm giới hạn gửi OTP (khóa là HMAC) | tạm thời (TTL) |
+| | `outbox` | Email thông báo (đổi mật khẩu), sự kiện sang service khác | tạm thời (TTL) |
 | | `sessions` | Refresh token (xoay vòng) | chục–trăm (có TTL) |
 | | `invitations` | Lời mời admin | ít (có TTL) |
 | | `audit_events` | Nhật ký hoạt động, chỉ thêm | chục nghìn/năm |
@@ -224,8 +227,11 @@ erDiagram
 |---|---|
 | `email`, `emailNormalized` | `emailNormalized` **unique**. |
 | `displayName` | Hiển thị trong audit, giao diện. |
-| `type` | `staff` (GĐ1). GĐ2+: `member`, `partner`, `supplier`. |
-| `roles` | Mảng khóa vai trò: `super_admin`, `content_editor`, `coordinator`, `auditor`. |
+| `type` | `staff`, `member` (GĐ1, ADR-016). GĐ2+: `partner`; GĐ3: `supplier`. |
+| `roles` | Mảng khóa vai trò: `super_admin`, `content_editor`, `coordinator`, `auditor`. Member không có vai trò. |
+| `googleSub` | Định danh Google (chỉ Member). Unique khi có. |
+| `emailVerifiedAt` | Thời điểm email được xác thực (OTP, Google, hoặc kích hoạt lời mời). |
+| `consent` | `{ version, at }`: phiên bản nội dung đồng ý và thời điểm (BR-06), cho Member. |
 | `status` | `invited` · `active` · `locked` · `disabled`. |
 | `passwordHash` | **Argon2id**. Không bao giờ trả ra API. |
 | `mfa.totp` | `{ secretEnc, enabledAt, lastUsedStep }`. `secretEnc` là bí mật TOTP **mã hóa cấp ứng dụng** (khóa nằm ở kho bí mật, không ở DB). `lastUsedStep` chống dùng lại cùng một mã. |
@@ -235,13 +241,13 @@ erDiagram
 
 **Vai trò và permission nằm trong code (`packages/shared`), không nằm trong DB.** Lý do: ở GĐ1 chỉ có 4 vai trò cố định, thay đổi phải qua review code và được audit qua lịch sử git; giảm bề mặt tấn công (không thể nâng quyền bằng cách sửa dữ liệu). Nếu sau này cần vai trò tùy biến, thêm collection `roles`.
 
-**Index:** `{ emailNormalized: 1 }` unique · `{ status: 1 }`.
+**Index:** `idx_users_email_normalized_uq` · `idx_users_status` · `idx_users_google_sub_uq` (unique, partial `googleSub: { $type: "string" }`).
 
 ### 4.2 `sessions` (refresh token)
 
 | Trường chính | Ghi chú |
 |---|---|
-| `userId`, `familyId` | `familyId` gom các token xoay vòng cùng một phiên đăng nhập. |
+| `userId`, `userType`, `familyId` | `familyId` gom các token xoay vòng cùng một phiên đăng nhập. `userType` để `web` chỉ refresh phiên member, `admin` chỉ phiên staff. |
 | `tokenHash` | Băm của refresh token; **không lưu token gốc**. |
 | `createdAt`, `lastUsedAt`, `expiresAt` | |
 | `rotatedAt`, `revokedAt`, `revokedReason` | Dùng lại token đã xoay vòng ⇒ nghi ngờ bị đánh cắp ⇒ **thu hồi cả `familyId`**. |
@@ -277,6 +283,20 @@ Email mời gửi **trực tiếp** qua `NotifyModule` (`@lavieco/service-kit`),
 - Danh sách hành động cần ghi: `02` §9.7.
 - **Index:** `{ at: -1 }` · `{ "actor.userId": 1, at: -1 }` · `{ action: 1, at: -1 }` · `{ "target.type": 1, "target.id": 1, at: -1 }`.
 - **Thời hạn lưu giữ:** chưa chốt (DQ2).
+
+### 4.4b `otp_codes` và `rate_limit_buckets` (OTP email dùng chung, ADR-016)
+
+`otp_codes`:
+
+- Trường: `challengeId` (ngẫu nhiên 128 bit, trả cho BFF), `emailNormalized`, `purpose` (`signup` · `reset_password` · `checkout` · `ticket_lookup`), `codeHash` (HMAC-SHA256 với pepper, không lưu mã), `expiresAt` (5 phút), `attempts` (tối đa 5), `verifiedAt`, `consumedAt` (bằng chứng xác thực chỉ dùng một lần), `purgeAt`.
+- **Không lưu IP.**
+- **Index:** `idx_otp_codes_challenge_id_uq` · TTL `idx_otp_codes_purge_at` (`purgeAt` = hết hạn + 1 ngày).
+
+`rate_limit_buckets`:
+
+- Trường: `{ key, count, expiresAt }`. `key` là HMAC của `otp:email:<email>` / `otp:ip:<ip>` / `otp:cooldown:<mục đích>:<email>`.
+- Cửa sổ cố định, cập nhật nguyên tử bằng upsert dạng pipeline.
+- **Index:** `idx_rate_limit_buckets_key_uq` · TTL `idx_rate_limit_buckets_expires_at`.
 
 ### 4.5 `signing_keys`
 
@@ -627,6 +647,11 @@ Yêu cầu **replica set** (`02` §8.1). Các thao tác dùng giao dịch nhiề
 | `waitlist_subscribers` | Tới khi hủy hoặc sau khi thông báo ra mắt + thời hạn đội quy định | Xóa, giữ băm vào danh sách loại trừ nếu đã hủy |
 | `qr_scan_daily`, `handbook_stats_daily` | Vô thời hạn | Tổng hợp ẩn danh, rất nhỏ |
 | `content_revisions`, `qr_codes` | Vô thời hạn | Bất biến / lưu trữ |
+| `otp_codes` | Hết hạn + 1 ngày | TTL `purgeAt` |
+| `rate_limit_buckets` | Hết cửa sổ (tối đa 10 phút) | TTL `expiresAt` |
+| `users` (member) | Tới khi người dùng yêu cầu xóa tài khoản | Xóa/ẩn danh hóa theo 8.2 |
+| Dữ liệu cá nhân của đơn/vé (`lavieco_program`): họ tên, email, SĐT người đặt, câu trả lời form (`order_answers`), ghi chú | **24 tháng kể từ khi chương trình kết thúc** (DQ8, đã chốt) | **Ẩn danh hóa** bằng job định kỳ (làm ở phase có đơn hàng). Đơn và vé vẫn còn, chỉ mất PII. |
+| Dữ liệu tài chính không chứa PII: `orderCode`, `amount`, `paidAt`, mã đối soát payOS, trạng thái hoàn tiền, `refundedAt` (`orders`, `payment_events`) | **Tối thiểu 10 năm** (DQ8, đã chốt) | Giữ nguyên, không xóa. Cần xác nhận lại với kế toán khi LAVIECO có pháp nhân. |
 
 ### 8.2 Ẩn danh hóa & yêu cầu xóa dữ liệu (BR-06, UC-29)
 
@@ -662,10 +687,11 @@ Chưa thiết kế chi tiết; nêu để đảm bảo thiết kế GĐ1 không 
 
 | GĐ | Service | Collection dự kiến | Nguyên tắc khi thiết kế |
 |---|---|---|---|
-| 2 | `program-service` | `programs`, `sessions`, `registrations`, `impact_records`, `impact_reports` | Chỉ lưu **số lượng** học sinh (BR-08). Báo cáo tác động có trạng thái duyệt (BR-09) và nguồn dẫn chứng. |
+| 1 | `program-service` (ADR-014) | Xem 9.2 | Thiết kế chi tiết ở Phase 2 |
+| 2 | `program-service` | thêm `sessions`, `impact_records`, `impact_reports` | Chỉ lưu **số lượng** học sinh (BR-08). Báo cáo tác động có trạng thái duyệt (BR-09) và nguồn dẫn chứng. |
 | 2 | `order-service` | `orders`, `quotes`, `payments` | Tiền = số nguyên VND; đơn giữ **bản chụp** giá và sản phẩm; nhận `gift_request` đã chuyển. |
 | 2 | `notification-service` | `templates`, `deliveries`, `preferences` | Tiêu thụ sự kiện từ outbox; log gửi không chứa PII. |
-| 2 | `identity-service` | thêm hồ sơ Member, liên kết Partner | `type` mở rộng; kiểm tra quyền theo `ownerId`. |
+| 2 | `identity-service` | liên kết Partner | `type` mở rộng; kiểm tra quyền theo `ownerId`. (Member đã có từ GĐ1.) |
 | 3 | `rewards-service` | `point_ledger`, `entitlements` | **Sổ cái chỉ thêm**; số dư được tính từ sổ cái (hoặc bản cache có kiểm tra lại). |
 | 3 | `collection-service` | `suppliers`, `pickups`, `volumes` | Khối lượng vỏ đưa vào số liệu tác động qua sự kiện. |
 
@@ -673,15 +699,32 @@ Chưa thiết kế chi tiết; nêu để đảm bảo thiết kế GĐ1 không 
 
 Đề xuất: collection **`reader_states`** thuộc `content-service` (không thuộc `identity`), khóa theo `userId`, chứa ghi chú, đánh dấu, tiến độ. Lý do: dữ liệu neo vào `pageId`/`blockId` của cẩm nang mà `content-service` hiểu; quyền riêng tư (BR-11) thực thi bằng `ownerId` ở service. Mỗi bản ghi có **ID sinh phía client (UUID)**, `updatedAt`, cờ xóa mềm để gộp từ IndexedDB theo *last-write-wins* từng bản ghi. Điều này đã được phản ánh ở `02` §4.2.
 
+### 9.2 Database `lavieco_program` (GĐ1, phác thảo; chốt ở Phase 2)
+
+Theo `05-programs-module.md` và các quyết định 17/10/2026. Tiền là số nguyên VND; mọi tài liệu có `schemaVersion`, `createdAt`, `updatedAt`, `revision` khi nhiều người sửa.
+
+| Collection | Nội dung chính | Ghi chú |
+|---|---|---|
+| `event_types` | Loại chương trình do admin quản lý (seed: Workshop, Talkshow, Triển lãm) | `program:write` |
+| `events` | `slug`, tiêu đề, `typeId`, `format` (`online` \| `offline`), thời gian, địa điểm/link online, mô tả, lưu ý an toàn, diễn giả, chương trình, FAQ, chính sách huỷ; `status` (`draft` · `published` · `closed` · `ended`); `form` (câu hỏi tuỳ chỉnh, ≤ 30, mỗi câu có `id` bất biến, `hidden`) | Không theo mẫu publishable (BR-17). `isFree` tính từ giá vé. |
+| `ticket_types` | `eventId`, tên, `price` (VND), `quantity` (`null` = không giới hạn), `sold`, `held`, giai đoạn mở bán, `maxPerOrder` | Giữ chỗ nguyên tử bằng `$expr` |
+| `orders` | `orderCode` (số, payOS), `eventId`, `userId?`, `buyer { name, email, emailNormalized, phone, phoneNormalized }`, `isGuardian`, `items` (bản chụp giá), `amount`, `status`, `expiresAt`, thông tin payOS tối thiểu | Không có thông tin người tham dự (BR-13) |
+| `order_answers` | Câu trả lời form tuỳ chỉnh **theo đơn**, khóa theo `questionId` | Xuất Excel kể cả câu đã ẩn |
+| `tickets` | `code` ngắn ngẫu nhiên (ví dụ `LVC-7K3Q9M`), `orderId`, `ticketTypeId`, `qrToken` (≥ 32 byte ngẫu nhiên), `status` (`valid` · `used` · `void`), `checkedInAt`, `checkedInBy` | Không có PII trên vé |
+| `payment_events` | `orderCode`, `type`, các trường cần đối soát (số tiền, mã tham chiếu, thời điểm), `verified` | Không lưu nguyên payload có tên người chuyển |
+
+**Lưu giữ (DQ8, 8.1).** Thiết kế schema sao cho PII (khối `buyer`, `order_answers`, ghi chú) **tách khỏi** trường tài chính. Job ẩn danh chỉ cần xóa/ghi đè các trường PII: đặt `buyer` về giá trị ẩn danh, thêm `anonymizedAt`. `orderCode`, `amount`, `paidAt`, mã đối soát, trạng thái hoàn tiền giữ ≥ 10 năm. Mốc tính 24 tháng là `endAt` của sự kiện. Job làm ở phase có đơn hàng.
+| `outbox`, `idempotency_keys` | Như các service khác | |
+
 ## 10. Vận hành: migration, index, quyền truy cập
 
 ### 10.1 Migration
 
-- Công cụ có phiên bản (ví dụ `migrate-mongo`), thư mục riêng mỗi service, tên `YYYYMMDDHHmm-mo-ta`. Mỗi migration **idempotent** (chạy lại an toàn).
+- Mỗi service có thư mục `migrations/`, file `YYYYMMDDHHmm-mo-ta.cjs` export `up(db)`. Lệnh `npm run db:migrate` (`src/cli/migrate.ts`) áp dụng theo thứ tự tên và ghi vào `migrations_applied` (ADR-019). Mỗi migration **idempotent** (chạy lại an toàn).
 - Chạy ở pipeline triển khai **trước** khi phát hành ứng dụng mới (`02` §12.4), bởi tài khoản `migrator`.
 - **Mẫu mở rộng – co lại (expand/contract)** cho thay đổi phá vỡ, để quay lui được một phiên bản: (1) thêm trường/collection mới; (2) ghi cả hai; (3) đọc từ mới; (4) backfill; (5) ở lần phát hành sau mới xóa trường cũ.
 - `schemaVersion` trên tài liệu cho phép nâng cấp **lười** (khi đọc/ghi) với các thay đổi nhỏ, hoặc backfill hàng loạt bằng migration.
-- **Dữ liệu khởi tạo (seed):** `work_categories` (3), `site_settings` (mặc định, `comingSoon.enabled = true`), `consent_texts` (phiên bản 1). **Tài khoản Super Admin đầu tiên tạo bằng lệnh khởi tạo một lần**, dùng mã dùng một lần cấp qua biến môi trường và **bắt buộc thiết lập 2FA ở lần đăng nhập đầu**. Tuyệt đối không có mật khẩu mặc định trong seed.
+- **Dữ liệu khởi tạo (seed):** `work_categories` (3), `site_settings` (mặc định, `comingSoon.enabled = true`), `consent_texts` (phiên bản 1). **Tài khoản Super Admin đầu tiên tạo bằng lệnh một lần** `npm run admin:create -- --email ... --name "..."`. Lệnh tạo tài khoản `invited` kèm một liên kết kích hoạt dùng một lần (48 giờ). Tài khoản chỉ hoạt động sau khi đặt mật khẩu **và** cài 2FA. Tuyệt đối không có mật khẩu mặc định trong seed.
 
 ### 10.2 Index
 
@@ -698,8 +741,11 @@ Chưa thiết kế chi tiết; nêu để đảm bảo thiết kế GĐ1 không 
 | `svc_identity` | `lavieco_identity` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` trên các collection; **riêng `audit_events` chỉ `find` + `insert`** |
 | `svc_content` | `lavieco_content` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
 | `svc_lead` | `lavieco_lead` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
-| `migrator` | cả ba | Tạo/sửa index và collection; **chỉ dùng trong pipeline**, thông tin xác thực không nằm ở service chạy |
-| `backup` | cả ba | Chỉ đọc |
+| `svc_program` | `lavieco_program` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
+| `migrator` | cả bốn | Tạo/sửa index và collection; **chỉ dùng trong pipeline**, thông tin xác thực không nằm ở service chạy |
+| `backup` | cả bốn | Chỉ đọc |
+
+Môi trường thật: **một cụm MongoDB Atlas (Singapore, replica set)** chứa 4 database logic. Các tài khoản trên tạo bằng custom role của Atlas, mỗi tài khoản chỉ có quyền trên database của mình. Local: replica set một nút trong `infra/compose/compose.dev.yml`, không bật xác thực.
 
 Không dùng vai trò `readWrite` dựng sẵn cho ứng dụng vì nó gồm cả quyền quản lý index và xóa collection; ứng dụng không cần quyền đó khi chạy. Mọi tài khoản dùng mật khẩu/khóa riêng, lưu ở kho bí mật, giới hạn địa chỉ mạng được phép kết nối.
 
@@ -726,6 +772,8 @@ Không dùng vai trò `readWrite` dựng sẵn cho ứng dụng vì nó gồm c�
 | UC-23 Tác phẩm, story card, QR | đọc/ghi `works`, `qr_codes`, `content_revisions`, `media`, `outbox`; ghi object storage |
 | UC-27 Người dùng & phân quyền | đọc/ghi `users`, `invitations`, `sessions`, `audit_events` |
 | UC-28 Cấu hình site | đọc/ghi `site_settings`, `consent_texts`, `outbox` |
+| UC-09 Đăng ký, đăng nhập Member | đọc/ghi `users`, `otp_codes`, `rate_limit_buckets`, `sessions`, `outbox`; ghi `audit_events` (đặt lại mật khẩu) |
+| UC-30 → 34 Phân hệ Chương trình | `lavieco_program` (9.2); OTP qua `identity-service` |
 
 ## 12. Giả định & câu hỏi mở
 
@@ -750,6 +798,7 @@ Không dùng vai trò `readWrite` dựng sẵn cho ứng dụng vì nó gồm c�
 | **DQ5** | Ý nghĩa của `N°` (Q5 ở `01`): mã bộ sưu tập hay số thứ tự từng tác phẩm độc bản? Nếu là hàng độc bản, cần mô hình tồn kho/đơn vị bán. | 5.2 |
 | **DQ6** | Độ dài **cửa sổ phát hiện trùng lead** (BR-07)? Đề xuất mặc định 30 ngày, cấu hình được. | 6.1 |
 | **DQ7** | Có nhập/xuất dữ liệu lead hàng loạt (CSV) không, và ai được phép? (Ảnh hưởng permission `lead:export` và audit.) | 6.1, `02` §9.3 |
+| ~~**DQ8**~~ | **Đã chốt (17/10/2026):** PII của đơn/vé giữ 24 tháng kể từ khi chương trình kết thúc rồi ẩn danh bằng job định kỳ; dữ liệu tài chính không chứa PII giữ tối thiểu 10 năm. Còn mở: xác nhận với kế toán khi có pháp nhân. | 8.1, 9.2 |
 
 ### 12.3 Đồng bộ với tài liệu khác
 
@@ -761,4 +810,5 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 |---|---|---|---|
 | v0.1 | 20/09/2026 | Bản nháp đầu: 3 database Giai đoạn 1, mẫu publishable, index, vòng đời và quyền riêng tư, định hướng GĐ2–3 | V.C. Trọng |
 | v0.2 | 20/09/2026 | Đồng bộ với `02`, `04`: `OutboxModule`/`NotifyModule` ở `service-kit`, email mời gửi trực tiếp, đổi tham chiếu câu hỏi sang `AQ`, bỏ mục "cần cập nhật" đã áp dụng | V.C. Trọng |
+| v0.4 | 17/10/2026 | Member + OTP: `users` (`googleSub`, `emailVerifiedAt`, `consent`), `otp_codes`, `rate_limit_buckets`, `outbox` của identity; phác thảo `lavieco_program` (9.2); tài khoản DB `svc_program`; Atlas; migration runner; DQ8 chốt (PII đơn/vé 24 tháng sau khi chương trình kết thúc rồi ẩn danh; dữ liệu tài chính không PII ≥ 10 năm) | V.C. Trọng |
 | v0.3 | 20/09/2026 | Bỏ khóa `team` và khối `team_members` khỏi `pages` (Đội ngũ là dữ liệu tĩnh); ghi chú ranh giới `media` và `public/` | V.C. Trọng |
