@@ -56,6 +56,19 @@ export const ERROR_CATALOG = {
   },
   "ticket_type.limit_reached": { status: 422, title: "Too many ticket types for this event" },
 
+  "media.type_unsupported": { status: 415, title: "Only JPEG, PNG and WebP images are accepted" },
+  "media.format_refused": {
+    status: 415,
+    title: "HEIC, HEIF and AVIF images are not supported yet",
+  },
+  "media.too_large": { status: 413, title: "Image is larger than allowed for this use" },
+  "media.image_invalid": { status: 422, title: "Image could not be decoded" },
+  "media.too_many_pixels": { status: 422, title: "Image has too many pixels" },
+  "media.unavailable": {
+    status: 409,
+    title: "Image does not exist, was deleted or belongs elsewhere",
+  },
+
   "event_type.name_taken": { status: 409, title: "An event type with this name already exists" },
 } as const satisfies Record<string, { status: number; title: string }>;
 

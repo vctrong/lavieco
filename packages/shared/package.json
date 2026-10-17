@@ -38,6 +38,16 @@
         "default": "./dist/events/index.cjs"
       }
     },
+    "./media": {
+      "import": {
+        "types": "./dist/media/index.d.ts",
+        "default": "./dist/media/index.js"
+      },
+      "require": {
+        "types": "./dist/media/index.d.cts",
+        "default": "./dist/media/index.cjs"
+      }
+    },
     "./identity": {
       "import": {
         "types": "./dist/identity/index.d.ts",
