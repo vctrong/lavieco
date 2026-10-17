@@ -147,7 +147,7 @@ packages:
 | Lệnh | Việc làm |
 |---|---|
 | `npm run env:init` | Tạo `.env.local` từ `.env.example` cho mọi project và cho compose (**không ghi đè** tệp đã có) |
-| `npm run dev:infra` | Bật MongoDB (replica set), MinIO, Mailpit bằng Docker, đọc biến từ `.env.local` ở gốc (mục 11) |
+| `npm run dev:infra` | Bật MongoDB (replica set), Mailpit bằng Docker, đọc biến từ `.env.local` ở gốc (mục 11). Ảnh dùng Cloudinary dev, không có container (ADR-020) |
 | `npm run dev` | Chạy đồng thời `web`, `admin` và 3 service ở chế độ phát triển |
 | `npm run build` · `npm run lint` · `npm run typecheck` | Chạy trên toàn workspace (Turborepo lo cache) |
 | `npm run test` · `npm run test:int` | Test đơn vị · test tích hợp |
@@ -292,7 +292,7 @@ apps/<web|admin>/
 
 **`public/`** (tài sản tĩnh cứng trong code):
 
-- **Dành cho:** logo, ảnh chia sẻ mặc định, **ảnh thành viên**, hình trang trí, ảnh dự phòng. **Ảnh do đội nội dung tải lên** (tác phẩm, cẩm nang, infographic) **không** để ở đây, mà đi qua `media`/object storage (`03` §5.8).
+- **Dành cho:** logo, ảnh chia sẻ mặc định, **ảnh thành viên**, hình trang trí, ảnh dự phòng. **Ảnh do đội nội dung tải lên** (tác phẩm, cẩm nang, infographic) **không** để ở đây, mà đi qua `media` (Cloudinary, ADR-020, `03` §5.8).
 - Mọi tệp trong `public/` được phục vụ **công khai** → không đặt dữ liệu riêng tư, bản nháp hay bí mật.
 - **Tên tệp:** `kebab-case`, chữ thường, không dấu, không khoảng trắng (ví dụ `team/vo-chi-trong.jpg`). Đổi ảnh thì **đổi tên tệp** (hoặc thêm hậu tố phiên bản) để không dính cache.
 - **Định dạng và dung lượng (đề xuất):** logo và hình trang trí dạng **SVG**; ảnh chụp dạng WebP/JPEG, cạnh dài tối đa ≈ 2000 px, khoảng ≤ 500 KB mỗi ảnh sau tối ưu. Tệp gốc/nguồn thiết kế để ở `docs/brand/` hoặc kho của đội thiết kế, **không** để trong `public/`.
@@ -541,11 +541,11 @@ flowchart LR
 | **`api`** | Nhận request, xác thực đầu vào bằng Zod, kiểm tra permission (`@RequirePermission`), gọi use case, ánh xạ kết quả ra DTO | Chứa quy tắc nghiệp vụ, gọi Mongoose |
 | **`application`** | Điều phối một tình huống (ví dụ "xuất bản chương"), mở giao dịch, gọi `ports`, ghi outbox | Import Mongoose/Nest, biết HTTP |
 | **`domain`** | Trạng thái, quy tắc thuần: máy trạng thái publishable (`03` §3), quy tắc người duyệt khác người soạn, kiểm tra xuất bản (BR-01), máy trạng thái lead, phát hiện trùng | Import bất kỳ framework nào (kể cả Nest, Mongoose) |
-| **`infrastructure`** | Schema/model Mongoose, hiện thực repository, gọi dịch vụ ngoài (object storage, email) | Chứa quy tắc nghiệp vụ; để lộ kiểu Mongoose ra ngoài tầng này |
+| **`infrastructure`** | Schema/model Mongoose, hiện thực repository, gọi dịch vụ ngoài (Cloudinary, email) | Chứa quy tắc nghiệp vụ; để lộ kiểu Mongoose ra ngoài tầng này |
 
 **Ghi chú thực dụng (không quá tay):**
 - `domain` là **hàm và kiểu thuần TypeScript**, dễ test không cần khởi động gì. Không cần dựng "aggregate root" hay "value object" nặng nề khi quy tắc chỉ vài dòng.
-- Chỉ tạo **`ports`** khi giúp test hoặc thay thế thật sự (repository, object storage, gửi email). Đừng tạo giao diện cho mọi lớp.
+- Chỉ tạo **`ports`** khi giúp test hoặc thay thế thật sự (repository, `MediaStorage`, gửi email). Đừng tạo giao diện cho mọi lớp.
 - Module giao tiếp với nhau qua **`index.ts`** (dịch vụ được export), không import sâu vào tầng trong của module khác (luật S2 dưới đây).
 
 ### 6.3 Luật ranh giới trong service
@@ -639,7 +639,7 @@ flowchart LR
 | **`.env.local`** | Mỗi project có `.env.local` (**gitignore**) chứa giá trị thật **chỉ cho máy dev**; tạo bằng `npm run env:init` (không ghi đè). Next.js tự nạp `.env.local`; service NestJS nạp qua module cấu hình của `service-kit` (chỉ khi chạy dev/test). **Staging/production không dùng tệp `.env*`**: biến do nền tảng chạy container cấp từ kho bí mật. |
 | **Không commit bí mật** | `.gitignore` chặn `.env*` trừ `.env.example`; `.dockerignore` loại `.env*` khỏi ảnh Docker. Giá trị thật ở kho bí mật của CI/hosting (`02` §9.6). Có quét bí mật trong CI. |
 | **Next.js** | Biến có tiền tố `NEXT_PUBLIC_` là **công khai** và được nhúng vào bundle lúc **build**, tuyệt đối không chứa bí mật (khi build Docker phải truyền lúc build). Tách `lib/env.ts` (server) và `lib/env.public.ts` (client). |
-| **Nhóm biến** | Kết nối DB (`MONGODB_URI`, `MONGODB_DB`, mỗi service một tài khoản riêng); xác thực (`JWT_SIGNING_KEYS` chỉ ở identity, `IDENTITY_JWKS_URL` ở service khác, `SERVICE_TOKEN_PRIVATE_JWK` ở bên gọi, `SERVICE_TOKEN_TRUSTED_KEYS` ở bên được gọi, ADR-018); OTP/TOTP (`OTP_PEPPER`, `TOTP_ENCRYPTION_KEY`); Google (`GOOGLE_CLIENT_ID`; secret chỉ ở identity); Turnstile; object storage; email (`SMTP_*`, `MAIL_FROM`); payOS (Phase 5); webhook (`REVALIDATE_SECRET`); quan sát. Sinh khóa: `npm run keys:generate -w @lavieco/identity-service`. |
+| **Nhóm biến** | Kết nối DB (`MONGODB_URI`, `MONGODB_DB`, mỗi service một tài khoản riêng); xác thực (`JWT_SIGNING_KEYS` chỉ ở identity, `IDENTITY_JWKS_URL` ở service khác, `SERVICE_TOKEN_PRIVATE_JWK` ở bên gọi, `SERVICE_TOKEN_TRUSTED_KEYS` ở bên được gọi, ADR-018); OTP/TOTP (`OTP_PEPPER`, `TOTP_ENCRYPTION_KEY`); Google (`GOOGLE_CLIENT_ID`; secret chỉ ở identity); Turnstile; Cloudinary (`CLOUDINARY_*` chỉ ở `content-service`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` ở app; ADR-020); email (`SMTP_*`, `MAIL_FROM`); payOS (Phase 5); webhook (`REVALIDATE_SECRET`); quan sát. Sinh khóa: `npm run keys:generate -w @lavieco/identity-service`. |
 | **Cờ hành vi** | Cấu hình nghiệp vụ đổi được lúc chạy (ví dụ "sắp ra mắt") lấy từ `site_settings`, **không** làm biến môi trường. Biến môi trường chỉ cho thứ gắn với hạ tầng/bí mật. |
 
 ## 9. Kiểm thử
@@ -738,12 +738,11 @@ Turborepo chạy `--filter="...[origin/main]"` để chỉ xử lý phần bị 
 
 ### 11.1 Môi trường cục bộ
 
-`npm run dev:infra` bật qua Docker Compose (`infra/compose/docker-compose.dev.yml`):
+`npm run dev:infra` bật qua Docker Compose (`infra/compose/compose.dev.yml`):
 
 | Dịch vụ | Vai trò | Cổng đề xuất |
 |---|---|---|
-| **MongoDB (replica set một nút)** | DB cho ba service; script khởi tạo tạo replica set, database, vai trò và tài khoản theo `03` §10.3 | 27017 |
-| **MinIO** | Object storage tương thích S3 (ảnh, tệp QR, bản chụp ánh xạ QR) | 9000 / 9001 |
+| **MongoDB (replica set một nút)** | DB cho mọi service; healthcheck khởi tạo replica set | 27017 |
 | **Mailpit** | Bắt email gửi ra (thay nhà cung cấp email thật) | 1025 / 8025 |
 
 Ứng dụng và service chạy trên máy (`npm run dev`) để có hot reload nhanh; có profile `full` chạy tất cả trong container để mô phỏng staging.
@@ -755,6 +754,9 @@ Turborepo chạy `--filter="...[origin/main]"` để chỉ xử lý phần bị 
 | `identity-service` | 4001 |
 | `content-service` | 4002 |
 | `lead-service` | 4003 |
+| `program-service` | 4004 |
+
+**Không có object storage ở local** (ADR-020): ảnh lên product environment Cloudinary **dev**, folder `lavieco/dev`. **Dev không bao giờ trỏ vào database production:** mặc định là Mongo trong compose; nếu dùng Atlas thì chỉ database hậu tố `_dev` (`lavieco_content_dev`...) với user Atlas riêng chỉ có quyền trên `*_dev`. `loadConfig` của `service-kit` từ chối khởi động khi ngoài production mà `MONGODB_URI` trỏ Atlas (`mongodb.net`) với database không có hậu tố `_dev`, và từ chối `_dev` ở production; `npm run env:check` báo cùng lỗi này (chỉ in tên biến).
 
 ### 11.2 Docker cho triển khai
 
@@ -872,7 +874,7 @@ Thứ tự khuyến nghị để có thứ chạy được sớm và ít làm l�
 | 1 | Khởi tạo repo: npm + Turborepo, `tsconfig.base`, `packages/config` (ESLint, Prettier), husky/commitlint, `.gitignore`/`.dockerignore` (chặn `.env*` trừ `.env.example`), script `env:init`, CI khung | `npm run lint && npm run typecheck` chạy trên workspace rỗng |
 | 2 | `packages/shared` (kiểu chung, permission, Problem Details) + `packages/observability` | Test so khớp ma trận quyền chạy |
 | 3 | `packages/ui`: **token + font + component nguyên thủy** + trang minh họa token | Token hiển thị đúng, khớp bộ nhận diện |
-| 4 | `service-kit` + **`identity-service`** tối thiểu (đăng nhập, 2FA, JWKS) + `infra/compose` (Mongo, MinIO, Mailpit) | Đăng nhập admin bằng 2FA ở local |
+| 4 | `service-kit` + **`identity-service`** tối thiểu (đăng nhập, 2FA, JWKS) + `infra/compose` (Mongo, Mailpit; MinIO đã bỏ ở Phase 2b, ADR-020) | Đăng nhập admin bằng 2FA ở local |
 | 5 | **`content-service`**: `qr` (phân giải), `catalog` (đọc) + `web` khung, route `/c/[code]`, trang 404 và trang chờ | Quét QR mẫu → `302` → đúng trang; e2e smoke đầu tiên |
 | 6 | `content-service` xuất bản (publishable), `handbook`, `media` + `admin` (đăng nhập, soạn, duyệt) | Soạn → duyệt → trang công khai đổi |
 | 7 | **`lead-service`** + `web` form hợp tác/quà tặng/nhận tin + `admin` quản lý lead + outbox email (Mailpit) | Gửi form → lead vào admin → email thông báo |
@@ -885,9 +887,9 @@ Lộ trình đang chạy theo các phase của phân hệ Chương trình (`05-p
 
 | Phase | Trạng thái | Ghi chú |
 |---|---|---|
-| **1** Auth + nền | **Xong**, đã duyệt. Nhánh `feat/phase1-foundation-auth` (chưa merge) | Gồm bước 1–4 ở bảng trên. `identity-service`: staff 2FA, Member (OTP email, Google), OTP dùng chung, phiên, audit. `web`: `/dang-ky`, `/dang-nhap`, `/quen-mat-khau`, `/tai-khoan`. `admin`: đăng nhập 2 bước, kích hoạt lời mời, khung chung. `content-service`, `lead-service` vẫn là khung rỗng. |
-| **2** `program-service` + CRUD sự kiện | **Xong** (18/10/2026). Nhánh `feat/phase2-events` (đã push, chưa merge) | Phạm vi ở 15.2. `program-service` (`event-types`, `events`, `ticketing`, `outbox`), admin `/events` (danh sách, soạn, form builder, loại vé, xem trước, nhân bản, `/events/types`), web `/chuong-trinh`, `/chuong-trinh/[slug]`, `/chuong-trinh/truong-hoc`, xem trước, `/api/revalidate`. Ảnh bìa dùng hình minh hoạ (`TODO(media)`). |
-| **2b** Module `media` (tải ảnh bìa) | **Việc tiếp theo, bắt buộc trước khi mở cho người dùng thật** | Quyết định D1 (18/10/2026): `content-service` `media` (kiểm tra loại theo nội dung, xoá EXIF, giới hạn dung lượng); `events.cover` trỏ tới media; admin bật ô tải ảnh bìa; web hiển thị bằng `next/image`. **Nơi lưu ảnh: Cloudinary** (quyết định 18/10/2026), thay cho bộ chứa tương thích S3 ở `docs/02` §8.2. Việc đầu tiên của Phase 2b: viết ADR-020 (Cloudinary cho ảnh nội dung: upload chỉ qua `content-service`, khoá API chỉ ở service, kiểm tra magic bytes + xoá EXIF trước khi gửi, quyền riêng tư/AQ4 về nơi lưu dữ liệu, MinIO còn dùng cho tệp QR hay không) rồi cập nhật `docs/02` §8.2, `docs/03` (`media`), `.env.example`. |
+| **1** Auth + nền | **Xong**, đã duyệt. Nhánh `feat/phase1-foundation-auth` (đã merge vào `main`) | Gồm bước 1–4 ở bảng trên. `identity-service`: staff 2FA, Member (OTP email, Google), OTP dùng chung, phiên, audit. `web`: `/dang-ky`, `/dang-nhap`, `/quen-mat-khau`, `/tai-khoan`. `admin`: đăng nhập 2 bước, kích hoạt lời mời, khung chung. `content-service`, `lead-service` vẫn là khung rỗng. |
+| **2** `program-service` + CRUD sự kiện | **Xong** (18/10/2026). Nhánh `feat/phase2-events` (đã merge vào `main`) | Phạm vi ở 15.2. `program-service` (`event-types`, `events`, `ticketing`, `outbox`), admin `/events` (danh sách, soạn, form builder, loại vé, xem trước, nhân bản, `/events/types`), web `/chuong-trinh`, `/chuong-trinh/[slug]`, `/chuong-trinh/truong-hoc`, xem trước, `/api/revalidate`. Ảnh bìa dùng hình minh hoạ (`TODO(media)`). |
+| **2b** Module `media` (ảnh chương trình, avatar) | **Đang làm.** Nhánh `feat/phase2b-media` | ADR-020 (Cloudinary). Dựng `content-service` (§13.3) với module `media`: kiểm tra magic bytes (JPEG/PNG/WebP; HEIC/AVIF báo lỗi riêng), giới hạn dung lượng (avatar ≤ 2 MB, chương trình ≤ 8 MB), xoá EXIF bằng `sharp`, port `MediaStorage` + bản cài Cloudinary, `pending → attached → deleted`, dọn `pending` sau 24 giờ. `program-service`: `cover` + `gallery` (≤ 12) là bản chụp media, `attach` khi lưu, outbox `media.release` khi thay ảnh/xoá nháp. Admin: ô tải ảnh bìa + thư viện ảnh. Web: hiển thị bằng `next/image` (named transformation), avatar ở `/tai-khoan`. MinIO bỏ khỏi compose; dev tách khỏi database production (§11.1). |
 | 3 → 6 | Chưa bắt đầu | Checkout miễn phí + vé QR + email → check-in + Excel → payOS → Vé của tôi, hoàn tiền, dashboard. **TODO(phase-3):** không phát hành vé/email cho sự kiện trực tuyến khi `onlineUrl` còn trống (khi xuất bản chỉ là cảnh báo). |
 
 ### 15.2 Phase 2: phạm vi
@@ -995,4 +997,5 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.5 | 17/10/2026 | Phase 1: `program-service` trong bảng 6.5; quyền truy cập endpoint qua `@RequirePermission`/`@RequireStaff`/`@RequireMember`/`@AllowServices`/`@PublicEndpoint` (ADR-018); `application/` không import Nest/Mongoose, nối bằng `useFactory`, port từ `@lavieco/service-kit/ports`; model đăng ký trong `infrastructure` (S1); công cụ test Vitest + swc + Testcontainers (ADR-019); `deps:check` thêm luật service và cấu hình riêng cho admin; cây thư mục, bản đồ route `web`/`admin`, S8–S10, biến môi trường, use case → nơi viết code, trạng thái lộ trình | V.C. Trọng |
 | v0.5.1 | 17/10/2026 | §15.1–15.3: Phase 1 xong; phạm vi Phase 2 (program-service + CRUD sự kiện) và danh sách cần đọc trước cho session sau | V.C. Trọng |
 | v0.6.1 | 18/10/2026 | Phase 2 đóng; Phase 2b dùng Cloudinary cho ảnh (cần ADR-020 và cập nhật `docs/02` §8.2 khi bắt đầu) | V.C. Trọng |
+| v0.7 | 18/10/2026 | Phase 2b bắt đầu: ADR-020 (Cloudinary), bỏ MinIO khỏi §11.1 và lệnh `dev:infra`; dev tách khỏi database production (guard ở `loadConfig`, `env:check`); biến Cloudinary; trạng thái lộ trình | V.C. Trọng |
 | v0.6 | 18/10/2026 | Phase 2 xong: bản đồ route `web` (`events`, xem trước, `/api/revalidate`) và `admin` (`/events/*`, loại chương trình ở `/events/types`), module `program-service` đã dựng, trạng thái lộ trình và Phase 2b (`media` bắt buộc trước khi mở cho người dùng thật), các điều chỉnh khi duyệt kế hoạch | V.C. Trọng |

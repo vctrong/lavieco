@@ -167,7 +167,7 @@ lavieco/
 **Bố cục project** (chi tiết: [`docs/04`](docs/04-cau-truc-ma-nguon.md) §2.1):
 
 - **Mã nguồn của mỗi project nằm gọn trong `src/`** (kể cả test); ngoài `src/` chỉ có cấu hình, `public/`, `Dockerfile`, tệp `.env*` và `migrations/` của service.
-- **`docs/` ở gốc repo**; **`public/` ở gốc mỗi app Next.js** (chứa ảnh tĩnh như logo, ảnh thành viên; ảnh do đội nội dung tải lên đi qua object storage).
+- **`docs/` ở gốc repo**; **`public/` ở gốc mỗi app Next.js** (chứa ảnh tĩnh như logo, ảnh thành viên; ảnh tải lên đi qua `content-service` và Cloudinary, ADR-020).
 - **Next.js 16+ dùng `src/proxy.ts`**, không dùng `middleware.ts`. Proxy chỉ điều hướng/gắn header, **không phải hàng rào bảo mật**.
 - **`.env.local`** chứa giá trị thật cho máy dev và **không bao giờ commit**; `.env.example` là bản mẫu được commit.
 
@@ -185,7 +185,7 @@ npm install
 # 2. Tạo .env.local từ .env.example ở mọi project (không ghi đè), rồi điền giá trị. KHÔNG commit
 npm run env:init
 
-# 3. Bật hạ tầng cục bộ: MongoDB (replica set), MinIO, Mailpit
+# 3. Bật hạ tầng cục bộ: MongoDB (replica set), Mailpit (ảnh dùng Cloudinary dev, xem docs/runbooks/chay-local.md)
 npm run dev:infra
 
 # 4. Migration và dữ liệu khởi tạo

@@ -6,7 +6,14 @@
 
 1. Node 24 (`.nvmrc`), Docker Desktop đang chạy.
 2. `npm install`, rồi `npm run env:init` để tạo các `.env.local` từ `.env.example` (không ghi đè tệp đã có).
-3. Ở `.env.local` gốc repo: đặt `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD` (giá trị bất kỳ cho máy dev). Nếu cổng 27017 đã có MongoDB khác dùng, đặt `MONGO_PORT=27018` và sửa `MONGODB_URI` của service theo cổng đó.
+3. Nếu cổng 27017 đã có MongoDB khác dùng, đặt `MONGO_PORT=27018` ở `.env.local` gốc repo và sửa `MONGODB_URI` của service theo cổng đó. Không còn MinIO: ảnh dùng Cloudinary dev (mục 2.1).
+
+### 1.0 Database: dev không bao giờ trỏ vào production
+
+- **Mặc định:** mọi service dùng Mongo trong compose, đúng như `.env.example` (`mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true`, `MONGODB_DB=lavieco_<service>`).
+- **Nếu cần Atlas khi dev** (ví dụ máy yếu không chạy Docker): chỉ dùng database có hậu tố `_dev` (`lavieco_identity_dev`, `lavieco_program_dev`, `lavieco_content_dev`) với **một user Atlas riêng chỉ có quyền trên các database `*_dev`**. Không dùng user `svc_*` của production trên máy dev.
+- Service từ chối khởi động (`invalid environment ... MONGODB_DB`) khi ngoài production mà `MONGODB_URI` trỏ `*.mongodb.net` với database không có hậu tố `_dev`; production từ chối database `_dev`. `npm run env:check` báo cùng lỗi, chỉ in tên biến.
+- Đã từng trỏ dev vào Atlas production: đổi `MONGODB_URI`/`MONGODB_DB` trong `.env.local` về compose (hoặc `*_dev`), rồi **xoay mật khẩu user Atlas production** đã từng nằm trên máy dev.
 
 ### 1.1 Mỗi khi pull code mới: `npm run env:check`
 
@@ -17,7 +24,7 @@ npm run env:check            # so mọi .env.local với .env.example, chỉ in 
 npm run env:check -- --fix   # thêm biến thiếu có giá trị mặc định trong .env.example (không ghi đè biến đã có)
 ```
 
-Biến thiếu mà `.env.example` để trống (khóa, secret) phải tự điền theo mục 2. Lệnh trả mã lỗi 1 khi còn biến thiếu. Ví dụ lỗi `Invalid server environment: PROGRAM_SERVICE_URL` khi `npm run dev` nghĩa là quên bước này.
+Biến thiếu mà `.env.example` để trống (khóa, secret) phải tự điền theo mục 2. Lệnh còn báo `MONGODB_DB` khi dev đang trỏ Atlas mà database không có hậu tố `_dev` (mục 1.0). Lệnh trả mã lỗi 1 khi còn vấn đề. Ví dụ lỗi `Invalid server environment: PROGRAM_SERVICE_URL` khi `npm run dev` nghĩa là quên bước này.
 
 ## 2. Sinh khóa
 
@@ -49,7 +56,7 @@ Khóa riêng (có trường `"d"`) chỉ nằm ở đúng một nơi. Service t�
 ## 3. Chạy
 
 ```
-npm run dev:infra                                      # Mongo replica set, MinIO, Mailpit
+npm run dev:infra                                      # Mongo replica set, Mailpit
 npm run db:migrate -w @lavieco/identity-service        # tạo index (idempotent, chạy lại an toàn)
 npm run build -w @lavieco/program-service && npm run db:migrate -w @lavieco/program-service   # index + seed loại chương trình (idempotent)
 npm run dev                                            # web :3000, admin :3001, identity :4001, program :4004

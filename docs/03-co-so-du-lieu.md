@@ -84,7 +84,7 @@
 | | `qr_codes` | Mã QR và ánh xạ đích đến | trăm |
 | | `qr_scan_daily` | Bộ đếm lượt quét theo mã × ngày | vài chục nghìn/năm |
 | | `handbook_stats_daily` | Bộ đếm mở/đọc hết chương theo ngày | nghìn/năm |
-| | `media` | Siêu dữ liệu ảnh | trăm–nghìn |
+| | `media` | Siêu dữ liệu ảnh tải lên (tệp ở Cloudinary, ADR-020) | trăm–nghìn |
 | | `content_revisions` | Bản chụp bất biến mỗi lần xuất bản | trăm–nghìn |
 | | `site_settings` | Cấu hình site (2 tài liệu cố định) | 2 |
 | | `consent_texts` | Các phiên bản nội dung đồng ý (bất biến) | ít |
@@ -404,7 +404,7 @@ Dùng mẫu publishable. Trang tĩnh: `key` ∈ `home`, `story`, `impact`, `cont
 
 - **`code` không bao giờ được cập nhật** (chặn ở tầng ứng dụng và có thể thêm `$jsonSchema` validator). 10 ký tự Crockford Base32 ≈ 50 bit; với vài trăm mã, việc dò đoán toàn bộ là không khả thi. Không dùng ký tự dễ nhầm (`I`, `L`, `O`, `U`).
 - **Không denormalize đường dẫn đích** vào tài liệu QR (dễ cũ khi đổi slug/gỡ nội dung). Phân giải làm hai truy vấn theo index (QR → đối tượng đích) và trả `{ status, canonicalPath }` với `status` ∈ `ok` · `not_published` · `revoked` · `not_found`.
-- **Bản chụp ánh xạ** ra object storage sau mỗi thay đổi (tạo, đổi đích, thu hồi): xem 7.3.
+- **Bản chụp ánh xạ** ra một nơi lưu ngoài MongoDB sau mỗi thay đổi (tạo, đổi đích, thu hồi): xem 7.3. Ảnh QR (SVG/PNG để in) **không lưu**, luôn sinh từ `code` khi cần (ADR-020).
 
 **Index:** `{ code: 1 }` unique · `{ "target.type": 1, "target.refId": 1 }` (tìm mọi QR trỏ tới một đối tượng, dùng cho cảnh báo khi lưu trữ) · `{ status: 1 }`.
 
@@ -429,20 +429,28 @@ db.qr_scan_daily.updateOne(
 
 ### 5.8 `media`
 
-> `media` chỉ dành cho ảnh **do đội nội dung tải lên qua `admin`**. Ảnh tĩnh cứng trong mã nguồn (logo, ảnh thành viên, hình trang trí) nằm ở `apps/web/public/images/` và **không** có bản ghi trong `media`.
+> Ảnh **tải lên qua `admin` hoặc `web`** (ảnh chương trình, avatar member; sau này ảnh cẩm nang, tác phẩm). Tệp ảnh nằm ở Cloudinary (ADR-020), collection này chỉ giữ siêu dữ liệu. Ảnh tĩnh cứng trong mã nguồn (logo, ảnh thành viên đội ngũ, hình trang trí) nằm ở `apps/web/public/images/` và **không** có bản ghi trong `media`. **Ảnh QR không bao giờ được lưu** (sinh từ mã khi cần).
 
-| Trường chính | Ghi chú |
+| Trường | Ghi chú |
 |---|---|
-| `kind` | `image` (GĐ1). **Không nhận SVG do người dùng tải lên** (rủi ro script); SVG chỉ do hệ thống sinh (mã QR). |
-| `original` | `{ mime, width, height, bytes, sha256 }`. Ảnh gốc giữ ở bucket riêng tư. |
-| `variants[]` | `{ name, width, height, format, storageKey, bytes }`, ví dụ `w480.webp`. |
-| `defaultAlt`, `caption`, `credit` | `credit` = tác giả/nguồn (bản quyền ảnh). |
-| `exifStripped` | Luôn `true`; đã xóa metadata (có thể chứa tọa độ GPS). |
-| `status` | `active` · `deleted` (xóa mềm). |
-| `uploadedBy` | `ActorRef`. |
+| `kind` | `image` (GĐ1). Chỉ JPEG/PNG/WebP sau khi kiểm tra magic bytes. **Không nhận SVG, HEIC/HEIF, AVIF.** |
+| `purpose` | `event_cover` · `event_gallery` · `avatar`. Quyết định giới hạn dung lượng (avatar ≤ 2 MB, chương trình ≤ 8 MB) và folder. |
+| `status` | `pending` (vừa tải, chưa gắn) · `attached` (đang được dùng) · `deleted` (đã giải phóng). |
+| `publicId` | Định danh ở Cloudinary, ví dụ `lavieco/prod/events/<ObjectId>`. Folder gốc theo môi trường. Không bao giờ đổi. |
+| `width`, `height`, `bytes`, `format` | Của ảnh **đã làm sạch** (sau khi xoay theo EXIF và mã hoá lại). `format` ∈ `jpeg` · `png` · `webp`. |
+| `sha256` | Băm của ảnh đã làm sạch, để đối soát; **không** unique (cùng một ảnh có thể dùng cho hai chương trình, mỗi lần là một bản ghi). |
+| `exifStripped` | Luôn `true`. |
+| `owner` | `{ kind: "member", userId }` cho avatar; `null` cho ảnh do staff tải. |
+| `attachedTo` | `{ service: "program-service", kind: "event", id }` khi `attached`; `null` khi `pending`. Avatar: `null` (sở hữu thể hiện qua `owner`). |
+| `uploadedBy` | `{ kind: "staff" \| "member", userId }`. |
+| `deletedAt`, `storageDeletedAt` | Lúc giải phóng; lúc đã xoá tệp ở Cloudinary (do outbox `media.destroy`). |
+| `schemaVersion`, `createdAt`, `updatedAt` | Như mọi tài liệu. |
 
-- **Vòng đời:** chỉ xóa thật (khỏi object storage) qua tác vụ dọn định kỳ đối với media `deleted` và không còn được tham chiếu. Việc phát hiện tham chiếu là quét theo lịch, không duy trì bộ đếm tham chiếu (tránh phức tạp và lệch).
-- **Index:** `{ sha256: 1 }` unique (lọc `status: active`, chống tải trùng) · `{ createdAt: -1 }`.
+- **`alt` không nằm ở đây:** nơi dùng ảnh giữ bản chụp `{ mediaId, publicId, width, height, alt }` (ví dụ `events.cover`, `events.gallery` ở 9.2). Avatar dùng alt sinh tự động ở giao diện.
+- **Vòng đời:** `pending` → `attached` → `deleted`; `pending` → `deleted` khi quá 24 giờ chưa gắn (job dọn). Chuyển sang `deleted` luôn kèm outbox `media.destroy` trong cùng giao dịch; handler xoá tệp ở Cloudinary rồi ghi `storageDeletedAt`. Bản ghi `deleted` giữ lại làm vết (không có PII ngoài `owner.userId`); khi xử lý yêu cầu xoá dữ liệu (UC-29) thì xoá hẳn bản ghi avatar của member đó.
+- **Gắn/giải phóng ảnh chương trình:** `program-service` gọi `attach` khi lưu chương trình (đồng bộ, trước giao dịch) và ghi outbox `media.release` khi ảnh bị thay hoặc bản nháp bị xoá. `attach` lặp lại với cùng `attachedTo` là thao tác rỗng; gắn ảnh đã thuộc nơi khác hoặc đã `deleted` → `409 media.unavailable`.
+- **Avatar:** mỗi member tối đa một avatar `attached`. Thay/xoá avatar giải phóng ảnh cũ trong cùng giao dịch.
+- **Index:** `idx_media_status_created_at` (`{ status: 1, createdAt: 1 }`, job dọn `pending`) · `idx_media_owner_avatar_uq` (`{ "owner.userId": 1 }` unique, partial `{ purpose: "avatar", live: true }`; `live` = `status: attached`, vì partial index không dùng `$ne`) · `idx_media_attached_to` (`{ "attachedTo.id": 1 }`).
 
 ### 5.9 `content_revisions`
 
@@ -633,7 +641,8 @@ Yêu cầu **replica set** (`02` §8.1). Các thao tác dùng giao dịch nhiề
 ### 7.3 Outbox và bản chụp ánh xạ QR
 
 - `outbox` của `content-service` và `lead-service` có cùng cấu trúc (dùng `OutboxModule` của `@lavieco/service-kit`), tiến trình xử lý nằm trong chính service (thăm dò theo chu kỳ ngắn, khóa việc bằng `findOneAndUpdate` để nhiều instance không xử lý trùng).
-- `type: qr.snapshot`: sau mỗi thay đổi QR, ghi bản chụp toàn bộ ánh xạ `{ code, status, target, updatedAt }` thành **tệp JSON bất biến có phiên bản** ở object storage (`qr-mapping/<thời điểm>-<số thứ tự>.json`), thử lại tới khi thành công. Đây là bảo hiểm cho BR-02 khi database hỏng (`02` §7.1).
+- `type: qr.snapshot`: sau mỗi thay đổi QR, ghi bản chụp toàn bộ ánh xạ `{ code, status, target, updatedAt }` thành **tệp JSON bất biến có phiên bản** (`qr-mapping/<thời điểm>-<số thứ tự>.json`) ở một nơi lưu ngoài MongoDB, thử lại tới khi thành công. Đây là bảo hiểm cho BR-02 khi database hỏng (`02` §7.1); **bắt buộc**, nơi lưu chọn khi dựng module `qr` (`TODO(qr-snapshot)`, ADR-020).
+- `type: media.destroy` (`{ mediaId }`): xoá tệp ở Cloudinary của media đã `deleted`, ghi `storageDeletedAt`; tệp đã không còn thì coi là xong.
 - `type: web.revalidate`: gọi webhook làm mới cache của `web`; thất bại thì thử lại vài lần rồi bỏ (ISR có chu kỳ làm mới làm lưới an toàn).
 
 ## 8. Vòng đời dữ liệu, quyền riêng tư & sao lưu
@@ -715,10 +724,10 @@ Theo `05-programs-module.md` và các quyết định 17–18/10/2026. Tiền l�
 | Collection | Trường chính | Index |
 |---|---|---|
 | `event_types` | `key` (sinh từ tên tiếng Việt, không đổi), `name: LocalizedText`, `sortOrder`, `archivedAt` (lưu trữ thay vì xoá), `revision`. Seed bằng migration: `workshop`, `talkshow`, `trien-lam`. | `idx_event_types_key_uq`, `idx_event_types_sort_order` |
-| `events` | `kind` (`standard` \| `past`), `slug`, `status` (`draft` · `published` · `closed` · `ended`), `title`, `searchKey`, `typeId`, `format` (`online` \| `offline`), `startAt`, `endAt`, `venue { name, address, mapUrl }` \| null, `onlineUrl` \| null, `summary`, `description` (văn bản thuần, TODO PQ5), `safetyNotes` (không bắt buộc), `cancellationPolicy`, `speakers` ≤ 10, `agenda` ≤ 30, `faq` ≤ 20, `cover` \| null (TODO media), `form.questions` ≤ 30, `pricing { isFree, priceFrom }`, `publishedAt`, `firstPublishedAt`, `statusHistory` ≤ 100, `discarded`/`discardedAt`, `revision`, `createdBy`/`updatedBy` (`{ userId }`) | `idx_events_slug_uq` (partial `discarded: false`), `idx_events_status_start_at`, `idx_events_type_id_status` |
+| `events` | `kind` (`standard` \| `past`), `slug`, `status` (`draft` · `published` · `closed` · `ended`), `title`, `searchKey`, `typeId`, `format` (`online` \| `offline`), `startAt`, `endAt`, `venue { name, address, mapUrl }` \| null, `onlineUrl` \| null, `summary`, `description` (văn bản thuần, TODO PQ5), `safetyNotes` (không bắt buộc), `cancellationPolicy`, `speakers` ≤ 10, `agenda` ≤ 30, `faq` ≤ 20, `cover` \| null và `gallery` ≤ 12, mỗi phần tử là bản chụp `{ mediaId, publicId, width, height, alt }` của `media` ở `lavieco_content` (ADR-020), `form.questions` ≤ 30, `pricing { isFree, priceFrom }`, `publishedAt`, `firstPublishedAt`, `statusHistory` ≤ 100, `discarded`/`discardedAt`, `revision`, `createdBy`/`updatedBy` (`{ userId }`) | `idx_events_slug_uq` (partial `discarded: false`), `idx_events_status_start_at`, `idx_events_type_id_status` |
 | `ticket_types` | `eventId`, `name`, `description`, `price`, `quantity` (`null` = không giới hạn), `saleStartAt`/`saleEndAt`, `maxPerOrder` ≤ 20, `sortOrder`, `hidden`, `sold`, `held`, `revision` | `idx_ticket_types_event_id_sort_order` |
 | `preview_tokens` | `tokenHash` (SHA-256), `eventId`, `createdBy`, `expiresAt` (+10 phút) | `idx_preview_tokens_token_hash_uq`, `idx_preview_tokens_expires_at` (TTL) |
-| `outbox` | Job `web.revalidate_event` `{ slug }` | như các service khác |
+| `outbox` | Job `web.revalidate_event` `{ slug }`; `media.release` `{ mediaId }` (ảnh bị thay, bỏ khỏi thư viện, hoặc bản nháp bị xoá) | như các service khác |
 
 Quy tắc dữ liệu:
 
@@ -795,7 +804,7 @@ Không dùng vai trò `readWrite` dựng sẵn cho ứng dụng vì nó gồm c�
 | UC-08 Trang giới thiệu | đọc `pages`, `media` |
 | UC-21 Quản lý lead | đọc/ghi `leads`, `lead_notes`, `gift_requests`; ghi `outbox`; đọc `users` (qua `identity-service`) |
 | UC-22 Soạn & xuất bản cẩm nang | đọc/ghi `handbook_chapters`, `content_revisions`, `media`, `outbox` |
-| UC-23 Tác phẩm, story card, QR | đọc/ghi `works`, `qr_codes`, `content_revisions`, `media`, `outbox`; ghi object storage |
+| UC-23 Tác phẩm, story card, QR | đọc/ghi `works`, `qr_codes`, `content_revisions`, `media`, `outbox`; ghi bản chụp ánh xạ QR (`TODO(qr-snapshot)`) |
 | UC-27 Người dùng & phân quyền | đọc/ghi `users`, `invitations`, `sessions`, `audit_events` |
 | UC-28 Cấu hình site | đọc/ghi `site_settings`, `consent_texts`, `outbox` |
 | UC-09 Đăng ký, đăng nhập Member | đọc/ghi `users`, `otp_codes`, `rate_limit_buckets`, `sessions`, `outbox`; ghi `audit_events` (đặt lại mật khẩu) |
@@ -838,4 +847,5 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 | v0.2 | 20/09/2026 | Đồng bộ với `02`, `04`: `OutboxModule`/`NotifyModule` ở `service-kit`, email mời gửi trực tiếp, đổi tham chiếu câu hỏi sang `AQ`, bỏ mục "cần cập nhật" đã áp dụng | V.C. Trọng |
 | v0.4 | 17/10/2026 | Member + OTP: `users` (`googleSub`, `emailVerifiedAt`, `consent`), `otp_codes`, `rate_limit_buckets`, `outbox` của identity; phác thảo `lavieco_program` (9.2); tài khoản DB `svc_program`; Atlas; migration runner; DQ8 chốt (PII đơn/vé 24 tháng sau khi chương trình kết thúc rồi ẩn danh; dữ liệu tài chính không PII ≥ 10 năm) | V.C. Trọng |
 | v0.5 | 18/10/2026 | Phase 2: chốt `event_types`, `events`, `ticket_types`, `preview_tokens` của `lavieco_program` (9.2), định nghĩa "miễn phí" và "đã có người đăng ký", sự kiện lưu trữ `kind: past`, bảng lưu giữ cho token xem trước và nháp bị xoá | V.C. Trọng |
+| v0.6 | 18/10/2026 | Phase 2b: `media` (5.8) theo ADR-020: Cloudinary, `purpose`, `pending → attached → deleted`, avatar member, không lưu ảnh QR; `events.cover`/`gallery` là bản chụp media; outbox `media.release`, `media.destroy`; bản chụp ánh xạ QR chờ chọn nơi lưu | V.C. Trọng |
 | v0.3 | 20/09/2026 | Bỏ khóa `team` và khối `team_members` khỏi `pages` (Đội ngũ là dữ liệu tĩnh); ghi chú ranh giới `media` và `public/` | V.C. Trọng |
