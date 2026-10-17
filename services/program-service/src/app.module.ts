@@ -18,8 +18,11 @@ import {
 import type { ProgramEnv } from "./config/env";
 import { EventTypesModule } from "./modules/event-types";
 import { EventsModule, type MediaAttachments } from "./modules/events";
+import { ProgramAuditModule, type AuditSink } from "./modules/audit";
+import { CheckinModule } from "./modules/checkin";
 import { OrdersModule } from "./modules/orders";
 import { PaymentsModule, payosGatewayProvider } from "./modules/payments";
+import { RegistrationsModule } from "./modules/registrations";
 import { ProgramOutboxModule } from "./modules/outbox";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
@@ -35,6 +38,8 @@ export type AppOverrides = {
   emailSender?: EmailSender;
   /** Replaces payOS (provider of PAYMENT_GATEWAY). */
   paymentGateway?: Provider;
+  /** Captures audit events instead of sending them to identity-service. */
+  auditSink?: AuditSink;
   /** Off in tests that drive the seat-hold expiry themselves. */
   runOrderExpiry?: boolean;
 };
@@ -74,11 +79,14 @@ export class AppModule {
         }),
         NotifyModule.forRoot(overrides.emailSender ? { sender: overrides.emailSender } : { env }),
         OutboxModule.forRoot(overrides.outbox),
+        ProgramAuditModule.forRoot(overrides.auditSink),
         HealthModule,
         EventTypesModule,
         events,
         orders,
         PaymentsModule.forRoot(orders),
+        CheckinModule.forRoot(orders),
+        RegistrationsModule.forRoot(events, orders),
         ProgramOutboxModule.forRoot(events, overrides.revalidateFetch),
       ],
     };

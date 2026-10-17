@@ -152,6 +152,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `MONGODB_DB` | Bắt buộc | Không | Tên database | Tự đặt | Atlas dev: `lavieco_program_dev` | `lavieco_program` |
 | `SERVICE_TOKEN_TRUSTED_KEYS` | Tuỳ chọn (mặc định `{}`) | Không | Khoá công khai của `web`, `admin` | Mục "Service token" | | `'{"web": {...}, "admin": {...}}'` |
 | `IDENTITY_JWKS_URL` | Bắt buộc | Không | JWKS của identity | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001/.well-known/jwks.json` |
+| `IDENTITY_SERVICE_URL` | Bắt buộc | Không | identity-service trên mạng riêng: ghi audit (xuất Excel, hoàn tiền) qua outbox | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001` |
 | `CONTENT_SERVICE_URL` | Bắt buộc | Không | content-service (gắn/giải phóng ảnh) | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4002` |
 | `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của program-service | `npm run keys:generate -w @lavieco/identity-service -- program-service` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
 | `WEB_APP_URL` | Bắt buộc | Không | Origin của `web`: webhook làm mới cache, link vé trong email, `returnUrl`/`cancelUrl` của payOS | Tự đặt; khi test payOS qua tunnel đặt bằng URL tunnel | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
@@ -180,3 +181,4 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | 17/10/2026 | `identity-service`: `SERVICE_TOKEN_TRUSTED_KEYS` phải có thêm khoá công khai `"program-service"` | Đổi nội dung (không đổi tên) | Phase 3, `feat/phase3-registration-payos` |
 | 17/10/2026 | `program-service`: `TICKET_LINK_SECRET`, `MAIL_PROVIDER`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Thêm (email vé, link vé ký HMAC) | Phase 3, `feat/phase3-registration-payos` |
 | 17/10/2026 | `program-service`: `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY` | Thêm (payOS, ADR-015) | Phase 3, `feat/phase3-registration-payos` |
+| 17/10/2026 | `program-service`: `IDENTITY_SERVICE_URL` | Thêm (audit qua outbox, ADR-021) | Phase 3, `feat/phase3-registration-payos` |

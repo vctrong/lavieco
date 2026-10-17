@@ -25,13 +25,25 @@ async function generate() {
     REVALIDATE_SECRET: Buffer.alloc(32).toString("base64"),
     CONTENT_SERVICE_URL: "http://127.0.0.1:1",
     SERVICE_TOKEN_PRIVATE_JWK: "openapi",
+    IDENTITY_SERVICE_URL: "http://127.0.0.1:1",
+    TICKET_LINK_SECRET: Buffer.alloc(32).toString("base64"),
+    SMTP_HOST: "127.0.0.1",
+    SMTP_PORT: "1",
+    MAIL_FROM: "openapi@lavieco.invalid",
   });
   const logger = createLogger({ service: "program-service", level: "silent" });
-  const app = await NestFactory.create(AppModule.forRoot(env, { logger }), {
-    preview: true,
-    abortOnError: false,
-    logger: false,
-  });
+  const app = await NestFactory.create(
+    AppModule.forRoot(env, {
+      logger,
+      runOrderExpiry: false,
+      auditSink: { send: async () => undefined },
+    }),
+    {
+      preview: true,
+      abortOnError: false,
+      logger: false,
+    },
+  );
   const document = buildOpenApiDocument(app, {
     title: "program-service",
     version: "1",

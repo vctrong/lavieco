@@ -1,4 +1,5 @@
 import {
+  type AuditEventIngestRequest,
   invitationAcceptResponseSchema,
   invitationInspectResponseSchema,
   memberProfileSchema,
@@ -158,6 +159,17 @@ export function createIdentityClient(options: IdentityClientOptions) {
         path: `${V1}/sessions/revoke`,
         auth: service,
         body,
+        requestId,
+      }),
+
+    // --- audit (other services, through their outbox, ADR-0021) ---
+    recordAuditEvent: (body: AuditEventIngestRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/audit-events`,
+        auth: service,
+        body,
+        idempotent: true,
         requestId,
       }),
   };

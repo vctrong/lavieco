@@ -14,6 +14,8 @@ const base64Key = (minBytes: number) =>
 export const programEnvSchema = baseServiceEnvSchema.extend(mailEnvSchema.shape).extend({
   /** identity-service JWKS, used to verify staff (and later member) access tokens. */
   IDENTITY_JWKS_URL: z.url(),
+  /** identity-service on the private network: audit events go there through the outbox. */
+  IDENTITY_SERVICE_URL: z.url(),
   /** Origin of `web`: cache revalidation webhook (`/api/revalidate`). */
   WEB_APP_URL: z.url(),
   /** HMAC key shared with `web` for `/api/revalidate`; base64 of at least 32 bytes. */

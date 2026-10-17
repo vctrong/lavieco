@@ -13,7 +13,10 @@ import type { EmailSender, OutboxPort, UnitOfWork } from "@lavieco/service-kit/p
 import type { ProgramEnv } from "../../config/env";
 import { EVENT_REPOSITORY, type EventRepository } from "../events";
 import { TICKET_TYPE_REPOSITORY, TicketingModule, type TicketTypeRepository } from "../ticketing";
+import { AUDIT_TRAIL, type AuditTrail } from "../audit";
+import { OrdersAdminController } from "./api/orders-admin.controller";
 import { OrdersPublicController } from "./api/orders-public.controller";
+import { OrderAdminService } from "./application/order-admin-service";
 import { CheckoutService } from "./application/checkout-service";
 import { OrderExpiryService } from "./application/order-expiry-service";
 import { OrderSettlementService } from "./application/order-settlement-service";
@@ -56,6 +59,7 @@ import {
   CHECKOUT_SERVICE,
   ORDER_EXPIRY_OPTIONS,
   ORDER_EXPIRY_SERVICE,
+  ORDER_ADMIN_SERVICE,
   ORDER_SETTLEMENT_SERVICE,
 } from "./orders.tokens";
 
@@ -80,7 +84,7 @@ export class OrdersModule {
     return {
       module: OrdersModule,
       imports: [orderPersistence, options.events, TicketingModule],
-      controllers: [OrdersPublicController],
+      controllers: [OrdersPublicController, OrdersAdminController],
       providers: [
         gateway,
         { provide: ORDER_REPOSITORY, useClass: MongoOrderRepository },
@@ -198,6 +202,45 @@ export class OrdersModule {
             PAYMENT_EVENT_REPOSITORY,
             EVENT_REPOSITORY,
             PAYMENT_GATEWAY,
+            UNIT_OF_WORK,
+            OUTBOX_PORT,
+          ],
+        },
+        {
+          provide: ORDER_ADMIN_SERVICE,
+          useFactory: (
+            orders: OrderRepository,
+            answers: OrderAnswerRepository,
+            tickets: TicketRepository,
+            paymentEvents: PaymentEventRepository,
+            events: EventRepository,
+            ticketTypes: TicketTypeRepository,
+            settlement: OrderSettlementService,
+            audit: AuditTrail,
+            unitOfWork: UnitOfWork,
+            outbox: OutboxPort,
+          ) =>
+            new OrderAdminService(
+              orders,
+              answers,
+              tickets,
+              paymentEvents,
+              events,
+              ticketTypes,
+              settlement,
+              audit,
+              unitOfWork,
+              outbox,
+            ),
+          inject: [
+            ORDER_REPOSITORY,
+            ORDER_ANSWER_REPOSITORY,
+            TICKET_REPOSITORY,
+            PAYMENT_EVENT_REPOSITORY,
+            EVENT_REPOSITORY,
+            TICKET_TYPE_REPOSITORY,
+            ORDER_SETTLEMENT_SERVICE,
+            AUDIT_TRAIL,
             UNIT_OF_WORK,
             OUTBOX_PORT,
           ],
