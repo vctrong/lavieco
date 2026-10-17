@@ -1,0 +1,1 @@
+export const INVITATION_SERVICE = Symbol("INVITATION_SERVICE");

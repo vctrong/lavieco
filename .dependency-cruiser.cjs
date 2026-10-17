@@ -45,6 +45,31 @@ module.exports = {
       to: { path: "^apps/[^/]+/src/features/" },
     },
     {
+      name: "services-do-not-import-apps",
+      comment: "services never import apps (docs/04 §4.1)",
+      severity: "error",
+      from: { path: "^services/" },
+      to: { path: "^apps/" },
+    },
+    {
+      name: "no-service-to-service-import",
+      comment:
+        "A service calls another one over HTTP (@lavieco/api-clients), never through code (docs/04 §4.1)",
+      severity: "error",
+      from: { path: "^services/([^/]+)/" },
+      to: { path: "^services/", pathNot: "^services/$1/" },
+    },
+    {
+      name: "s2-modules-only-through-index",
+      comment: "S2: a module imports another module of the same service through its index.ts only",
+      severity: "error",
+      from: { path: "^services/([^/]+)/src/modules/([^/]+)/" },
+      to: {
+        path: "^services/$1/src/modules/[^/]+/",
+        pathNot: ["^services/$1/src/modules/$2/", "^services/$1/src/modules/[^/]+/index\.ts$"],
+      },
+    },
+    {
       name: "no-circular",
       severity: "error",
       from: {},

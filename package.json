@@ -8,17 +8,24 @@
   },
   "workspaces": [
     "apps/*",
+    "services/*",
     "packages/*"
   ],
   "scripts": {
     "env:init": "node infra/scripts/env-init.mjs",
-    "dev": "turbo run dev --filter=@lavieco/web",
+    "dev:infra": "docker compose -f infra/compose/compose.dev.yml --env-file .env.local up -d --wait",
+    "dev:infra:down": "docker compose -f infra/compose/compose.dev.yml --env-file .env.local down",
+    "dev": "turbo run dev",
     "build": "turbo run build",
     "start": "npm run start -w @lavieco/web",
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
-    "deps:check": "depcruise apps packages --config .dependency-cruiser.cjs",
+    "test:int": "turbo run test:int",
+    "deps:check": "depcruise apps/web services packages --config .dependency-cruiser.cjs && depcruise apps/admin --config .dependency-cruiser.admin.cjs",
+    "db:migrate": "turbo run db:migrate",
+    "gen:openapi": "turbo run gen:openapi",
+    "admin:create": "npm run admin:create -w @lavieco/identity-service --",
     "format": "prettier --write .",
     "prepare": "husky"
   },

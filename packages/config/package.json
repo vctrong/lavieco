@@ -5,7 +5,14 @@
   "type": "module",
   "exports": {
     "./eslint-next": "./eslint-next.mjs",
-    "./eslint-base": "./eslint-base.mjs"
+    "./eslint-node": "./eslint-node.mjs",
+    "./eslint-base": "./eslint-base.mjs",
+    "./tsconfig.node.json": "./tsconfig.node.json",
+    "./tsconfig.nest.json": "./tsconfig.nest.json"
+  },
+  "dependencies": {
+    "@eslint/js": "^9",
+    "typescript-eslint": "^8"
   },
   "peerDependencies": {
     "eslint": "^9"

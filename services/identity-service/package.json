@@ -1,0 +1,51 @@
+{
+  "name": "@lavieco/identity-service",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Who is who, what they may do, what they did: staff (2FA) and member accounts, sessions, OTP, audit.",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "dev": "node --env-file-if-exists=.env.local --watch --enable-source-maps -r @swc-node/register src/main.ts",
+    "start": "node --enable-source-maps dist/main.js",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:int": "vitest run --config vitest.int.config.ts",
+    "db:migrate": "node --env-file-if-exists=.env.local dist/cli/migrate.js",
+    "gen:openapi": "node dist/openapi.js",
+    "admin:create": "node --env-file-if-exists=.env.local dist/cli/create-super-admin.js",
+    "keys:generate": "node dist/cli/generate-keys.js"
+  },
+  "dependencies": {
+    "@lavieco/observability": "*",
+    "@lavieco/service-kit": "*",
+    "@lavieco/shared": "*",
+    "@nestjs/common": "^11.1.0",
+    "@nestjs/core": "^11.1.0",
+    "@nestjs/mongoose": "^11.0.0",
+    "@nestjs/platform-express": "^11.1.0",
+    "@nestjs/swagger": "^11.2.0",
+    "@node-rs/argon2": "^2.0.2",
+    "express": "^5",
+    "jose": "^5.10.0",
+    "mongoose": "^8.18.0",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.0",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@lavieco/config": "*",
+    "@nestjs/testing": "^11.1.0",
+    "@swc-node/register": "^1.10.0",
+    "@swc/core": "^1.13.0",
+    "@testcontainers/mongodb": "^11.0.0",
+    "@types/express": "^5",
+    "@types/node": "^24",
+    "@types/supertest": "^6.0.0",
+    "eslint": "^9",
+    "supertest": "^7.1.0",
+    "typescript": "^5",
+    "unplugin-swc": "^1.5.0",
+    "vitest": "^3.2.0"
+  }
+}

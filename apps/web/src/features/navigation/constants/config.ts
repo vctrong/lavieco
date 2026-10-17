@@ -17,6 +17,9 @@ export const NAV_ITEMS: readonly NavItem[] = [
 
 export const CTA_HREF = "/hop-tac";
 
+/** Member space; signed-out visitors are sent to the sign-in page by `proxy.ts`. */
+export const ACCOUNT_HREF = "/tai-khoan";
+
 export const CATALOGUE_ITEMS: readonly CatalogueItem[] = [
   { id: "preface", number: "Nº 00", href: "/" },
   { id: "story", number: "Nº 01", href: "/cau-chuyen" },

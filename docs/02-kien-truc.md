@@ -2,8 +2,8 @@
 
 | | |
 |---|---|
-| **Phiên bản** | v0.3 (bản nháp, chờ duyệt) |
-| **Cập nhật** | 20/09/2026 |
+| **Phiên bản** | v0.4 (bản nháp, chờ duyệt) |
+| **Cập nhật** | 17/10/2026 |
 | **Phụ trách** | Võ Chí Trọng (CTO) |
 | **Đối tượng đọc** | Đội phát triển, CISO, mentor kỹ thuật |
 | **Tài liệu liên quan** | `01-nghiep-vu.md` (đầu vào của tài liệu này) · `README.md` · `03-co-so-du-lieu.md` · `04-cau-truc-ma-nguon.md` · `CLAUDE.md` |
@@ -77,7 +77,7 @@ Rút ra từ `01-nghiep-vu.md`. Đây là các "driver": nếu kiến trúc khô
 
 ### 3.1 Các thành phần
 
-**5 thành phần triển khai** cho Giai đoạn 1:
+**6 thành phần triển khai** cho Giai đoạn 1. `program-service` được đưa lên từ GĐ2 theo ADR-014 (phân hệ Chương trình, `05-programs-module.md`):
 
 | Thành phần | Loại | Vai trò tóm tắt |
 |---|---|---|
@@ -85,9 +85,10 @@ Rút ra từ `01-nghiep-vu.md`. Đây là các "driver": nếu kiến trúc khô
 | `admin` | Ứng dụng Next.js | Giao diện quản trị nội bộ; BFF cho admin |
 | `content-service` | Service NestJS | Nội dung xuất bản: cẩm nang, tác phẩm, story card, QR, trang giới thiệu, cấu hình site, media |
 | `lead-service` | Service NestJS | Lead, yêu cầu quà tặng, danh sách chờ ra mắt, thông báo đi (email) |
-| `identity-service` | Service NestJS | Tài khoản admin, vai trò, xác thực 2 lớp, phiên đăng nhập, nhật ký hoạt động |
+| `identity-service` | Service NestJS | Tài khoản admin (2FA) và Member (email + OTP, Google), vai trò, phiên đăng nhập, OTP email dùng chung, nhật ký hoạt động |
+| `program-service` | Service NestJS | Sự kiện (miền `events`), loại vé, giữ chỗ, đơn, vé QR, check-in, người đăng ký & xuất Excel, thanh toán payOS (module `payments`, ADR-015) |
 
-**2 ứng dụng + 3 service.** `admin` và `identity-service` có mặt ngay ở GĐ1 vì các use case UC-21, 22, 23, 27, 28 (quản trị, phân quyền, xác thực 2 lớp) **thuộc Giai đoạn 1** (xem mục 18).
+**2 ứng dụng + 4 service.** `admin` và `identity-service` có mặt ngay ở GĐ1 vì các use case UC-21, 22, 23, 27, 28 (quản trị, phân quyền, xác thực 2 lớp) **thuộc Giai đoạn 1** (xem mục 18).
 
 ### 3.2 Sơ đồ container
 
@@ -166,11 +167,11 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 
 | Service | Trách nhiệm (bounded context) | Module bên trong | Dữ liệu sở hữu (khái niệm) | GĐ |
 |---|---|---|---|:-:|
-| **identity-service** | Ai là ai, được làm gì, đã làm gì | `auth` (đăng nhập, 2FA), `users`, `invitations`, `sessions`, `signing-keys`, `audit` | Người dùng, phiên/refresh token, lời mời, nhật ký hoạt động. GĐ2+: hồ sơ Member, liên kết Partner/Supplier | 1 |
+| **identity-service** | Ai là ai, được làm gì, đã làm gì | `auth` (staff 2 bước, member, Google), `users`, `invitations`, `sessions`, `otp`, `security`, `signing-keys`, `audit`, `outbox` | Người dùng (staff, member), phiên/refresh token, lời mời, mã OTP, bộ đếm giới hạn tần suất, nhật ký hoạt động. GĐ2+: liên kết Partner/Supplier | 1 |
 | **content-service** | Mọi thứ được **xuất bản** cho công chúng | `handbook`, `catalog` (tác phẩm, nhóm, story card), `qr`, `programs-public` (mô tả chương trình), `pages` (Trang chủ, Câu chuyện, Tác động, Hợp tác; **Đội ngũ là dữ liệu tĩnh trong `web`**, không thuộc CMS), `site-settings`, `media`, `consent`, `outbox` | Chương/trang cẩm nang, tác phẩm, story card, mã QR + số lượt quét theo ngày, mô tả chương trình, trang tĩnh, cấu hình site, metadata media, nội dung đồng ý (bất biến), outbox | 1 |
 | **lead-service** | Mọi **liên hệ đến** từ bên ngoài | `leads`, `gift-requests`, `waitlist`, `internal-notes`, `outbox`, `idempotency` | Lead, lịch sử trạng thái, ghi chú nội bộ, yêu cầu quà tặng, người đăng ký nhận tin, bản ghi đồng ý, outbox | 1 |
-| **program-service** | Chương trình **vận hành**: lịch, đăng ký, buổi học; **số liệu tác động** | `programs`, `sessions`, `registrations`, `impact` | Chương trình vận hành, buổi học, đăng ký, số liệu tác động, báo cáo | 2 |
-| **order-service** | Đơn hàng combo B2B: báo giá, xác nhận, giao nhận, thanh toán | `orders`, `quotes`, `payments` | Đơn hàng, báo giá, giao dịch thanh toán | 2 |
+| **program-service** | Chương trình **vận hành**: sự kiện, vé, check-in (GĐ1); lịch, buổi học, **số liệu tác động** (GĐ2) | GĐ1: `events`, `event-types`, `ticketing`, `orders`, `tickets`, `checkin`, `registrations`, `payments`, `outbox`, `idempotency`, `jobs`. GĐ2: `sessions`, `impact` | Sự kiện, loại vé, đơn, vé, câu trả lời form, sự kiện thanh toán; GĐ2: buổi học, số liệu tác động | 1 (ADR-014) |
+| **order-service** | Đơn hàng combo B2B: báo giá, xác nhận, giao nhận, thanh toán | `orders`, `quotes`, `payments` (tách `payments` khỏi `program-service` khi cần dùng chung, ADR-015) | Đơn hàng, báo giá, giao dịch thanh toán | 2 |
 | **notification-service** | Gửi thông báo đa kênh (email, Zalo) theo sự kiện | `templates`, `channels`, `deliveries` | Mẫu thông báo, lịch sử gửi, tùy chọn nhận | 2 |
 | **rewards-service** | Điểm thưởng, mở khóa nội dung freemium | `points`, `entitlements` | Số dư, giao dịch điểm, quyền truy cập | 3 |
 | **collection-service** | Nhà cung ứng, lịch thu gom, khối lượng vỏ hải sản | `suppliers`, `pickups`, `volumes` | Nhà cung ứng, lịch thu gom, khối lượng | 3 |
@@ -178,7 +179,7 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 
 > **Vai trò và permission là hằng số trong code** (`packages/shared`), không phải dữ liệu trong DB (`03` §4.1).
 
-> **Hai khái niệm "chương trình" khác nhau.** `content-service` giữ **mô tả công khai** (trang giới thiệu Workshop, Ngoại khóa, ESG). `program-service` (GĐ2) giữ **thực thể vận hành** (lịch, đăng ký, buổi học). Hai bên liên kết bằng mã chương trình (slug), không chung dữ liệu.
+> **Hai khái niệm "chương trình" khác nhau.** `content-service` giữ **mô tả công khai** (`program_pages`: bốn nấc thang Workshop, Ngoại khóa, ESG). `program-service` giữ **thực thể vận hành**: sự kiện có vé (miền `events` trong code, GĐ1), lịch và buổi học (GĐ2). Hai bên liên kết bằng slug, không chung dữ liệu. Trong code và route admin, sự kiện luôn mang tên `events` để không trùng `programs`.
 
 > **Module `impact` (số liệu tác động) ban đầu nằm trong `program-service`.** Vì nguồn số liệu GĐ2 chỉ có buổi học. Khi `collection-service` xuất hiện (GĐ3) và số liệu đến từ nhiều nguồn, tách `impact` thành service riêng (điều kiện ở mục 14).
 
@@ -189,10 +190,10 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 | M1 Cẩm nang xanh số | `content-service` (`handbook`, `qr`) | Ghi chú/đánh dấu lưu trên **thiết bị** ở GĐ1; GĐ2 đồng bộ qua collection `reader_states` **của `content-service`** (`03` §9.1) |
 | M2 Bộ sưu tập & sản phẩm | `content-service` (`catalog`) | |
 | M3 Hợp tác & lead | `lead-service` | |
-| M4 Chương trình giáo dục | `content-service` (mô tả) → `program-service` (vận hành, GĐ2) | |
+| M4 Chương trình giáo dục | `content-service` (mô tả) + `program-service` (sự kiện, vé, check-in: GĐ1; lịch, buổi học: GĐ2) | ADR-014 |
 | M5 Yêu cầu quà & đơn hàng | `lead-service` (yêu cầu, GĐ1) → `order-service` (đơn, GĐ2) | Yêu cầu quà tặng luôn gắn với một lead |
 | M6 Tác động & báo cáo ESG | `program-service` (`impact`, GĐ2) → service riêng (GĐ3) | |
-| M7 Tài khoản & phân quyền | `identity-service` | Admin GĐ1, Member/Partner GĐ2, Supplier GĐ3 |
+| M7 Tài khoản & phân quyền | `identity-service` | Admin và Member GĐ1 (ADR-016), Partner GĐ2, Supplier GĐ3 |
 | M8 Thu gom nguyên liệu | `collection-service` | GĐ3 |
 | M9 Cộng đồng & tích điểm | `rewards-service` | GĐ3 |
 | M10 Nền tảng chung | Chia theo chức năng (bảng dưới) | Không có "service nền tảng" chung |
@@ -222,6 +223,9 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 | UC-23 Tác phẩm, story card, QR | `admin` → `content-service`, `identity-service` |
 | UC-27 Người dùng & phân quyền | `admin` → `identity-service` |
 | UC-28 Cấu hình site, "sắp ra mắt" | `admin` → `content-service`, `identity-service` |
+| UC-09 Đăng ký, đăng nhập Member | `web` → `identity-service` (`auth`, `otp`, `sessions`) |
+| UC-30, UC-31 Đăng ký chương trình, vé | `web` → `program-service`; OTP qua `identity-service`; payOS → webhook vào `web` → `program-service` |
+| UC-32 → UC-34 Quản trị sự kiện, đơn, check-in | `admin` → `program-service`, `identity-service` |
 
 ## 5. Ứng dụng frontend
 
@@ -284,12 +288,15 @@ Chưa cần ở GĐ1. Khi cần (điều kiện ở mục 14):
 
 | Trường hợp | Cơ chế |
 |---|---|
-| Admin thực hiện thao tác | `admin` chuyển **access token của người dùng** tới service. Service tự xác minh chữ ký và kiểm tra quyền. |
-| `web` đọc nội dung công khai / gửi form | `web` dùng **service token** riêng: JWT ngắn hạn, ký bằng khóa của `web`, có `aud` = service đích, chỉ mang quyền tối thiểu (đọc nội dung đã xuất bản, tạo lead). |
+| Admin thực hiện thao tác | `admin` chuyển **access token của người dùng** (`aud = lavieco:staff`) tới service. Service tự xác minh chữ ký và kiểm tra quyền. |
+| Member thao tác dữ liệu của mình | `web` chuyển **access token member** (`aud = lavieco:member`). Service lọc theo `userId` (chống IDOR). Token member bị từ chối ở mọi endpoint cần permission. |
+| `web` đọc nội dung công khai / gửi form | `web` dùng **service token** riêng: JWT Ed25519 sống 60 giây, ký bằng khóa của `web`, `iss = web`, `aud` = service đích. Service chỉ nhận token từ bên gọi được khai báo trên endpoint (`@AllowServices`, ADR-018). Không dùng bí mật dùng chung. |
 | Service gọi `identity-service` (audit, JWKS) | Service token của chính service đó. |
 | Webhook `content-service` → `web` | Chữ ký HMAC trên nội dung + dấu thời gian (chống phát lại). |
 
-> Khoá công khai để xác minh JWT phân phối qua **JWKS** của `identity-service`, service cache lại và làm mới định kỳ.
+> Khoá công khai để xác minh JWT người dùng phân phối qua **JWKS** của `identity-service`; service cache lại và làm mới định kỳ. Khóa công khai của từng bên gọi (service token) nằm trong cấu hình `SERVICE_TOKEN_TRUSTED_KEYS` của service được gọi (ADR-018).
+>
+> **Webhook payOS** không đi thẳng vào service: Route Handler `web/api/payments/payos/webhook` chuyển nguyên raw body tới `program-service`, và service xác minh chữ ký bằng checksum key (ADR-015).
 
 ### 6.4 Chịu lỗi & suy giảm êm
 
@@ -489,7 +496,10 @@ Quy tắc: dữ liệu đi qua **mỗi ranh giới** đều bị validate lại;
 | **Token** | Access token JWT **ngắn hạn** (ví dụ vài chục phút trở xuống), ký bất đối xứng, kèm `sub`, `roles`, `aud`. Refresh token **xoay vòng**, lưu dạng băm ở `identity-service`, thu hồi được. |
 | **Cookie** | `httpOnly`, `Secure`, `SameSite=Strict`, phạm vi theo host của `admin`. |
 | **Thao tác nhạy cảm** | Xuất danh sách lead, đổi vai trò, thu hồi mã QR: **yêu cầu xác thực lại** (step-up) và ghi audit. |
-| **Mời admin** | Liên kết mời dùng một lần, hết hạn; người được mời tự đặt mật khẩu và cài 2FA. |
+| **Mời admin** | Liên kết mời dùng một lần, hết hạn sau 48 giờ; người được mời tự đặt mật khẩu và cài 2FA (quét QR, xác nhận mã đầu tiên) trước khi tài khoản hoạt động. Super Admin đầu tiên tạo bằng lệnh `npm run admin:create`, cũng đi qua bước này. |
+| **Member** (ADR-016) | Email + mật khẩu sau khi xác thực email bằng OTP 6 số, hoặc Google (chỉ Member, không cho admin). Khóa tạm 15 phút sau 5 lần sai. Access token 15 phút, refresh 30 ngày, cookie `SameSite=Lax`. |
+| **OTP email** | Dùng chung cho `signup`, `reset_password`, `checkout`, `ticket_lookup`: 6 số, chỉ lưu HMAC, hết hạn 5 phút, tối đa 5 lần nhập, 3 lần gửi/10 phút mỗi email, 10 lần/10 phút mỗi IP, chờ 45 giây giữa hai lần gửi. Bộ đếm lưu trong MongoDB (`rate_limit_buckets`, khóa là HMAC, không lưu IP). Phản hồi không tiết lộ email đã có tài khoản hay chưa. |
+| **Khóa ký** | Ed25519 (`JWT_SIGNING_KEYS`), không nằm trong DB; `signing_keys` chỉ lưu nửa công khai để truy vết. Staff access token 10 phút, refresh 12 giờ, cookie `SameSite=Strict`. |
 | **Khóa/thu hồi** | Khóa tài khoản có hiệu lực trong thời gian sống tối đa của access token (ngắn); refresh token bị vô hiệu ngay. |
 
 ### 9.3 Phân quyền (AuthZ)
@@ -515,8 +525,14 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `user:manage` | ✓ | — | — | — |
 | `audit:read` | ✓ | — | — | ✓ |
 | `privacy:process` (xử lý yêu cầu xóa dữ liệu) | ✓ | — | — | — |
+| `program:read` (sự kiện, loại vé, người đăng ký) | ✓ | ✓ | ✓ | ✓ |
+| `program:write` (tạo/sửa/xuất bản sự kiện, loại chương trình) | ✓ | — | ✓ | — |
+| `order:read` (đơn vé, đối soát) | ✓ | — | ✓ | ✓ |
+| `order:refund` (hoàn tiền, huỷ vé) | ✓ | — | ✓ | — |
+| `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
+| `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |
 
-(*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Permission GĐ2+ (`program:*`, `impact:*`, `order:*`, ...) bổ sung khi các service tương ứng ra đời. Ánh xạ bổ sung theo `03`: tải media cần `content:write`; sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
+(*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014). Permission GĐ2+ (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cần `content:write`; sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
 
 **Quy tắc thực thi:**
 1. `admin` ẩn/hiện chức năng theo quyền (chỉ để trải nghiệm tốt), **không phải hàng rào bảo mật**.
@@ -671,8 +687,8 @@ Tách hoặc thêm khi thỏa **ít nhất một** điều kiện và đã thử
 
 | GĐ | Thành phần triển khai | Thêm so với GĐ trước |
 |---|---|---|
-| **1** | `web`, `admin`, `identity`, `content`, `lead` | (khởi đầu) |
-| **2** | + `program-service` (kèm `impact`), `order-service`, `notification-service`, message broker, API Gateway *(nếu đủ điều kiện)*; Member/Partner trong `identity` | Thương mại hóa giáo dục, đơn B2B, thông báo đa kênh |
+| **1** | `web`, `admin`, `identity`, `content`, `lead`, `program` (sự kiện, vé, payOS; ADR-014); Member trong `identity` | (khởi đầu) |
+| **2** | + `impact` trong `program-service`, `order-service`, `notification-service`, message broker, API Gateway *(nếu đủ điều kiện)*; Partner trong `identity` | Thương mại hóa giáo dục, đơn B2B, thông báo đa kênh |
 | **3** | + `rewards-service`, `collection-service`, tách `impact`, client ứng dụng cộng đồng; Supplier trong `identity` | Hệ sinh thái cộng đồng, thu gom |
 
 ### 14.3 Đích đến (GĐ3)
@@ -764,6 +780,13 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | 010 | `admin` là ứng dụng Next.js riêng trên tên miền phụ | Đề xuất |
 | 011 | Nhà cung cấp email giao dịch và cấu hình SPF/DKIM/DMARC | Cần thêm thông tin |
 | 012 | Định dạng module của gói dùng chung: phát hành cả ESM và CJS (Next.js dùng ESM, NestJS mặc định CJS) | Đề xuất |
+| 013 | Motion và biểu tượng thương hiệu | Đề xuất |
+| 014 | `program-service` (sự kiện, vé, check-in) vào GĐ1 | Chấp nhận |
+| 015 | payOS là module `payments` của `program-service`; webhook qua `web` | Chấp nhận |
+| 016 | Tài khoản Member và Google (chỉ Member) ở GĐ1 | Chấp nhận |
+| 017 | Xuất Excel người đăng ký bằng `exceljs` | Chấp nhận |
+| 018 | Service token Ed25519 theo bên gọi, khai báo quyền truy cập endpoint | Chấp nhận |
+| 019 | Phiên bản & công cụ backend (NestJS 11, Mongoose 8, Vitest + swc, Testcontainers); xem lại khi NestJS 11 hết hỗ trợ bảo mật hoặc khi chuyển sang ESM | Đã chấp nhận |
 
 ## 17. Giả định & câu hỏi mở
 
@@ -772,7 +795,8 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | Mã | Giả định |
 |---|---|
 | **AR1** | Lưu lượng GĐ1 thấp/trung bình (thí điểm tại Cần Thơ); một máy chủ đủ đáp ứng. Cần đo để xác nhận. |
-| **AR2** | Chưa có thanh toán online ở GĐ1 (A1 ở `01`) nên chưa cần đối chiếu chuẩn thanh toán. |
+| **AR2** | Thanh toán online ở GĐ1 chỉ cho vé chương trình, qua payOS/VietQR (ADR-015). LAVIECO không lưu dữ liệu thẻ; `payment_events` chỉ lưu trường cần đối soát. |
+| **AR5** | MongoDB: một cụm Atlas (Singapore, replica set) chứa 4 database logic (`lavieco_identity`, `_content`, `_lead`, `_program`); mỗi service một user DB chỉ có quyền trên database của mình. Local: replica set một nút trong compose. |
 | **AR3** | Các câu hỏi mở Q1–Q9 ở `01` **không thay đổi ranh giới service**, chỉ ảnh hưởng chi tiết nội bộ (ví dụ Q4 ảnh hưởng danh mục nhóm đối tác trong `lead-service`). |
 | **AR4** | Đội có thể quản lý được tên miền lâu dài và tài khoản Cloudflare dưới danh nghĩa của LAVIECO (không gắn cá nhân). |
 
@@ -784,7 +808,7 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | **AQ2** | **Email dự phòng** khi `lead-service` lỗi có chứa dữ liệu cá nhân: chấp nhận không? Hộp thư nào nhận? | 6.4, 9.4 |
 | **AQ3** | **Thời hạn lưu giữ lead** trước khi ẩn danh hóa? | 9.4 |
 | **AQ4** | Yêu cầu **lưu trữ dữ liệu trong nước**: có áp dụng cho LAVIECO không? (cần tham vấn pháp lý) | Vị trí DB/máy chủ |
-| **AQ5** | **Tên miền chính thức** của LAVIECO là gì, ai đứng tên đăng ký? | 7.1, ADR-007 |
+| **AQ5** | ~~Tên miền chính thức~~ **Đã chốt `lavieco.io.vn`** (17/10/2026). Còn mở: ai đứng tên đăng ký. | 7.1, ADR-007 |
 | **AQ6** | Ai quản trị hạ tầng, ai là người dự phòng khi CTO vắng? | 15.3, 11 |
 | **AQ7** | Có cần **danh sách IP/Cloudflare Access** cho `admin` từ đầu, hay chỉ 2FA? | 5.2, 12.3 |
 | **AQ8** | Nhà cung cấp email giao dịch, và tên miền gửi mail? | ADR-011 |
@@ -813,3 +837,4 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 | v0.1 | 20/09/2026 | Bản nháp đầu: phân rã service, giao tiếp, luồng chính, bảo mật, triển khai, lộ trình tiến hóa, ADR đề xuất | V.C. Trọng |
 | v0.2 | 20/09/2026 | Đồng bộ với `01`, `03`, `04`: sửa số thành phần (5), thêm mục 3.4 (gói dùng chung), module `consent`/`outbox`/`sessions`/`signing-keys`, permission `site:read`, audit qua outbox, CI/local env, ADR-012, đổi mã câu hỏi sang `AQ` | V.C. Trọng |
 | v0.3 | 20/09/2026 | Thêm `proxy.ts` (không phải hàng rào bảo mật), tài sản tĩnh, `.env.local`; Đội ngũ là dữ liệu tĩnh | V.C. Trọng |
+| v0.4 | 17/10/2026 | Phân hệ Chương trình vào GĐ1: 6 thành phần, `program-service` (ADR-014), payOS (ADR-015), Member + Google + OTP (ADR-016), service token theo bên gọi (ADR-018), 6 permission mới, AQ5 chốt, AR2/AR5 | V.C. Trọng |

@@ -1,0 +1,67 @@
+export const TEXT = {
+  vi: {
+    meta: {
+      login: "Đăng nhập quản trị | LAVIECO",
+      secondFactor: "Xác thực 2 lớp | LAVIECO",
+      invite: "Kích hoạt tài khoản quản trị | LAVIECO",
+    },
+    eyebrow: "LAVIECO · Quản trị nội bộ",
+    login: {
+      title: "Đăng nhập",
+      intro: "Dành cho thành viên đội LAVIECO. Mọi tài khoản quản trị đều cần mã xác thực 2 lớp.",
+      email: "Email",
+      password: "Mật khẩu",
+      submit: "Tiếp tục",
+      submitting: "Đang kiểm tra...",
+    },
+    secondFactor: {
+      title: "Xác thực 2 lớp",
+      intro: "Nhập mã 6 số trong ứng dụng xác thực, hoặc một mã khôi phục dạng xxxxx-xxxxx.",
+      code: "Mã xác thực",
+      submit: "Đăng nhập",
+      submitting: "Đang xác thực...",
+      restart: "Đăng nhập lại từ đầu",
+    },
+    invite: {
+      title: "Kích hoạt tài khoản",
+      intro: "Đặt mật khẩu và cài xác thực 2 lớp. Tài khoản chỉ hoạt động khi đã cài xong cả hai.",
+      invalidTitle: "Liên kết không còn hiệu lực",
+      invalidBody:
+        "Liên kết kích hoạt đã được dùng, đã hết hạn hoặc bị thu hồi. Bạn liên hệ Super Admin để nhận liên kết mới.",
+      step1:
+        "1. Quét mã QR bằng ứng dụng xác thực (Google Authenticator, Microsoft Authenticator, 1Password...)",
+      qrAlt: "Mã QR để thêm tài khoản LAVIECO vào ứng dụng xác thực",
+      manualKey: "Không quét được? Nhập khóa thủ công:",
+      step2: "2. Đặt thông tin đăng nhập",
+      displayName: "Tên hiển thị",
+      email: "Email",
+      password: "Mật khẩu",
+      passwordHint: "Ít nhất 8 ký tự, không trùng với tên email.",
+      totpCode: "Mã 6 số đang hiện trong ứng dụng",
+      submit: "Kích hoạt tài khoản",
+      submitting: "Đang kích hoạt...",
+      recoveryTitle: "Lưu các mã khôi phục",
+      recoveryBody:
+        "Mỗi mã dùng được một lần khi bạn mất điện thoại. Mã chỉ hiện duy nhất lần này: hãy lưu vào trình quản lý mật khẩu.",
+      continue: "Tôi đã lưu, đến trang đăng nhập",
+    },
+    validation: {
+      email: "Email chưa đúng định dạng.",
+      password: "Bạn vui lòng nhập mật khẩu.",
+      newPassword: "Mật khẩu cần từ 8 đến 128 ký tự.",
+      displayName: "Bạn vui lòng nhập tên hiển thị.",
+      code: "Mã gồm 6 chữ số, hoặc mã khôi phục dạng xxxxx-xxxxx.",
+      totpCode: "Mã gồm đúng 6 chữ số.",
+    },
+    errors: {
+      invalid_credentials: "Email hoặc mật khẩu chưa đúng.",
+      locked: "Tài khoản tạm khóa 15 phút vì nhập sai nhiều lần.",
+      mfa_code_invalid: "Mã xác thực chưa đúng hoặc đã được dùng.",
+      mfa_expired: "Bước xác thực đã hết hạn. Bạn đăng nhập lại từ đầu.",
+      invitation_invalid: "Liên kết không còn hiệu lực. Bạn liên hệ Super Admin.",
+      totp_invalid: "Mã trong ứng dụng chưa khớp. Bạn kiểm tra giờ trên điện thoại và thử mã mới.",
+      password_weak: "Mật khẩu quá dễ đoán. Bạn chọn mật khẩu khác.",
+      unavailable: "Hệ thống đang bận. Bạn thử lại sau ít phút.",
+    },
+  },
+} as const;

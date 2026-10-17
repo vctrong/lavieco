@@ -49,3 +49,15 @@ docs/brand/originals/
 
 # turborepo
 .turbo/
+
+# build output of packages and services
+dist/
+tsup.config.bundled_*
+
+# key material and one-time secrets: never committed (docs/runbooks/chay-local.md)
+*.key
+*.jwk
+*.jwk.json
+*-keys.json
+*recovery-codes*
+secrets/

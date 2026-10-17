@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "//": "NestJS services: CommonJS output (ADR-012). verbatimModuleSyntax is off because it forbids ESM syntax in CommonJS files; decorator metadata is required by Nest's DI.",
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["es2023"],
+    "types": ["node"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "verbatimModuleSyntax": false,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "noEmit": false,
+    "declaration": false,
+    "sourceMap": true
+  }
+}

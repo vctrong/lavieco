@@ -8,6 +8,9 @@
     "typecheck": { "dependsOn": ["^build"] },
     "lint": { "dependsOn": ["^build"] },
     "test": { "dependsOn": ["^build"] },
-    "dev": { "cache": false, "persistent": true }
+    "test:int": { "dependsOn": ["^build"], "cache": false },
+    "db:migrate": { "dependsOn": ["^build"], "cache": false },
+    "gen:openapi": { "dependsOn": ["^build"], "cache": false },
+    "dev": { "dependsOn": ["^build"], "cache": false, "persistent": true }
   }
 }
