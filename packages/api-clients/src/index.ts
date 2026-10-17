@@ -12,6 +12,11 @@ export {
   type IdentityClientOptions,
 } from "./identity-client";
 export {
+  createProgramClient,
+  type ProgramClient,
+  type ProgramClientOptions,
+} from "./program-client";
+export {
   SERVICE_TOKEN_TTL_SECONDS,
   createServiceTokenSigner,
   type ServiceTokenSigner,

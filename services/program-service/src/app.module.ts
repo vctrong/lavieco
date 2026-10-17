@@ -15,12 +15,16 @@ import {
 
 import type { ProgramEnv } from "./config/env";
 import { EventTypesModule } from "./modules/event-types";
+import { EventsModule } from "./modules/events";
+import { ProgramOutboxModule } from "./modules/outbox";
 
 export type AppOverrides = {
   logger?: Logger;
   outbox?: Partial<OutboxOptions>;
   /** Tests verify user tokens against a local key instead of identity's JWKS. */
   userKeyResolver?: JWTVerifyGetKey;
+  /** Captures calls to the revalidation webhook of `web`. */
+  revalidateFetch?: typeof fetch;
 };
 
 @Module({})
@@ -51,6 +55,8 @@ export class AppModule {
         OutboxModule.forRoot(overrides.outbox),
         HealthModule,
         EventTypesModule,
+        EventsModule,
+        ProgramOutboxModule.forRoot(overrides.revalidateFetch),
       ],
     };
   }
