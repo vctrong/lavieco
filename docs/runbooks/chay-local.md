@@ -8,6 +8,17 @@
 2. `npm install`, rồi `npm run env:init` để tạo các `.env.local` từ `.env.example` (không ghi đè tệp đã có).
 3. Ở `.env.local` gốc repo: đặt `MINIO_ROOT_USER`, `MINIO_ROOT_PASSWORD` (giá trị bất kỳ cho máy dev). Nếu cổng 27017 đã có MongoDB khác dùng, đặt `MONGO_PORT=27018` và sửa `MONGODB_URI` của service theo cổng đó.
 
+### 1.1 Mỗi khi pull code mới: `npm run env:check`
+
+Phase mới thường thêm biến môi trường. Sau mỗi lần pull, chạy:
+
+```
+npm run env:check            # so mọi .env.local với .env.example, chỉ in TÊN biến thiếu/trống
+npm run env:check -- --fix   # thêm biến thiếu có giá trị mặc định trong .env.example (không ghi đè biến đã có)
+```
+
+Biến thiếu mà `.env.example` để trống (khóa, secret) phải tự điền theo mục 2. Lệnh trả mã lỗi 1 khi còn biến thiếu. Ví dụ lỗi `Invalid server environment: PROGRAM_SERVICE_URL` khi `npm run dev` nghĩa là quên bước này.
+
 ## 2. Sinh khóa
 
 ```
@@ -40,7 +51,7 @@ Khóa riêng (có trường `"d"`) chỉ nằm ở đúng một nơi. Service t�
 ```
 npm run dev:infra                                      # Mongo replica set, MinIO, Mailpit
 npm run db:migrate -w @lavieco/identity-service        # tạo index (idempotent, chạy lại an toàn)
-npm run build -w @lavieco/program-service && npm run db:migrate -w @lavieco/program-service   # index + seed loại chương trình
+npm run build -w @lavieco/program-service && npm run db:migrate -w @lavieco/program-service   # index + seed loại chương trình (idempotent)
 npm run dev                                            # web :3000, admin :3001, identity :4001, program :4004
 ```
 
