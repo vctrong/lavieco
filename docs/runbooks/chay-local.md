@@ -1,6 +1,6 @@
 # Runbook: chạy hệ thống trên máy dev
 
-Áp dụng từ Phase 1 (17/10/2026): `identity-service`, `web`, `admin`; từ Phase 2 (18/10/2026) thêm `program-service`. Giá trị thật chỉ nằm trong các tệp `.env.local` (gitignore); **không commit, không dán vào chat/issue**.
+Áp dụng từ Phase 1 (17/10/2026): `identity-service`, `web`, `admin`; từ Phase 2 (18/10/2026) thêm `program-service`; từ Phase 2b thêm `content-service` (ảnh, Cloudinary). Giá trị thật chỉ nằm trong các tệp `.env.local` (gitignore); **không commit, không dán vào chat/issue**.
 
 ## 1. Chuẩn bị
 
@@ -51,7 +51,24 @@ Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32
 | `apps/admin` | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của admin>` |
 | | `PROGRAM_SERVICE_URL`, `WEB_APP_URL` | giữ mặc định |
 
+| `services/content-service` | `SERVICE_TOKEN_TRUSTED_KEYS` | `{"program-service": <PUBLIC_JWK của program-service>}` (sinh bằng `keys:generate -- program-service`) |
+| | `CLOUDINARY_*` | khoá của product environment **dev** (mục 2.1) |
+
 Khóa riêng (có trường `"d"`) chỉ nằm ở đúng một nơi. Service từ chối nếu `SERVICE_TOKEN_TRUSTED_KEYS` chứa khóa riêng.
+
+### 2.1 Cloudinary (ảnh, ADR-020)
+
+1. Dùng **product environment (hoặc tài khoản) Cloudinary riêng cho dev**, không bao giờ dùng khoá của prod trên máy dev (khoá Cloudinary có quyền trên cả tài khoản, không giới hạn được theo folder).
+2. Lấy `Cloud name`, `API key`, `API secret` ở Dashboard → API Keys, điền vào `services/content-service/.env.local` (`CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, `CLOUDINARY_API_SECRET`). Không dán vào chat/issue.
+3. Settings → Security: bật **Strict transformations** (chỉ named transformation được phép tạo ảnh, ảnh gốc không bao giờ phát ra).
+4. Tạo các named transformation `t_lv_w96` … `t_lv_w1920` (idempotent, chạy lại khi danh sách đổi):
+
+   ```
+   npm run build -w @lavieco/content-service && npm run media:setup -w @lavieco/content-service
+   ```
+
+5. Kiểm tra một lần sau khi tải một ảnh: `https://res.cloudinary.com/<cloud>/image/private/t_lv_w640/<publicId>` trả ảnh; `https://res.cloudinary.com/<cloud>/image/private/<publicId>` (ảnh gốc) và một transformation tự chế (ví dụ `w_2000`) **bị từ chối**.
+6. `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` của `web` và `admin` = cloud name dev (không bí mật). Ảnh dev nằm dưới folder `lavieco/dev`, prod dưới `lavieco/prod` (suy ra từ `NODE_ENV`).
 
 ## 3. Chạy
 
@@ -59,7 +76,8 @@ Khóa riêng (có trường `"d"`) chỉ nằm ở đúng một nơi. Service t�
 npm run dev:infra                                      # Mongo replica set, Mailpit
 npm run db:migrate -w @lavieco/identity-service        # tạo index (idempotent, chạy lại an toàn)
 npm run build -w @lavieco/program-service && npm run db:migrate -w @lavieco/program-service   # index + seed loại chương trình (idempotent)
-npm run dev                                            # web :3000, admin :3001, identity :4001, program :4004
+npm run build -w @lavieco/content-service && npm run db:migrate -w @lavieco/content-service   # index của media, outbox (idempotent)
+npm run dev                                            # web :3000, admin :3001, identity :4001, content :4002, program :4004
 ```
 
 - Email (mã OTP, thông báo) xem ở Mailpit: http://localhost:8025
@@ -72,6 +90,7 @@ npm run dev                                            # web :3000, admin :3001,
 npm run lint && npm run typecheck && npm run test && npm run deps:check
 npm run test:int -w @lavieco/identity-service          # cần Docker (Testcontainers)
 npm run test:int -w @lavieco/program-service           # cần Docker (Testcontainers)
+npm run test:int -w @lavieco/content-service           # cần Docker; ảnh lưu trong bộ nhớ, không gọi Cloudinary
 npm run gen:openapi                                    # sinh docs/api/*.openapi.json
 ```
 
