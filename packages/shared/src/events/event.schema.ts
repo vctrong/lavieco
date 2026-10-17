@@ -2,6 +2,8 @@ import { z } from "zod";
 
 import { isoDateTimeSchema, objectIdSchema } from "../common/object-id";
 import { cursorPageQuerySchema, cursorPageSchema } from "../common/pagination";
+import { MEDIA_LIMITS } from "../media/limits";
+import { mediaImageInputSchema, mediaImageSchema } from "../media/media.schema";
 import {
   EVENT_STATUSES,
   eventActionSchema,
@@ -44,9 +46,16 @@ export const eventFaqItemSchema = z.object({
   answer: z.string().trim().min(1).max(2_000),
 });
 
-/** Cover image; uploads arrive with the `media` module (TODO(media), docs/04 §15). */
-export const eventCoverSchema = z.object({ url: z.string(), alt: z.string() });
-export type EventCover = z.infer<typeof eventCoverSchema>;
+/** Cover or gallery image: snapshot of a content-service `media` (ADR-0020). */
+export const eventImageSchema = mediaImageSchema;
+export type EventImage = z.infer<typeof eventImageSchema>;
+
+const galleryInputSchema = z
+  .array(mediaImageInputSchema)
+  .max(MEDIA_LIMITS.eventGalleryMax)
+  .refine((items) => new Set(items.map((item) => item.mediaId)).size === items.length, {
+    message: "An image appears twice in the gallery",
+  });
 
 const detailsShape = {
   title: z.string().trim().min(1).max(EVENT_LIMITS.titleMax),
@@ -68,6 +77,9 @@ const detailsShape = {
   speakers: z.array(eventSpeakerSchema).max(EVENT_LIMITS.speakersMax).default([]),
   agenda: z.array(eventAgendaItemSchema).max(EVENT_LIMITS.agendaMax).default([]),
   faq: z.array(eventFaqItemSchema).max(EVENT_LIMITS.faqMax).default([]),
+  /** Uploaded beforehand through content-service; program-service attaches it on save. */
+  cover: mediaImageInputSchema.nullable().default(null),
+  gallery: galleryInputSchema.default([]),
 };
 
 const startBeforeEnd = {
@@ -134,7 +146,8 @@ export const eventSchema = z.object({
   speakers: z.array(eventSpeakerSchema),
   agenda: z.array(eventAgendaItemSchema),
   faq: z.array(eventFaqItemSchema),
-  cover: eventCoverSchema.nullable(),
+  cover: eventImageSchema.nullable(),
+  gallery: z.array(eventImageSchema),
   form: eventFormSchema,
   ticketTypes: z.array(ticketTypeSchema),
   pricing: eventPricingSchema,
@@ -162,7 +175,7 @@ export const eventListItemSchema = z.object({
   startAt: isoDateTimeSchema,
   endAt: isoDateTimeSchema,
   venueName: z.string().nullable(),
-  cover: eventCoverSchema.nullable(),
+  cover: eventImageSchema.nullable(),
   pricing: eventPricingSchema,
   /** `capacity` null = unlimited (or no ticket type yet). */
   seats: z.object({ sold: z.number().int(), capacity: z.number().int().nullable() }),

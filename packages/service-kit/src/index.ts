@@ -23,6 +23,7 @@ export { SERVICE_CONFIG, ServiceConfigModule } from "./config/config.module";
 export {
   ConfigError,
   baseServiceEnvSchema,
+  databaseIsolationIssue,
   loadConfig,
   type BaseServiceEnv,
 } from "./config/load-config";

@@ -1,6 +1,7 @@
 // Compares every `.env.local` with its `.env.example` (root and each workspace project)
-// and reports, by NAME only, the variables that are missing or still empty. Values are
-// never printed. Exit code 1 when something needs attention, so it can gate scripts.
+// and reports, by NAME only, the variables that are missing or still empty, and a dev
+// setup pointing at a production database. Values are never printed. Exit code 1 when
+// something needs attention, so it can gate scripts.
 //
 //   npm run env:check          report only
 //   npm run env:check -- --fix append missing variables whose example has a default
@@ -28,6 +29,23 @@ function parse(file) {
     if (match) entries.set(match[1], match[2].trim());
   }
   return entries;
+}
+
+/** Quotes as written in a .env file are not part of the value. */
+const unquote = (value) => (value ?? "").replace(/^(['"])(.*)\1$/, "$2");
+
+/**
+ * Same rule as `databaseIsolationIssue` in @lavieco/service-kit (docs/04 §11.1):
+ * outside production, Atlas only with a `_dev` database; production never `_dev`.
+ * Returns the offending variable NAME, never its value.
+ */
+function databaseIsolationIssue(local) {
+  const uri = unquote(local.get("MONGODB_URI"));
+  const db = unquote(local.get("MONGODB_DB"));
+  if (!uri || !db) return null;
+  const devDatabase = db.endsWith("_dev");
+  if (unquote(local.get("NODE_ENV")) === "production") return devDatabase ? "MONGODB_DB" : null;
+  return /\.mongodb\.net(?=[:/,?]|$)/i.test(uri) && !devDatabase ? "MONGODB_DB" : null;
 }
 
 const isEmpty = (value) => value === undefined || value === "" || value === "''" || value === '""';
@@ -65,19 +83,24 @@ for (const dir of projectDirs) {
   const unset = [...example.keys()].filter(
     (key) => local.has(key) && isEmpty(local.get(key)) && isEmpty(example.get(key)),
   );
+  const isolation = databaseIsolationIssue(local);
   const notes = [];
+  if (isolation) {
+    notes.push(`${isolation}: Atlas outside production needs a *_dev database (docs/04 §11.1)`);
+  }
   if (appended.length) notes.push(`added with defaults: ${appended.join(", ")}`);
   if (stillMissing.length) notes.push(`missing: ${stillMissing.join(", ")}`);
   if (unset.length) notes.push(`empty (may be optional): ${unset.join(", ")}`);
-  if (stillMissing.length) problems += 1;
+  const failed = stillMissing.length > 0 || isolation !== null;
+  if (failed) problems += 1;
   process.stdout.write(
-    `${stillMissing.length ? "✗" : "✓"} ${label}${notes.length ? `: ${notes.join(" | ")}` : ""}\n`,
+    `${failed ? "✗" : "✓"} ${label}${notes.length ? `: ${notes.join(" | ")}` : ""}\n`,
   );
 }
 
 if (problems > 0) {
   process.stdout.write(
-    "\nSome variables are missing. Defaults: npm run env:check -- --fix. Secrets: see docs/runbooks/chay-local.md §2.\n",
+    "\nSome variables need attention. Defaults: npm run env:check -- --fix. Secrets: see docs/runbooks/chay-local.md §2.\n",
   );
   process.exitCode = 1;
 }

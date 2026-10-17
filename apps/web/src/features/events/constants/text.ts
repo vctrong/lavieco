@@ -74,6 +74,7 @@ export const TEXT = {
       safety: "Lưu ý an toàn",
       speakers: "Người hướng dẫn",
       agenda: "Lịch trình",
+      gallery: "Hình ảnh",
       tickets: "Loại vé",
       faq: "Câu hỏi thường gặp",
       policy: "Chính sách huỷ",

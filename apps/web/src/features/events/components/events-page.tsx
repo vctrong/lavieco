@@ -21,7 +21,9 @@ function Featured({ event }: { event: PublicEventCard }) {
       <div className="p-4 md:p-5">
         <CoverArt
           title={event.title}
+          cover={event.cover}
           label={event.type?.name.vi}
+          sizes="(min-width: 768px) 50vw, 100vw"
           className="aspect-[5/4] w-full md:h-full"
         />
       </div>

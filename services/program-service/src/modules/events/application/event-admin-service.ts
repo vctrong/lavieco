@@ -18,9 +18,12 @@ import { duplicateOf } from "../domain/duplicate";
 import { toEventContent, type Actor, type EventRecord } from "../domain/event";
 import { nextStatus } from "../domain/event-lifecycle";
 import { baseSlug, duplicateBaseSlug, firstFreeSlug } from "../domain/event-slug";
+import { NO_IMAGES, imageIds, releasedImageIds } from "../domain/event-images";
 import { assertFormChangeAllowed } from "../domain/form-rules";
+import { queueImageRelease, resolveEventImages } from "./event-media";
 import { snapshotOf, type EventSnapshot } from "./event-snapshot";
 import type { EventRepository } from "./ports/event-repository.port";
+import type { MediaAttachments } from "./ports/media-attachments.port";
 import type { PreviewTokenRepository } from "./ports/preview-token-repository.port";
 import { queueRevalidation } from "./revalidation";
 
@@ -40,6 +43,7 @@ export class EventAdminService {
     private readonly previewTokens: PreviewTokenRepository,
     private readonly unitOfWork: UnitOfWork,
     private readonly outbox: OutboxPort,
+    private readonly media: MediaAttachments,
   ) {}
 
   async list(query: EventListQuery) {
@@ -59,8 +63,12 @@ export class EventAdminService {
   async create(input: EventCreateRequest, actor: Actor, now = new Date()) {
     await this.requireSelectableType(input.typeId);
     const slug = input.slug ?? (await this.freeSlug(baseSlug(input.title)));
+    const id = this.events.newId();
+    const images = await resolveEventImages(this.media, id, NO_IMAGES, input);
     const event = await this.events.insert({
       ...toEventContent(input),
+      id,
+      images,
       kind: input.kind,
       slug,
       form: { questions: [] },
@@ -78,15 +86,19 @@ export class EventAdminService {
     if (slug !== current.slug && current.firstPublishedAt !== null) {
       throw new DomainError("event.slug_locked");
     }
+    if (current.revision !== input.revision) throw new DomainError("common.conflict");
+    const images = await resolveEventImages(this.media, id, current, input);
     const updated = await this.unitOfWork.run(async (tx) => {
       const saved = await this.events.updateContent(
         id,
         input.revision,
-        { content: toEventContent(input), slug },
+        { content: toEventContent(input), slug, images },
         actor,
         tx,
       );
       if (!saved) throw new DomainError("common.conflict");
+      // A replaced cover or a photo taken out of the gallery is deleted (ADR-0020).
+      await queueImageRelease(this.outbox, tx, id, releasedImageIds(current, images));
       await queueRevalidation(this.outbox, tx, saved);
       return saved;
     });
@@ -153,6 +165,9 @@ export class EventAdminService {
       const event = await this.events.insert(
         {
           ...copy.content,
+          id: this.events.newId(),
+          // One image belongs to one event: the copy starts without images (ADR-0020).
+          images: NO_IMAGES,
           kind: source.kind,
           slug,
           form: copy.form,
@@ -174,7 +189,13 @@ export class EventAdminService {
     if (current.status !== "draft" || current.firstPublishedAt !== null) {
       throw new DomainError("event.discard_not_allowed");
     }
-    if (!(await this.events.discard(id, revision, actor))) throw new DomainError("common.conflict");
+    await this.unitOfWork.run(async (tx) => {
+      if (!(await this.events.discard(id, revision, actor, tx))) {
+        throw new DomainError("common.conflict");
+      }
+      // A thrown-away draft keeps no images (ADR-0020).
+      await queueImageRelease(this.outbox, tx, id, imageIds(current));
+    });
   }
 
   /** Short-lived link for the preview iframe of `web` (D2); staff with `program:read`. */

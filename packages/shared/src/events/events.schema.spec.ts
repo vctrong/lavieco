@@ -39,6 +39,29 @@ describe("eventCreateRequestSchema", () => {
   it("refuses a malformed slug", () => {
     expect(eventCreateRequestSchema.safeParse({ ...base, slug: "Có Dấu" }).success).toBe(false);
   });
+
+  it("takes cover and gallery as media ids with alt text (ADR-0020)", () => {
+    const image = { mediaId: "64b7f0c2a1b2c3d4e5f60719", alt: "Bàn làm việc" };
+    const parsed = eventCreateRequestSchema.parse({ ...base, cover: image, gallery: [] });
+    expect(parsed.cover).toEqual(image);
+    expect(eventCreateRequestSchema.parse(base).gallery).toEqual([]);
+    expect(
+      eventCreateRequestSchema.safeParse({ ...base, cover: { ...image, alt: " " } }).success,
+    ).toBe(false);
+  });
+
+  it("caps the gallery at 12 distinct images", () => {
+    const images = Array.from({ length: 13 }, (_, index) => ({
+      mediaId: `64b7f0c2a1b2c3d4e5f607${String(index).padStart(2, "0")}`,
+      alt: "Ảnh",
+    }));
+    expect(eventCreateRequestSchema.safeParse({ ...base, gallery: images }).success).toBe(false);
+    expect(
+      eventCreateRequestSchema.safeParse({ ...base, gallery: images.slice(0, 12) }).success,
+    ).toBe(true);
+    const twice = [images[0], images[0]];
+    expect(eventCreateRequestSchema.safeParse({ ...base, gallery: twice }).success).toBe(false);
+  });
 });
 
 describe("formQuestionSchema", () => {

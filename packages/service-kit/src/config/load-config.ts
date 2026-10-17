@@ -6,7 +6,8 @@ export const baseServiceEnvSchema = z.object({
   PORT: z.coerce.number().int().min(1).max(65535),
   LOG_LEVEL: z.enum(["fatal", "error", "warn", "info", "debug", "trace", "silent"]).default("info"),
   MONGODB_URI: z.string().min(1),
-  MONGODB_DB: z.string().regex(/^lavieco_[a-z]+$/),
+  /** `lavieco_<service>`; the `_dev` suffix marks a development database on Atlas. */
+  MONGODB_DB: z.string().regex(/^lavieco_[a-z]+(?:_dev)?$/),
   /**
    * Public keys of the components allowed to call this service with a service token,
    * as a JSON object `{ "<caller>": <public Ed25519 JWK> }` (ADR-0018).
@@ -36,5 +37,24 @@ export function loadConfig<TSchema extends z.ZodType>(
     const keys = [...new Set(parsed.error.issues.map((issue) => String(issue.path[0] ?? "?")))];
     throw new ConfigError(keys);
   }
+  const isolation = databaseIsolationIssue(parsed.data as DatabaseEnv);
+  if (isolation) throw new ConfigError([isolation]);
   return parsed.data;
+}
+
+type DatabaseEnv = { NODE_ENV?: unknown; MONGODB_URI?: unknown; MONGODB_DB?: unknown };
+
+const ATLAS_HOST = /\.mongodb\.net(?=[:/,?]|$)/i;
+
+/**
+ * Keeps development away from production data (docs/04 §11.1). Outside production a
+ * service may only reach Atlas with a `_dev` database (and a dedicated Atlas user that
+ * has rights on `*_dev` only); production never uses a `_dev` database. Returns the
+ * offending variable name, or null. Mirrored by `infra/scripts/env-check.mjs`.
+ */
+export function databaseIsolationIssue(env: DatabaseEnv): "MONGODB_DB" | null {
+  if (typeof env.MONGODB_URI !== "string" || typeof env.MONGODB_DB !== "string") return null;
+  const devDatabase = env.MONGODB_DB.endsWith("_dev");
+  if (env.NODE_ENV === "production") return devDatabase ? "MONGODB_DB" : null;
+  return ATLAS_HOST.test(env.MONGODB_URI) && !devDatabase ? "MONGODB_DB" : null;
 }

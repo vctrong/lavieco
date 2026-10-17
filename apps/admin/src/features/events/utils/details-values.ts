@@ -1,6 +1,9 @@
-import type { EventFormat, EventKind, EventView } from "@lavieco/shared/events";
+import type { EventFormat, EventImage, EventKind, EventView } from "@lavieco/shared/events";
 
 import { isoToVietnamLocal, vietnamLocalToIso } from "./format";
+
+/** An uploaded image in the form: what is shown, plus the alt text being edited. */
+export type EventImageValue = EventImage;
 
 /** What the details form edits; strings only, converted to the contract on submit. */
 export type DetailsValues = {
@@ -22,6 +25,8 @@ export type DetailsValues = {
   speakers: { name: string; role: string }[];
   agenda: { time: string; title: string }[];
   faq: { question: string; answer: string }[];
+  cover: EventImageValue | null;
+  gallery: EventImageValue[];
 };
 
 export function emptyDetails(typeId: string): DetailsValues {
@@ -44,6 +49,8 @@ export function emptyDetails(typeId: string): DetailsValues {
     speakers: [],
     agenda: [],
     faq: [],
+    cover: null,
+    gallery: [],
   };
 }
 
@@ -67,7 +74,18 @@ export function detailsOf(event: EventView): DetailsValues {
     speakers: event.speakers.map((speaker) => ({ ...speaker })),
     agenda: event.agenda.map((item) => ({ ...item })),
     faq: event.faq.map((item) => ({ ...item })),
+    cover: event.cover ? { ...event.cover } : null,
+    gallery: event.gallery.map((image) => ({ ...image })),
   };
+}
+
+/** Media ids the saved event already holds (the rest are uploaded but not saved yet). */
+export function savedImageIds(event: EventView | null): Set<string> {
+  if (!event) return new Set();
+  return new Set([
+    ...(event.cover ? [event.cover.mediaId] : []),
+    ...event.gallery.map((image) => image.mediaId),
+  ]);
 }
 
 /**
@@ -99,5 +117,8 @@ export function toDetailsRequest(values: DetailsValues) {
     speakers: values.speakers,
     agenda: values.agenda,
     faq: values.faq,
+    // Only the media id and alt: program-service takes the file details from content-service.
+    cover: values.cover ? { mediaId: values.cover.mediaId, alt: values.cover.alt } : null,
+    gallery: values.gallery.map((image) => ({ mediaId: image.mediaId, alt: image.alt })),
   };
 }

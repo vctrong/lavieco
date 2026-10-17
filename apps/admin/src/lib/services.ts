@@ -1,9 +1,11 @@
 import "server-only";
 
 import {
+  createContentClient,
   createIdentityClient,
   createProgramClient,
   createServiceTokenSigner,
+  type ContentClient,
   type IdentityClient,
   type ProgramClient,
   type ServiceTokenSigner,
@@ -14,6 +16,7 @@ import { serverEnv } from "./env";
 
 let identity: IdentityClient | null = null;
 let program: ProgramClient | null = null;
+let content: ContentClient | null = null;
 let signer: ServiceTokenSigner | null = null;
 let logger: Logger | null = null;
 
@@ -42,6 +45,15 @@ export function programClient(): ProgramClient {
     signer: adminSigner(),
   });
   return program;
+}
+
+/** content-service client: image uploads carry the staff access token (ADR-0020). */
+export function contentClient(): ContentClient {
+  content ??= createContentClient({
+    baseUrl: serverEnv().CONTENT_SERVICE_URL,
+    signer: adminSigner(),
+  });
+  return content;
 }
 
 export function adminLogger(): Logger {

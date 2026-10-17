@@ -10,10 +10,14 @@ import type {
 } from "@lavieco/shared/events";
 
 import type { Actor, EventContent, EventRecord, StatusChange } from "../../domain/event";
+import type { EventImages } from "../../domain/event-images";
 
 export const EVENT_REPOSITORY = Symbol("EVENT_REPOSITORY");
 
 export type NewEvent = EventContent & {
+  /** From `newId()`: images are attached to the event before it is written. */
+  id: string;
+  images: EventImages;
   kind: EventKind;
   slug: string;
   form: EventForm;
@@ -33,6 +37,7 @@ export type PublicEventRecord = Omit<
 export type Page<T> = { items: T[]; nextCursor: string | null };
 
 export interface EventRepository {
+  newId(): string;
   /** Throws `event.slug_taken` when the slug is already used by a live event. */
   insert(input: NewEvent, tx?: TxContext): Promise<EventRecord>;
   /** Live (not discarded) event, any status. */
@@ -42,7 +47,7 @@ export interface EventRepository {
   updateContent(
     id: string,
     revision: number,
-    changes: { content: EventContent; slug: string },
+    changes: { content: EventContent; slug: string; images: EventImages },
     actor: Actor,
     tx?: TxContext,
   ): Promise<EventRecord | null>;
@@ -67,7 +72,7 @@ export interface EventRepository {
   ): Promise<EventRecord | null>;
   /** Derived field: does not bump `revision`, so open admin forms stay valid. */
   setPricing(id: string, pricing: EventPricing, tx?: TxContext): Promise<void>;
-  discard(id: string, revision: number, actor: Actor): Promise<boolean>;
+  discard(id: string, revision: number, actor: Actor, tx?: TxContext): Promise<boolean>;
   listAdmin(query: EventListQuery): Promise<Page<EventRecord> & { counts: EventStatusCounts }>;
   listPublic(query: PublicEventListQuery): Promise<Page<PublicEventRecord>>;
   /** Published, closed or ended only (S3). */

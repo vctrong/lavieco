@@ -25,6 +25,7 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, EventFailure>> = {
   "ticket_type.locked": "ticket_locked",
   "ticket_type.limit_reached": "ticket_limit",
   "event_type.name_taken": "type_name_taken",
+  "media.unavailable": "media_unavailable",
 };
 
 /** Maps a program-service failure to copy the forms can show; logs codes only. */

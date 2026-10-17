@@ -36,7 +36,7 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 - **Mã nguồn của mỗi project (`apps/*`, `services/*`, `packages/*`, `e2e`) nằm gọn trong `src/`**, kể cả test (`*.spec.ts` cạnh mã; `src/test/` của service cho test tích hợp/hợp đồng; `e2e/src/`). Không tạo `app/`, `lib/`, `components/`, `modules/` ở gốc project.
 - Ngoài `src/` chỉ có: cấu hình (`package.json`, `tsconfig*.json`, `next.config.ts`, `nest-cli.json`...), `public/` (chỉ app Next.js), `Dockerfile`, `.env.example`, `.env.local`, và **ngoại lệ duy nhất `migrations/`** của service.
 - **`docs/` ở gốc repo** (tài liệu, `adr/`, `design/`, `brand/`, `runbooks/`, `api/`). Không đặt tài liệu trong `apps/`, `services/`, `packages/`.
-- **`public/` ở gốc mỗi app Next.js**: chỉ cho **tài sản tĩnh cứng trong code** (logo, ảnh thành viên, hình trang trí, ảnh dự phòng) tại `public/images/{brand,team,illustrations,placeholders}/`. Ảnh do đội nội dung tải lên **không** để ở đây (đi qua `media`/object storage).
+- **`public/` ở gốc mỗi app Next.js**: chỉ cho **tài sản tĩnh cứng trong code** (logo, ảnh thành viên, hình trang trí, ảnh dự phòng) tại `public/images/{brand,team,illustrations,placeholders}/`. Ảnh tải lên **không** để ở đây (đi qua `content-service` `media` → Cloudinary, ADR-020).
 - **Next.js 16+ dùng `src/proxy.ts`** (cùng cấp `src/app/`, export hàm `proxy`). **Không tạo `middleware.ts`.**
 - **`.env.local`** = giá trị thật của máy dev, **gitignore, không bao giờ commit/đọc/in**; `.env.example` là bản mẫu commit. Tạo bằng `npm run env:init`.
 
@@ -45,7 +45,7 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 | Lệnh                                                        | Việc                                                                                            |
 | ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
 | `npm run env:init`                                          | Tạo `.env.local` từ `.env.example` cho mọi project (không ghi đè)                               |
-| `npm run dev:infra`                                         | MongoDB (replica set), MinIO, Mailpit bằng Docker                                               |
+| `npm run dev:infra`                                         | MongoDB (replica set), Mailpit bằng Docker (ảnh: Cloudinary dev, không container)               |
 | `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003), program (4004) |
 | `npm run admin:create -- --email … --name "…"`              | Tạo Super Admin đầu tiên (link kích hoạt một lần, bắt buộc cài 2FA)                             |
 | `npm run keys:generate -w @lavieco/identity-service`        | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)               |
@@ -61,7 +61,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 
 1. **6 thành phần GĐ1:** `apps/web`, `apps/admin` (Next.js) + `services/identity-service`, `content-service`, `lead-service`, `program-service` (NestJS; sự kiện/vé/payOS, miền `events` trong code, ADR-014/015). Member + Google + OTP ở `identity` (ADR-016). Service token Ed25519 theo bên gọi, mỗi route khai báo đúng một quy tắc truy cập (ADR-018). Không thêm service/gateway/broker khi chưa thỏa điều kiện ở `docs/02` §14.1 và chưa có ADR.
 2. **Service không mở ra Internet.** Chỉ `web` và `admin` nhận lưu lượng ngoài. Trình duyệt **không bao giờ** gọi thẳng service; đi qua BFF (Route Handlers/Server Actions).
-3. **Mỗi service một database** (`lavieco_identity` / `_content` / `_lead` / `_program`, một cụm Atlas Singapore, local là replica set trong compose), tài khoản DB riêng. **Cấm** đọc/ghi DB của service khác và cấm `$lookup` chéo DB. Tham chiếu chéo = ID + bản chụp (snapshot).
+3. **Mỗi service một database** (`lavieco_identity` / `_content` / `_lead` / `_program`, một cụm Atlas Singapore, local là replica set trong compose), tài khoản DB riêng. **Dev không bao giờ trỏ vào database production**: Atlas ở dev chỉ với database hậu tố `_dev` và user riêng; `loadConfig` từ chối nếu vi phạm (`docs/04` §11.1). **Cấm** đọc/ghi DB của service khác và cấm `$lookup` chéo DB. Tham chiếu chéo = ID + bản chụp (snapshot).
 4. **Hướng phụ thuộc** (`docs/04` §4.1): apps → packages; services → packages; **không** apps ↔ services, **không** service → service (gọi nhau qua HTTP bằng `@lavieco/api-clients`).
 5. **`packages/` chỉ chứa hợp đồng và công cụ**, không có logic nghiệp vụ: `shared`, `ui`, `api-clients`, `service-kit`, `observability`, `config`. Không thêm gói mới khi chưa có ≥2 nơi thật sự cần.
 6. **Việc bất đồng bộ** (audit, email, làm mới cache, bản chụp QR) **ghi vào `outbox` trong cùng giao dịch** với dữ liệu chính. Không gọi dịch vụ ngoài bên trong giao dịch. Giao dịch chỉ trong **một** service.
@@ -97,7 +97,8 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - `code`: 10 ký tự Crockford Base32, **ngẫu nhiên, không tuần tự**, **không bao giờ cập nhật** sau khi tạo.
 - Phân giải trả `{ status, canonicalPath }` với `status` ∈ `ok` · `not_published` · `revoked` · `not_found`. Mọi trạng thái không `ok` → trang thân thiện. Chỉ trả nội dung **đã xuất bản**.
 - Đếm lượt quét bằng `$inc` upsert vào `qr_scan_daily` theo `(code, day)`, `day` tính theo Asia/Ho_Chi_Minh. **Không lưu IP.**
-- Mỗi thay đổi QR (tạo/đổi đích/thu hồi) → outbox `qr.snapshot` ghi bản chụp ánh xạ bất biến ra object storage.
+- Mỗi thay đổi QR (tạo/đổi đích/thu hồi) → outbox `qr.snapshot` ghi bản chụp ánh xạ bất biến ra nơi lưu ngoài MongoDB (**bắt buộc**; nơi lưu chọn khi dựng module `qr`, `TODO(qr-snapshot)`).
+- **Không lưu ảnh QR** (vé hay sản phẩm): luôn sinh từ `qrToken`/`code` khi cần.
 - Lưu trữ nội dung đang có QR hoạt động trỏ tới: **cảnh báo và cần xác nhận**.
 
 ## 8. Frontend (`apps/web`, `apps/admin`)
@@ -111,6 +112,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Không sửa `globals.css` khi làm tính năng** (chỉ `@import` token). Muốn đổi token: PR riêng ở `packages/ui`.
 - **Icon:** chỉ `react-icons/fi` (Feather), **không SVG inline cho icon**. Cần icon Feather không có: hỏi (PQ2), đừng tự thêm thư viện icon.
 - **Font:** Fraunces (`--font-display`) + Be Vietnam Pro (`--font-sans`) qua `next/font`.
+- **Ảnh tải lên (ADR-020):** chỉ qua BFF → `content-service` (`CLOUDINARY_API_SECRET` chỉ ở service). Service kiểm tra magic bytes (JPEG/PNG/WebP; HEIC/AVIF báo lỗi riêng), avatar ≤ 2 MB, ảnh chương trình ≤ 8 MB, xoá EXIF bằng `sharp` trước khi gửi; client kiểm tra trước để báo lỗi sớm. Không phát ảnh gốc: chỉ named transformation `t_lv_w<rộng>` qua loader `next/image`. DB lưu `publicId` + `width`/`height`; nơi dùng giữ bản chụp `{ mediaId, publicId, width, height, alt }`. Thay/xoá ảnh thì giải phóng ảnh cũ (outbox `media.release`/`media.destroy`).
 - **Cấm `dangerouslySetInnerHTML`.** Nội dung dạng khối được kết xuất bằng component.
 - **Truy cập được:** `alt` bắt buộc; điều hướng bàn phím; **mọi hiệu ứng phải tắt/giảm khi `prefers-reduced-motion`**; Cẩm nang đọc được khi chưa chạy JS (hiệu ứng lật trang là lớp nâng cao).
 - **Dữ liệu:** lấy ở `server/` qua `api-clients` → ánh xạ sang view model. Cache tag: `content:<thực-thể>` và `content:<thực-thể>:<slug|id>`; webhook `/api/revalidate` (HMAC) gọi `revalidateTag` đúng các tag này.
@@ -216,7 +218,7 @@ Dùng mặc định trong tài liệu nếu an toàn, ghi `TODO(<mã>)`, hoặc 
 | AQ1           | Phương án hosting và ngân sách (mặc định đề xuất: một máy chủ + Docker Compose + Cloudflare)                                                              |
 | AQ2           | Email dự phòng khi `lead-service` lỗi (chứa PII) có chấp nhận không                                                                                       |
 | AQ3, DQ1, DQ2 | Thời hạn lưu giữ lead / audit                                                                                                                             |
-| AQ4           | Yêu cầu lưu trữ dữ liệu trong nước (cần tham vấn pháp lý)                                                                                                 |
+| AQ4           | Yêu cầu lưu trữ dữ liệu trong nước (cần tham vấn pháp lý). Ảnh ở Cloudinary ngoài nước đã chấp nhận cho GĐ1 (ADR-020)                                     |
 | AQ5           | Người đứng tên miền (tên miền đã chốt: `lavieco.io.vn`)                                                                                                   |
 | AQ6, AQ7, AQ8 | Người quản trị hạ tầng; IP allowlist/Cloudflare Access cho admin; nhà cung cấp email                                                                      |
 | DQ3, DQ6, DQ7 | Xác nhận email 2 bước cho danh sách chờ; cửa sổ phát hiện trùng lead (mặc định 30 ngày, cấu hình được); nhập/xuất lead hàng loạt                          |

@@ -6,6 +6,8 @@ const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   IDENTITY_SERVICE_URL: z.url(),
   PROGRAM_SERVICE_URL: z.url(),
+  /** content-service: event image uploads (ADR-0020). */
+  CONTENT_SERVICE_URL: z.url(),
   /** Origin of `web`: the event preview is rendered there inside an iframe (D2). */
   WEB_APP_URL: z.url(),
   SERVICE_TOKEN_PRIVATE_JWK: z.string().min(2),

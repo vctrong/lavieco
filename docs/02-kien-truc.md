@@ -114,7 +114,7 @@ flowchart TB
 
   subgraph data["Lưu trữ"]
     mdb[("MongoDB<br/>mỗi service một database")]
-    obj[("Object storage<br/>ảnh, tệp QR, bản chụp ánh xạ QR")]
+    obj[("Cloudinary<br/>ảnh tải lên (ADR-020)")]
   end
 
   mail[["Nhà cung cấp email"]]
@@ -239,7 +239,7 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 | **Cẩm nang (đọc)** | Nội dung dựng phía server, **đọc được khi chưa chạy JS**. Hiệu ứng lật trang, chế độ tối, đổi cỡ chữ là lớp nâng cao (client component). |
 | **Ghi chú/đánh dấu (GĐ1)** | Lưu ở trình duyệt (IndexedDB). Mỗi bản ghi có **ID sinh phía client (UUID)**, `updatedAt`, cờ xóa mềm. Cấu trúc này để GĐ2 chỉ cần *gộp và đồng bộ* khi người dùng đăng nhập, không phải làm lại. |
 | **Proxy (`src/proxy.ts`)** | Next.js 16+ dùng `proxy.ts` thay `middleware.ts`. Chỉ điều hướng/gắn header nhẹ: cổng "sắp ra mắt", định tuyến ngôn ngữ, header bảo mật. **Không phải hàng rào bảo mật** (xem 9.3). |
-| **Tài sản tĩnh** | Logo, ảnh và thông tin sáu thành viên, hình trang trí là **dữ liệu/ảnh tĩnh trong mã nguồn** (`public/images/`, `features/team/constants`). Ảnh do đội nội dung tải lên đi qua `media`/object storage. Chi tiết `04` §5.1. |
+| **Tài sản tĩnh** | Logo, ảnh và thông tin sáu thành viên, hình trang trí là **dữ liệu/ảnh tĩnh trong mã nguồn** (`public/images/`, `features/team/constants`). Ảnh do đội nội dung tải lên đi qua `media` (Cloudinary, ADR-020). Chi tiết `04` §5.1. |
 | **Chế độ "sắp ra mắt"** | `web` đọc cờ từ cấu hình site (cache ngắn) trong `proxy.ts`. Khi bật, khách thấy trang chờ. Admin xem toàn bộ site qua **Draft Mode** của Next.js, kích hoạt bằng liên kết xem trước có chữ ký từ `admin`. |
 | **i18n** | Định tuyến theo ngôn ngữ, `vi` mặc định. Nội dung lưu dạng `{vi, en?}` ngay từ đầu (A7). |
 | **SEO** | Metadata riêng từng trang, ảnh chia sẻ mạng xã hội, sitemap, dữ liệu có cấu trúc cho trang chính. |
@@ -308,7 +308,7 @@ Chưa cần ở GĐ1. Khi cần (điều kiện ở mục 14):
 | `lead-service` lỗi khi gửi form | `web` thử lại (idempotent). Vẫn lỗi: **gửi email dự phòng** tới hộp thư của đội chứa nội dung form (cần cân nhắc dữ liệu cá nhân trong email, xem AQ2), đồng thời báo người dùng đã nhận. Lead không được mất. |
 | Nhà cung cấp email lỗi | Lead đã lưu; outbox giữ thông báo và **thử lại** cho tới khi gửi được, cảnh báo nếu tồn đọng lâu. |
 | `identity-service` lỗi | Admin không đăng nhập mới được. Phiên hiện có vẫn hoạt động tới khi token hết hạn. Site công khai không phụ thuộc `identity-service`. |
-| Object storage lỗi | Ảnh mới không tải lên được. Ảnh đã có phục vụ qua CDN. |
+| Cloudinary lỗi | Ảnh mới không tải lên được (`503`, giao diện báo thử lại). Ảnh đã có vẫn phục vụ từ CDN của Cloudinary. Xoá ảnh cũ nằm trong outbox, thử lại tới khi được. |
 
 ## 7. Các luồng chính
 
@@ -349,7 +349,7 @@ sequenceDiagram
   W--)C: tăng bộ đếm lượt quét (không chặn phản hồi)
 ```
 
-**Bảo hiểm cho dữ liệu QR:** mỗi khi ánh xạ `mã → đích đến` thay đổi, `content-service` ghi thêm một **bản chụp bất biến** (JSON có phiên bản) vào object storage. Nếu cơ sở dữ liệu hỏng, ánh xạ vẫn khôi phục được, vì mất ánh xạ nghĩa là mất khả năng phục vụ mọi sản phẩm đã bán.
+**Bảo hiểm cho dữ liệu QR:** mỗi khi ánh xạ `mã → đích đến` thay đổi, `content-service` ghi thêm một **bản chụp bất biến** (JSON có phiên bản) ra một nơi lưu nằm ngoài MongoDB (chọn khi dựng module `qr`, `TODO(qr-snapshot)`, ADR-020). Nếu cơ sở dữ liệu hỏng, ánh xạ vẫn khôi phục được, vì mất ánh xạ nghĩa là mất khả năng phục vụ mọi sản phẩm đã bán.
 
 ### 7.2 Gửi form → Lead (UC-04, 05, 06, 07)
 
@@ -443,18 +443,22 @@ Chi tiết schema và index ở `03-co-so-du-lieu.md`. Ở đây chỉ chốt c�
 | **Migration** | Script có phiên bản (ví dụ công cụ migrate cho MongoDB), chạy trong pipeline triển khai, có thể chạy lại (idempotent). |
 | **Nội dung đa ngôn ngữ** | Trường văn bản người dùng thấy lưu dạng `{vi, en?}`. |
 
-### 8.2 Object storage (ảnh, tệp QR, bản chụp ánh xạ QR)
+### 8.2 Ảnh tải lên (Cloudinary, ADR-020)
 
-- Bộ chứa tương thích S3, **bucket riêng tư**; công chúng nhận ảnh qua CDN với tên tệp có băm nội dung (cache bất biến).
-- Quy trình tải ảnh: admin → `content-service` kiểm tra loại tệp **theo nội dung thực (magic bytes)**, giới hạn dung lượng → xử lý bằng thư viện ảnh (ví dụ `sharp`): **xóa metadata EXIF (có thể chứa tọa độ GPS)**, tạo các kích thước và định dạng hiện đại → lưu.
-- Tệp QR chất lượng in (SVG/PNG) sinh theo yêu cầu, lưu kèm phiên bản.
+- **Nơi lưu:** Cloudinary, hai product environment (hoặc tài khoản) riêng cho dev và prod, khoá API riêng. Folder gốc theo `NODE_ENV`: `lavieco/prod` ở production, `lavieco/dev` ở mọi môi trường khác; bên dưới là `events/`, `avatars/`.
+- **Chỉ qua `content-service`:** trình duyệt → BFF (`admin`/`web`) → `content-service` (multipart). Chỉ service gọi Cloudinary bằng API đã ký; `CLOUDINARY_API_SECRET` chỉ nằm ở `content-service`. Không có upload thẳng từ trình duyệt, không có preset unsigned.
+- **Kiểm tra trước khi gửi:** loại tệp theo **nội dung thực (magic bytes)**, chỉ JPEG/PNG/WebP (HEIC/HEIF/AVIF có mã lỗi riêng để giao diện hướng dẫn chọn JPG/PNG; SVG bị từ chối); dung lượng **avatar ≤ 2 MB**, **ảnh chương trình ≤ 8 MB**; tối đa 40 megapixel. `sharp` xoay theo EXIF rồi **mã hoá lại không kèm metadata** (xoá EXIF/GPS) trước khi gửi. Client kiểm tra cùng các điều kiện để báo lỗi sớm, service vẫn kiểm tra lại.
+- **Không phát ảnh gốc:** ảnh lưu `type: private`, tài khoản bật **Strict transformations**, chỉ các named transformation `t_lv_w<rộng>` (danh sách `MEDIA_DELIVERY_WIDTHS` ở `shared`) được phép. `web`/`admin` dựng URL bằng loader của `next/image`.
+- **Dữ liệu:** `media` ở `lavieco_content` (`03` §5.8) giữ `publicId`, kích thước, trạng thái, chủ sở hữu; nơi dùng giữ bản chụp `{ mediaId, publicId, width, height, alt }`.
+- **Vòng đời:** ảnh mới `pending`, quá 24 giờ chưa gắn thì bị dọn. `program-service` gắn ảnh (`attach`) khi lưu chương trình và ghi outbox `media.release` khi ảnh bị thay hoặc bản nháp bị xoá. Avatar thay/xoá thì ảnh cũ được giải phóng ngay trong `content-service`. Giải phóng = `deleted` + outbox `media.destroy` (xoá tệp ở Cloudinary).
+- **Ảnh QR không được lưu:** QR vé (từ `qrToken`) và QR in trên sản phẩm (từ `code`) luôn sinh từ mã khi cần. **Bản chụp ánh xạ QR (BR-02, §7.1) vẫn bắt buộc**; nơi lưu chọn khi dựng module `qr` (`TODO(qr-snapshot)`).
 
 ### 8.3 Sao lưu & khôi phục
 
 | Đối tượng | Chính sách đề xuất |
 |---|---|
 | MongoDB | Sao lưu hàng ngày; nếu nhà cung cấp hỗ trợ, bật khôi phục theo thời điểm. **Diễn tập khôi phục định kỳ** (bản sao lưu chưa từng thử khôi phục là bản sao lưu chưa được kiểm chứng). |
-| Object storage | Bật versioning; bản chụp ánh xạ QR không xóa. |
+| Ảnh (Cloudinary) | Cloudinary lưu dự phòng phía nhà cung cấp; ảnh có thể tải lại từ người soạn nên không sao lưu riêng ở GĐ1. Bản chụp ánh xạ QR không xóa (nơi lưu: `TODO(qr-snapshot)`). |
 | Bí mật & khóa | Lưu ở kho bí mật, có bản dự phòng do 2 người nắm giữ. |
 | Mục tiêu đề xuất | RPO ≤ 24 giờ, RTO trong vài giờ ở GĐ1 (điều chỉnh sau khi có dữ liệu thực tế). |
 
@@ -478,7 +482,7 @@ flowchart LR
     s["identity, content, lead, program"]
   end
   subgraph z4["Vùng 4: Dữ liệu"]
-    d["MongoDB, object storage"]
+    d["MongoDB, Cloudinary (ảnh)"]
   end
   u --> e --> w
   e --> a
@@ -536,7 +540,7 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
 | `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |
 
-(*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014). Permission GĐ2+ (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cần `content:write`; sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
+(*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014). Permission GĐ2+ (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cho nội dung (cẩm nang, tác phẩm) cần `content:write`, tải ảnh chương trình cần `program:write`, avatar do chính member tải (`@RequireMember`, ADR-020); sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
 
 **Quy tắc thực thi:**
 1. `admin` ẩn/hiện chức năng theo quyền (chỉ để trải nghiệm tốt), **không phải hàng rào bảo mật**.
@@ -622,7 +626,7 @@ Ghi tối thiểu: đăng nhập (thành công/thất bại), bật/tắt 2FA, �
 
 | Môi trường | Mục đích | Ghi chú |
 |---|---|---|
-| **Local** | Phát triển | Docker Compose: MongoDB (replica set một nút), MinIO (object storage tương thích S3), Mailpit (bắt email gửi ra); ứng dụng và service chạy trên máy (`npm run dev`). Dữ liệu mẫu, **không dùng dữ liệu thật** (`04` §11). |
+| **Local** | Phát triển | Docker Compose: MongoDB (replica set một nút), Mailpit (bắt email gửi ra); ảnh lên product environment Cloudinary **dev** (ADR-020); ứng dụng và service chạy trên máy (`npm run dev`). Dữ liệu mẫu, **không dùng dữ liệu thật** (`04` §11). **Không bao giờ trỏ vào database production:** mặc định dùng Mongo trong compose; nếu dùng Atlas thì chỉ database hậu tố `_dev` với user Atlas riêng chỉ có quyền trên `*_dev`. Service từ chối khởi động khi ngoài production mà trỏ Atlas với database không có hậu tố `_dev`, và production từ chối database `_dev`. |
 | **Staging** | Kiểm thử trước phát hành | Nhánh `develop`. Dữ liệu giả lập. Tên miền tách biệt, chặn công cụ tìm kiếm. |
 | **Production** | Người dùng thật | Nhánh `main`. Triển khai có phê duyệt. |
 
@@ -811,7 +815,7 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | **AQ1** | Chốt **phương án hosting** (A/B/C ở mục 12.2) và ngân sách hằng tháng cho hạ tầng? | ADR-006 |
 | **AQ2** | **Email dự phòng** khi `lead-service` lỗi có chứa dữ liệu cá nhân: chấp nhận không? Hộp thư nào nhận? | 6.4, 9.4 |
 | **AQ3** | **Thời hạn lưu giữ lead** trước khi ẩn danh hóa? | 9.4 |
-| **AQ4** | Yêu cầu **lưu trữ dữ liệu trong nước**: có áp dụng cho LAVIECO không? (cần tham vấn pháp lý) | Vị trí DB/máy chủ |
+| **AQ4** | Yêu cầu **lưu trữ dữ liệu trong nước**: có áp dụng cho LAVIECO không? (cần tham vấn pháp lý). **GĐ1 (18/10/2026): chấp nhận lưu ảnh (kể cả avatar) ở Cloudinary ngoài nước**; xem lại khi có pháp nhân, khi quy mô tăng hoặc khi đối tác yêu cầu (ADR-020). Phần DB/máy chủ vẫn mở. | Vị trí DB/máy chủ, ảnh |
 | **AQ5** | ~~Tên miền chính thức~~ **Đã chốt `lavieco.io.vn`** (17/10/2026). Còn mở: ai đứng tên đăng ký. | 7.1, ADR-007 |
 | **AQ6** | Ai quản trị hạ tầng, ai là người dự phòng khi CTO vắng? | 15.3, 11 |
 | **AQ7** | Có cần **danh sách IP/Cloudflare Access** cho `admin` từ đầu, hay chỉ 2FA? | 5.2, 12.3 |
@@ -843,3 +847,4 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 | v0.3 | 20/09/2026 | Thêm `proxy.ts` (không phải hàng rào bảo mật), tài sản tĩnh, `.env.local`; Đội ngũ là dữ liệu tĩnh | V.C. Trọng |
 | v0.4 | 17/10/2026 | Phân hệ Chương trình vào GĐ1: 6 thành phần, `program-service` (ADR-014), payOS (ADR-015), Member + Google + OTP (ADR-016), service token theo bên gọi (ADR-018), 6 permission mới, AQ5 chốt, AR2/AR5 | V.C. Trọng |
 | v0.5 | 18/10/2026 | Phase 2: luồng làm mới cache service → `web/api/revalidate` (HMAC, qua outbox); chính sách nhúng trang, ngoại lệ xem trước sự kiện cho origin `admin`; `program` trong vùng mạng riêng | V.C. Trọng |
+| v0.6 | 18/10/2026 | Phase 2b: §8.2 ảnh tải lên bằng Cloudinary (ADR-020) thay object storage S3/MinIO, không lưu ảnh QR, bản chụp ánh xạ QR chờ chọn nơi lưu; §8.3, §6.4; §12.1 tách dev khỏi database production; quyền tải ảnh chương trình/avatar; AQ4 chấp nhận ảnh ngoài nước ở GĐ1 | V.C. Trọng |

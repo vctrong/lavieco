@@ -53,7 +53,7 @@ export {
 } from "./event-type.schema";
 export {
   eventAgendaItemSchema,
-  eventCoverSchema,
+  eventImageSchema,
   eventCreateRequestSchema,
   eventDetailsSchema,
   eventFaqItemSchema,
@@ -71,7 +71,7 @@ export {
   eventStatusCountsSchema,
   eventUpdateRequestSchema,
   eventVenueSchema,
-  type EventCover,
+  type EventImage,
   type EventCreateRequest,
   type EventDetails,
   type EventList,

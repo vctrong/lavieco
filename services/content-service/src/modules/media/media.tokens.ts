@@ -1,0 +1,2 @@
+export const MEDIA_SERVICE = Symbol("MEDIA_SERVICE");
+export const MEDIA_SWEEPER_OPTIONS = Symbol("MEDIA_SWEEPER_OPTIONS");

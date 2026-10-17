@@ -274,7 +274,7 @@ flowchart LR
 | UC-06 | Đăng ký khóa học cho trường | Guest | M3, M4 | 1 |
 | UC-07 | Đăng ký nhận tin khi ra mắt | Guest | M10 | 1 |
 | UC-08 | Xem trang giới thiệu (Câu chuyện, Tác động, Đội ngũ) | Guest | M10 | 1 |
-| UC-09 | Đăng ký, đăng nhập | Member | M7 | 1 |
+| UC-09 | Đăng ký, đăng nhập; ảnh đại diện tuỳ chọn (đổi/gỡ bất cứ lúc nào, ADR-020) | Member | M7 | 1 |
 | UC-10 | Đồng bộ ghi chú, đánh dấu, tiến độ đọc | Member | M1 | 2 |
 | UC-11 | Lưu tác phẩm yêu thích | Member | M2 | 2 |
 | UC-12 | Xem lịch sử yêu cầu và đơn | Member | M5 | 2 |
@@ -770,3 +770,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.4 | 16/10/2026 | Đồng bộ định vị v1.3: ba lớp giá trị (thêm Lớp Truyền thông, chưa có tính năng GĐ1), cập nhật nhóm sản phẩm minh chứng | V.C. Trọng |
 | v0.5 | 17/10/2026 | Phân hệ Chương trình vào GĐ1 (ADR-014): Member (UC-09 lên GĐ1), UC-30 → 34, BR-12 → 17, quyền mới trong ma trận, A1 cập nhật, A9 | V.C. Trọng |
 | v0.6 | 18/10/2026 | UC-32: sự kiện đã diễn ra (lưu trữ); UC-30: ô lưu ý an toàn chỉ khi chương trình có lưu ý | V.C. Trọng |
+| v0.7 | 18/10/2026 | Phase 2b: UC-09 thêm ảnh đại diện tuỳ chọn của Member; UC-32 có ảnh bìa và thư viện ảnh (≤ 12, bắt buộc mô tả ảnh). Ảnh lưu ở Cloudinary, đã xoá EXIF (ADR-020) | V.C. Trọng |
