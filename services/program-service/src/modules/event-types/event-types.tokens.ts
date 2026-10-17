@@ -1,0 +1,1 @@
+export const EVENT_TYPE_SERVICE = Symbol("EVENT_TYPE_SERVICE");
