@@ -154,7 +154,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `IDENTITY_JWKS_URL` | Bắt buộc | Không | JWKS của identity | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001/.well-known/jwks.json` |
 | `CONTENT_SERVICE_URL` | Bắt buộc | Không | content-service (gắn/giải phóng ảnh) | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4002` |
 | `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của program-service | `npm run keys:generate -w @lavieco/identity-service -- program-service` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
-| `WEB_APP_URL` | Bắt buộc | Không | Origin của `web` (webhook làm mới cache) | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
+| `WEB_APP_URL` | Bắt buộc | Không | Origin của `web`: webhook làm mới cache, link vé trong email, `returnUrl`/`cancelUrl` của payOS | Tự đặt; khi test payOS qua tunnel đặt bằng URL tunnel | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
 | `REVALIDATE_SECRET` | Bắt buộc | **Có** | HMAC webhook làm mới cache, **cùng giá trị** với `web` | `RANDOM_32B` của `keys:generate` | Khác nhau giữa dev và prod | `R2lBLWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYQ==` |
 | `TICKET_LINK_SECRET` | Bắt buộc | **Có** | Khoá HMAC của link đơn/vé trong email (`/ve/[token]`, trang thanh toán, huỷ đơn) | `RANDOM_32B` của `keys:generate` | Khác nhau giữa dev và prod. **Đổi giá trị là mọi link vé đã gửi hết hiệu lực** | `VElDS0VULWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLTE=` |
 | `MAIL_PROVIDER` | Tuỳ chọn (mặc định `smtp`) | Không | Nhà cung cấp email vé (AQ8) | Tự đặt | | `smtp` |
@@ -164,6 +164,9 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `SMTP_USER` | Tuỳ chọn | Không | Tài khoản SMTP | Dashboard nhà cung cấp email | Dev để trống | `apikey` |
 | `SMTP_PASS` | Tuỳ chọn | **Có** | Mật khẩu/API key SMTP | Dashboard nhà cung cấp email | Dev để trống | `gia-smtp-pass` |
 | `MAIL_FROM` | Bắt buộc | Không | Người gửi email vé | Tự đặt | | `"LAVIECO <no-reply@lavieco.io.vn>"` |
+| `PAYOS_CLIENT_ID` | Tuỳ chọn (trống = tắt payOS; đủ cả ba mới bật) | Không (nhưng đừng công bố) | Client ID của kênh thanh toán payOS | my.payos.vn → Kênh thanh toán → chọn kênh → Thông tin tích hợp | **Kênh riêng** cho dev và prod (`docs/runbooks/payos.md`) | `gia-client-id-0000` |
+| `PAYOS_API_KEY` | Tuỳ chọn (như trên) | **Có** | API key gọi payOS (tạo link, đối soát, huỷ link) | Như trên | Như trên | `gia-api-key-0000` |
+| `PAYOS_CHECKSUM_KEY` | Tuỳ chọn (như trên) | **Có** | Khoá HMAC xác minh chữ ký webhook; **chỉ ở program-service** | Như trên | Như trên; lộ thì đổi ngay trên my.payos.vn | `gia-checksum-key-0000` |
 
 ## Lịch sử thay đổi
 
@@ -176,3 +179,4 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | 17/10/2026 | (tài liệu này được tạo, chưa đổi biến) | | Phase 3, `feat/phase3-registration-payos` |
 | 17/10/2026 | `identity-service`: `SERVICE_TOKEN_TRUSTED_KEYS` phải có thêm khoá công khai `"program-service"` | Đổi nội dung (không đổi tên) | Phase 3, `feat/phase3-registration-payos` |
 | 17/10/2026 | `program-service`: `TICKET_LINK_SECRET`, `MAIL_PROVIDER`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `MAIL_FROM` | Thêm (email vé, link vé ký HMAC) | Phase 3, `feat/phase3-registration-payos` |
+| 17/10/2026 | `program-service`: `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY` | Thêm (payOS, ADR-015) | Phase 3, `feat/phase3-registration-payos` |

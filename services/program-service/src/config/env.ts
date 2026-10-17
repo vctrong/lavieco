@@ -23,6 +23,14 @@ export const programEnvSchema = baseServiceEnvSchema.extend(mailEnvSchema.shape)
    * it breaks every link already sent; base64 of at least 32 bytes.
    */
   TICKET_LINK_SECRET: base64Key(32),
+  /**
+   * payOS payment channel (Kênh thanh toán in my.payos.vn). All three or none: without
+   * them paid events refuse bookings, free events still work. The checksum key verifies
+   * webhooks and never leaves this service (ADR-0015).
+   */
+  PAYOS_CLIENT_ID: z.string().default(""),
+  PAYOS_API_KEY: z.string().default(""),
+  PAYOS_CHECKSUM_KEY: z.string().default(""),
   /** content-service on the private network: attaches and releases event images (ADR-0020). */
   CONTENT_SERVICE_URL: z.url(),
   /**

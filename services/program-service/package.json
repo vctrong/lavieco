@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:int": "vitest run --config vitest.int.config.ts",
     "db:migrate": "node --env-file-if-exists=.env.local dist/cli/migrate.js",
+    "payos:webhook": "node --env-file-if-exists=.env.local dist/cli/payos-webhook.js",
     "gen:openapi": "node dist/openapi.js"
   },
   "dependencies": {
@@ -24,6 +25,7 @@
     "@nestjs/mongoose": "^11.0.0",
     "@nestjs/platform-express": "^11.1.0",
     "@nestjs/swagger": "^11.2.0",
+    "@payos/node": "2.0.5",
     "express": "^5",
     "jose": "^5.10.0",
     "mongoose": "^8.18.0",

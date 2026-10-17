@@ -1,0 +1,1 @@
+export const PAYOS_WEBHOOK_SERVICE = Symbol("PAYOS_WEBHOOK_SERVICE");

@@ -19,6 +19,7 @@ import type { ProgramEnv } from "./config/env";
 import { EventTypesModule } from "./modules/event-types";
 import { EventsModule, type MediaAttachments } from "./modules/events";
 import { OrdersModule } from "./modules/orders";
+import { PaymentsModule, payosGatewayProvider } from "./modules/payments";
 import { ProgramOutboxModule } from "./modules/outbox";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
@@ -45,6 +46,11 @@ export class AppModule {
   /** Built from parsed env so tests can start the real module graph with fakes. */
   static forRoot(env: ProgramEnv, overrides: AppOverrides = {}): DynamicModule {
     const events = EventsModule.forRoot(overrides.mediaAttachments);
+    const orders = OrdersModule.forRoot({
+      events,
+      gateway: overrides.paymentGateway ?? payosGatewayProvider,
+      expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
+    });
     return {
       module: AppModule,
       imports: [
@@ -71,11 +77,8 @@ export class AppModule {
         HealthModule,
         EventTypesModule,
         events,
-        OrdersModule.forRoot({
-          events,
-          gateway: overrides.paymentGateway,
-          expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
-        }),
+        orders,
+        PaymentsModule.forRoot(orders),
         ProgramOutboxModule.forRoot(events, overrides.revalidateFetch),
       ],
     };

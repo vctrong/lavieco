@@ -14,7 +14,8 @@ import {
 } from "@lavieco/shared/events";
 
 import { CheckoutService } from "../application/checkout-service";
-import { CHECKOUT_SERVICE } from "../orders.tokens";
+import { OrderSettlementService } from "../application/order-settlement-service";
+import { CHECKOUT_SERVICE, ORDER_SETTLEMENT_SERVICE } from "../orders.tokens";
 import { toLookupDto, toOrderView } from "./order.mapper";
 
 const tokenPipe = new ZodValidationPipe(orderAccessTokenSchema);
@@ -26,7 +27,10 @@ const tokenPipe = new ZodValidationPipe(orderAccessTokenSchema);
 @ApiTags("orders")
 @Controller("internal/v1")
 export class OrdersPublicController {
-  constructor(@Inject(CHECKOUT_SERVICE) private readonly checkout: CheckoutService) {}
+  constructor(
+    @Inject(CHECKOUT_SERVICE) private readonly checkout: CheckoutService,
+    @Inject(ORDER_SETTLEMENT_SERVICE) private readonly settlement: OrderSettlementService,
+  ) {}
 
   @Post("orders")
   @HttpCode(201)
@@ -55,6 +59,20 @@ export class OrdersPublicController {
   @ApiZodResponse(200, orderViewSchema)
   async cancel(@Param("token", tokenPipe) token: string) {
     return toOrderView(await this.checkout.cancelByToken(token));
+  }
+
+  @Post("order-links/:token/reconcile")
+  @HttpCode(200)
+  @AllowServices("web")
+  @ApiOperation({
+    summary: "Back from payOS with the order still pending: ask payOS (throttled, display only)",
+  })
+  @ApiZodResponse(200, orderViewSchema)
+  async reconcile(@Param("token", tokenPipe) token: string) {
+    // returnUrl never confirms a payment by itself: only payOS's own answer does (BR-15).
+    const { order } = await this.checkout.getByToken(token);
+    await this.settlement.reconcile(order.id, { publicCall: true });
+    return toOrderView(await this.checkout.load(order.id));
   }
 
   @Post("ticket-lookups")

@@ -16,6 +16,7 @@ import { TICKET_TYPE_REPOSITORY, TicketingModule, type TicketTypeRepository } fr
 import { OrdersPublicController } from "./api/orders-public.controller";
 import { CheckoutService } from "./application/checkout-service";
 import { OrderExpiryService } from "./application/order-expiry-service";
+import { OrderSettlementService } from "./application/order-settlement-service";
 import {
   ORDER_ANSWER_REPOSITORY,
   ORDER_REPOSITORY,
@@ -23,6 +24,7 @@ import {
   TICKET_REPOSITORY,
   type OrderAnswerRepository,
   type OrderRepository,
+  type PaymentEventRepository,
   type TicketRepository,
 } from "./application/ports/order-repositories.port";
 import {
@@ -50,7 +52,12 @@ import {
   MongoPaymentEventRepository,
   MongoTicketRepository,
 } from "./infrastructure/ticket.repository";
-import { CHECKOUT_SERVICE, ORDER_EXPIRY_OPTIONS, ORDER_EXPIRY_SERVICE } from "./orders.tokens";
+import {
+  CHECKOUT_SERVICE,
+  ORDER_EXPIRY_OPTIONS,
+  ORDER_EXPIRY_SERVICE,
+  ORDER_SETTLEMENT_SERVICE,
+} from "./orders.tokens";
 
 export type OrdersModuleOptions = {
   /** The app's `events` module instance (a dynamic module, shared). */
@@ -162,6 +169,39 @@ export class OrdersModule {
           ) => new OrderExpiryService(orders, checkout, unitOfWork),
           inject: [ORDER_REPOSITORY, CHECKOUT_SERVICE, UNIT_OF_WORK],
         },
+        {
+          provide: ORDER_SETTLEMENT_SERVICE,
+          useFactory: (
+            orders: OrderRepository,
+            ticketTypes: TicketTypeRepository,
+            tickets: TicketRepository,
+            paymentEvents: PaymentEventRepository,
+            events: EventRepository,
+            gateway: PaymentGateway,
+            unitOfWork: UnitOfWork,
+            outbox: OutboxPort,
+          ) =>
+            new OrderSettlementService(
+              orders,
+              ticketTypes,
+              tickets,
+              paymentEvents,
+              events,
+              gateway,
+              unitOfWork,
+              outbox,
+            ),
+          inject: [
+            ORDER_REPOSITORY,
+            TICKET_TYPE_REPOSITORY,
+            TICKET_REPOSITORY,
+            PAYMENT_EVENT_REPOSITORY,
+            EVENT_REPOSITORY,
+            PAYMENT_GATEWAY,
+            UNIT_OF_WORK,
+            OUTBOX_PORT,
+          ],
+        },
         OrderExpiryScheduler,
         OrderJobHandlers,
       ],
@@ -173,6 +213,7 @@ export class OrdersModule {
         PAYMENT_GATEWAY,
         ORDER_LINKS,
         CHECKOUT_SERVICE,
+        ORDER_SETTLEMENT_SERVICE,
         OrderExpiryScheduler,
       ],
     };

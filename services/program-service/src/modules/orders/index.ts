@@ -1,5 +1,9 @@
-export { CHECKOUT_SERVICE } from "./orders.tokens";
+export { CHECKOUT_SERVICE, ORDER_SETTLEMENT_SERVICE } from "./orders.tokens";
 export { CheckoutService, type OrderBundle } from "./application/checkout-service";
+export {
+  OrderSettlementService,
+  type ConfirmedPayment,
+} from "./application/order-settlement-service";
 export { CANCEL_PAYMENT_LINK_JOB, SEND_TICKETS_JOB } from "./application/order-jobs";
 export {
   ORDER_ANSWER_REPOSITORY,
@@ -21,5 +25,6 @@ export {
   type VerifiedPayment,
 } from "./application/ports/order-services.port";
 export type { OrderRecord, PaymentLink } from "./domain/order";
+export { DisabledPaymentGateway } from "./infrastructure/disabled-payment-gateway";
 export { OrderExpiryScheduler } from "./infrastructure/order-expiry.scheduler";
 export { OrdersModule } from "./orders.module";
