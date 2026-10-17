@@ -4,8 +4,9 @@ import { useRef, type ClipboardEvent, type KeyboardEvent } from "react";
 
 import { cn } from "@lavieco/ui";
 
-import { OTP_LENGTH } from "../constants/config";
-import { TEXT } from "../constants/text";
+import { SITE_TEXT } from "../constants/text";
+
+const OTP_LENGTH = 6;
 
 type OtpInputProps = {
   value: string;
@@ -21,7 +22,7 @@ type OtpInputProps = {
  * phones can offer the code from the email.
  */
 export function OtpInput({ value, onChange, disabled, invalid, describedBy }: OtpInputProps) {
-  const t = TEXT.vi.otp;
+  const t = SITE_TEXT.vi.otp;
   const refs = useRef<(HTMLInputElement | null)[]>([]);
   const digits = Array.from({ length: OTP_LENGTH }, (_, index) => value[index] ?? "");
 

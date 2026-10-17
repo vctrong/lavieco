@@ -9,17 +9,18 @@ import { Button, CheckboxField, TextField } from "@lavieco/ui";
 
 import { TurnstileWidget } from "@/shared/components/turnstile-widget";
 
+import { FormAlert } from "@/shared/components/form-alert";
+import { HoneypotField } from "@/shared/components/honeypot-field";
+import { OtpInput } from "@/shared/components/otp-input";
+import { useCountdown } from "@/shared/hooks/use-countdown";
+
 import { completeSignup, requestSignupCode } from "../actions/signup";
 import { NEXT_PARAM, ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { signupDetailsSchema, type SignupDetailsInput } from "../schemas";
-import { useCountdown } from "../hooks/use-countdown";
 import { toClientFieldErrors } from "./field-errors";
-import { FormAlert } from "./form-alert";
 import { GoogleButton } from "./google-button";
-import { HoneypotField } from "./honeypot-field";
 import { messageFor } from "./messages";
-import { OtpInput } from "./otp-input";
 
 type SignupFlowProps = {
   next: string;

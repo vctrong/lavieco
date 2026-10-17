@@ -52,8 +52,6 @@ export const TEXT = {
     otp: {
       title: "Nhập mã xác thực",
       sentTo: "Mã 6 số đã được gửi tới",
-      groupLabel: "Mã xác thực 6 số",
-      digitLabel: (index: number) => `Chữ số ${index} trên 6`,
       changeEmail: "Đổi email",
       resend: "Gửi lại mã",
       resendIn: (seconds: number) => `Gửi lại mã sau ${seconds}s`,

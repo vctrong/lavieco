@@ -9,16 +9,17 @@ import { Button, CheckboxField, TextField } from "@lavieco/ui";
 
 import { TurnstileWidget } from "@/shared/components/turnstile-widget";
 
+import { FormAlert } from "@/shared/components/form-alert";
+import { HoneypotField } from "@/shared/components/honeypot-field";
+import { OtpInput } from "@/shared/components/otp-input";
+import { useCountdown } from "@/shared/hooks/use-countdown";
+
 import { completeReset, requestResetCode } from "../actions/reset-password";
 import { ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { useCountdown } from "../hooks/use-countdown";
 import { resetRequestSchema } from "../schemas";
 import { toClientFieldErrors } from "./field-errors";
-import { FormAlert } from "./form-alert";
-import { HoneypotField } from "./honeypot-field";
 import { messageFor } from "./messages";
-import { OtpInput } from "./otp-input";
 
 type Pending = { email: string; challengeId: string; resendAvailableAt: string };
 

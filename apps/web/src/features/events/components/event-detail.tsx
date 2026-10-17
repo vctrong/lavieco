@@ -16,7 +16,7 @@ import { Container, Eyebrow, PearlDot } from "@lavieco/ui";
 
 import { MEDIA_DELIVERY_READY, MediaImage } from "@/shared/components/media-image";
 
-import { EVENTS_PATH, HANDBOOK_PATH } from "../constants/config";
+import { EVENTS_PATH, HANDBOOK_PATH, TICKET_LOOKUP_PATH, checkoutPath } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { formatSchedule, formatShortDate, formatVnd, paragraphsOf } from "../utils/format";
 import { AvailabilityTag, priceLabel } from "./event-card";
@@ -30,22 +30,46 @@ function SectionTitle({ id, children }: { id: string; children: string }) {
   );
 }
 
-function RegisterBox({ event }: { event: PublicEventDetail }) {
+function RegisterBox({ event, preview }: { event: PublicEventDetail; preview: boolean }) {
   const t = TEXT.vi.detail;
-  const note =
-    event.status === "closed" ? t.closed : event.status === "ended" ? t.ended : t.registerSoonNote;
+  const { open, blocker } = event.registration;
+  const label =
+    event.status === "closed"
+      ? t.closed
+      : event.status === "ended"
+        ? t.ended
+        : blocker
+          ? t.blockers[blocker]
+          : t.registerNow;
   return (
     <div className="rounded-3xl bg-deep-blue p-6 text-soft-white">
       <p className="font-display text-3xl">{priceLabel(event) ?? ""}</p>
-      {/* Registration and tickets open with checkout (docs/05 §9 phase 3). */}
-      <button
-        type="button"
-        disabled
-        className="mt-5 w-full cursor-not-allowed rounded-full bg-soft-white/15 px-6 py-3 text-sm font-semibold text-soft-white/80"
+      {open && !preview ? (
+        <Link
+          href={checkoutPath(event.slug)}
+          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-brand px-6 py-3 text-sm font-bold text-deep-blue shadow-emerald-cta transition-transform hover:scale-[1.02] motion-reduce:transition-none"
+        >
+          {t.registerNow}
+          <FiArrowRight aria-hidden="true" size={16} />
+        </Link>
+      ) : (
+        <button
+          type="button"
+          disabled
+          className="mt-5 w-full cursor-not-allowed rounded-full bg-soft-white/15 px-6 py-3 text-sm font-semibold text-soft-white/80"
+        >
+          {open ? t.registerNow : label}
+        </button>
+      )}
+      <p className="mt-3 text-[12.5px] leading-relaxed text-mint-mist/80">
+        {open ? t.registerNote : blocker === "online_link_pending" ? t.registerSoonNote : label}
+      </p>
+      <Link
+        href={TICKET_LOOKUP_PATH}
+        className="mt-4 inline-block text-[12.5px] font-semibold text-mint-mist underline-offset-4 hover:underline"
       >
-        {event.status === "closed" ? t.closed : event.status === "ended" ? t.ended : t.registerSoon}
-      </button>
-      <p className="mt-3 text-[12.5px] leading-relaxed text-mint-mist/80">{note}</p>
+        {t.lookupTickets}
+      </Link>
     </div>
   );
 }
@@ -54,7 +78,14 @@ function RegisterBox({ event }: { event: PublicEventDetail }) {
  * Public event page, also used by the preview (same rendering, D2). Plain-text content
  * only, rendered as paragraphs: no HTML from the service is ever injected.
  */
-export function EventDetail({ event }: { event: PublicEventDetail }) {
+export function EventDetail({
+  event,
+  preview = false,
+}: {
+  event: PublicEventDetail;
+  /** The preview never links to the checkout. */
+  preview?: boolean;
+}) {
   const t = TEXT.vi.detail;
   const Place = event.format === "online" ? FiVideo : FiMapPin;
   const description = paragraphsOf(event.description);
@@ -288,7 +319,7 @@ export function EventDetail({ event }: { event: PublicEventDetail }) {
           </div>
 
           <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
-            {event.kind === "standard" ? <RegisterBox event={event} /> : null}
+            {event.kind === "standard" ? <RegisterBox event={event} preview={preview} /> : null}
             {event.ticketTypes.length > 0 ? (
               <section
                 aria-labelledby="loai-ve"

@@ -1,3 +1,5 @@
+import type { RegistrationBlocker } from "@lavieco/shared/events";
+
 /** Copy of the public program pages (`/chuong-trinh`). Event content comes from program-service. */
 export const TEXT = {
   vi: {
@@ -79,8 +81,19 @@ export const TEXT = {
       faq: "Câu hỏi thường gặp",
       policy: "Chính sách huỷ",
       register: "Đăng ký",
+      registerNow: "Đăng ký ngay",
+      registerNote: "Chỉ cần thông tin người đặt. Vé có mã QR được gửi qua email sau khi xác thực.",
+      lookupTickets: "Tra cứu vé đã đặt",
       registerSoon: "Sắp mở đăng ký",
       registerSoonNote: "Đăng ký và nhận vé qua email sẽ mở trong thời gian tới.",
+      blockers: {
+        not_open: "Chưa mở đăng ký",
+        online_link_pending: "Sắp mở đăng ký",
+        sold_out: "Hết chỗ",
+        sale_not_started: "Chưa mở bán vé",
+        sale_ended: "Đã hết thời gian mở bán",
+        event_started: "Chương trình đã bắt đầu",
+      } satisfies Record<RegistrationBlocker, string>,
       closed: "Chương trình đã đóng đăng ký.",
       ended: "Chương trình đã diễn ra.",
       unlimited: "Không giới hạn chỗ",

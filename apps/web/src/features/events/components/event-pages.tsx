@@ -29,7 +29,7 @@ export async function EventPreviewPage({ token }: { token: string }) {
         <FiEye aria-hidden="true" size={14} />
         {t.banner} · {t.status[event.status]}
       </div>
-      <EventDetail event={event} />
+      <EventDetail event={event} preview />
     </>
   );
 }
