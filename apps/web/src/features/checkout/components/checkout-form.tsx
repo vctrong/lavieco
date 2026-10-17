@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useMemo, useState, type FormEvent } from "react";
+import { useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { FiEdit2, FiLock, FiMail, FiMinus, FiPlus } from "react-icons/fi";
 
 import { ORDER_LIMITS, type PublicEventDetail } from "@lavieco/shared/events";
@@ -61,6 +61,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
   const [alert, setAlert] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const resendIn = useCountdown(pending?.resendAvailableAt ?? null);
+  const codeFormRef = useRef<HTMLFormElement>(null);
 
   const lines = useMemo(
     () =>
@@ -115,7 +116,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
       safetyAcknowledged: consents.safety,
       isGuardian: consents.guardian,
       website: String(formData.get("website") ?? ""),
-      turnstileToken: String(formData.get("cf-turnstile-response") ?? "") || undefined,
+      turnstileToken: String(formData.get("turnstileToken") ?? "") || undefined,
     };
   };
 
@@ -183,7 +184,11 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
 
   const handleResend = async () => {
     if (!draft || resendIn > 0 || busy) return;
-    if (await send(draft)) setNotice(t.otp.resent);
+    // A Turnstile token is single use: the code step has its own widget for resends.
+    const token = codeFormRef.current
+      ? String(new FormData(codeFormRef.current).get("turnstileToken") ?? "") || undefined
+      : undefined;
+    if (await send({ ...draft, turnstileToken: token })) setNotice(t.otp.resent);
   };
 
   const summary = (
@@ -224,6 +229,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
     return (
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <form
+          ref={codeFormRef}
           onSubmit={handleCode}
           noValidate
           className="space-y-6 rounded-3xl border border-hairline bg-white p-6 md:p-8"
@@ -270,6 +276,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
               {resendIn > 0 ? t.otp.resendIn(resendIn) : t.otp.resend}
             </button>
           </div>
+          {resendIn === 0 ? <TurnstileWidget siteKey={turnstileSiteKey} /> : null}
           <FormAlert tone="success" message={notice} />
           <FormAlert tone="error" message={alert} />
           <Button type="submit" disabled={busy} className="w-full disabled:opacity-70">

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useId, useState, type FormEvent } from "react";
+import { useId, useRef, useState, type FormEvent } from "react";
 import { FiArrowRight, FiMail } from "react-icons/fi";
 
 import type { TicketLookupResponse } from "@lavieco/shared/events";
@@ -32,6 +32,7 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
   const [alert, setAlert] = useState<string | null>(null);
   const [result, setResult] = useState<TicketLookupResponse["items"] | null>(null);
   const resendIn = useCountdown(pending?.resendAvailableAt ?? null);
+  const codeFormRef = useRef<HTMLFormElement>(null);
 
   const sendCode = async (values: Record<string, unknown>) => {
     setBusy(true);
@@ -118,6 +119,7 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
   if (pending) {
     return (
       <form
+        ref={codeFormRef}
         onSubmit={handleCode}
         noValidate
         className="space-y-6 rounded-3xl border border-hairline bg-white p-6 md:p-8"
@@ -143,11 +145,18 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
         <button
           type="button"
           disabled={resendIn > 0 || busy}
-          onClick={() => void sendCode({ email: pending.email })}
+          onClick={() =>
+            // A Turnstile token is single use: the code step has its own widget for resends.
+            void sendCode({
+              email: pending.email,
+              ...(codeFormRef.current ? Object.fromEntries(new FormData(codeFormRef.current)) : {}),
+            })
+          }
           className="text-[13px] font-medium text-deep-blue hover:text-emerald-brand disabled:text-charcoal/50"
         >
           {resendIn > 0 ? t.otp.resendIn(resendIn) : t.otp.resend}
         </button>
+        {resendIn === 0 ? <TurnstileWidget siteKey={turnstileSiteKey} /> : null}
         <FormAlert tone="error" message={alert} />
         <Button type="submit" disabled={busy} className="w-full disabled:opacity-70">
           {busy ? t.lookup.verifying : t.lookup.verify}
