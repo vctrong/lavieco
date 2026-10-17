@@ -17,7 +17,7 @@ Trong **cùng một commit**, cập nhật cả ba nơi:
 2. `.env.example` tương ứng (không có giá trị thật).
 3. Tài liệu này: bảng của project, mục "Biến liên quan giữa các service" nếu có, và "Lịch sử thay đổi".
 
-`npm run env:check` cảnh báo khi một biến có trong `.env.example` mà chưa được nhắc trong tài liệu này.
+`npm run env:check` cảnh báo khi một biến có trong `.env.example` mà chưa được nhắc trong tài liệu này, và báo lỗi khi biến dạng JSON (`*_KEYS`, `*_JWK`) không đúng cú pháp (chỉ in tên biến và vị trí ký tự lỗi, không in giá trị).
 
 Cột **Bắt buộc**: "Bắt buộc" nghĩa là project từ chối khởi động khi thiếu hoặc sai. "Tuỳ chọn (mặc định …)" nghĩa là có thể bỏ trống. Cột **Bí mật**: "Có" nghĩa là lộ giá trị thì phải xoay (đổi) ngay.
 

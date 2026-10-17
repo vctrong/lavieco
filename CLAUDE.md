@@ -72,25 +72,25 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 
 ## 6. Quy tắc nghiệp vụ không được vi phạm
 
-| Mã    | Quy tắc                                                                                            |
-| ----- | -------------------------------------------------------------------------------------------------- |
-| BR-01 | Trang tác phẩm luôn có story card và liên kết về Cẩm nang; sản phẩm là minh chứng                  |
-| BR-02 | **Mã QR bất biến**; đích đến đổi ở server; mã bị thu hồi hiện trang thân thiện, không lỗi kỹ thuật |
-| BR-03 | Cẩm nang miễn phí lúc ra mắt nhưng nội dung có `accessLevel` ngay từ đầu                           |
-| BR-04 | Không mất lead; không xóa cứng, chỉ lưu trữ                                                        |
-| BR-05 | Nội dung: nháp → chờ duyệt → xuất bản; **người duyệt khác người soạn**                             |
-| BR-06 | Mọi form có ô đồng ý (lưu phiên bản + thời điểm); thu tối thiểu; có quy trình xóa/xuất             |
-| BR-07 | Lead trùng (SĐT/email chuẩn hóa, trong cửa sổ thời gian) thì gộp, không tạo bản sao                |
-| BR-08 | **Không thu thông tin cá nhân học sinh**, chỉ số lượng                                             |
-| BR-09 | Số liệu tác động chỉ công bố khi có nguồn và được Super Admin duyệt                                |
-| BR-10 | Giá công khai là **khoảng giá niêm yết**, giá chốt do đội xác nhận                                 |
-| BR-11 | Ghi chú cá nhân của người đọc chỉ chủ sở hữu thấy                                                  |
-| BR-12 | Email người đặt vé / người đăng ký tài khoản phải xác thực OTP (kể cả chương trình miễn phí)       |
-| BR-13 | Chỉ thu thông tin **người đặt** + số lượng vé; không tên người tham dự, sức khoẻ, cân nặng, CCCD   |
-| BR-14 | Giữ chỗ 15 phút, chỉ sau khi OTP thành công; không bán vượt                                        |
-| BR-15 | Thanh toán chỉ xác nhận bằng webhook đã xác minh chữ ký; hoàn tiền thủ công                        |
-| BR-16 | Mỗi vé một QR ngẫu nhiên, check-in một lần                                                         |
-| BR-17 | Sự kiện tự xuất bản (không duyệt 2 người); form đã có người trả lời chỉ thêm/ẩn câu hỏi            |
+| Mã    | Quy tắc                                                                                                                                                |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| BR-01 | Trang tác phẩm luôn có story card và liên kết về Cẩm nang; sản phẩm là minh chứng                                                                      |
+| BR-02 | **Mã QR bất biến**; đích đến đổi ở server; mã bị thu hồi hiện trang thân thiện, không lỗi kỹ thuật                                                     |
+| BR-03 | Cẩm nang miễn phí lúc ra mắt nhưng nội dung có `accessLevel` ngay từ đầu                                                                               |
+| BR-04 | Không mất lead; không xóa cứng, chỉ lưu trữ                                                                                                            |
+| BR-05 | Nội dung: nháp → chờ duyệt → xuất bản; **người duyệt khác người soạn**                                                                                 |
+| BR-06 | Mọi form có ô đồng ý (lưu phiên bản + thời điểm); thu tối thiểu; có quy trình xóa/xuất                                                                 |
+| BR-07 | Lead trùng (SĐT/email chuẩn hóa, trong cửa sổ thời gian) thì gộp, không tạo bản sao                                                                    |
+| BR-08 | **Không thu thông tin cá nhân học sinh**, chỉ số lượng                                                                                                 |
+| BR-09 | Số liệu tác động chỉ công bố khi có nguồn và được Super Admin duyệt                                                                                    |
+| BR-10 | Giá công khai là **khoảng giá niêm yết**, giá chốt do đội xác nhận                                                                                     |
+| BR-11 | Ghi chú cá nhân của người đọc chỉ chủ sở hữu thấy                                                                                                      |
+| BR-12 | Email người đặt vé / người đăng ký tài khoản phải xác thực OTP (kể cả chương trình miễn phí)                                                           |
+| BR-13 | Chỉ thu thông tin **người đặt** + số lượng vé; không tên người tham dự, sức khoẻ, cân nặng, CCCD                                                       |
+| BR-14 | Giữ chỗ 15 phút, chỉ sau khi OTP thành công; không bán vượt                                                                                            |
+| BR-15 | Thanh toán chỉ xác nhận bằng webhook có chữ ký hợp lệ hoặc truy vấn API payOS phía server (không bao giờ bằng tham số `returnUrl`); hoàn tiền thủ công |
+| BR-16 | Mỗi vé một QR ngẫu nhiên, check-in một lần                                                                                                             |
+| BR-17 | Sự kiện tự xuất bản (không duyệt 2 người); form đã có người trả lời chỉ thêm/ẩn câu hỏi                                                                |
 
 ## 7. QR: quy tắc riêng (dễ làm sai nhất)
 
@@ -121,7 +121,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Form:** Zod ở client (trải nghiệm) **và** ở Route Handler (an toàn); sinh `Idempotency-Key` (UUID) khi mở form; Turnstile + honeypot.
 - **Ghi chú/đánh dấu Cẩm nang (GĐ1):** IndexedDB sau module `features/handbook/storage`, ID UUID, `updatedAt`, xóa mềm. Không rải truy cập IndexedDB khắp nơi.
 - **Phiên:** member ở `web` (`lib/session.ts`, cookie httpOnly `SameSite=Lax`), staff ở `admin` (`SameSite=Strict`). Server Component không ghi cookie: token hết hạn thì chuyển qua `/api/auth/refresh?tiep=…` (web) hoặc `?next=…` (admin). Đường dẫn quay lại luôn qua `safeNextPath`. Form công khai có honeypot `website` + Turnstile (bật bằng `TURNSTILE_ENABLED`).
-- **Phân hệ Chương trình** (`docs/05`, ADR-014): miền tên `events` trong code (admin `/events`, loại chương trình ở `/events/types`); `programs`/`program_pages` là mô tả công khai của `content-service`. Chỉ thu thông tin người đặt (BR-13), không dữ liệu sức khoẻ/CCCD. Trường cố định của form: họ tên, email, SĐT, đồng ý dữ liệu (+ "đã đọc lưu ý an toàn" chỉ khi có lưu ý). Miễn phí = có loại vé giá 0. Xem trước: `web` `/xem-truoc/chuong-trinh/[token]`, chỉ origin admin được nhúng; mọi trang khác chặn nhúng. Cache tag sự kiện: `program:events`, `program:events:<slug>`.
+- **Phân hệ Chương trình** (`docs/05`, ADR-014): miền tên `events` trong code (admin `/events`, loại chương trình ở `/events/types`); `programs`/`program_pages` là mô tả công khai của `content-service`. Chỉ thu thông tin người đặt (BR-13), không dữ liệu sức khoẻ/CCCD. Trường cố định của form: họ tên, email, SĐT, đồng ý dữ liệu (+ "đã đọc lưu ý an toàn" chỉ khi có lưu ý). Miễn phí = có loại vé giá 0. Xem trước: `web` `/xem-truoc/chuong-trinh/[token]`, chỉ origin admin được nhúng; mọi trang khác chặn nhúng. Cache tag sự kiện: `program:events`, `program:events:<slug>`. Đặt vé (Phase 3): `web` `/chuong-trinh/[slug]/dang-ky` → OTP (member có email đã xác thực thì bỏ qua) → `/chuong-trinh/thanh-toan/[token]` (VietQR, poll 3 giây) hoặc `/ve/[token]`; `/tra-cuu-ve`; webhook payOS `/api/payments/payos/webhook` chỉ chuyển raw body sang service. `forChildren` thì checkout bắt buộc tick "phụ huynh/người giám hộ". Admin: `/orders`, `/events/[id]/registrations` (cần `order:read`; xuất Excel cần `registration:export` + step-up), `/checkin`. Step-up = nhập lại TOTP (ADR-021).
 - **Env:** `NEXT_PUBLIC_*` là công khai (nhúng vào bundle lúc build), **không chứa bí mật**. Đọc env qua `lib/env.ts` (server) / `lib/env.public.ts`. Giá trị thật chỉ ở `.env.local`.
 - **`src/proxy.ts`:** chỉ điều hướng và gắn header nhẹ. `web`: cổng "sắp ra mắt" (rewrite tới `/sap-ra-mat` khi cờ bật và không có Draft Mode), i18n nếu cần, header bảo mật. `admin`: chuyển hướng `/login` khi chưa có phiên, `noindex`, header bảo mật. **Không** logic nghiệp vụ, không DB, không gọi service nặng. **Không phải hàng rào bảo mật**: Route Handler/Server Action/service vẫn tự kiểm tra xác thực và quyền.
 - **Ảnh tĩnh (`public/images/...`):** tên `kebab-case` không dấu (vd `team/vo-chi-trong.jpg`); đường dẫn khai báo ở constants (`src/shared/constants/assets.ts` hoặc `constants/` của tính năng), `alt` ở `text.ts`, không viết đường dẫn trong JSX; hiển thị bằng `next/image`; đổi ảnh thì đổi tên tệp. Favicon/OG/`robots`/`sitemap` dùng tệp quy ước trong `src/app/`, không để ở `public/`.

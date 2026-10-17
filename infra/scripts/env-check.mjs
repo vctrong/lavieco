@@ -54,6 +54,25 @@ const envDoc = existsSync(envDocPath) ? readFileSync(envDocPath, "utf8") : null;
 /** Variables named in `.env.example` files but absent from the env documentation. */
 const undocumented = [];
 
+/** Variables holding JSON (keys, key maps): checked for syntax, reported by name only. */
+const JSON_VARIABLE = /(_KEYS|_JWK)$/;
+
+/** Names (with the error position) of JSON variables that do not parse. Never the value. */
+function invalidJson(local) {
+  const issues = [];
+  for (const [key, raw] of local) {
+    const value = unquote(raw);
+    if (!JSON_VARIABLE.test(key) || value === "") continue;
+    try {
+      JSON.parse(value);
+    } catch (error) {
+      const position = /position (\d+)/.exec(String(error))?.[1];
+      issues.push(position ? `${key} (character ${Number(position) + 1})` : key);
+    }
+  }
+  return issues;
+}
+
 const isEmpty = (value) => value === undefined || value === "" || value === "''" || value === '""';
 
 let problems = 0;
@@ -95,14 +114,16 @@ for (const dir of projectDirs) {
     (key) => local.has(key) && isEmpty(local.get(key)) && isEmpty(example.get(key)),
   );
   const isolation = databaseIsolationIssue(local);
+  const badJson = invalidJson(local);
   const notes = [];
+  if (badJson.length) notes.push(`invalid JSON: ${badJson.join(", ")}`);
   if (isolation) {
     notes.push(`${isolation}: Atlas outside production needs a *_dev database (docs/04 §11.1)`);
   }
   if (appended.length) notes.push(`added with defaults: ${appended.join(", ")}`);
   if (stillMissing.length) notes.push(`missing: ${stillMissing.join(", ")}`);
   if (unset.length) notes.push(`empty (may be optional): ${unset.join(", ")}`);
-  const failed = stillMissing.length > 0 || isolation !== null;
+  const failed = stillMissing.length > 0 || isolation !== null || badJson.length > 0;
   if (failed) problems += 1;
   process.stdout.write(
     `${failed ? "✗" : "✓"} ${label}${notes.length ? `: ${notes.join(" | ")}` : ""}\n`,

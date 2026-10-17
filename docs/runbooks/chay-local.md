@@ -88,7 +88,9 @@ npm run build -w @lavieco/content-service && npm run db:migrate -w @lavieco/cont
 npm run dev                                            # web :3000, admin :3001, identity :4001, content :4002, program :4004
 ```
 
-- Email (mã OTP, thông báo) xem ở Mailpit: http://localhost:8025
+- Email (mã OTP, thông báo, **email vé có QR**) xem ở Mailpit: http://localhost:8025
+- Thử đăng ký (Phase 3): xuất bản một chương trình có loại vé giá 0 ở admin → `http://localhost:3000/chuong-trinh/<slug>` → "Đăng ký ngay" → nhập mã OTP từ Mailpit → trang `/ve/[token]`. Chương trình có phí cần `PAYOS_*` (xem `docs/runbooks/payos.md`). Admin: `/orders`, `/events/<id>/registrations`, `/checkin`.
+- Sau khi sửa biến JSON (`SERVICE_TOKEN_TRUSTED_KEYS`, `JWT_SIGNING_KEYS`, `SERVICE_TOKEN_PRIVATE_JWK`), chạy `npm run env:check`: lệnh báo biến nào sai cú pháp mà không in giá trị.
 - Super Admin đầu tiên: `npm run admin:create -- --email <email> --name "<tên>"`. Lệnh in ra link kích hoạt dùng một lần (48 giờ). Mở link, quét QR bằng ứng dụng xác thực, đặt mật khẩu, lưu 10 mã khôi phục.
 - Google sign-in (tuỳ chọn): đặt `GOOGLE_CLIENT_ID` ở cả `web` và `identity-service`, `GOOGLE_CLIENT_SECRET` chỉ ở `identity-service`, redirect URI `http://localhost:3000/api/auth/google/callback` (phải khớp với Google Console).
 

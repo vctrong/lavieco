@@ -16,6 +16,7 @@
 1. Thêm **`program-service`** (NestJS, database `lavieco_program`, tài khoản DB riêng) ngay ở GĐ1. Điều kiện ở `docs/02` §14.1 được thỏa theo mục (3): dữ liệu và ranh giới đã rõ, khớp một bounded context.
 2. Trong code, miền này mang tên **`events`** (module `events`, route admin `/events`). UI vẫn hiển thị "Chương trình". Tên `programs`/`program_pages` giữ cho **mô tả công khai** trong `content-service` (bốn nấc thang), tránh trùng nghĩa.
 3. Module dự kiến: `events`, `event-types`, `ticketing`, `orders`, `tickets`, `checkin`, `registrations` (câu trả lời form, xuất Excel), `payments` (ADR-015), `outbox`, `idempotency`, `jobs`.
+   - **Cập nhật Phase 3 (17/10/2026):** vé (`tickets`) nằm trong module `orders` cùng đơn, câu trả lời, `payment_events`, job hết hạn giữ chỗ và hàm ghi nhận thanh toán dùng chung (một giao dịch cho đơn + chỗ + vé). `payments` chỉ chứa client payOS và webhook. Thêm module `audit` (gửi audit sang identity qua outbox, ADR-021). Không có module `idempotency`: checkout idempotent theo `verificationId` của bằng chứng email.
 4. Permission mới: `program:read`, `program:write`, `order:read`, `order:refund`, `registration:export`, `checkin:perform` (`docs/02` §9.3).
 5. Vòng đời sự kiện: `draft → published → closed | ended`, xem trước theo quyền, **không cần người duyệt thứ hai** (khác mẫu publishable của BR-05). Được gỡ xuất bản về `draft` khi chưa có ai đăng ký.
 
