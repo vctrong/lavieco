@@ -3,7 +3,16 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { FiAlertTriangle, FiCheckCircle, FiCopy, FiEye, FiInfo, FiXCircle } from "react-icons/fi";
+import {
+  FiAlertTriangle,
+  FiCamera,
+  FiCheckCircle,
+  FiCopy,
+  FiEye,
+  FiInfo,
+  FiUsers,
+  FiXCircle,
+} from "react-icons/fi";
 
 import type { EventAction, EventView } from "@lavieco/shared/events";
 import { Button, cn } from "@lavieco/ui";
@@ -143,6 +152,24 @@ export function StatusPanel({
         </Link>
       </div>
       <Readiness event={event} />
+      {event.kind === "standard" && event.status !== "draft" ? (
+        <div className="flex flex-wrap gap-2">
+          <Link
+            href={`/events/${event.id}/registrations`}
+            className="flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+          >
+            <FiUsers aria-hidden="true" size={13} />
+            {t.actions.registrations}
+          </Link>
+          <Link
+            href={`/checkin/${event.id}`}
+            className="flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+          >
+            <FiCamera aria-hidden="true" size={13} />
+            {t.actions.checkin}
+          </Link>
+        </div>
+      ) : null}
       {canWrite ? (
         <div className="space-y-2">
           {dirty ? (
