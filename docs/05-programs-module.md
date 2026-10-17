@@ -6,7 +6,7 @@
 
 ## Quyết định bổ sung (17/10/2026)
 
-**Thiết kế.** Ảnh trong `docs/design/admin&chuongtrinh/` chỉ để tham khảo **bố cục và luồng**:
+**Thiết kế.** Ảnh trong `docs/design/admin-chuong-trinh/` chỉ để tham khảo **bố cục và luồng**:
 
 - Style theo `packages/ui`: 6 token màu, Fraunces + Be Vietnam Pro, `react-icons/fi`. Nội dung theo docs và định vị v1.3.
 - Bỏ mọi thứ trong ảnh mâu thuẫn với docs: bàn/ghế, chi nhánh, SMS/Zalo, VAT, danh sách chờ, QR đổi mã, "Thêm vào Ví", khách tự yêu cầu hoàn tiền, chữ "ven biển", số liệu tác động không nguồn, tên phụ ("The Living Gallery"...), icon Material, bảng màu trong `DESIGN.md`.
@@ -57,7 +57,7 @@
 ## 0. Trước khi code
 
 1. Đọc `CLAUDE.md`, `docs/01`–`04`.
-2. Xem **toàn bộ** ảnh thiết kế trong `docs/design/admin&chuongtrinh/` (dùng Read để xem ảnh). Lập danh sách màn → route tương ứng → component chính. UI phải bám sát các màn này.
+2. Xem **toàn bộ** ảnh thiết kế trong `docs/design/admin-chuong-trinh/` (dùng Read để xem ảnh). Lập danh sách màn → route tương ứng → component chính. UI phải bám sát các màn này.
 3. Kiểm tra 3 service hiện có trong repo, đề xuất ánh xạ vào mục 3 (gộp/tách nếu cần) và **dừng lại cho tôi duyệt** trước khi viết code.
 4. Mỗi phase (mục 9) làm xong thì dừng, tóm tắt, chờ duyệt.
 

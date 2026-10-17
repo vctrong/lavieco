@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,400&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-tint":"#006c4e","on-tertiary-container":"#454100","surface-container-highest":"#e1e3df","on-error-container":"#93000a","on-secondary":"#ffffff","on-primary-fixed-variant":"#00513a","tertiary-container":"#b7ae41","on-tertiary":"#ffffff","tertiary-fixed":"#f0e672","on-error":"#ffffff","on-surface-variant":"#3d4a43","surface":"#f8faf6","outline":"#6c7a72","primary-fixed":"#75fac7","inverse-surface":"#2e312f","on-tertiary-fixed-variant":"#4d4800","on-secondary-container":"#425582","surface-container-low":"#f2f4f0","outline-variant":"#bbcac1","secondary-fixed-dim":"#b3c6fa","surface-container-lowest":"#ffffff","surface-container":"#eceeeb","error-container":"#ffdad6","primary-container":"#10b183","on-secondary-fixed":"#011944","tertiary-fixed-dim":"#d3ca59","on-surface":"#191c1a","tertiary":"#676000","surface-variant":"#e1e3df","primary-fixed-dim":"#55ddac","on-primary-container":"#003c2a","inverse-primary":"#55ddac","secondary-fixed":"#d9e2ff","background":"#f8faf6","primary":"#006c4e","error":"#ba1a1a","on-primary":"#ffffff","on-background":"#191c1a","on-tertiary-fixed":"#1f1c00","surface-container-high":"#e7e9e5","on-primary-fixed":"#002115","secondary-container":"#b8cbff","on-secondary-fixed-variant":"#324672","inverse-on-surface":"#eff1ed","surface-bright":"#f8faf6","surface-dim":"#d8dbd7","secondary":"#4b5d8b"},"borderRadius":{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},"spacing":{"space-md":"1rem","space-xl":"3rem","space-lg":"1.75rem","gutter-desktop":"3rem","margin-desktop":"4.5rem","margin":"1.25rem","gutter-tablet":"2rem","gutter":"1.5rem","space-xs":"0.25rem","margin-tablet":"2.5rem","space-sm":"0.5rem"},"fontFamily":{"body-sm":["Be Vietnam Pro"],"display-hero-mobile":["Fraunces"],"headline-md":["Fraunces"],"headline-sm":["Fraunces"],"display-hero":["Fraunces"],"body-md":["Be Vietnam Pro"],"body-lg":["Be Vietnam Pro"],"title-editorial":["Fraunces"],"headline-lg-mobile":["Fraunces"],"label-caps":["Be Vietnam Pro"],"metadata-curatorial":["Be Vietnam Pro"],"headline-lg":["Fraunces"]},"fontSize":{"body-sm":["13px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["40px",{"lineHeight":"48px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-md":["32px",{"lineHeight":"42px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-sm":["24px",{"lineHeight":"32px","fontWeight":"500"}],"display-hero":["64px",{"lineHeight":"76px","letterSpacing":"-0.02em","fontWeight":"400"}],"body-md":["15px",{"lineHeight":"26px","fontWeight":"400"}],"body-lg":["18px",{"lineHeight":"31px","fontWeight":"300"}],"title-editorial":["20px",{"lineHeight":"30px","fontWeight":"400"}],"headline-lg-mobile":["30px",{"lineHeight":"38px","letterSpacing":"-0.01em","fontWeight":"400"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.12em","fontWeight":"600"}],"metadata-curatorial":["11px",{"lineHeight":"16px","letterSpacing":"0.06em","fontWeight":"500"}],"headline-lg":["44px",{"lineHeight":"54px","letterSpacing":"-0.015em","fontWeight":"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container-lowest z-50 flex flex-col justify-between py-6 px-4 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-6"><div class="px-3 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-sm font-semibold"><span class="material-symbols-outlined text-[22px] text-on-primary-container">spa</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-title-editorial tracking-tight text-on-surface font-bold">LAVIECO</span><span class="w-2 h-2 rounded-full bg-tertiary-fixed"></span></div><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">The Living Gallery · Operations</span></div></div><div class="px-3"><div class="bg-surface-container-low px-3 py-2 rounded-DEFAULT flex items-center justify-between"><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">Niên khoá 2026</span><span class="font-metadata-curatorial text-metadata-curatorial text-primary uppercase font-bold tracking-wider">Khu bảo tồn</span></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.08)]"><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tong-quan" href="#"><span class="material-symbols-outlined text-[20px]">space_dashboard</span><span class="font-body-md text-body-md">Tổng quan</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chuong-trinh" href="#"><span class="material-symbols-outlined text-[20px]">local_florist</span><span class="font-body-md text-body-md">Chương trình</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="don-hang" href="#"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-body-md text-body-md">Đơn hàng &amp; payOS</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="nguoi-tham-du" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Người tham dự</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="quet-check-in" href="#"><span class="material-symbols-outlined text-[20px]">qr_code_scanner</span><span class="font-body-md text-body-md">Quét Check-in</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="bao-cao-tai-chinh" href="#"><span class="material-symbols-outlined text-[20px]">finance</span><span class="font-body-md text-body-md">Báo cáo &amp; Tài chính</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="cai-dat-he-thong" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-body-md text-body-md">Cài đặt hệ thống</span></a></nav></div><div class="flex flex-col gap-3 px-3"><div class="bg-surface-container-low p-3 rounded-DEFAULT flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Cổng payOS trực tuyến</span></div><span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">99.9%</span></div><div class="pt-2 border-t border-surface-container-highest/60 flex items-center justify-between"><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">Mã định danh khoá: Nº 2026-HQ</span><span class="material-symbols-outlined text-on-surface-variant text-[16px]">eco</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl z-40 px-8 flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex items-center gap-6 flex-1 max-w-xl"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span><input class="w-full pl-10 pr-4 py-2 bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/70 rounded-full font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/40 transition-all" placeholder="Tìm mã đơn, tên học viên, workshop..." type="search"/></div><div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full shrink-0"><span class="material-symbols-outlined text-primary text-[18px]">storefront</span><select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer pr-1"><option>Cần Thơ (Sông Hậu)</option><option>Sài Gòn (Thảo Cầm Viên)</option><option>Hà Nội (Hồ Tây)</option></select></div></div><div class="flex items-center gap-5 shrink-0"><button class="relative p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-tertiary-container"></span></button><div class="h-5 w-px bg-surface-container-highest"></div><div class="flex items-center gap-3"><div class="text-right"><div class="font-body-md text-body-md text-on-surface font-semibold leading-tight">Võ Chí Trọng</div><div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">Quản trị kỹ thuật</div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface px-8 py-8"><div class="flex flex-col w-full">
+<!-- Scroll Progress / Atmospheric Accent -->
+<div class="w-full h-0.5 bg-surface-container-high relative overflow-hidden -mt-8 mb-6">
+<div class="h-full bg-primary-container w-[78%] relative">
+<span class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-tertiary-fixed shadow-sm"></span>
+</div>
+</div>
+<!-- Breadcrumb & Curatorial Identity -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-3">
+<div class="flex items-center gap-2 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">
+<a class="hover:text-primary transition-colors" href="#">Chương trình</a>
+<span class="opacity-40">/</span>
+<span class="text-on-surface">WS-2026-CT08</span>
+<span class="opacity-40">/</span>
+<span class="text-primary font-semibold">Danh sách người đăng ký</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+        Niên khoá 2026 · Phân hiệu Tây Đô
+      </span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/70">Mã kho lưu trữ: Nº CT-08-REG</span>
+</div>
+</div>
+<!-- Header Section with Editorial Asymmetry -->
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6 pb-6">
+<div class="space-y-2 max-w-3xl">
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-metadata-curatorial text-metadata-curatorial font-semibold tracking-wide uppercase">
+          Khảo sát thể trạng &amp; Vận hành
+        </span>
+<span class="text-on-surface-variant text-body-sm font-body-sm">· Đăng ký hoàn tất qua payOS</span>
+</div>
+<h1 class="font-headline-md text-headline-md text-on-surface tracking-tight">
+        Danh sách người đăng ký &amp; Khảo sát học viên
+      </h1>
+<div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-on-surface-variant font-body-sm text-body-sm pt-1">
+<span class="font-medium text-on-surface">Workshop làm chậu cây từ bột vỏ sò Tây Đô</span>
+<span class="opacity-30">•</span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">calendar_today</span>
+          15.03.2026 (08:30 - 11:30)
+        </span>
+<span class="opacity-30">•</span>
+<span class="inline-flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">pin_drop</span>
+          Bảo tàng Sinh thái Cần Thơ (Phòng gốm Sông Hậu)
+        </span>
+</div>
+</div>
+<!-- Action Bar & Bulk Controller -->
+<div class="flex flex-wrap items-center gap-3 shrink-0">
+<div class="relative">
+<select class="appearance-none bg-surface-container-low hover:bg-surface-container text-on-surface pl-4 pr-10 py-2.5 rounded-full font-body-sm text-body-sm cursor-pointer focus:outline-none transition-all shadow-sm" id="bulkActionSelect">
+<option value="">Thao tác hàng loạt (0 đã chọn)</option>
+<option value="resend_email">Gửi lại vé hàng loạt qua Email</option>
+<option value="checkin">Đánh dấu check-in hàng loạt</option>
+<option value="export_selected">Xuất danh sách đã chọn (.xlsx)</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant text-[18px]">expand_more</span>
+</div>
+<button class="flex items-center gap-2 px-5 py-2.5 rounded-full bg-surface-container-low hover:bg-surface-container text-on-surface font-body-sm text-body-sm font-medium transition-all shadow-sm" id="openExportModalBtn">
+<span class="material-symbols-outlined text-[18px] text-on-surface-variant">ios_share</span>
+<span>Xuất Excel</span>
+</button>
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold transition-all hover:opacity-95 shadow-md">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+<span>Gửi email cho tất cả</span>
+</button>
+</div>
+</div>
+<!-- KPI Museum Metrics Bar -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+<!-- Card 1: Capacity -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col justify-between relative overflow-hidden group">
+<div class="absolute -right-4 -bottom-4 w-20 h-20 bg-primary-container/10 rounded-full blur-xl group-hover:bg-primary-container/20 transition-all"></div>
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider">Tổng vé đăng ký</span>
+<span class="material-symbols-outlined text-primary text-[20px]">confirmation_number</span>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-on-surface font-normal">18</span>
+<span class="font-body-md text-body-md text-on-surface-variant">/ 20 suất</span>
+</div>
+<div class="w-full bg-surface-container-low h-1.5 rounded-full mt-2.5 overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 90%;"></div>
+</div>
+<div class="flex justify-between items-center mt-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span>Tỷ lệ lấp đầy: 90%</span>
+<span class="text-primary font-semibold">Còn 2 chỗ</span>
+</div>
+</div>
+</div>
+<!-- Card 2: Checked In -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider">Đã vào cửa</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[16px]">check</span>
+</span>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-primary font-normal">14</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">học viên</span>
+</div>
+<div class="flex items-center gap-1.5 mt-3 text-primary font-metadata-curatorial text-metadata-curatorial font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span>77.8% sĩ số hiện diện</span>
+</div>
+</div>
+</div>
+<!-- Card 3: Pending Check In -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider">Chưa check-in</span>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">schedule</span>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-on-surface font-normal">04</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">đang di chuyển</span>
+</div>
+<div class="mt-3 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+          Đón khách tới 08:45
+        </div>
+</div>
+</div>
+<!-- Card 4: Apron Inventory Allocation -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col justify-between">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider">Tạp dề bảo hộ</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">dry_cleaning</span>
+</div>
+<div class="mt-2 space-y-1.5">
+<div class="flex items-center justify-between font-metadata-curatorial text-metadata-curatorial">
+<span class="text-on-surface">Size S (Vải thô)</span>
+<span class="font-semibold text-primary">6 áo</span>
+</div>
+<div class="flex items-center justify-between font-metadata-curatorial text-metadata-curatorial">
+<span class="text-on-surface">Size M (Tiêu chuẩn)</span>
+<span class="font-semibold text-primary">9 áo</span>
+</div>
+<div class="flex items-center justify-between font-metadata-curatorial text-metadata-curatorial">
+<span class="text-on-surface">Size L / XL</span>
+<span class="font-semibold text-primary">3 áo</span>
+</div>
+</div>
+</div>
+<!-- Card 5: Allergy & Safety Alert -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-center justify-between text-on-surface-variant">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider">Lưu ý sức khoẻ</span>
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-tertiary-fixed text-on-tertiary-fixed">
+<span class="material-symbols-outlined text-[16px]">health_and_safety</span>
+</span>
+</div>
+<div class="mt-3">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-md text-headline-md text-tertiary font-normal">02</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">cảnh báo dị ứng</span>
+</div>
+<div class="mt-2 inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-tertiary-fixed/30 text-on-tertiary-container font-metadata-curatorial text-metadata-curatorial">
+<span>Chuẩn bị găng Nitrile riêng</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Filtration & Search Bar (Curatorial Gallery Filters) -->
+<div class="bg-surface-container-lowest p-4 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.04)] mb-6 flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+<div class="relative flex-1 min-w-[280px]">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full pl-11 pr-4 py-2 bg-surface-container-low text-on-surface rounded-full font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/30 transition-all" id="tableSearchInput" placeholder="Tìm theo tên học viên, SĐT, email, mã vé LVC-26-XXXX..." type="text"/>
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<!-- Status Filter -->
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">Check-in:</span>
+<select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer pr-2">
+<option value="all">Tất cả trạng thái</option>
+<option value="checked">Đã check-in (14)</option>
+<option value="unchecked">Chưa check-in (4)</option>
+</select>
+</div>
+<!-- Ticket Tier Filter -->
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">Hạng vé:</span>
+<select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer pr-2">
+<option value="all">Tất cả hạng vé</option>
+<option value="standard">Vé tiêu chuẩn (150k)</option>
+<option value="student">Học sinh / Sinh viên (120k)</option>
+</select>
+</div>
+<!-- Apron Size Filter -->
+<div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">Tạp dề:</span>
+<select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer pr-2">
+<option value="all">Mọi size (Tất cả)</option>
+<option value="S">Size S</option>
+<option value="M">Size M</option>
+<option value="L">Size L/XL</option>
+</select>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant" title="Làm mới bộ lọc">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+</div>
+</div>
+<!-- Primary Survey & Registration Table -->
+<div class="bg-surface-container-lowest rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] overflow-hidden">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low/70 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider">
+<th class="py-4 pl-6 pr-3 w-10">
+<input class="rounded w-4 h-4 accent-primary cursor-pointer" id="selectAllCheckbox" type="checkbox"/>
+</th>
+<th class="py-4 px-3">Mã vé / Đơn hàng</th>
+<th class="py-4 px-3">Học viên &amp; Liên lạc</th>
+<th class="py-4 px-3">Hạng vé &amp; Mức thu</th>
+<th class="py-4 px-3">Q1: Kinh nghiệm gốm</th>
+<th class="py-4 px-3">Q2: Tạp dề</th>
+<th class="py-4 px-3">Q3: Dị ứng khoáng/vôi</th>
+<th class="py-4 px-3 text-center">Q4: Nhận tài liệu</th>
+<th class="py-4 px-3">Trạng thái Check-in</th>
+<th class="py-4 pr-6 pl-3 text-right">Tác vụ</th>
+</tr>
+</thead>
+<tbody class="divide-y-0 text-on-surface font-body-sm text-body-sm">
+<!-- Row 1 (Highlight - Open in drawer by default or click) -->
+<tr class="bg-primary-fixed/20 hover:bg-primary-fixed/30 transition-colors cursor-pointer group" onclick="openDrawer('Nguyễn Minh Khang', 'LVC-26-0001', '#LVC-ORD-089', '0908 123 456', 'khang.nguyen@taydo.eco', 'Size M', 'Không ghi nhận', 'Đã check-in (08:16)')">
+<td class="py-4 pl-6 pr-3" onclick="event.stopPropagation()">
+<input checked="" class="row-checkbox rounded w-4 h-4 accent-primary cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-primary font-body-md text-body-md">LVC-26-0001</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant flex items-center gap-1">
+<span>#LVC-ORD-089</span>
+<span class="w-1 h-1 rounded-full bg-primary-container"></span>
+<span>payOS</span>
+</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-on-surface flex items-center gap-2">
+<span>Nguyễn Minh Khang</span>
+<span class="inline-flex items-center px-1.5 py-0.2 rounded text-[10px] bg-secondary-fixed text-on-secondary-fixed font-metadata-curatorial uppercase">Hội viên</span>
+</div>
+<div class="text-on-surface-variant text-body-sm font-body-sm">0908 123 456</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">khang.nguyen@taydo.eco</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-medium text-on-surface">Vé tiêu chuẩn</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-primary font-semibold">150.000 đ</div>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+                Chưa từng làm gốm
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-metadata-curatorial text-metadata-curatorial font-semibold">
+                Size M
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+                Không dị ứng
+              </span>
+</td>
+<td class="py-4 px-3 text-center">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed-variant" title="Đồng ý nhận cẩm nang phục hồi san hô">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-metadata-curatorial text-metadata-curatorial font-semibold shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-on-primary-container"></span>
+                Đã vào cửa · 08:16
+              </span>
+</td>
+<td class="py-4 pr-6 pl-3 text-right" onclick="event.stopPropagation()">
+<div class="flex items-center justify-end gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary transition-all" title="Gửi lại vé qua Email">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+</button>
+<button class="p-2 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all text-on-surface" onclick="openDrawer('Nguyễn Minh Khang', 'LVC-26-0001', '#LVC-ORD-089', '0908 123 456', 'khang.nguyen@taydo.eco', 'Size M', 'Không ghi nhận', 'Đã check-in (08:16)')" title="Xem hồ sơ chi tiết">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2 (Allergy Warning Case) -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer" onclick="openDrawer('Lê Thị Ánh Mai', 'LVC-26-0004', '#LVC-ORD-092', '0939 444 888', 'anhmai.le@gmail.com', 'Size S', 'Dị ứng vôi sống nhẹ - Cần găng riêng', 'Đã check-in (08:24)')">
+<td class="py-4 pl-6 pr-3" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded w-4 h-4 accent-primary cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-primary font-body-md text-body-md">LVC-26-0004</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">#LVC-ORD-092 · payOS</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-on-surface">Lê Thị Ánh Mai</div>
+<div class="text-on-surface-variant text-body-sm font-body-sm">0939 444 888</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">anhmai.le@gmail.com</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-medium text-on-surface">Học sinh / SV</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-primary font-semibold">120.000 đ</div>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+                Đã có kinh nghiệm
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-metadata-curatorial text-metadata-curatorial font-semibold">
+                Size S
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-metadata-curatorial text-metadata-curatorial font-semibold">
+<span class="material-symbols-outlined text-[13px]">warning</span>
+                Dị ứng vôi sống · Cấp găng tay
+              </span>
+</td>
+<td class="py-4 px-3 text-center">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-metadata-curatorial text-metadata-curatorial font-semibold shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-on-primary-container"></span>
+                Đã vào cửa · 08:24
+              </span>
+</td>
+<td class="py-4 pr-6 pl-3 text-right" onclick="event.stopPropagation()">
+<div class="flex items-center justify-end gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary transition-all" title="Gửi lại vé qua Email">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+</button>
+<button class="p-2 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all text-on-surface" onclick="openDrawer('Lê Thị Ánh Mai', 'LVC-26-0004', '#LVC-ORD-092', '0939 444 888', 'anhmai.le@gmail.com', 'Size S', 'Dị ứng vôi sống nhẹ - Cần găng riêng', 'Đã check-in (08:24)')" title="Xem hồ sơ chi tiết">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3 (Unchecked participant) -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer" onclick="openDrawer('Trần Bảo Long', 'LVC-26-0009', '#LVC-ORD-101', '0912 888 999', 'baolong.arch@outlook.com', 'Size L/XL', 'Không ghi nhận', 'Chưa check-in')">
+<td class="py-4 pl-6 pr-3" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded w-4 h-4 accent-primary cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-primary font-body-md text-body-md">LVC-26-0009</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">#LVC-ORD-101 · payOS</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-on-surface">Trần Bảo Long</div>
+<div class="text-on-surface-variant text-body-sm font-body-sm">0912 888 999</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">baolong.arch@outlook.com</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-medium text-on-surface">Vé tiêu chuẩn</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-primary font-semibold">150.000 đ</div>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+                Chưa từng làm gốm
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-metadata-curatorial text-metadata-curatorial font-semibold">
+                Size L/XL
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+                Không dị ứng
+              </span>
+</td>
+<td class="py-4 px-3 text-center">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-surface-container text-on-surface-variant">
+<span class="material-symbols-outlined text-[15px]">close</span>
+</span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant/50"></span>
+                Chưa check-in
+              </span>
+</td>
+<td class="py-4 pr-6 pl-3 text-right" onclick="event.stopPropagation()">
+<div class="flex items-center justify-end gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary transition-all" title="Gửi lại vé qua Email">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+</button>
+<button class="p-2 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all text-on-surface" onclick="openDrawer('Trần Bảo Long', 'LVC-26-0009', '#LVC-ORD-101', '0912 888 999', 'baolong.arch@outlook.com', 'Size L/XL', 'Không ghi nhận', 'Chưa check-in')" title="Xem hồ sơ chi tiết">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4 -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer" onclick="openDrawer('Phạm Thuỷ Tiên', 'LVC-26-0012', '#LVC-ORD-108', '0977 333 112', 'thuytien.eco@yahoo.com', 'Size M', 'Không ghi nhận', 'Đã check-in (08:29)')">
+<td class="py-4 pl-6 pr-3" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded w-4 h-4 accent-primary cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-primary font-body-md text-body-md">LVC-26-0012</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">#LVC-ORD-108 · payOS</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-on-surface">Phạm Thuỷ Tiên</div>
+<div class="text-on-surface-variant text-body-sm font-body-sm">0977 333 112</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">thuytien.eco@yahoo.com</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-medium text-on-surface">Vé tiêu chuẩn</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-primary font-semibold">150.000 đ</div>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+                Đã có kinh nghiệm
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-secondary-fixed text-on-secondary-fixed font-metadata-curatorial text-metadata-curatorial font-semibold">
+                Size M
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="material-symbols-outlined text-[14px] text-primary">verified_user</span>
+                Không dị ứng
+              </span>
+</td>
+<td class="py-4 px-3 text-center">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-metadata-curatorial text-metadata-curatorial font-semibold shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-on-primary-container"></span>
+                Đã vào cửa · 08:29
+              </span>
+</td>
+<td class="py-4 pr-6 pl-3 text-right" onclick="event.stopPropagation()">
+<div class="flex items-center justify-end gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary transition-all" title="Gửi lại vé qua Email">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+</button>
+<button class="p-2 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all text-on-surface" title="Xem hồ sơ chi tiết">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 5 (Second Allergy Notice) -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer" onclick="openDrawer('Đỗ Hoàng Quân', 'LVC-26-0015', '#LVC-ORD-115', '0903 555 777', 'quan.hoang@cantho.edu.vn', 'Size L/XL', 'Nhạy cảm da tay khi khô - Cần lotion dừa', 'Chưa check-in')">
+<td class="py-4 pl-6 pr-3" onclick="event.stopPropagation()">
+<input class="row-checkbox rounded w-4 h-4 accent-primary cursor-pointer" type="checkbox"/>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-primary font-body-md text-body-md">LVC-26-0015</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">#LVC-ORD-115 · payOS</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-semibold text-on-surface">Đỗ Hoàng Quân</div>
+<div class="text-on-surface-variant text-body-sm font-body-sm">0903 555 777</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">quan.hoang@cantho.edu.vn</div>
+</td>
+<td class="py-4 px-3">
+<div class="font-medium text-on-surface">Vé tiêu chuẩn</div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-primary font-semibold">150.000 đ</div>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+                Chưa từng làm gốm
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface font-metadata-curatorial text-metadata-curatorial font-semibold">
+                Size L/XL
+              </span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-metadata-curatorial text-metadata-curatorial font-semibold">
+<span class="material-symbols-outlined text-[13px]">info</span>
+                Da nhạy cảm khô · Cấp lotion
+              </span>
+</td>
+<td class="py-4 px-3 text-center">
+<span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
+<span class="material-symbols-outlined text-[15px]">check</span>
+</span>
+</td>
+<td class="py-4 px-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="w-1.5 h-1.5 rounded-full bg-on-surface-variant/50"></span>
+                Chưa check-in
+              </span>
+</td>
+<td class="py-4 pr-6 pl-3 text-right" onclick="event.stopPropagation()">
+<div class="flex items-center justify-end gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container text-on-surface-variant hover:text-primary transition-all" title="Gửi lại vé qua Email">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+</button>
+<button class="p-2 rounded-full bg-surface-container-high hover:bg-primary-container hover:text-on-primary-container transition-all text-on-surface" title="Xem hồ sơ chi tiết">
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Pagination & Curatorial Summary -->
+<div class="p-4 bg-surface-container-low/40 flex flex-col sm:flex-row items-center justify-between gap-4 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+<div class="flex items-center gap-2">
+<span>Hiển thị 1 - 5 trên tổng số 18 học viên</span>
+<span class="opacity-40">|</span>
+<span class="text-primary font-medium">Bảo lưu kiểm tra thể trạng trước phiên</span>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-full bg-surface-container text-on-surface-variant/50 cursor-not-allowed" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<span class="px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-bold">1</span>
+<button class="px-3 py-1 rounded-full hover:bg-surface-container transition-colors">2</button>
+<button class="px-3 py-1 rounded-full hover:bg-surface-container transition-colors">3</button>
+<button class="p-1.5 rounded-full hover:bg-surface-container text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Editorial Secondary Artifact Section (Visual Depth & Richness) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-12 items-center">
+<div class="lg:col-span-5 bg-surface-container-lowest p-6 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] relative overflow-hidden">
+<div class="flex items-center justify-between mb-4">
+<div class="space-y-0.5">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant tracking-wider">Mô hình thực hành</span>
+<h2 class="font-title-editorial text-title-editorial text-on-surface font-semibold">Chất liệu vỏ sò Tây Đô</h2>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-primary font-metadata-curatorial text-metadata-curatorial font-semibold">Nº MAT-26</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4 leading-relaxed">
+        100% vỏ sò thu gom từ vùng cồn Cái Răng được nung nhẹ ở 400°C và nghiền mịn. Kết hợp keo thực vật tự nhiên giúp giảm 78% vết chân carbon so với gốm nung công nghiệp.
+      </p>
+<div class="w-full h-44 rounded-DEFAULT overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="A curated, close-up photograph of natural seashell powder and organic clay pots on a smooth minimalist limestone table. Warm morning museum sunlight streaming through an arched window, soft mint green highlights, quiet Vietnamese ecological studio atmosphere, high art aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD9Y4fMSXfGD0uG0dXpFq9YXEeCgWUZYMRctuVF02qp-chxVowLe2jd9gsT3lNR3ZQOnTyeYoN3Pw6AKcM8yLukAu28fYlRGvA_23QJ73QD3AusaxAmGSIdg-7q83iT4ZrkniTe6OXUP_wdJ866MM5O7pUMeFDqMkHivkQZ9_hXO8enOy9dKuhzSmcvcOxGJVieefjaT_BzApyFh3YImsTko_4wtgnRiQYCkTKBHhM"/>
+<div class="absolute bottom-2 left-2 right-2 bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-full flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface">Vật liệu thực nghiệm: Bột vỏ sò &amp; Đất sét sông Hậu</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">100% Thuần sinh học</span>
+</div>
+</div>
+</div>
+<div class="lg:col-span-7 bg-surface-container-lowest p-6 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col justify-between">
+<div class="flex items-center justify-between mb-4">
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant tracking-wider">Điều phối vận hành</span>
+<h2 class="font-title-editorial text-title-editorial text-on-surface font-semibold">Tình trạng chuẩn bị phiên làm việc</h2>
+</div>
+<span class="material-symbols-outlined text-primary text-[24px]">balance</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+<div class="p-3.5 rounded-DEFAULT bg-surface-container-low flex flex-col justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Bột vỏ sò chuẩn bị</span>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-headline-sm text-headline-sm text-on-surface">36</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">kg (Đủ 18 suất)</span>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-medium mt-1">Đã cân sẵn từng phần</span>
+</div>
+<div class="p-3.5 rounded-DEFAULT bg-surface-container-low flex flex-col justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Bàn xoay thủ công</span>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-headline-sm text-headline-sm text-on-surface">20</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">bàn xoay</span>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-medium mt-1">Đã hiệu chuẩn trục</span>
+</div>
+<div class="p-3.5 rounded-DEFAULT bg-surface-container-low flex flex-col justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Găng tay y tế riêng</span>
+<div class="mt-2 flex items-baseline gap-1">
+<span class="font-headline-sm text-headline-sm text-tertiary">04</span>
+<span class="text-body-sm font-body-sm text-on-surface-variant">bộ dự phòng</span>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary font-semibold mt-1">Dành cho 2 ca dị ứng</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-4 rounded-DEFAULT flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="text-body-sm font-body-sm text-on-surface">
+            Hệ thống payOS đang kích hoạt chế độ tự động cấp biên lai và mã QR vé vào cổng qua hòm thư điện tử.
+          </div>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold shrink-0 ml-4 uppercase">Thời gian thực</span>
+</div>
+</div>
+</div>
+<!-- SLIDE-OVER DRAWER (Active Attendee Detail View) -->
+<div class="fixed inset-0 z-50 overflow-hidden flex justify-end transition-all duration-300" id="attendeeDrawer">
+<!-- Backdrop -->
+<div class="fixed inset-0 bg-on-surface/20 backdrop-blur-sm transition-opacity" id="drawerBackdrop" onclick="closeDrawer()"></div>
+<!-- Drawer Panel -->
+<div class="relative w-full max-w-xl bg-surface-container-lowest h-full shadow-[0_28px_60px_-16px_rgba(32,52,95,0.25)] flex flex-col justify-between z-10 overflow-y-auto">
+<!-- Drawer Header -->
+<div class="p-6 bg-surface-container-low/60 flex items-start justify-between border-b-0">
+<div class="space-y-1">
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-metadata-curatorial text-metadata-curatorial font-semibold uppercase">
+              Hồ sơ học viên
+            </span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">#HV-9042</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface" id="drawerName">Nguyễn Minh Khang</h2>
+<div class="font-metadata-curatorial text-metadata-curatorial text-primary flex items-center gap-1.5 font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span id="drawerStatus">Đã check-in (08:16)</span>
+</div>
+</div>
+<button class="p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant" onclick="closeDrawer()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Drawer Content Body -->
+<div class="p-6 space-y-6 flex-1">
+<!-- Ticket Specimen Card (Arch Motif) -->
+<div class="p-5 rounded-DEFAULT bg-surface-container-low flex flex-col sm:flex-row items-center gap-5 relative overflow-hidden">
+<!-- QR Code Representation -->
+<div class="w-28 h-28 bg-surface-container-lowest rounded-DEFAULT p-2 flex flex-col items-center justify-center shadow-sm shrink-0">
+<div class="w-full h-full bg-on-surface/90 rounded p-1 flex items-center justify-center text-surface text-[10px] text-center font-mono break-all leading-tight">
+              [QR: LVC-26-0001]
+            </div>
+<span class="text-[9px] font-metadata-curatorial text-on-surface-variant mt-1 uppercase">Quét tại cổng</span>
+</div>
+<div class="flex-1 space-y-1.5 w-full">
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">Mã vé chính thức</span>
+<span class="font-body-md text-body-md font-bold text-primary" id="drawerTicketId">LVC-26-0001</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Đơn hàng:</span>
+<span class="font-medium text-on-surface" id="drawerOrderId">#LVC-ORD-089</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Số tiền thanh toán:</span>
+<span class="font-semibold text-on-surface">150.000 đ (payOS)</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm pt-1">
+<span class="text-on-surface-variant">Thời gian xuất vé:</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">14.03.2026 - 19:42</span>
+</div>
+</div>
+</div>
+<!-- Curatorial Survey Answers (Full Form Inspection) -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<h3 class="font-title-editorial text-title-editorial text-on-surface font-semibold">Khảo sát &amp; Thể trạng học viên</h3>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">4/4 Câu trả lời</span>
+</div>
+<div class="space-y-3">
+<!-- Q1 -->
+<div class="p-3.5 rounded-DEFAULT bg-surface-container-low/70">
+<div class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant mb-1">
+                Câu 1: Kinh nghiệm tạo hình thủ công / làm gốm
+              </div>
+<div class="text-body-sm font-body-sm text-on-surface font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">brush</span>
+<span>Chưa từng làm gốm (Người mới bắt đầu)</span>
+</div>
+<div class="text-[12px] text-on-surface-variant mt-1 italic">
+                * Ghi chú hệ thống: Cần nghệ nhân hỗ trợ giai đoạn định tâm đất sét trên bàn xoay.
+              </div>
+</div>
+<!-- Q2 -->
+<div class="p-3.5 rounded-DEFAULT bg-surface-container-low/70">
+<div class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant mb-1">
+                Câu 2: Kích cỡ tạp dề vải thô bảo hộ
+              </div>
+<div class="text-body-sm font-body-sm text-on-surface font-medium flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">checkroom</span>
+<span id="drawerApron">Size M (Tiêu chuẩn học viên)</span>
+</div>
+<span class="px-2 py-0.5 rounded bg-surface-container font-metadata-curatorial text-metadata-curatorial text-primary font-semibold">Đã đóng gói mã CT-01</span>
+</div>
+</div>
+<!-- Q3 -->
+<div class="p-3.5 rounded-DEFAULT bg-surface-container-low/70">
+<div class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant mb-1">
+                Câu 3: Tiền sử dị ứng khoáng vôi hoặc bột vỏ nhuyễn thể
+              </div>
+<div class="text-body-sm font-body-sm text-on-surface font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[18px]">health_and_safety</span>
+<span id="drawerAllergy">Không có tiền sử dị ứng</span>
+</div>
+<div class="text-[12px] text-on-surface-variant mt-1">
+                Đủ điều kiện tiếp xúc trực tiếp hỗn hợp vỏ sò tươi không qua găng cao su dày.
+              </div>
+</div>
+<!-- Q4 -->
+<div class="p-3.5 rounded-DEFAULT bg-surface-container-low/70">
+<div class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant mb-1">
+                Câu 4: Nguyện vọng nhận Cẩm nang số phục hồi hệ sinh thái Sông Hậu
+              </div>
+<div class="text-body-sm font-body-sm text-on-surface font-medium flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined text-[18px]">check_circle</span>
+<span>Đồng ý tiếp nhận qua Email đã đăng ký</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Contact Information Block -->
+<div class="p-4 rounded-DEFAULT bg-surface-container-low/50 space-y-2">
+<div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">Thông tin liên lạc đã xác thực</div>
+<div class="grid grid-cols-2 gap-2 text-body-sm font-body-sm">
+<div>
+<span class="text-on-surface-variant">Số điện thoại:</span>
+<div class="font-medium text-on-surface" id="drawerPhone">0908 123 456</div>
+</div>
+<div>
+<span class="text-on-surface-variant">Hòm thư:</span>
+<div class="font-medium text-on-surface truncate" id="drawerEmail">khang.nguyen@taydo.eco</div>
+</div>
+</div>
+</div>
+<!-- payOS Gateway Audit Trail -->
+<div class="p-4 rounded-DEFAULT bg-surface-container-low/50 space-y-2">
+<div class="flex items-center justify-between font-metadata-curatorial text-metadata-curatorial uppercase">
+<span class="text-on-surface-variant">Lịch sử thanh toán payOS</span>
+<span class="text-primary font-bold">Thành công 100%</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm pt-1">
+<span class="text-on-surface-variant">Mã giao dịch ngân hàng:</span>
+<span class="font-mono text-on-surface text-[12px]">MB-20260314-99812</span>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Hình thức:</span>
+<span class="text-on-surface">VietQR Tự động xác thực</span>
+</div>
+</div>
+</div>
+<!-- Drawer Action Buttons (NO SMS - As Instructed) -->
+<div class="p-6 bg-surface-container-low/80 flex flex-col gap-2.5 border-t-0">
+<div class="flex gap-2">
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold hover:opacity-90 transition-all shadow-sm" onclick="resendEmailAction()">
+<span class="material-symbols-outlined text-[18px]">outgoing_mail</span>
+<span>Gửi lại vé qua Email</span>
+</button>
+<button class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface font-body-sm text-body-sm font-medium transition-all" onclick="manualCheckinAction()">
+<span class="material-symbols-outlined text-[18px] text-primary">verified</span>
+<span>Xác nhận Check-in</span>
+</button>
+</div>
+<button class="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-full hover:bg-surface-container text-on-surface-variant font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider transition-all" onclick="printBadgeAction()">
+<span class="material-symbols-outlined text-[16px]">badge</span>
+<span>In thẻ tên lưu niệm (Giấy Kraft tái sinh)</span>
+</button>
+</div>
+</div>
+</div>
+<!-- MODAL: XUẤT DỮ LIỆU EXCEL (Overlay Component) -->
+<div class="fixed inset-0 z-50 overflow-y-auto hidden flex items-center justify-center p-4" id="exportModal">
+<!-- Backdrop -->
+<div class="fixed inset-0 bg-on-surface/30 backdrop-blur-sm transition-opacity" onclick="closeExportModal()"></div>
+<!-- Modal Box -->
+<div class="relative bg-surface-container-lowest rounded-lg max-w-lg w-full p-6 shadow-[0_28px_60px_-16px_rgba(32,52,95,0.2)] z-10 space-y-6">
+<div class="flex items-start justify-between">
+<div class="space-y-1">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-primary font-semibold">Xuất dữ liệu hệ thống</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Tùy chọn xuất file Excel / CSV</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Chọn các trường dữ liệu cần trích xuất cho workshop WS-2026-CT08.</p>
+</div>
+<button class="p-1 rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors" onclick="closeExportModal()">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Column Selector Checkboxes -->
+<div class="space-y-3 bg-surface-container-low p-4 rounded-DEFAULT font-body-sm text-body-sm">
+<label class="flex items-center gap-3 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded accent-primary" type="checkbox"/>
+<span class="text-on-surface font-medium">Thông tin cá nhân (Họ tên, SĐT, Email, Nhóm hội viên)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded accent-primary" type="checkbox"/>
+<span class="text-on-surface font-medium">Mã vé &amp; Mã đơn hàng tương ứng (#LVC-ORD)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded accent-primary" type="checkbox"/>
+<span class="text-on-surface font-medium">Toàn bộ câu hỏi khảo sát thể trạng (Kinh nghiệm, Size tạp dề, Dị ứng)</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded accent-primary" type="checkbox"/>
+<span class="text-on-surface font-medium">Trạng thái thanh toán payOS &amp; Mã giao dịch MB Bank</span>
+</label>
+<label class="flex items-center gap-3 cursor-pointer">
+<input checked="" class="w-4 h-4 rounded accent-primary" type="checkbox"/>
+<span class="text-on-surface font-medium">Thời điểm check-in &amp; Cửa đón tiếp Tây Đô</span>
+</label>
+</div>
+<!-- File Type & Delimiter -->
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-on-surface-variant">Định dạng tệp:</span>
+<div class="flex items-center gap-3">
+<label class="flex items-center gap-1.5 cursor-pointer">
+<input checked="" class="accent-primary" name="fileFormat" type="radio" value="xlsx"/>
+<span class="text-on-surface font-medium">Excel (.xlsx)</span>
+</label>
+<label class="flex items-center gap-1.5 cursor-pointer">
+<input class="accent-primary" name="fileFormat" type="radio" value="csv"/>
+<span class="text-on-surface font-medium">CSV (UTF-8)</span>
+</label>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="flex items-center justify-end gap-3 pt-2">
+<button class="px-5 py-2.5 rounded-full hover:bg-surface-container font-body-sm text-body-sm text-on-surface-variant font-medium transition-all" onclick="closeExportModal()">
+          Hủy bỏ
+        </button>
+<button class="flex items-center gap-2 px-6 py-2.5 rounded-full bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold hover:opacity-95 transition-all shadow-md" onclick="downloadExcelAction()">
+<span class="material-symbols-outlined text-[18px]">download</span>
+<span>Tải file .xlsx</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Notification Toast Simulation -->
+<div class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none bg-surface-container-lowest text-on-surface px-5 py-3 rounded-full shadow-[0_28px_60px_-16px_rgba(32,52,95,0.25)] flex items-center gap-3" id="toastNotification">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container"></div>
+<span class="font-body-sm text-body-sm font-medium" id="toastMessage">Thông báo hệ thống</span>
+</div>
+<script>
+    // Drawer Controller
+    function openDrawer(name, ticketId, orderId, phone, email, apron, allergy, status) {
+      document.getElementById('drawerName').innerText = name;
+      document.getElementById('drawerTicketId').innerText = ticketId;
+      document.getElementById('drawerOrderId').innerText = orderId;
+      document.getElementById('drawerPhone').innerText = phone;
+      document.getElementById('drawerEmail').innerText = email;
+      document.getElementById('drawerApron').innerText = apron;
+      document.getElementById('drawerAllergy').innerText = allergy;
+      document.getElementById('drawerStatus').innerText = status;
+      
+      const drawer = document.getElementById('attendeeDrawer');
+      drawer.classList.remove('hidden');
+      drawer.classList.remove('pointer-events-none');
+    }
+
+    function closeDrawer() {
+      const drawer = document.getElementById('attendeeDrawer');
+      drawer.classList.add('hidden');
+    }
+
+    // Modal Controller
+    const exportModal = document.getElementById('exportModal');
+    const openExportModalBtn = document.getElementById('openExportModalBtn');
+
+    openExportModalBtn.addEventListener('click', () => {
+      exportModal.classList.remove('hidden');
+    });
+
+    function closeExportModal() {
+      exportModal.classList.add('hidden');
+    }
+
+    // Toast Notification Utility
+    function showToast(message) {
+      const toast = document.getElementById('toastNotification');
+      const toastMessage = document.getElementById('toastMessage');
+      toastMessage.innerText = message;
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        toast.classList.add('translate-y-24', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3500);
+    }
+
+    function resendEmailAction() {
+      const email = document.getElementById('drawerEmail').innerText;
+      showToast('Đã gửi lại vé vào cổng và QR code tới email: ' + email);
+    }
+
+    function manualCheckinAction() {
+      document.getElementById('drawerStatus').innerText = 'Đã check-in thủ công (Vừa xong)';
+      showToast('Đã xác nhận điểm danh học viên thành công');
+    }
+
+    function printBadgeAction() {
+      showToast('Đang kết nối máy in thẻ tên thủ công tại quầy Cần Thơ...');
+    }
+
+    function downloadExcelAction() {
+      closeExportModal();
+      showToast('Đang tải file Excel danh sách học viên & khảo sát...');
+    }
+
+    // Checkbox Master Control
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+    const bulkSelect = document.getElementById('bulkActionSelect');
+
+    selectAllCheckbox.addEventListener('change', (e) => {
+      rowCheckboxes.forEach(cb => cb.checked = e.target.checked);
+      updateBulkCount();
+    });
+
+    rowCheckboxes.forEach(cb => {
+      cb.addEventListener('change', updateBulkCount);
+    });
+
+    function updateBulkCount() {
+      const checkedCount = document.querySelectorAll('.row-checkbox:checked').length;
+      bulkSelect.options[0].text = `Thao tác hàng loạt (${checkedCount} đã chọn)`;
+    }
+
+    // Table quick search filter simulation
+    document.getElementById('tableSearchInput').addEventListener('input', function(e) {
+      const query = e.target.value.toLowerCase();
+      const rows = document.querySelectorAll('tbody tr');
+      rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(query) ? '' : 'none';
+      });
+    });
+  </script>
+</div></main><footer class="w-full bg-surface-container-low/70 py-6 px-8 mt-12"><div class="flex flex-col md:flex-row items-center justify-between gap-4"><div class="flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">Hệ thống vận hành bình thường · Cổng payOS trực tuyến 2026</span></div><div class="flex items-center gap-6 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant"><span class="uppercase tracking-widest">LAVIECO Curatorial Living System</span><span>Bảo lưu mọi quyền tác quyền sinh thái</span></div></div></footer></div></body></html>

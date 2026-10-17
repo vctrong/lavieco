@@ -1,0 +1,595 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-tint":"#006c4e","on-tertiary-container":"#454100","surface-container-highest":"#e1e3df","on-error-container":"#93000a","on-secondary":"#ffffff","on-primary-fixed-variant":"#00513a","tertiary-container":"#b7ae41","on-tertiary":"#ffffff","tertiary-fixed":"#f0e672","on-error":"#ffffff","on-surface-variant":"#3d4a43","surface":"#f8faf6","outline":"#6c7a72","primary-fixed":"#75fac7","inverse-surface":"#2e312f","on-tertiary-fixed-variant":"#4d4800","on-secondary-container":"#425582","surface-container-low":"#f2f4f0","outline-variant":"#bbcac1","secondary-fixed-dim":"#b3c6fa","surface-container-lowest":"#ffffff","surface-container":"#eceeeb","error-container":"#ffdad6","primary-container":"#10b183","on-secondary-fixed":"#011944","tertiary-fixed-dim":"#d3ca59","on-surface":"#191c1a","tertiary":"#676000","surface-variant":"#e1e3df","primary-fixed-dim":"#55ddac","on-primary-container":"#003c2a","inverse-primary":"#55ddac","secondary-fixed":"#d9e2ff","background":"#f8faf6","primary":"#006c4e","error":"#ba1a1a","on-primary":"#ffffff","on-background":"#191c1a","on-tertiary-fixed":"#1f1c00","surface-container-high":"#e7e9e5","on-primary-fixed":"#002115","secondary-container":"#b8cbff","on-secondary-fixed-variant":"#324672","inverse-on-surface":"#eff1ed","surface-bright":"#f8faf6","surface-dim":"#d8dbd7","secondary":"#4b5d8b"},"borderRadius":{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},"spacing":{"space-md":"1rem","space-xl":"3rem","space-lg":"1.75rem","gutter-desktop":"3rem","margin-desktop":"4.5rem","margin":"1.25rem","gutter-tablet":"2rem","gutter":"1.5rem","space-xs":"0.25rem","margin-tablet":"2.5rem","space-sm":"0.5rem"},"fontFamily":{"body-sm":["Be Vietnam Pro"],"display-hero-mobile":["Fraunces"],"headline-md":["Fraunces"],"headline-sm":["Fraunces"],"display-hero":["Fraunces"],"body-md":["Be Vietnam Pro"],"body-lg":["Be Vietnam Pro"],"title-editorial":["Fraunces"],"headline-lg-mobile":["Fraunces"],"label-caps":["Be Vietnam Pro"],"metadata-curatorial":["Be Vietnam Pro"],"headline-lg":["Fraunces"]},"fontSize":{"body-sm":["13px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["40px",{"lineHeight":"48px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-md":["32px",{"lineHeight":"42px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-sm":["24px",{"lineHeight":"32px","fontWeight":"500"}],"display-hero":["64px",{"lineHeight":"76px","letterSpacing":"-0.02em","fontWeight":"400"}],"body-md":["15px",{"lineHeight":"26px","fontWeight":"400"}],"body-lg":["18px",{"lineHeight":"31px","fontWeight":"300"}],"title-editorial":["20px",{"lineHeight":"30px","fontWeight":"400"}],"headline-lg-mobile":["30px",{"lineHeight":"38px","letterSpacing":"-0.01em","fontWeight":"400"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.12em","fontWeight":"600"}],"metadata-curatorial":["11px",{"lineHeight":"16px","letterSpacing":"0.06em","fontWeight":"500"}],"headline-lg":["44px",{"lineHeight":"54px","letterSpacing":"-0.015em","fontWeight":"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container-lowest z-50 flex flex-col justify-between py-6 px-4 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-6"><div class="px-3 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-sm font-semibold"><span class="material-symbols-outlined text-[22px] text-on-primary-container">spa</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-title-editorial tracking-tight text-on-surface font-bold">LAVIECO</span><span class="w-2 h-2 rounded-full bg-tertiary-fixed"></span></div><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">The Living Gallery · Operations</span></div></div><div class="px-3"><div class="bg-surface-container-low px-3 py-2 rounded-DEFAULT flex items-center justify-between"><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">Niên khoá 2026</span><span class="font-metadata-curatorial text-metadata-curatorial text-primary uppercase font-bold tracking-wider">Khu bảo tồn</span></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.08)]"><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tong-quan" href="#"><span class="material-symbols-outlined text-[20px]">space_dashboard</span><span class="font-body-md text-body-md">Tổng quan</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chuong-trinh" href="#"><span class="material-symbols-outlined text-[20px]">local_florist</span><span class="font-body-md text-body-md">Chương trình</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="don-hang" href="#"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-body-md text-body-md">Đơn hàng &amp; payOS</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="nguoi-tham-du" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Người tham dự</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="quet-check-in" href="#"><span class="material-symbols-outlined text-[20px]">qr_code_scanner</span><span class="font-body-md text-body-md">Quét Check-in</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="bao-cao-tai-chinh" href="#"><span class="material-symbols-outlined text-[20px]">finance</span><span class="font-body-md text-body-md">Báo cáo &amp; Tài chính</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="cai-dat-he-thong" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-body-md text-body-md">Cài đặt hệ thống</span></a></nav></div><div class="flex flex-col gap-3 px-3"><div class="bg-surface-container-low p-3 rounded-DEFAULT flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Cổng payOS trực tuyến</span></div><span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">99.9%</span></div><div class="pt-2 border-t border-surface-container-highest/60 flex items-center justify-between"><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">Mã định danh khoá: Nº 2026-HQ</span><span class="material-symbols-outlined text-on-surface-variant text-[16px]">eco</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl z-40 px-8 flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex items-center gap-6 flex-1 max-w-xl"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span><input class="w-full pl-10 pr-4 py-2 bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/70 rounded-full font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/40 transition-all" placeholder="Tìm mã đơn, tên học viên, workshop..." type="search"></div><div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full shrink-0"><span class="material-symbols-outlined text-primary text-[18px]">storefront</span><select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer pr-1"><option>Cần Thơ (Sông Hậu Cổ Cung)</option><option>Cần Thơ (Bến Ninh Kiều)</option><option>Cần Thơ (Khu Gốm Sò)</option></select></div></div><div class="flex items-center gap-5 shrink-0"><button class="relative p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-tertiary-container"></span></button><div class="h-5 w-px bg-surface-container-highest"></div><div class="flex items-center gap-3"><div class="text-right"><div class="font-body-md text-body-md text-on-surface font-semibold leading-tight">Võ Chí Trọng</div><div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">Quản trị kỹ thuật</div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface px-8 py-8"><div class="flex flex-col w-full">
+<!-- Scroll Curatorial Progress -->
+<div class="fixed top-16 left-72 right-0 h-0.5 bg-surface-container-highest z-30">
+<div class="h-full bg-primary w-2/5 flex items-center justify-end">
+<div class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed shadow-sm"></div>
+</div>
+</div>
+<!-- Ambient Gallery Gradient -->
+<div class="relative w-full overflow-hidden">
+<div class="absolute -top-32 right-12 w-96 h-96 rounded-full bg-primary-fixed/20 blur-3xl pointer-events-none"></div>
+<div class="absolute top-48 left-1/3 w-80 h-80 rounded-full bg-secondary-fixed/20 blur-3xl pointer-events-none"></div>
+<!-- Editorial Header Block -->
+<section class="relative pt-4 pb-8 flex flex-col gap-6">
+<div class="flex flex-col xl:flex-row xl:items-end justify-between gap-6">
+<div class="flex flex-col gap-2 max-w-3xl">
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial uppercase tracking-widest">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="">Hệ thống Workshop, Triển lãm &amp; Talkshow 2026</span>
+<span class="">·</span>
+<span class="">Kho lưu trữ Nº 04/2026</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight font-normal">
+            Quản lý Chương trình
+          </h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            Điều phối công suất không gian mở, tiến độ phát hành chỗ ngồi và kiểm soát doanh thu cổng thanh toán sinh thái payOS theo thời gian thực.
+          </p>
+</div>
+<div class="flex flex-wrap items-center gap-3 shrink-0">
+<button class="flex items-center gap-2 px-5 py-3 rounded-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm hover:bg-surface-container-high transition-all shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)]">
+<span class="material-symbols-outlined text-[18px] text-primary">download</span>
+<span class="">Xuất danh sách Excel</span>
+</button>
+<button class="flex items-center gap-2.5 px-6 py-3 rounded-full bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold hover:shadow-lg transition-all hover:scale-[1.02]">
+<span class="material-symbols-outlined text-[20px]">add_circle</span>
+<span class="">Tạo chương trình mới</span>
+</button>
+</div>
+</div>
+<!-- State Tab Pills & KPI Metric Bar -->
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pt-2">
+<div class="flex items-center gap-1.5 p-1 bg-surface-container-low rounded-full overflow-x-auto">
+<button class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-body-sm text-body-sm font-semibold flex items-center gap-2 shrink-0 shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>
+<span class="">Tất cả</span>
+<span class="bg-surface-container-lowest/30 px-1.5 py-0.5 rounded-full text-[11px]">12</span>
+</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center gap-2 shrink-0 transition-colors">
+<span class="">Đang mở bán</span>
+<span class="bg-surface-container-highest px-1.5 py-0.5 rounded-full text-[11px] font-medium">6</span>
+</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center gap-2 shrink-0 transition-colors">
+<span class="">Sắp diễn ra</span>
+<span class="bg-surface-container-highest px-1.5 py-0.5 rounded-full text-[11px] font-medium">3</span>
+</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center gap-2 shrink-0 transition-colors">
+<span class="">Đã đóng</span>
+<span class="bg-surface-container-highest px-1.5 py-0.5 rounded-full text-[11px] font-medium">2</span>
+</button>
+<button class="px-4 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm flex items-center gap-2 shrink-0 transition-colors">
+<span class="">Bản nháp</span>
+<span class="bg-surface-container-highest px-1.5 py-0.5 rounded-full text-[11px] font-medium">1</span>
+</button>
+</div>
+<div class="flex items-center gap-6 px-4 py-2 bg-surface-container-lowest rounded-full shadow-[0_16px_36px_-12px_rgba(32,52,95,0.04)]">
+<div class="flex items-center gap-2 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+<span class="">Tỷ lệ lấp đầy tháng 03:</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">88.4%</span>
+</div>
+<div class="w-px h-4 bg-surface-container-highest"></div>
+<div class="flex items-center gap-2 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">
+<span class="">Tổng lượt bảo lưu:</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold">118 chỗ</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Curatorial Tool Bench (Filters & Search) -->
+<section class="bg-surface-container-lowest rounded-DEFAULT p-4 shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] mb-6 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4">
+<div class="flex-1 relative flex items-center">
+<span class="material-symbols-outlined absolute left-3.5 text-on-surface-variant text-[20px]">filter_vintage</span>
+<input class="w-full pl-11 pr-4 py-2.5 bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/70 rounded-full font-body-sm text-body-sm focus:outline-none focus:bg-surface-container-lowest transition-all" placeholder="Tra cứu mã khóa (WS-2026), tiêu đề workshop, nghệ nhân..." type="text">
+</div>
+<div class="flex flex-wrap items-center gap-3">
+<!-- Type Filter -->
+<div class="flex items-center gap-2 bg-surface-container-low px-3.5 py-2 rounded-full">
+<span class="material-symbols-outlined text-primary text-[18px]">category</span>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">Hình thức:</span>
+<select class="bg-transparent font-body-sm text-body-sm text-on-surface focus:outline-none cursor-pointer pr-1"><option>Tất cả không gian tại Cần Thơ</option><option>Khu Gốm Sò - Bến Ninh Kiều</option><option>Xưởng Nhuộm Lụa Phù Sa Sông Hậu</option><option>Cung Trưng Bày Sinh Thái A3</option></select>
+</div>
+<!-- Venue Filter -->
+<div class="flex items-center gap-2 bg-surface-container-low px-3.5 py-2 rounded-full">
+<span class="material-symbols-outlined text-primary text-[18px]">pin_drop</span>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">Không gian xưởng:</span>
+<select class="bg-transparent font-body-sm text-body-sm text-on-surface focus:outline-none cursor-pointer pr-1"><option>Tất cả không gian tại Cần Thơ</option><option>Khu Gốm Sò - Bến Ninh Kiều</option><option>Xưởng Nhuộm Lụa Phù Sa Sông Hậu</option><option>Cung Trưng Bày Sinh Thái A3</option></select>
+</div>
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-high text-on-surface font-body-sm text-body-sm hover:bg-surface-container-highest transition-colors">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+<span class="">Bộ lọc nâng cao</span>
+</button>
+</div>
+</section>
+<!-- Main Exhibition Table Surface -->
+<section class="bg-surface-container-lowest rounded-DEFAULT overflow-hidden shadow-[0_28px_60px_-16px_rgba(32,52,95,0.06)]">
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-surface-container-low text-on-surface-variant font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider">
+<th class="py-4 pl-6 pr-3 w-16 text-center">Tiêu bản</th>
+<th class="py-4 px-4 min-w-[280px]">Chương trình &amp; Mã hồ sơ</th>
+<th class="py-4 px-4 min-w-[140px]">Phân loại</th>
+<th class="py-4 px-4 min-w-[190px]">Thời gian &amp; Không gian</th>
+<th class="py-4 px-4 min-w-[170px]">Lượng vé &amp; Công suất</th>
+<th class="py-4 px-4 text-right min-w-[130px]">Doanh thu tạm</th>
+<th class="py-4 px-4 text-center min-w-[140px]">Trạng thái</th>
+<th class="py-4 pr-6 pl-4 text-right min-w-[140px]">Thao tác</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm divide-y-0">
+<!-- Row 1: Active Workshop Shell Sand -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group">
+<td class="py-4 pl-6 pr-3">
+<div class="w-14 h-16 rounded-[28px_28px_6px_6px] overflow-hidden bg-surface-container-high flex-shrink-0 shadow-sm relative group-hover:scale-105 transition-transform duration-300">
+<div class="w-full h-full bg-cover bg-center" data-alt="Artisanal bio-ceramic workshop crafting sustainable pots from discarded oyster shells, natural river sand and organic pigments, bathed in morning gallery daylight with botanical plant surroundings, Vietnamese Mekong Delta studio setting" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAFIkyWt8T2cTgP-eV9PPOHhTQ7swlB35eKCdrbCjhJHPNJyH_0Cc1TXeDV1pYNKXFCcwrddZzY4QEs6LTZOf-CaQCgRfxPB7kXiSpndxHCBuBNVcm9YDA4d2nNxeW8P3SZHYqhl2SdG--vsn7zMjgs1aJiWwwmel9pgOqNJfBvUUcHLpqyAot6hocDXTJEWeeYTWZ1bYcVCs2zoQPoxQD6J7sYHaPEM98JUKLYL0g')"></div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-metadata-curatorial text-metadata-curatorial px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-semibold">WS-2026-CT08</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Khu vực Nam Bộ</span>
+</div>
+<a class="font-headline-sm text-title-editorial text-on-surface font-semibold hover:text-primary transition-colors leading-snug" href="#">
+                    Workshop làm chậu cây từ bột vỏ sò Tây Đô
+                  </a>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Nghệ nhân phụ trách: ThS. Lê Cẩm Vân · Điêu khắc thủ công sinh học</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-metadata-curatorial text-metadata-curatorial uppercase">
+<span class="material-symbols-outlined text-[14px] text-primary">eco</span>
+<span class="">Workshop</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-0.5 text-on-surface">
+<span class="font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span>
+                    15.03.2026 (09:00 - 12:00)
+                  </span>
+<span class="text-on-surface-variant flex items-center gap-1.5 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">location_on</span>
+                    Cần Thơ (Sông Hậu)
+                  </span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-metadata-curatorial text-metadata-curatorial">
+<span class="font-bold text-on-surface">18 / 20 vé</span>
+<span class="text-primary font-bold">90%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 90%"></div>
+</div>
+<span class="text-[11px] text-on-surface-variant font-metadata-curatorial">Còn 2 suất danh dự</span>
+</div>
+</td>
+<td class="py-4 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-title-editorial text-on-surface font-bold">2.700.000 đ</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">150.000 đ / vé</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-metadata-curatorial text-metadata-curatorial uppercase font-bold tracking-wide shadow-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary animate-ping"></span>
+<span class="">Còn 2 chỗ</span>
+</div>
+</td>
+<td class="py-4 pr-6 pl-4 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors" title="Danh sách người học">
+<span class="material-symbols-outlined text-[18px]">group</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Chỉnh sửa nội dung">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Sao chép niên khoá">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 2: Fully Booked Mud Dyeing -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group bg-surface-container-low/30">
+<td class="py-4 pl-6 pr-3">
+<div class="w-14 h-16 rounded-[28px_28px_6px_6px] overflow-hidden bg-surface-container-high flex-shrink-0 shadow-sm relative group-hover:scale-105 transition-transform duration-300">
+<div class="w-full h-full bg-cover bg-center" data-alt="Traditional botanical textile dyeing using mangrove mud and wild forest leaves, linen hanging to dry in sunlight, earthy rich umber and jade green hues, serene Vietnamese natural craft workshop interior" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAzoVUn_DFYHPrNa9jqWmG0Ouu-MpVsBj5kLzrmqiGMafymkS0bUMlYYKZRCMoxUNgkaIqGgbZKe16dXh1CQLV-ng71zIVOgdGg8dSaA2DIMWjaW6pWSLbnXe1uUVordesAjuOVdrTUOXHIjFW-NjMHGeq3OJKm1JYbHscx_Ka2zrqrdXJthNNfyFpDxEAWMinJcWAhnr7BR9yrw5zBDnFXOGfzmDyAHwJyMogk3w0')"></div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-metadata-curatorial text-metadata-curatorial px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-semibold">WS-2026-CG02</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Xưởng Nhuộm Sông Hậu</span>
+</div>
+<a class="font-headline-sm text-title-editorial text-on-surface font-semibold hover:text-primary transition-colors leading-snug" href="#">Nhuộm vải từ sắc tố thực vật &amp; bùn phù sa Sông Hậu</a>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Nghệ nhân phụ trách: Huỳnh Triều Giang · Làng lụa sinh thái Tân Châu</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-metadata-curatorial text-metadata-curatorial uppercase">
+<span class="material-symbols-outlined text-[14px] text-secondary">palette</span>
+<span class="">Workshop</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-0.5 text-on-surface">
+<span class="font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span>
+                    22.03.2026 (14:00 - 17:30)
+                  </span>
+<span class="text-on-surface-variant flex items-center gap-1.5 font-body-sm text-body-sm"><span class="material-symbols-outlined text-[16px] text-on-surface-variant">location_on</span> Xưởng Cần Thơ (Bến Ninh Kiều)</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-metadata-curatorial text-metadata-curatorial">
+<span class="font-bold text-on-surface">15 / 15 vé</span>
+<span class="text-on-surface-variant font-bold">100%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full" style="width: 100%"></div>
+</div>
+<span class="text-[11px] text-on-surface-variant font-metadata-curatorial">Đã kích hoạt danh sách chờ (8 người)</span>
+</div>
+</td>
+<td class="py-4 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-title-editorial text-on-surface font-bold">2.700.000 đ</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">180.000 đ / vé</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-metadata-curatorial text-metadata-curatorial uppercase font-semibold">
+<span class="material-symbols-outlined text-[14px]">lock</span>
+<span class="">Hết vé</span>
+</div>
+</td>
+<td class="py-4 pr-6 pl-4 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors" title="Danh sách người học">
+<span class="material-symbols-outlined text-[18px]">group</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Chỉnh sửa nội dung">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Sao chép niên khoá">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 3: Talkshow Live Zoom -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group">
+<td class="py-4 pl-6 pr-3">
+<div class="w-14 h-16 rounded-[28px_28px_6px_6px] overflow-hidden bg-surface-container-high flex-shrink-0 shadow-sm relative group-hover:scale-105 transition-transform duration-300">
+<div class="w-full h-full bg-cover bg-center" data-alt="Bio-architectural showcase presenting futuristic pavilion made from compressed mollusc shells and bamboo fibers, architectural drawings, atmospheric lighting, clean Vietnamese gallery exhibition" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuDpmzm8TMJYOktIFq7JogRcV05PKiSLniDG8i_hZGpZZ2KDpteeYmELD3_fSuVpiJVJAyKOuNxhS22rYoOPoDOc6B59RaWKVadEH_s4GpUVP181VSKmN0kByhTQ9xCHuMLVxWXRcl01G604uwBorNa0JUT5VnwkVIqt9u_enkGz6_LDxmCMiXVdLJ2ZApv9KD_9sDLHX0FUZuhg7WSrwkJPNdMf7EQgF4pr6pLOJm8')"></div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-metadata-curatorial text-metadata-curatorial px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-semibold">TS-2026-OL01</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Phát sóng trực tuyến</span>
+</div>
+<a class="font-headline-sm text-title-editorial text-on-surface font-semibold hover:text-primary transition-colors leading-snug" href="#">
+                    Talkshow: Kiến trúc sinh học và Tương lai rác thải vỏ nhuyễn thể
+                  </a>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Diễn giả: KTS. Trần An Bình &amp; TS. Nguyễn Hữu Trí</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-metadata-curatorial text-metadata-curatorial uppercase">
+<span class="material-symbols-outlined text-[14px] text-secondary">podium</span>
+<span class="">Talkshow</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-0.5 text-on-surface">
+<span class="font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span>
+                    28.03.2026 (20:00 - 21:30)
+                  </span>
+<span class="text-on-surface-variant flex items-center gap-1.5 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-primary">videocam</span>
+                    Trực tuyến (Zoom Cloud)
+                  </span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-metadata-curatorial text-metadata-curatorial">
+<span class="font-bold text-on-surface">85 / 100 vé</span>
+<span class="text-primary font-bold">85%</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 85%"></div>
+</div>
+<span class="text-[11px] text-on-surface-variant font-metadata-curatorial">Còn 15 liên kết Zoom</span>
+</div>
+</td>
+<td class="py-4 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-title-editorial text-primary font-bold">Miễn phí</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Tài trợ xanh payOS</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed-variant font-metadata-curatorial text-metadata-curatorial uppercase font-bold tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="">Đang mở bán</span>
+</div>
+</td>
+<td class="py-4 pr-6 pl-4 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors" title="Danh sách người học">
+<span class="material-symbols-outlined text-[18px]">group</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Chỉnh sửa nội dung">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Sao chép niên khoá">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+<!-- Row 4: Ongoing Curatorial Exhibition -->
+<tr class="hover:bg-surface-container-low/60 transition-colors group">
+<td class="py-4 pl-6 pr-3">
+<div class="w-14 h-16 rounded-[28px_28px_6px_6px] overflow-hidden bg-surface-container-high flex-shrink-0 shadow-sm relative group-hover:scale-105 transition-transform duration-300">
+<div class="w-full h-full bg-cover bg-center" data-alt="Art installation showing iridescent mother of pearl fragments floating above natural silt alluvium river sediments, minimalist museum glass hall, deep reflections and Vietnamese river aesthetic" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAcrbkNYOIgPCxVcBjAfD2_uUllNzB42IzxwnE2adXu1gMjqYx_1laf_FksYZqIhsjg8UP5LnwB6YjmSe40n4zqlnMSn5xNyd0BQmIGOKrcedIhuHv2UMJHRAjiUSupUmmzQj3zmG9sKVKKlGBks9XiVnBLg0LBK__sfg5nSzDpW-gPklCQ5w9GqsJ0GgDlXxXC4Fav4Ykc0zI9JFi7ItmbHmrzyVffufdru7CwIA0')"></div>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-metadata-curatorial text-metadata-curatorial px-2 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-semibold">TL-2026-CT01</span>
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Không gian Trưng bày A3</span>
+</div>
+<a class="font-headline-sm text-title-editorial text-on-surface font-semibold hover:text-primary transition-colors leading-snug" href="#">
+                    Triển lãm tương tác: Dấu chân xà cừ và Dòng phù sa
+                  </a>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Giám tuyển: Đặng Hoài Thu · Bộ sưu tập Trầm tích Đồng bằng 2026</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container text-on-surface font-metadata-curatorial text-metadata-curatorial uppercase">
+<span class="material-symbols-outlined text-[14px] text-tertiary">museum</span>
+<span class="">Triển lãm</span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-0.5 text-on-surface">
+<span class="font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">calendar_today</span>
+                    01.03 - 30.04.2026
+                  </span>
+<span class="text-on-surface-variant flex items-center gap-1.5 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">location_on</span>
+                    Cần Thơ (Cung trưng bày)
+                  </span>
+</div>
+</td>
+<td class="py-4 px-4">
+<div class="flex flex-col gap-1.5">
+<div class="flex justify-between items-center font-metadata-curatorial text-metadata-curatorial">
+<span class="font-bold text-on-surface">Không giới hạn</span>
+<span class="text-tertiary font-bold">Mở cửa tự do</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-tertiary h-full rounded-full w-full"></div>
+</div>
+<span class="text-[11px] text-on-surface-variant font-metadata-curatorial">420 lượt ghé thăm tuần qua</span>
+</div>
+</td>
+<td class="py-4 px-4 text-right">
+<div class="flex flex-col items-end">
+<span class="font-headline-sm text-title-editorial text-primary font-bold">Miễn phí</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Vé tham quan sinh thái</span>
+</div>
+</td>
+<td class="py-4 px-4 text-center">
+<div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-metadata-curatorial text-metadata-curatorial uppercase font-bold tracking-wide">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-container-lowest animate-pulse"></span>
+<span class="">Đang diễn ra</span>
+</div>
+</td>
+<td class="py-4 pr-6 pl-4 text-right">
+<div class="inline-flex items-center gap-1">
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-primary transition-colors" title="Danh sách người học">
+<span class="material-symbols-outlined text-[18px]">group</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Chỉnh sửa nội dung">
+<span class="material-symbols-outlined text-[18px]">edit_note</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Sao chép niên khoá">
+<span class="material-symbols-outlined text-[18px]">content_copy</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container-high text-on-surface-variant hover:text-on-surface transition-colors" title="Tác vụ khác">
+<span class="material-symbols-outlined text-[18px]">more_vert</span>
+</button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Curatorial Gallery Pagination -->
+<div class="p-4 bg-surface-container-low/40 flex flex-col sm:flex-row items-center justify-between gap-4">
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="">Hiển thị</span>
+<span class="font-bold text-on-surface">1 - 4</span>
+<span class="">trên tổng số</span>
+<span class="font-bold text-on-surface">12 chương trình được giám tuyển</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-9 h-9 rounded-full flex items-center justify-center bg-surface-container-lowest text-on-surface-variant hover:text-on-surface disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-[18px]">chevron_left</span>
+</button>
+<div class="flex items-center gap-1 font-body-sm text-body-sm">
+<button class="w-9 h-9 rounded-full bg-primary-container text-on-primary-container font-bold flex items-center justify-center shadow-sm">1</button>
+<button class="w-9 h-9 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high flex items-center justify-center">2</button>
+<button class="w-9 h-9 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface-container-high flex items-center justify-center">3</button>
+</div>
+<button class="w-9 h-9 rounded-full flex items-center justify-center bg-surface-container-lowest text-on-surface-variant hover:text-on-surface">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Curatorial Quick Inspection Panel (Tạp dề & Khảo sát Học viên Workshop tiêu biểu) -->
+<section class="mt-8 bg-surface-container-low rounded-DEFAULT p-6 lg:p-8 relative overflow-hidden shadow-[0_16px_36px_-12px_rgba(32,52,95,0.05)]">
+<div class="flex flex-col lg:flex-row items-start justify-between gap-6 pb-6">
+<div class="flex items-start gap-4">
+<div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container shrink-0">
+<span class="material-symbols-outlined text-[24px]">assignment_turned_in</span>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-2">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-widest text-primary font-bold">Hồ sơ vận hành lớp học</span>
+<span class="text-on-surface-variant">·</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Khóa WS-2026-CT08</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold">
+              Khảo sát thể trạng học viên &amp; Chuẩn bị vật tư tự nhiên
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant max-w-2xl">
+              Dữ liệu người tham dự tích hợp từ cổng thanh toán sinh thái payOS, dùng để may đo tạp dề vải đũi và chuẩn bị găng tay chống kích ứng bột vỏ sò.
+            </p>
+</div>
+</div>
+<div class="flex items-center gap-3 shrink-0">
+<button class="flex items-center gap-2 px-4 py-2 rounded-full bg-surface-container-lowest text-on-surface font-body-sm text-body-sm hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span class="">In thẻ bàn nghệ nhân</span>
+</button>
+<button class="flex items-center gap-2 px-5 py-2 rounded-full bg-primary text-on-primary font-body-sm text-body-sm font-medium hover:opacity-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">mail</span>
+<span class="">Gửi thư dặn dò tự động</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid for Operational Parameters -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+<!-- Card 1: Apron Size Distribution -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT flex flex-col justify-between shadow-sm">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant font-bold">Phân bổ kích thước Tạp Dề Đũi</span>
+<span class="material-symbols-outlined text-primary text-[20px]">checkroom</span>
+</div>
+<div class="space-y-3 pt-2">
+<div>
+<div class="flex justify-between font-body-sm text-body-sm mb-1">
+<span class="text-on-surface">Size S (Tiêu chuẩn thon gọn)</span>
+<span class="font-semibold text-primary">6 người (33%)</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 33%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm mb-1">
+<span class="text-on-surface">Size M (Tiêu chuẩn vừa)</span>
+<span class="font-semibold text-primary">9 người (50%)</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 50%"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm mb-1">
+<span class="text-on-surface">Size L / XL (Rộng rãi tự do)</span>
+<span class="font-semibold text-primary">3 người (17%)</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+<div class="bg-primary-container h-full rounded-full" style="width: 17%"></div>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-4 mt-2 flex items-center justify-between text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="">Đã cấp phát vải may: 18 bộ</span>
+<span class="text-primary font-bold">Hoàn tất</span>
+</div>
+</div>
+<!-- Card 2: Allergies & Material Sensitivities -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT flex flex-col justify-between shadow-sm">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant font-bold">Lưu ý Dị ứng &amp; Cơ địa Da</span>
+<span class="material-symbols-outlined text-tertiary text-[20px]">healing</span>
+</div>
+<div class="flex flex-col gap-2.5 pt-1">
+<div class="p-3 bg-surface-container-low rounded-DEFAULT flex items-start gap-2.5">
+<span class="material-symbols-outlined text-error text-[18px] shrink-0 mt-0.5">warning</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">Dị ứng bụi vỏ sò sống &amp; Bột vôi</span>
+<span class="text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">2 học viên (Trần Minh Q., Hoàng Diệu H.) · Bố trí găng tay cao su sinh học &amp; mặt nạ than hoạt tính riêng</span>
+</div>
+</div>
+<div class="p-3 bg-surface-container-low rounded-DEFAULT flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">check_circle</span>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface font-semibold">16 học viên sức khỏe bình thường</span>
+<span class="text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">Đã xác nhận quy chuẩn an toàn hóa chất tự nhiên</span>
+</div>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="">Y tá trực ban: Phòng Y Tế A1</span>
+<span class="text-primary font-bold">Sẵn sàng</span>
+</div>
+</div>
+<!-- Card 3: PayOS Eco-Gateway Summary -->
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT flex flex-col justify-between shadow-sm">
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant font-bold">Cổng đối soát vé payOS</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">account_balance_wallet</span>
+</div>
+<div class="flex flex-col gap-3 pt-1">
+<div class="flex items-baseline justify-between">
+<span class="text-on-surface-variant font-body-sm text-body-sm">Đã chuyển khoản thành công:</span>
+<span class="font-headline-sm text-headline-sm text-primary font-bold">2.700.000 đ</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-on-surface-variant font-body-sm text-body-sm">Số giao dịch tức thời (Webhook):</span>
+<span class="font-body-sm text-body-sm font-bold text-on-surface">18 lệnh (100% khớp)</span>
+</div>
+<div class="flex items-baseline justify-between">
+<span class="text-on-surface-variant font-body-sm text-body-sm">Mã tham chiếu ngân hàng:</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface font-mono">PAYOS_2026_CT08_BATCH</span>
+</div>
+</div>
+</div>
+<div class="pt-4 flex items-center justify-between font-metadata-curatorial text-metadata-curatorial">
+<span class="text-on-surface-variant">Đối soát kế toán tự động</span>
+<span class="px-2.5 py-0.5 rounded-full bg-primary-container text-on-primary-container font-bold">Đã khóa sổ</span>
+</div>
+</div>
+</div>
+</section>
+</div>
+</div></main><footer class="w-full bg-surface-container-low/70 py-6 px-8 mt-12"><div class="flex flex-col md:flex-row items-center justify-between gap-4"><div class="flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">Hệ thống vận hành bình thường · Cổng payOS trực tuyến 2026</span></div><div class="flex items-center gap-6 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant"><span class="uppercase tracking-widest">LAVIECO Curatorial Living System</span><span class="">Bảo lưu mọi quyền tác quyền sinh thái</span></div></div></footer></div>
+
+</body></html>
