@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { eventCreateRequestSchema } from "@lavieco/shared/events";
 
 import { fieldErrorsOf } from "../schemas";
-import { emptyDetails, toDetailsRequest } from "./details-values";
+import { emptyDetails, savedImageIds, toDetailsRequest } from "./details-values";
 
 const TYPE_ID = "64b7f0c2a1b2c3d4e5f60718";
 
@@ -44,5 +44,47 @@ describe("toDetailsRequest", () => {
     const errors = fieldErrorsOf(result.error!);
     expect(errors.title).toBe("Không được để trống.");
     expect(errors.onlineUrl).toBe("Link phải bắt đầu bằng http:// hoặc https://.");
+  });
+});
+
+describe("event images in the details form (ADR-0020)", () => {
+  const image = (mediaId: string, alt: string) => ({
+    mediaId,
+    publicId: `lavieco/dev/events/${mediaId}`,
+    width: 1600,
+    height: 900,
+    alt,
+  });
+
+  it("sends only media ids and alt text, never file details", () => {
+    const body = toDetailsRequest({
+      ...emptyDetails(TYPE_ID),
+      title: "Có ảnh",
+      startLocal: "2026-11-15T09:00",
+      endLocal: "2026-11-15T12:00",
+      cover: image("64b7f0c2a1b2c3d4e5f60701", "Ảnh bìa"),
+      gallery: [image("64b7f0c2a1b2c3d4e5f60702", "Thành phẩm")],
+    });
+    expect(body.cover).toEqual({ mediaId: "64b7f0c2a1b2c3d4e5f60701", alt: "Ảnh bìa" });
+    expect(body.gallery).toEqual([{ mediaId: "64b7f0c2a1b2c3d4e5f60702", alt: "Thành phẩm" }]);
+    expect(eventCreateRequestSchema.safeParse(body).success).toBe(true);
+  });
+
+  it("asks for alt text on every image", () => {
+    const body = toDetailsRequest({
+      ...emptyDetails(TYPE_ID),
+      title: "Thiếu mô tả",
+      startLocal: "2026-11-15T09:00",
+      endLocal: "2026-11-15T12:00",
+      gallery: [image("64b7f0c2a1b2c3d4e5f60703", "")],
+    });
+    const result = eventCreateRequestSchema.safeParse(body);
+    expect(result.success).toBe(false);
+    if (!result.success)
+      expect(Object.keys(fieldErrorsOf(result.error))).toContain("gallery.0.alt");
+  });
+
+  it("knows which images are already saved", () => {
+    expect(savedImageIds(null).size).toBe(0);
   });
 });

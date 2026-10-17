@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { FiImage, FiLock } from "react-icons/fi";
+import { FiLock } from "react-icons/fi";
 
 import {
   EVENT_FORMATS,
@@ -21,11 +21,13 @@ import { fieldErrorsOf } from "../schemas";
 import {
   detailsOf,
   emptyDetails,
+  savedImageIds,
   toDetailsRequest,
   type DetailsValues,
 } from "../utils/details-values";
 import { EditorSection } from "./editor-section";
 import { FormAlert } from "./form-alert";
+import { CoverField, GalleryField } from "./image-fields";
 import { RepeatableRows } from "./repeatable-rows";
 
 type DetailsFormProps = {
@@ -95,6 +97,7 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
   const [alert, setAlert] = useState<{ tone: "error" | "success"; message: string } | null>(null);
   const [busy, setBusy] = useState(false);
   const disabled = busy || !canWrite;
+  const savedIds = savedImageIds(event);
 
   const set = <K extends keyof DetailsValues>(key: K, value: DetailsValues[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
@@ -226,21 +229,22 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
             wrapperClassName="md:col-span-2"
           />
           <div className="md:col-span-2">
-            <p className="mb-1.5 text-[11px] font-medium uppercase tracking-museum text-deep-blue/70">
-              {t.editor.fields.cover}
-            </p>
-            {/* TODO(media): upload with type sniffing and EXIF removal (D1, docs/04 §15). */}
-            <div className="flex items-center gap-4 rounded-2xl border border-dashed border-deep-blue/20 bg-soft-white p-4">
-              <span
-                aria-hidden="true"
-                className="flex h-16 w-14 shrink-0 items-center justify-center rounded-arch-sm bg-mint-mist text-deep-blue/40"
-              >
-                <FiImage size={18} />
-              </span>
-              <p className="text-[12.5px] leading-relaxed text-charcoal/65">
-                {t.editor.fields.coverSoon}
-              </p>
-            </div>
+            <CoverField
+              value={values.cover}
+              saved={values.cover !== null && savedIds.has(values.cover.mediaId)}
+              disabled={disabled}
+              error={errors["cover.alt"]}
+              onChange={(cover) => set("cover", cover)}
+            />
+          </div>
+          <div className="md:col-span-2">
+            <GalleryField
+              items={values.gallery}
+              savedIds={savedIds}
+              disabled={disabled}
+              errors={errors}
+              onChange={(gallery) => set("gallery", gallery)}
+            />
           </div>
         </div>
       </EditorSection>
