@@ -1,4 +1,5 @@
 import { type DynamicModule, Module } from "@nestjs/common";
+import type { Provider } from "@nestjs/common";
 import type { JWTVerifyGetKey } from "jose";
 
 import type { Logger } from "@lavieco/observability";
@@ -7,6 +8,7 @@ import {
   HealthModule,
   LoggingModule,
   MongoModule,
+  NotifyModule,
   OutboxModule,
   ServiceConfigModule,
   parseTrustedServiceKeys,
@@ -16,7 +18,9 @@ import {
 import type { ProgramEnv } from "./config/env";
 import { EventTypesModule } from "./modules/event-types";
 import { EventsModule, type MediaAttachments } from "./modules/events";
+import { OrdersModule } from "./modules/orders";
 import { ProgramOutboxModule } from "./modules/outbox";
+import type { EmailSender } from "@lavieco/service-kit/ports";
 
 export type AppOverrides = {
   logger?: Logger;
@@ -27,7 +31,14 @@ export type AppOverrides = {
   revalidateFetch?: typeof fetch;
   /** Stands in for content-service (event images). */
   mediaAttachments?: MediaAttachments;
+  emailSender?: EmailSender;
+  /** Replaces payOS (provider of PAYMENT_GATEWAY). */
+  paymentGateway?: Provider;
+  /** Off in tests that drive the seat-hold expiry themselves. */
+  runOrderExpiry?: boolean;
 };
+
+const ORDER_EXPIRY_INTERVAL_MS = 60_000;
 
 @Module({})
 export class AppModule {
@@ -55,10 +66,16 @@ export class AppModule {
             : { jwksUrl: env.IDENTITY_JWKS_URL },
           trustedServiceKeys: parseTrustedServiceKeys(env.SERVICE_TOKEN_TRUSTED_KEYS),
         }),
+        NotifyModule.forRoot(overrides.emailSender ? { sender: overrides.emailSender } : { env }),
         OutboxModule.forRoot(overrides.outbox),
         HealthModule,
         EventTypesModule,
         events,
+        OrdersModule.forRoot({
+          events,
+          gateway: overrides.paymentGateway,
+          expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
+        }),
         ProgramOutboxModule.forRoot(events, overrides.revalidateFetch),
       ],
     };

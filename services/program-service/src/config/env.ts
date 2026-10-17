@@ -1,17 +1,28 @@
 import { z } from "zod";
 
-import { baseServiceEnvSchema, loadConfig } from "@lavieco/service-kit";
+import { baseServiceEnvSchema, loadConfig, mailEnvSchema } from "@lavieco/service-kit";
 
-/** program-service environment (docs/04 §8). Documented in `.env.example`. */
-export const programEnvSchema = baseServiceEnvSchema.extend({
+const base64Key = (minBytes: number) =>
+  z.string().refine((value) => Buffer.from(value, "base64").length >= minBytes, {
+    message: `must be base64 of at least ${minBytes} bytes`,
+  });
+
+/**
+ * program-service environment (docs/04 §8). Documented in `.env.example` and
+ * docs/06-bien-moi-truong.md (same commit whenever a variable changes).
+ */
+export const programEnvSchema = baseServiceEnvSchema.extend(mailEnvSchema.shape).extend({
   /** identity-service JWKS, used to verify staff (and later member) access tokens. */
   IDENTITY_JWKS_URL: z.url(),
   /** Origin of `web`: cache revalidation webhook (`/api/revalidate`). */
   WEB_APP_URL: z.url(),
   /** HMAC key shared with `web` for `/api/revalidate`; base64 of at least 32 bytes. */
-  REVALIDATE_SECRET: z.string().refine((value) => Buffer.from(value, "base64").length >= 32, {
-    message: "must be base64 of at least 32 bytes",
-  }),
+  REVALIDATE_SECRET: base64Key(32),
+  /**
+   * HMAC key of the order links emailed to buyers (`/ve/[token]`, payment page). Changing
+   * it breaks every link already sent; base64 of at least 32 bytes.
+   */
+  TICKET_LINK_SECRET: base64Key(32),
   /** content-service on the private network: attaches and releases event images (ADR-0020). */
   CONTENT_SERVICE_URL: z.url(),
   /**

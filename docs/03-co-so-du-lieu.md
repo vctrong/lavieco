@@ -739,17 +739,24 @@ Quy tắc dữ liệu:
 - `onlineUrl` **không bao giờ** có trong phản hồi công khai. Phản hồi công khai cũng không có `form`, tác giả, lịch sử, `revision`, bộ đếm thô (chỉ "còn ≤ 10 chỗ"/"hết chỗ").
 - `createdBy`/`updatedBy` chỉ lưu `userId`: token staff không mang tên hiển thị để chụp lại.
 
-**Phác thảo cho Phase 3 → 6** (chưa dựng):
+**Đã dựng (Phase 3, nhánh `feat/phase3-registration-payos`, migration `202610190001-orders-tickets`):**
 
-| Collection | Nội dung chính | Ghi chú |
+| Collection | Trường chính | Index |
 |---|---|---|
-| `orders` | `orderCode` (số, payOS), `eventId`, `userId?`, `buyer { name, email, emailNormalized, phone, phoneNormalized }`, `isGuardian`, `items` (bản chụp giá), `amount`, `status`, `expiresAt`, thông tin payOS tối thiểu | Không có thông tin người tham dự (BR-13) |
-| `order_answers` | Câu trả lời form tuỳ chỉnh **theo đơn**, khóa theo `questionId` | Xuất Excel kể cả câu đã ẩn |
-| `tickets` | `code` ngắn ngẫu nhiên (ví dụ `LVC-7K3Q9M`), `orderId`, `ticketTypeId`, `qrToken` (≥ 32 byte ngẫu nhiên), `status` (`valid` · `used` · `void`), `checkedInAt`, `checkedInBy` | Không có PII trên vé |
-| `payment_events` | `orderCode`, `type`, các trường cần đối soát (số tiền, mã tham chiếu, thời điểm), `verified` | Không lưu nguyên payload có tên người chuyển |
-| `idempotency_keys` | Như các service khác | Checkout |
+| `orders` | `orderCode` (số nguyên 10 chữ số ngẫu nhiên, payOS), `eventId`, `userId` \| null (member đặt), `verificationId` (`sub` của bằng chứng email, một bằng chứng một đơn), `buyer { fullName, email, emailNormalized, phone, phoneNormalized }` (**PII**), `items` (bản chụp `{ ticketTypeId, name, unitPrice, quantity }`), `amount` (server tính), `status` (`pending` · `paid` · `expired` · `cancelled` · `refunded`), `seatState` (`held` · `sold` · `released`), `expiresAt` (+15 phút), `paidAt`, `cancelledAt`, `expiredAt`, `refundedAt`, `refundNote`, `note` (**PII**), `consent { version, at }`, `safetyAcknowledgedAt`, `flags { refundRequired, amountMismatch, latePayment }`, `payment { paymentLinkId, checkoutUrl, qrCode, bin, accountNumber, accountName, description, expiresAt }` \| null, `lastReconciledAt`, `anonymizedAt`, `revision` | `idx_orders_order_code_uq`, `idx_orders_verification_id_uq`, `idx_orders_status_expires_at`, `idx_orders_event_id_status_created_at`, `idx_orders_buyer_email_created_at`, `idx_orders_created_at` |
+| `order_answers` | `orderId`, `eventId`, `answers [{ questionId, value: string \| string[] }]` (**PII**), theo đơn | `idx_order_answers_order_id_uq` |
+| `tickets` | `code` (`LVC-` + 6 ký tự Crockford ngẫu nhiên), `qrToken` (32 byte ngẫu nhiên, base64url; ảnh QR sinh khi cần, không lưu), `orderId`, `eventId`, `ticketTypeId`, `ticketTypeName`, `status` (`valid` · `used` · `void`), `checkedInAt`, `checkedInBy`, `voidedAt` | `idx_tickets_code_uq`, `idx_tickets_qr_token_uq`, `idx_tickets_order_id`, `idx_tickets_event_id_status` |
+| `payment_events` | `orderCode`, `source` (`webhook` · `reconcile`), `amount`, `reference`, `paymentLinkId`, `transactionAt`, `outcome` (`paid` · `duplicate` · `amount_mismatch` · `refund_required` · `unknown_order`). Chỉ thanh toán đã xác minh; **không** tên/số tài khoản người chuyển | `idx_payment_events_order_code_created_at` |
+| `outbox` (thêm) | `order.send_tickets` `{ orderId }`, `payment.cancel_link` `{ orderId }` | |
 
-**Lưu giữ (DQ8, 8.1).** Thiết kế schema sao cho PII (khối `buyer`, `order_answers`, ghi chú) **tách khỏi** trường tài chính. Job ẩn danh chỉ cần xóa/ghi đè các trường PII: đặt `buyer` về giá trị ẩn danh, thêm `anonymizedAt`. `orderCode`, `amount`, `paidAt`, mã đối soát, trạng thái hoàn tiền giữ ≥ 10 năm. Mốc tính 24 tháng là `endAt` của sự kiện. Job làm ở phase có đơn hàng.
+Quy tắc dữ liệu:
+
+- **Giữ chỗ** (BR-14): `ticket_types.held`/`sold` chỉ đổi bằng `$inc` có điều kiện `sold + held + n ≤ quantity` (luôn đúng khi `quantity = null`) trong giao dịch tạo đơn; một loại vé thất bại thì cả giao dịch huỷ. Hết hạn/huỷ/hoàn tiền trả chỗ bằng update có điều kiện trên trạng thái đơn, nên chạy nhiều instance hay đua với webhook vẫn chỉ trả một lần.
+- **Miễn phí**: đơn `paid`, `amount = 0`, `seatState = sold`, phát hành vé ngay.
+- Idempotency của checkout dựa trên `verificationId` (unique): gửi lại cùng bằng chứng trả về đơn đã tạo. Không dùng `idempotency_keys` riêng.
+- Không có `isGuardian`: chưa có trường đánh dấu chương trình cho trẻ em (TODO khi có).
+
+**Lưu giữ (DQ8, 8.1).** Thiết kế schema sao cho PII (khối `buyer`, `order_answers`, ghi chú) **tách khỏi** trường tài chính. Job ẩn danh chỉ cần xóa/ghi đè các trường PII: đặt `buyer`, `note` và `order_answers` của đơn về giá trị ẩn danh, thêm `anonymizedAt` (`TODO(dq8-anonymize)`, hoãn theo quyết định 6 của kế hoạch Phase 3; lần chạy đầu sớm nhất 24 tháng sau sự kiện đầu tiên). `orderCode`, `amount`, `paidAt`, mã đối soát, trạng thái hoàn tiền giữ ≥ 10 năm. Mốc tính 24 tháng là `endAt` của sự kiện. Job làm ở phase có đơn hàng.
 
 ## 10. Vận hành: migration, index, quyền truy cập
 

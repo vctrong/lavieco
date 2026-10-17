@@ -77,4 +77,11 @@ export interface EventRepository {
   listPublic(query: PublicEventListQuery): Promise<Page<PublicEventRecord>>;
   /** Published, closed or ended only (S3). */
   findPublicBySlug(slug: string): Promise<PublicEventRecord | null>;
+  /**
+   * Same scope, full record (form, online link): used by the checkout and to tell the
+   * public page whether registration is open. Never mapped to a public DTO as is.
+   */
+  findPublicFullBySlug(slug: string, tx?: TxContext): Promise<EventRecord | null>;
+  /** Any event, discarded included (orders keep pointing at their event). */
+  findByIds(ids: string[]): Promise<EventRecord[]>;
 }

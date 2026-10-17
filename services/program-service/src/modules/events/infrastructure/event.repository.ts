@@ -313,6 +313,25 @@ export class MongoEventRepository implements EventRepository {
     return doc ? toPublicRecord(doc) : null;
   }
 
+  /** Full record of a public event, for the checkout only (never mapped to a public DTO). */
+  async findPublicFullBySlug(slug: string, tx?: TxContext) {
+    const doc = await this.model
+      .findOne({ slug, discarded: false, status: { $in: PUBLIC_STATUSES } })
+      .session(sessionOf(tx) ?? null)
+      .lean<EventDoc>()
+      .exec();
+    return doc ? toRecord(doc) : null;
+  }
+
+  async findByIds(ids: string[]) {
+    if (ids.length === 0) return [];
+    const docs = await this.model
+      .find({ _id: { $in: ids.map((id) => new Types.ObjectId(id)) } })
+      .lean<EventDoc[]>()
+      .exec();
+    return docs.map(toRecord);
+  }
+
   private async updateLive(
     id: string,
     revision: number,

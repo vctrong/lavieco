@@ -95,12 +95,16 @@ export {
   publicEventDetailSchema,
   publicEventListQuerySchema,
   publicEventListSchema,
+  publicFormQuestionSchema,
+  publicRegistrationSchema,
   publicTicketTypeSchema,
   type PublicAvailability,
   type PublicEventCard,
   type PublicEventDetail,
   type PublicEventList,
   type PublicEventListQuery,
+  type PublicFormQuestion,
+  type PublicRegistration,
   type PublicTicketType,
 } from "./public-event.schema";
 export {

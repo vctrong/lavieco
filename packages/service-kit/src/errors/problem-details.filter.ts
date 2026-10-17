@@ -28,6 +28,7 @@ type Mapped = {
   errors?: FieldError[];
   retryAfterSeconds?: number;
   remainingAttempts?: number;
+  reason?: string;
 };
 
 const HTTP_STATUS_CODES: Record<number, ErrorCode> = {
@@ -79,6 +80,7 @@ export class ProblemDetailsFilter implements ExceptionFilter {
       ...(mapped.remainingAttempts !== undefined
         ? { remainingAttempts: mapped.remainingAttempts }
         : {}),
+      ...(mapped.reason !== undefined ? { reason: mapped.reason } : {}),
     };
     if (mapped.retryAfterSeconds !== undefined) {
       response.setHeader("retry-after", String(mapped.retryAfterSeconds));
@@ -90,11 +92,13 @@ export class ProblemDetailsFilter implements ExceptionFilter {
     if (isDomainError(exception)) {
       const retry = exception.extensions?.retryAfterSeconds;
       const remaining = exception.extensions?.remainingAttempts;
+      const reason = exception.extensions?.reason;
       return {
         code: exception.code,
         detail: exception.detail,
         retryAfterSeconds: typeof retry === "number" ? Math.ceil(retry) : undefined,
         remainingAttempts: typeof remaining === "number" ? remaining : undefined,
+        reason: typeof reason === "string" && /^[a-z_]{1,40}$/.test(reason) ? reason : undefined,
       };
     }
     if (exception instanceof RequestValidationError) {

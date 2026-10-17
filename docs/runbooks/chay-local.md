@@ -45,6 +45,8 @@ Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32
 | | `TOTP_ENCRYPTION_KEY`, `OTP_PEPPER` | hai giá trị `RANDOM_32B` |
 | `services/program-service` | `SERVICE_TOKEN_TRUSTED_KEYS` | giống của `identity-service`: `{"web": <PUBLIC_JWK của web>, "admin": <PUBLIC_JWK của admin>}` |
 | | `REVALIDATE_SECRET` | một giá trị `RANDOM_32B` (dùng chung với `web`) |
+| | `TICKET_LINK_SECRET` | một giá trị `RANDOM_32B` **khác** (khoá link vé `/ve/[token]`; đổi là link đã gửi hết hiệu lực) |
+| | `SMTP_*`, `MAIL_FROM` | giữ mặc định (Mailpit) |
 | | `IDENTITY_JWKS_URL`, `WEB_APP_URL` | giữ mặc định trong `.env.example` |
 | | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của program-service>` (gọi `content-service` để gắn/giải phóng ảnh) |
 | | `CONTENT_SERVICE_URL` | giữ mặc định (`http://127.0.0.1:4002`) |

@@ -126,6 +126,7 @@ describe("create → tickets → form → publish → public", () => {
     await addTicket(draft.id);
     await addTicket(draft.id, { name: "Vé học sinh", price: 0, quantity: 5 });
     const questionId = randomUUID();
+    const hiddenQuestionId = randomUUID();
     await t
       .http()
       .put(`/internal/v1/events/${draft.id}/form`)
@@ -134,7 +135,13 @@ describe("create → tickets → form → publish → public", () => {
         revision: draft.revision,
         questions: [
           { id: questionId, type: "paragraph", label: "Bạn mong đợi điều gì?", required: false },
-          { id: randomUUID(), type: "short_text", label: "Ẩn đi", required: false, hidden: true },
+          {
+            id: hiddenQuestionId,
+            type: "short_text",
+            label: "Ẩn đi",
+            required: false,
+            hidden: true,
+          },
         ],
       })
       .expect(200);
@@ -162,6 +169,9 @@ describe("create → tickets → form → publish → public", () => {
     const parsed = publicEventDetailSchema.parse(detail.body);
     expect(parsed.safetyNotes).toBe("Có phát găng tay và khẩu trang.");
     expect(parsed.ticketTypes).toHaveLength(2);
+    // The checkout needs the visible questions; hidden ones never leave the service.
+    expect(parsed.registration.questions.map((question) => question.id)).toEqual([questionId]);
+    expect(parsed.registration).toMatchObject({ open: true, safetyAcknowledgementRequired: true });
     // The response carries nothing private, not even under another name.
     const raw = JSON.stringify(detail.body);
     for (const leak of [
@@ -170,7 +180,8 @@ describe("create → tickets → form → publish → public", () => {
       '"revision"',
       '"sold"',
       '"held"',
-      questionId,
+      '"hidden"',
+      hiddenQuestionId,
     ]) {
       expect(raw).not.toContain(leak);
     }
