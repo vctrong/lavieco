@@ -6,6 +6,7 @@ export default defineConfig({
     index: "src/index.ts",
     "permissions/index": "src/permissions/index.ts",
     "identity/index": "src/identity/index.ts",
+    "events/index": "src/events/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

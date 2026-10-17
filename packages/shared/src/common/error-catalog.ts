@@ -34,6 +34,29 @@ export const ERROR_CATALOG = {
   "member.consent_required": { status: 422, title: "Data-processing consent is required" },
   "member.google_failed": { status: 400, title: "Google sign-in could not be completed" },
   "member.google_not_allowed": { status: 403, title: "Google sign-in is not available here" },
+  "event.invalid_transition": {
+    status: 409,
+    title: "Status change not allowed from the current status",
+  },
+  "event.has_registrations": { status: 409, title: "Event already has registrations" },
+  "event.not_publishable": { status: 422, title: "Event does not meet the publishing conditions" },
+  "event.form_locked": { status: 409, title: "Form change not allowed once people registered" },
+  "event.slug_taken": { status: 409, title: "Another event already uses this slug" },
+  "event.slug_locked": { status: 409, title: "Slug cannot change after the event was published" },
+  "event.type_unavailable": { status: 422, title: "Event type does not exist or is archived" },
+  "event.past_event_restricted": { status: 409, title: "Past events have no tickets or form" },
+  "event.discard_not_allowed": {
+    status: 409,
+    title: "Only never-published drafts can be discarded",
+  },
+
+  "ticket_type.locked": {
+    status: 409,
+    title: "Ticket type change not allowed once seats are taken",
+  },
+  "ticket_type.limit_reached": { status: 422, title: "Too many ticket types for this event" },
+
+  "event_type.name_taken": { status: 409, title: "An event type with this name already exists" },
 } as const satisfies Record<string, { status: number; title: string }>;
 
 export type ErrorCode = keyof typeof ERROR_CATALOG;
