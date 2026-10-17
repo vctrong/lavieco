@@ -144,6 +144,7 @@ export const TEXT = {
       saleStartAt: "Mở bán từ",
       saleEndAt: "Đến",
       hidden: "Ẩn khỏi website",
+      seats: (count: number) => `${count} chỗ`,
       sold: (sold: number, held: number) => `Đã bán ${sold} · đang giữ ${held}`,
       locked: "Đã có người đặt: giá cố định, chỉ tăng số lượng hoặc ẩn vé.",
       empty: "Chưa có loại vé. Cần ít nhất một loại vé đang hiện để xuất bản.",

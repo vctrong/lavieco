@@ -218,7 +218,7 @@ function TicketSummary({
         </p>
         <p className="mt-0.5 text-[12.5px] text-charcoal/65">
           {ticket.price === 0 ? t.free : formatVnd(ticket.price)} ·{" "}
-          {ticket.quantity === null ? t.list.unlimited : `${ticket.quantity}`} ·{" "}
+          {ticket.quantity === null ? t.list.unlimited : t.tickets.seats(ticket.quantity)} ·{" "}
           {t.tickets.sold(ticket.sold, ticket.held)}
         </p>
       </div>

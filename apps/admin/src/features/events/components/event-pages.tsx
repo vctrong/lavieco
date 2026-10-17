@@ -53,7 +53,10 @@ export function EditEventPage({
   return (
     <div className="mx-auto max-w-7xl">
       <PageHeader
-        eyebrow={`${t.editor.editEyebrow} · ${t.kind[event.kind]}`}
+        // Only archive-only events need a second label; standard events are the default.
+        eyebrow={
+          event.kind === "past" ? `${t.editor.editEyebrow} · ${t.kind.past}` : t.editor.editEyebrow
+        }
         title={event.title}
         intro={formatRange(event.startAt, event.endAt)}
         back={<BackLink href="/events" label={t.editor.backToList} />}

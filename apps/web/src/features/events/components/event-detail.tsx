@@ -41,7 +41,7 @@ function RegisterBox({ event }: { event: PublicEventDetail }) {
         disabled
         className="mt-5 w-full cursor-not-allowed rounded-full bg-soft-white/15 px-6 py-3 text-sm font-semibold text-soft-white/80"
       >
-        {event.status === "published" ? t.registerSoon : t.register}
+        {event.status === "closed" ? t.closed : event.status === "ended" ? t.ended : t.registerSoon}
       </button>
       <p className="mt-3 text-[12.5px] leading-relaxed text-mint-mist/80">{note}</p>
     </div>
