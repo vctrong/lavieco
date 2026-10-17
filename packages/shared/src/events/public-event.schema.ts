@@ -5,7 +5,7 @@ import { cursorPageSchema } from "../common/pagination";
 import { eventFormatSchema, eventKindSchema, eventStatusSchema } from "./enums";
 import {
   eventAgendaItemSchema,
-  eventCoverSchema,
+  eventImageSchema,
   eventFaqItemSchema,
   eventPricingSchema,
   eventSpeakerSchema,
@@ -34,7 +34,7 @@ export const publicEventCardSchema = z.object({
   endAt: isoDateTimeSchema,
   venue: z.object({ name: z.string(), address: z.string() }).nullable(),
   summary: z.string(),
-  cover: eventCoverSchema.nullable(),
+  cover: eventImageSchema.nullable(),
   pricing: eventPricingSchema,
   availability: publicAvailabilitySchema,
 });
@@ -66,6 +66,7 @@ export const publicEventDetailSchema = publicEventCardSchema.extend({
   speakers: z.array(eventSpeakerSchema),
   agenda: z.array(eventAgendaItemSchema),
   faq: z.array(eventFaqItemSchema),
+  gallery: z.array(eventImageSchema),
   ticketTypes: z.array(publicTicketTypeSchema),
 });
 export type PublicEventDetail = z.infer<typeof publicEventDetailSchema>;

@@ -598,15 +598,34 @@
                             "nullable": true,
                             "type": "object",
                             "properties": {
-                              "url": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
                                 "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
                               },
                               "alt": {
                                 "type": "string"
                               }
                             },
                             "required": [
-                              "url",
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
                               "alt"
                             ],
                             "additionalProperties": false
@@ -907,6 +926,49 @@
                       ]
                     }
                   },
+                  "cover": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "object",
+                    "properties": {
+                      "mediaId": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{24}$"
+                      },
+                      "alt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "mediaId",
+                      "alt"
+                    ]
+                  },
+                  "gallery": {
+                    "default": [],
+                    "maxItems": 12,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "alt": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "alt"
+                      ]
+                    }
+                  },
                   "kind": {
                     "default": "standard",
                     "type": "string",
@@ -1103,18 +1165,75 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
+                    },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
                     },
                     "form": {
                       "type": "object",
@@ -1415,6 +1534,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "gallery",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -1633,18 +1753,75 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
+                    },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
                     },
                     "form": {
                       "type": "object",
@@ -1945,6 +2122,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "gallery",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -2149,6 +2327,49 @@
                       ]
                     }
                   },
+                  "cover": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "object",
+                    "properties": {
+                      "mediaId": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{24}$"
+                      },
+                      "alt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "mediaId",
+                      "alt"
+                    ]
+                  },
+                  "gallery": {
+                    "default": [],
+                    "maxItems": 12,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "alt": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "alt"
+                      ]
+                    }
+                  },
                   "revision": {
                     "type": "integer",
                     "minimum": 1,
@@ -2343,18 +2564,75 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
+                    },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
                     },
                     "form": {
                       "type": "object",
@@ -2655,6 +2933,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "gallery",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -2965,18 +3244,75 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
+                    },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
                     },
                     "form": {
                       "type": "object",
@@ -3277,6 +3613,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "gallery",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -3526,18 +3863,75 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
+                    },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
                     },
                     "form": {
                       "type": "object",
@@ -3838,6 +4232,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "gallery",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -4056,18 +4451,75 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
+                    },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
                     },
                     "form": {
                       "type": "object",
@@ -4368,6 +4820,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "gallery",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -5207,15 +5660,34 @@
                             "nullable": true,
                             "type": "object",
                             "properties": {
-                              "url": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
                                 "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
                               },
                               "alt": {
                                 "type": "string"
                               }
                             },
                             "required": [
-                              "url",
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
                               "alt"
                             ],
                             "additionalProperties": false
@@ -5429,15 +5901,34 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
@@ -5558,6 +6049,44 @@
                         "additionalProperties": false
                       }
                     },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "ticketTypes": {
                       "type": "array",
                       "items": {
@@ -5649,6 +6178,7 @@
                     "speakers",
                     "agenda",
                     "faq",
+                    "gallery",
                     "ticketTypes"
                   ],
                   "additionalProperties": false
@@ -5794,15 +6324,34 @@
                       "nullable": true,
                       "type": "object",
                       "properties": {
-                        "url": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
                           "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
                         },
                         "alt": {
                           "type": "string"
                         }
                       },
                       "required": [
-                        "url",
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
                         "alt"
                       ],
                       "additionalProperties": false
@@ -5923,6 +6472,44 @@
                         "additionalProperties": false
                       }
                     },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "ticketTypes": {
                       "type": "array",
                       "items": {
@@ -6014,6 +6601,7 @@
                     "speakers",
                     "agenda",
                     "faq",
+                    "gallery",
                     "ticketTypes"
                   ],
                   "additionalProperties": false

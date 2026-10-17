@@ -11,13 +11,51 @@ import request from "supertest";
 
 import { createLogger } from "@lavieco/observability";
 import { OutboxWorker, configureServiceApp } from "@lavieco/service-kit";
-import type { ServiceName } from "@lavieco/shared";
+import { DomainError, type ServiceName } from "@lavieco/shared";
+import type { EventImagePurpose } from "@lavieco/shared/media";
 import { IDENTITY_ISSUER, TOKEN_AUDIENCES } from "@lavieco/shared/identity";
 import type { Role } from "@lavieco/shared/permissions";
 
 import { AppModule, type AppOverrides } from "../../app.module";
 import { runMigrations } from "../../cli/migrate";
 import { programEnvSchema, type ProgramEnv } from "../../config/env";
+import type { MediaAttachments } from "../../modules/events";
+
+/**
+ * Stands in for content-service: knows the "uploaded" images, enforces one image per
+ * event like the real attach, and records releases.
+ */
+export class FakeMediaAttachments implements MediaAttachments {
+  private readonly uploads = new Map<string, { eventId: string | null; purpose?: string }>();
+  readonly released: { mediaId: string; eventId: string }[] = [];
+  unavailable = false;
+
+  /** An image as the admin would have uploaded it: returns its media id. */
+  upload(): string {
+    const mediaId = new Types.ObjectId().toHexString();
+    this.uploads.set(mediaId, { eventId: null });
+    return mediaId;
+  }
+
+  holderOf(mediaId: string) {
+    return this.uploads.get(mediaId)?.eventId ?? null;
+  }
+
+  async attach(mediaId: string, purpose: EventImagePurpose, eventId: string) {
+    if (this.unavailable) throw new DomainError("common.unavailable");
+    const upload = this.uploads.get(mediaId);
+    if (!upload || (upload.eventId !== null && upload.eventId !== eventId)) {
+      throw new DomainError("media.unavailable");
+    }
+    this.uploads.set(mediaId, { eventId, purpose });
+    return { publicId: `lavieco/dev/events/${mediaId}`, width: 1600, height: 900 };
+  }
+
+  async release(mediaId: string, eventId: string) {
+    this.released.push({ mediaId, eventId });
+    this.uploads.delete(mediaId);
+  }
+}
 
 type CallerKey = { privateKey: KeyLike; kid: string };
 
@@ -27,6 +65,7 @@ export type TestApp = {
   logs: string[];
   env: ProgramEnv;
   db: mongo.Db;
+  media: FakeMediaAttachments;
   /** Staff access token as identity-service would sign it. */
   staffToken: (roles: Role[], userId?: string) => Promise<string>;
   memberToken: (userId?: string) => Promise<string>;
@@ -65,7 +104,10 @@ export async function createTestApp(
     IDENTITY_JWKS_URL: "http://identity.test/.well-known/jwks.json",
     WEB_APP_URL: "http://web.test",
     REVALIDATE_SECRET: randomBytes(32).toString("base64"),
+    CONTENT_SERVICE_URL: "http://content.test",
+    SERVICE_TOKEN_PRIVATE_JWK: "unused-in-tests",
   });
+  const media = new FakeMediaAttachments();
 
   const client = new mongo.MongoClient(mongoUri);
   await client.connect();
@@ -88,6 +130,7 @@ export async function createTestApp(
     imports: [
       AppModule.forRoot(env, {
         outbox: { runWorker: false },
+        mediaAttachments: media,
         ...overrides,
         logger,
         userKeyResolver: async () => identity.publicKey,
@@ -114,6 +157,7 @@ export async function createTestApp(
     logs,
     env,
     db,
+    media,
     staffToken: (roles, userId = new Types.ObjectId().toHexString()) =>
       userToken({ typ: "staff", roles, sid: randomUUID() }, TOKEN_AUDIENCES.staff, userId),
     memberToken: (userId = new Types.ObjectId().toHexString()) =>

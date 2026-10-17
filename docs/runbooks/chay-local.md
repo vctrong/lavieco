@@ -33,6 +33,7 @@ npm run build -w @lavieco/identity-service
 npm run keys:generate -w @lavieco/identity-service -- identity-service
 npm run keys:generate -w @lavieco/identity-service -- web
 npm run keys:generate -w @lavieco/identity-service -- admin
+npm run keys:generate -w @lavieco/identity-service -- program-service
 ```
 
 Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32 byte. Đặt vào các tệp như sau:
@@ -45,6 +46,8 @@ Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32
 | `services/program-service` | `SERVICE_TOKEN_TRUSTED_KEYS` | giống của `identity-service`: `{"web": <PUBLIC_JWK của web>, "admin": <PUBLIC_JWK của admin>}` |
 | | `REVALIDATE_SECRET` | một giá trị `RANDOM_32B` (dùng chung với `web`) |
 | | `IDENTITY_JWKS_URL`, `WEB_APP_URL` | giữ mặc định trong `.env.example` |
+| | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của program-service>` (gọi `content-service` để gắn/giải phóng ảnh) |
+| | `CONTENT_SERVICE_URL` | giữ mặc định (`http://127.0.0.1:4002`) |
 | `apps/web` | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của web>` |
 | | `REVALIDATE_SECRET` | **cùng giá trị** với `program-service` |
 | | `PROGRAM_SERVICE_URL`, `ADMIN_APP_URL` | giữ mặc định (`ADMIN_APP_URL` là origin duy nhất được nhúng trang xem trước) |

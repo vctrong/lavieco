@@ -227,6 +227,7 @@ describe("duplicate", () => {
     slug: "workshop-vo-so",
     status: "ended",
     cover: null,
+    gallery: [],
     form: { questions: [] },
     pricing: { isFree: false, priceFrom: 150_000 },
     publishedAt: NOW,

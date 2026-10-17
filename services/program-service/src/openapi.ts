@@ -23,6 +23,8 @@ async function generate() {
     IDENTITY_JWKS_URL: "http://127.0.0.1:1/.well-known/jwks.json",
     WEB_APP_URL: "http://localhost:3000",
     REVALIDATE_SECRET: Buffer.alloc(32).toString("base64"),
+    CONTENT_SERVICE_URL: "http://127.0.0.1:1",
+    SERVICE_TOKEN_PRIVATE_JWK: "openapi",
   });
   const logger = createLogger({ service: "program-service", level: "silent" });
   const app = await NestFactory.create(AppModule.forRoot(env, { logger }), {

@@ -15,6 +15,7 @@
     "gen:openapi": "node dist/openapi.js"
   },
   "dependencies": {
+    "@lavieco/api-clients": "*",
     "@lavieco/observability": "*",
     "@lavieco/service-kit": "*",
     "@lavieco/shared": "*",

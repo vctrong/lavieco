@@ -9,6 +9,7 @@ import {
   EVENT_LIMITS,
   EVENT_STATUSES,
   type EventForm,
+  type EventImage,
   type EventListQuery,
   type EventPricing,
   type EventStatus,
@@ -22,6 +23,7 @@ import type {
   PublicEventRecord,
 } from "../application/ports/event-repository.port";
 import type { Actor, EventContent, EventRecord, StatusChange } from "../domain/event";
+import type { EventImages } from "../domain/event-images";
 import { decodeCursor, encodeCursor, monthRange } from "../domain/public-filters";
 import { EVENT_MODEL } from "./event.model";
 
@@ -48,6 +50,14 @@ const PUBLIC_PROJECTION = {
 
 const PUBLIC_STATUSES: EventStatus[] = ["published", "closed", "ended"];
 
+const toImage = (image: EventImage): EventImage => ({
+  mediaId: image.mediaId,
+  publicId: image.publicId,
+  width: image.width,
+  height: image.height,
+  alt: image.alt,
+});
+
 function toPublicRecord(doc: Partial<EventDoc> & { _id: Types.ObjectId }): PublicEventRecord {
   return {
     id: doc._id.toHexString(),
@@ -69,7 +79,8 @@ function toPublicRecord(doc: Partial<EventDoc> & { _id: Types.ObjectId }): Publi
     speakers: doc.speakers ?? [],
     agenda: doc.agenda ?? [],
     faq: doc.faq ?? [],
-    cover: doc.cover ?? null,
+    cover: doc.cover ? toImage(doc.cover) : null,
+    gallery: (doc.gallery ?? []).map(toImage),
     pricing: {
       isFree: doc.pricing?.isFree ?? false,
       priceFrom: doc.pricing?.priceFrom ?? null,
@@ -116,16 +127,22 @@ const escapeRegex = (value: string) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$
 export class MongoEventRepository implements EventRepository {
   constructor(@InjectModel(EVENT_MODEL) private readonly model: Model<EventDoc>) {}
 
-  async insert(input: NewEvent, tx?: TxContext) {
+  newId() {
+    return new Types.ObjectId().toHexString();
+  }
+
+  async insert({ id, images, ...input }: NewEvent, tx?: TxContext) {
     try {
       const [doc] = await this.model.create(
         [
           {
+            _id: new Types.ObjectId(id),
             ...contentFields(input),
             kind: input.kind,
             slug: input.slug,
             status: "draft",
-            cover: null,
+            cover: images.cover,
+            gallery: images.gallery,
             form: input.form,
             pricing: input.pricing,
             publishedAt: null,
@@ -168,7 +185,7 @@ export class MongoEventRepository implements EventRepository {
   async updateContent(
     id: string,
     revision: number,
-    changes: { content: EventContent; slug: string },
+    changes: { content: EventContent; slug: string; images: EventImages },
     actor: Actor,
     tx?: TxContext,
   ) {
@@ -176,7 +193,13 @@ export class MongoEventRepository implements EventRepository {
       return await this.updateLive(
         id,
         revision,
-        { ...contentFields(changes.content), slug: changes.slug, updatedBy: actor },
+        {
+          ...contentFields(changes.content),
+          slug: changes.slug,
+          cover: changes.images.cover,
+          gallery: changes.images.gallery,
+          updatedBy: actor,
+        },
         tx,
       );
     } catch (error) {
@@ -226,13 +249,14 @@ export class MongoEventRepository implements EventRepository {
     await this.model.updateOne({ _id: id }, { $set: { pricing } }, { session: sessionOf(tx) });
   }
 
-  async discard(id: string, revision: number, actor: Actor) {
+  async discard(id: string, revision: number, actor: Actor, tx?: TxContext) {
     const result = await this.model.updateOne(
       { _id: id, revision, status: "draft", firstPublishedAt: null, discarded: false },
       {
         $set: { discarded: true, discardedAt: new Date(), updatedBy: actor },
         $inc: { revision: 1 },
       },
+      { session: sessionOf(tx) },
     );
     return result.modifiedCount === 1;
   }

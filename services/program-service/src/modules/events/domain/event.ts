@@ -1,6 +1,6 @@
 import type {
-  EventCover,
   EventDetails,
+  EventImage,
   EventForm,
   EventFormat,
   EventKind,
@@ -40,7 +40,9 @@ export type EventRecord = EventContent & {
   kind: EventKind;
   slug: string;
   status: EventStatus;
-  cover: EventCover | null;
+  /** Snapshots of content-service media (ADR-0020); one image belongs to one event. */
+  cover: EventImage | null;
+  gallery: EventImage[];
   form: EventForm;
   /** Derived from ticket types, stored for the public "free" filter. */
   pricing: EventPricing;

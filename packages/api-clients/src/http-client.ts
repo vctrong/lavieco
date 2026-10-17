@@ -13,6 +13,10 @@ export type CallOptions<TSchema extends z.ZodType | undefined> = {
   path: string;
   auth: CallAuth;
   body?: unknown;
+  /** Multipart body (image uploads, ADR-0020); fetch sets the boundary itself. */
+  form?: FormData;
+  /** Overrides the client timeout (uploads take longer than JSON calls). */
+  timeoutMs?: number;
   /** Response schema; omit for `204 No Content`. */
   schema?: TSchema;
   /** Safe to retry: GET, or a POST carrying an Idempotency-Key (docs/02 §6.1). */
@@ -60,15 +64,15 @@ export function createHttpClient({
       options.auth.kind === "service"
         ? `Bearer ${await signer.tokenFor(audience)}`
         : `Bearer ${options.auth.accessToken}`;
-    if (options.body !== undefined) headers["content-type"] = "application/json";
+    if (options.body !== undefined && !options.form) headers["content-type"] = "application/json";
     if (options.requestId) headers["x-request-id"] = options.requestId;
     if (options.idempotencyKey) headers["idempotency-key"] = options.idempotencyKey;
 
     return fetchImpl(`${root}${options.path}`, {
       method: options.method,
       headers,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
-      signal: AbortSignal.timeout(timeoutMs),
+      body: options.form ?? (options.body === undefined ? undefined : JSON.stringify(options.body)),
+      signal: AbortSignal.timeout(options.timeoutMs ?? timeoutMs),
     });
   }
 

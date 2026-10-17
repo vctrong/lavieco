@@ -12,6 +12,14 @@ export const programEnvSchema = baseServiceEnvSchema.extend({
   REVALIDATE_SECRET: z.string().refine((value) => Buffer.from(value, "base64").length >= 32, {
     message: "must be base64 of at least 32 bytes",
   }),
+  /** content-service on the private network: attaches and releases event images (ADR-0020). */
+  CONTENT_SERVICE_URL: z.url(),
+  /**
+   * PRIVATE Ed25519 JWK of program-service, signing its service tokens to
+   * content-service (ADR-0018). Its public half goes into content-service's
+   * SERVICE_TOKEN_TRUSTED_KEYS.
+   */
+  SERVICE_TOKEN_PRIVATE_JWK: z.string().min(1),
 });
 
 export type ProgramEnv = z.infer<typeof programEnvSchema>;

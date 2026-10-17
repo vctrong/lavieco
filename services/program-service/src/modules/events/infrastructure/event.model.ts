@@ -8,6 +8,18 @@ export const PREVIEW_TOKEN_MODEL = "PreviewToken";
 
 const actorSchema = new Schema({ userId: { type: String, required: true } }, { _id: false });
 
+/** Snapshot of a content-service media (ADR-0020): enough to render, no call needed. */
+const imageSchema = new Schema(
+  {
+    mediaId: { type: String, required: true },
+    publicId: { type: String, required: true },
+    width: { type: Number, required: true },
+    height: { type: Number, required: true },
+    alt: { type: String, required: true },
+  },
+  { _id: false },
+);
+
 const questionSchema = new Schema(
   {
     id: { type: String, required: true },
@@ -53,11 +65,9 @@ export const eventSchema = new Schema(
     speakers: { type: [{ name: String, role: String, _id: false }], default: [] },
     agenda: { type: [{ time: String, title: String, _id: false }], default: [] },
     faq: { type: [{ question: String, answer: String, _id: false }], default: [] },
-    // TODO(media): cover upload through content-service media (docs/04 §15).
-    cover: {
-      type: new Schema({ url: String, alt: String }, { _id: false }),
-      default: null,
-    },
+    cover: { type: imageSchema, default: null },
+    /** ≤ MEDIA_LIMITS.eventGalleryMax (12), enforced by the shared contract. */
+    gallery: { type: [imageSchema], default: [] },
     form: {
       questions: { type: [questionSchema], default: [] },
     },

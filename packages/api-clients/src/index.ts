@@ -1,5 +1,11 @@
 export { ServiceProblemError, ServiceUnavailableError, isServiceProblem } from "./errors";
 export {
+  createContentClient,
+  type ContentClient,
+  type ContentClientOptions,
+  type ImageFile,
+} from "./content-client";
+export {
   createHttpClient,
   type CallAuth,
   type CallOptions,

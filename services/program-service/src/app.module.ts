@@ -15,7 +15,7 @@ import {
 
 import type { ProgramEnv } from "./config/env";
 import { EventTypesModule } from "./modules/event-types";
-import { EventsModule } from "./modules/events";
+import { EventsModule, type MediaAttachments } from "./modules/events";
 import { ProgramOutboxModule } from "./modules/outbox";
 
 export type AppOverrides = {
@@ -25,12 +25,15 @@ export type AppOverrides = {
   userKeyResolver?: JWTVerifyGetKey;
   /** Captures calls to the revalidation webhook of `web`. */
   revalidateFetch?: typeof fetch;
+  /** Stands in for content-service (event images). */
+  mediaAttachments?: MediaAttachments;
 };
 
 @Module({})
 export class AppModule {
   /** Built from parsed env so tests can start the real module graph with fakes. */
   static forRoot(env: ProgramEnv, overrides: AppOverrides = {}): DynamicModule {
+    const events = EventsModule.forRoot(overrides.mediaAttachments);
     return {
       module: AppModule,
       imports: [
@@ -55,8 +58,8 @@ export class AppModule {
         OutboxModule.forRoot(overrides.outbox),
         HealthModule,
         EventTypesModule,
-        EventsModule,
-        ProgramOutboxModule.forRoot(overrides.revalidateFetch),
+        events,
+        ProgramOutboxModule.forRoot(events, overrides.revalidateFetch),
       ],
     };
   }

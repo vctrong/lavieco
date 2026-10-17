@@ -55,6 +55,7 @@ export function toEventDto(snapshot: EventSnapshot): EventView {
     agenda: event.agenda,
     faq: event.faq,
     cover: event.cover,
+    gallery: event.gallery,
     form: event.form,
     ticketTypes: snapshot.ticketTypes.map(toTicketTypeDto),
     pricing: event.pricing,
@@ -126,6 +127,7 @@ export function toPublicDetailDto(bundle: PublicEventBundle): PublicEventDetail 
     speakers: event.speakers,
     agenda: event.agenda,
     faq: event.faq,
+    gallery: event.gallery,
     ticketTypes: ticketTypes.map((ticketType) => ({
       id: ticketType.id,
       name: ticketType.name,
