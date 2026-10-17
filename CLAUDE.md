@@ -61,7 +61,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 
 1. **6 thành phần GĐ1:** `apps/web`, `apps/admin` (Next.js) + `services/identity-service`, `content-service`, `lead-service`, `program-service` (NestJS; sự kiện/vé/payOS, miền `events` trong code, ADR-014/015). Member + Google + OTP ở `identity` (ADR-016). Service token Ed25519 theo bên gọi, mỗi route khai báo đúng một quy tắc truy cập (ADR-018). Không thêm service/gateway/broker khi chưa thỏa điều kiện ở `docs/02` §14.1 và chưa có ADR.
 2. **Service không mở ra Internet.** Chỉ `web` và `admin` nhận lưu lượng ngoài. Trình duyệt **không bao giờ** gọi thẳng service; đi qua BFF (Route Handlers/Server Actions).
-3. **Mỗi service một database** (`lavieco_identity` / `_content` / `_lead`), tài khoản DB riêng. **Cấm** đọc/ghi DB của service khác và cấm `$lookup` chéo DB. Tham chiếu chéo = ID + bản chụp (snapshot).
+3. **Mỗi service một database** (`lavieco_identity` / `_content` / `_lead` / `_program`, một cụm Atlas Singapore, local là replica set trong compose), tài khoản DB riêng. **Cấm** đọc/ghi DB của service khác và cấm `$lookup` chéo DB. Tham chiếu chéo = ID + bản chụp (snapshot).
 4. **Hướng phụ thuộc** (`docs/04` §4.1): apps → packages; services → packages; **không** apps ↔ services, **không** service → service (gọi nhau qua HTTP bằng `@lavieco/api-clients`).
 5. **`packages/` chỉ chứa hợp đồng và công cụ**, không có logic nghiệp vụ: `shared`, `ui`, `api-clients`, `service-kit`, `observability`, `config`. Không thêm gói mới khi chưa có ≥2 nơi thật sự cần.
 6. **Việc bất đồng bộ** (audit, email, làm mới cache, bản chụp QR) **ghi vào `outbox` trong cùng giao dịch** với dữ liệu chính. Không gọi dịch vụ ngoài bên trong giao dịch. Giao dịch chỉ trong **một** service.
