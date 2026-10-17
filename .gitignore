@@ -61,3 +61,8 @@ tsup.config.bundled_*
 *-keys.json
 *recovery-codes*
 secrets/
+
+# local working material, kept out of the repo
+docs_temp/
+docs/design/png tach nen/
+docs/design/png vien trang/

@@ -13,6 +13,7 @@
   ],
   "scripts": {
     "env:init": "node infra/scripts/env-init.mjs",
+    "env:check": "node infra/scripts/env-check.mjs",
     "dev:infra": "docker compose -f infra/compose/compose.dev.yml --env-file .env.local up -d --wait",
     "dev:infra:down": "docker compose -f infra/compose/compose.dev.yml --env-file .env.local down",
     "dev": "turbo run dev",

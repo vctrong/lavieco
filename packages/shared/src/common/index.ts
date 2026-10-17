@@ -11,4 +11,10 @@ export {
   type FieldError,
   type ProblemDetails,
 } from "./problem-details";
+export {
+  REVALIDATE_HEADERS,
+  REVALIDATE_TOLERANCE_SECONDS,
+  revalidateRequestSchema,
+  type RevalidateRequest,
+} from "./revalidate";
 export { SERVICE_NAMES, isServiceName, type ServiceName } from "./service-names";

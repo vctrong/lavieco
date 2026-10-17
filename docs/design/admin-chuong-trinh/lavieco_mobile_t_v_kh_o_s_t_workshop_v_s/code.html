@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_stack" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&amp;family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "secondary-container": "#b8cbff", "secondary": "#4b5d8b", "on-secondary-fixed-variant": "#324672", "on-surface": "#191c1a", "on-tertiary": "#ffffff", "secondary-fixed": "#d9e2ff", "surface-variant": "#e1e3df", "surface-container-lowest": "#ffffff", "on-primary-container": "#003c2a", "tertiary-container": "#b7ae41", "tertiary-fixed-dim": "#d3ca59", "inverse-on-surface": "#eff1ed", "on-tertiary-fixed-variant": "#4d4800", "on-primary-fixed": "#002115", "on-secondary": "#ffffff", "surface-container-low": "#f2f4f0", "surface-bright": "#f8faf6", "primary-fixed-dim": "#55ddac", "error": "#ba1a1a", "primary": "#006c4e", "surface-tint": "#006c4e", "outline": "#6c7a72", "primary-container": "#10b183", "on-surface-variant": "#3d4a43", "on-primary-fixed-variant": "#00513a", "secondary-fixed-dim": "#b3c6fa", "primary-fixed": "#75fac7", "surface-container": "#eceeeb", "on-error-container": "#93000a", "on-primary": "#ffffff", "outline-variant": "#bbcac1", "inverse-surface": "#2e312f", "surface-dim": "#d8dbd7", "background": "#f8faf6", "surface-container-highest": "#e1e3df", "on-background": "#191c1a", "error-container": "#ffdad6", "on-secondary-fixed": "#011944", "inverse-primary": "#55ddac", "on-tertiary-container": "#454100", "on-secondary-container": "#425582", "on-error": "#ffffff", "tertiary-fixed": "#f0e672", "on-tertiary-fixed": "#1f1c00", "tertiary": "#676000", "surface": "#f8faf6", "surface-container-high": "#e7e9e5" }, "borderRadius": { "DEFAULT": "1rem", "lg": "2rem", "xl": "3rem", "full": "9999px" }, "spacing": { "space-md": "1rem", "margin": "1.25rem", "margin-tablet": "2.5rem", "space-xl": "3rem", "margin-desktop": "4.5rem", "gutter": "1.5rem", "gutter-desktop": "3rem", "space-lg": "1.75rem", "space-xs": "0.25rem", "gutter-tablet": "2rem", "space-sm": "0.5rem" }, "fontFamily": { "body-lg": ["Be Vietnam Pro"], "body-sm": ["Be Vietnam Pro"], "body-md": ["Be Vietnam Pro"], "metadata-curatorial": ["Be Vietnam Pro"], "headline-md": ["Fraunces"], "label-caps": ["Be Vietnam Pro"], "display-hero-mobile": ["Fraunces"], "headline-lg-mobile": ["Fraunces"], "display-hero": ["Fraunces"], "headline-lg": ["Fraunces"], "title-editorial": ["Fraunces"], "headline-sm": ["Fraunces"] }, "fontSize": { "body-lg": ["18px", { "lineHeight": "31px", "fontWeight": "300" }], "body-sm": ["13px", { "lineHeight": "22px", "fontWeight": "400" }], "body-md": ["15px", { "lineHeight": "26px", "fontWeight": "400" }], "metadata-curatorial": ["11px", { "lineHeight": "16px", "letterSpacing": "0.06em", "fontWeight": "500" }], "headline-md": ["32px", { "lineHeight": "42px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "label-caps": ["12px", { "lineHeight": "16px", "letterSpacing": "0.12em", "fontWeight": "600" }], "display-hero-mobile": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "headline-lg-mobile": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.01em", "fontWeight": "400" }], "display-hero": ["64px", { "lineHeight": "76px", "letterSpacing": "-0.02em", "fontWeight": "400" }], "headline-lg": ["44px", { "lineHeight": "54px", "letterSpacing": "-0.015em", "fontWeight": "400" }], "title-editorial": ["20px", { "lineHeight": "30px", "fontWeight": "400" }], "headline-sm": ["24px", { "lineHeight": "32px", "fontWeight": "500" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#f8faf6;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface antialiased flex flex-col min-h-full"><header class="fixed top-0 inset-x-0 z-50 bg-surface/80 backdrop-blur-xl pt-safe"><div class="h-16 px-margin flex items-center justify-between"><div class="flex items-center gap-space-sm min-w-0"><button aria-label="Go back" class="w-11 h-11 -ml-2 flex items-center justify-center rounded-full text-secondary hover:bg-surface-container-low transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[20px]">arrow_back</span></button><h1 class="font-title-editorial text-title-editorial text-on-surface truncate pr-2">Session Reservation</h1></div><div class="flex items-center gap-space-sm shrink-0"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full relative">
+<!-- Top Curatorial Progress Indicator -->
+<div class="w-full h-0.5 bg-surface-container relative">
+<div class="h-full bg-primary-container relative" style="width: 72%;">
+<span class="absolute right-0 top-1/2 -translate-y-1/2 w-1.5 h-1.5 rounded-full bg-tertiary-fixed shadow-sm"></span>
+</div>
+</div>
+<!-- Background Gallery Content (Appears under the reservation bottom sheet) -->
+<div class="px-margin pt-space-md pb-space-xl flex flex-col gap-space-md opacity-85 select-none pointer-events-none">
+<!-- Curatorial Index Label -->
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">
+        Nº 01 · WORKSHOP TÂY ĐÔ · 2026
+      </span>
+<span class="px-2 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-metadata-curatorial text-metadata-curatorial">
+        BẢO TỒN SINH THÁI
+      </span>
+</div>
+<!-- Title with Fraunces Italic Flourish -->
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface leading-snug">
+        Workshop làm chậu cây từ <span class="font-headline-sm italic text-primary font-normal">bột vỏ sò</span> Tây Đô
+      </h2>
+</div>
+<!-- Arch-Framed Cover Preview with Eco Badge -->
+<div class="relative w-full rounded-t-[140px] rounded-b-lg overflow-hidden bg-surface-container-low p-2 shadow-md">
+<div class="relative w-full h-52 rounded-t-[132px] rounded-b-md overflow-hidden">
+<div class="bg-cover bg-center w-full h-full transform scale-100" data-alt="Artisan hands gently kneading and molding an eco-friendly biocomposite clay made from crushed pearlescent river clam shells into a minimalist organic plant pot, soft diffused morning gallery light, Vietnamese ceramic studio backdrop in Can Tho, warm muted earth tones, emerald accents, tactile texture" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAp1-P6d3zUEMKR7kTCDnqZID2-UUtIoWARYhfFqw75ZEaR4d9k4bOjVumO6G_9Lwx6AGtcTkYxM2Ac64WctGtJWfPBVlZKnd9dI_lKLixJ9xoc-NzRWmf7xBM6QWhCshlaco22XBnh7GHztJLkfBMqfEr35eI_-lIiG6epmKGUUmZ5UrV2-9mrq_xk0S7mTzIoXnM4oUXFkzz59XGIlLVTw302yusBJY032N5tYekCDKXn9vLJQzk9')">
+</div>
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent"></div>
+<div class="absolute bottom-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-lowest/90 backdrop-blur-md shadow-sm">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">eco</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface font-semibold">Đã gom 14.8kg vỏ xà cừ</span>
+</div>
+</div>
+</div>
+<!-- Workshop Quick Context Cards -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low">
+<span class="w-8 h-8 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] text-on-primary-fixed">calendar_today</span>
+</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Thời gian</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Chủ Nhật, 15.03.2026 · 08:30 – 11:30</span>
+</div>
+</div>
+<div class="flex items-center gap-3 p-3 rounded-lg bg-surface-container-low">
+<span class="w-8 h-8 rounded-full bg-secondary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] text-on-secondary-fixed">pin_drop</span>
+</span>
+<div class="flex flex-col min-w-0">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Địa điểm</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Xưởng Nghệ thuật LAVIECO, 45B Đường 30/4, Cần Thơ</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg bg-surface-container-low">
+<div class="flex items-center gap-3">
+<span class="w-8 h-8 rounded-full bg-tertiary-fixed flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px] text-on-tertiary-fixed">group</span>
+</span>
+<div class="flex flex-col">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">Quy mô</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Giới hạn 20 học viên</span>
+</div>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-metadata-curatorial text-metadata-curatorial font-semibold tracking-wide animate-pulse">
+          CÒN 8 CHỖ
+        </span>
+</div>
+</div>
+</div>
+<!-- Modal Scrim Overlay (Curatorial Exhibition Focus) -->
+<div class="fixed inset-0 bg-on-surface/40 backdrop-blur-[2px] z-40 transition-opacity"></div>
+<!-- Interactive Bottom Sheet Drawer -->
+<div class="fixed inset-x-0 bottom-0 z-50 max-h-[777px] flex flex-col bg-surface-bright rounded-t-xl shadow-xl overflow-hidden">
+<!-- Tactile Brass/Pewter Handlebar & Curatorial Header -->
+<div class="pt-3 pb-2 px-margin flex flex-col items-center bg-surface-bright shrink-0">
+<div class="w-10 h-1 rounded-full bg-outline-variant mb-3"></div>
+<div class="w-full flex items-center justify-between">
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary uppercase font-bold tracking-widest block">LAVIECO RESERVATION</span>
+<h3 class="font-title-editorial text-title-editorial text-on-surface font-medium">Chọn vé &amp; Đăng ký tham gia</h3>
+</div>
+<!-- Urgency Micro-Badge -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-tertiary-fixed/40 text-on-tertiary-container shadow-sm">
+<span class="material-symbols-outlined text-[14px] text-tertiary">timer</span>
+<span class="font-metadata-curatorial text-metadata-curatorial font-semibold text-tertiary" id="countdown-timer">14:59</span>
+</div>
+</div>
+</div>
+<!-- Scrollable Sheet Body -->
+<div class="flex-1 overflow-y-auto px-margin pt-2 pb-24 flex flex-col gap-space-md">
+<!-- Section 1: Ticket Options -->
+<div class="flex flex-col gap-2.5">
+<div class="flex items-center justify-between">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">1. Hạng vé bảo trợ</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-secondary">Tối đa 2 vé/lượt</span>
+</div>
+<!-- Ticket Card 1: Selected -->
+<div class="p-3.5 rounded-lg bg-surface-container-low transition-all duration-200 flex flex-col gap-2.5 relative shadow-sm" id="ticket-card-std">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-start gap-2.5">
+<div class="w-5 h-5 mt-0.5 rounded-full bg-primary flex items-center justify-center shrink-0">
+<span class="w-2 h-2 rounded-full bg-tertiary-fixed"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md text-on-surface font-semibold">Vé tiêu chuẩn</span>
+<span class="px-2 py-0.2 rounded-full bg-primary-fixed text-on-primary-fixed font-metadata-curatorial text-metadata-curatorial">Phổ biến</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Bao gồm trọn bộ học liệu bột sò, chậu nung và cây giống kiểng lá</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-title-editorial text-title-editorial text-on-surface font-medium block">150.000 đ</span>
+</div>
+</div>
+<!-- Quantity Stepper -->
+<div class="flex items-center justify-between pt-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Số lượng đăng ký</span>
+<div class="flex items-center gap-3 bg-surface-container-lowest px-2 py-1 rounded-full shadow-sm">
+<button aria-label="Giảm vé" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors disabled:opacity-30" id="btn-dec" type="button">
+<span class="material-symbols-outlined text-[16px]">remove</span>
+</button>
+<span class="font-body-md text-body-md text-on-surface font-semibold w-4 text-center" id="ticket-qty">1</span>
+<button aria-label="Tăng vé" class="w-7 h-7 rounded-full flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors" id="btn-inc" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Ticket Card 2: Student Discount -->
+<div class="p-3.5 rounded-lg bg-surface-container-lowest opacity-85 transition-all duration-200 flex items-start justify-between gap-2 shadow-sm" id="ticket-card-stu">
+<div class="flex items-start gap-2.5">
+<div class="w-5 h-5 mt-0.5 rounded-full bg-surface-container-high flex items-center justify-center shrink-0">
+<span class="w-2 h-2 rounded-full bg-transparent"></span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md text-on-surface font-medium">Học sinh / Sinh viên</span>
+<span class="px-1.5 py-0.2 rounded-full bg-secondary-fixed text-on-secondary-fixed font-metadata-curatorial text-metadata-curatorial">-20%</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Yêu cầu xuất trình thẻ HSSV hợp lệ khi check-in</span>
+</div>
+</div>
+<div class="text-right shrink-0">
+<span class="font-title-editorial text-title-editorial text-on-surface-variant font-medium block">120.000 đ</span>
+</div>
+</div>
+</div>
+<!-- Section 2: Attendee Credentials Form -->
+<div class="flex flex-col gap-2.5">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">2. Thông tin nhận vé điện tử (QR Pass)</span>
+<div class="flex flex-col gap-2 bg-surface-container-low p-3.5 rounded-lg">
+<div class="flex flex-col gap-1">
+<label class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">HỌ VÀ TÊN NGƯỜI THAM GIA *</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">badge</span>
+<input class="w-full bg-surface-container-lowest text-on-surface rounded-full py-2 pl-9 pr-4 font-body-sm text-body-sm focus:outline-none focus:ring-0 shadow-sm" type="text" value="Nguyễn Minh Khang"/>
+</div>
+</div>
+<div class="grid grid-cols-1 gap-2 pt-1">
+<div class="flex flex-col gap-1">
+<label class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">SỐ ĐIỆN THOẠI (SMS CHECK-IN) *</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">call</span>
+<input class="w-full bg-surface-container-lowest text-on-surface rounded-full py-2 pl-9 pr-4 font-body-sm text-body-sm focus:outline-none focus:ring-0 shadow-sm" type="tel" value="0912 345 678"/>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<label class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">EMAIL NHẬN VÉ &amp; TÀI LIỆU WORKSHOP *</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-secondary text-[18px]">mail</span>
+<input class="w-full bg-surface-container-lowest text-on-surface rounded-full py-2 pl-9 pr-4 font-body-sm text-body-sm focus:outline-none focus:ring-0 shadow-sm" type="email" value="khang.nguyen@example.com"/>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 3: Curatorial Workshop Survey -->
+<div class="flex flex-col gap-2.5">
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase">3. Khảo sát chu đáo từ LAVIECO</span>
+<div class="flex flex-col gap-3 bg-surface-container-low p-3.5 rounded-lg">
+<!-- Prior Experience Radio -->
+<div class="flex flex-col gap-1.5">
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Bạn đã từng thử làm gốm thủ công chưa?</span>
+<div class="flex flex-col gap-1.5">
+<label class="flex items-center gap-2.5 p-2 rounded-md bg-surface-container-lowest cursor-pointer">
+<span class="w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+<span class="w-1.5 h-1.5 rounded-full bg-surface-bright"></span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface">Chưa, đây là lần đầu tiên tôi tham gia</span>
+</label>
+<label class="flex items-center gap-2.5 p-2 rounded-md bg-surface-container-lowest opacity-75 cursor-pointer">
+<span class="w-4 h-4 rounded-full bg-surface-container-high flex items-center justify-center"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Đã có kinh nghiệm cơ bản</span>
+</label>
+</div>
+</div>
+<!-- Apron Size Custom Pills -->
+<div class="flex flex-col gap-1.5 pt-1">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Kích cỡ tạp dề vải đũi LAVIECO</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-secondary">Khử khuẩn trước mỗi buổi</span>
+</div>
+<div class="grid grid-cols-3 gap-2">
+<button class="py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high transition-colors text-center" type="button">
+                Size S
+              </button>
+<button class="py-1.5 rounded-full bg-primary text-on-primary font-body-sm text-body-sm font-medium flex items-center justify-center gap-1.5 shadow-sm" type="button">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>
+<span>Size M</span>
+</button>
+<button class="py-1.5 rounded-full bg-surface-container-lowest text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high transition-colors text-center" type="button">
+                Size L
+              </button>
+</div>
+</div>
+<!-- Allergy / Note Field -->
+<div class="flex flex-col gap-1 pt-1">
+<div class="flex items-center justify-between">
+<label class="font-body-sm text-body-sm text-on-surface font-medium">Lưu ý đặc biệt / Dị ứng da tiếp xúc</label>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Không bắt buộc</span>
+</div>
+<input class="w-full bg-surface-container-lowest text-on-surface rounded-lg py-2 px-3 font-body-sm text-body-sm focus:outline-none focus:ring-0 shadow-sm" type="text" value="Không có"/>
+</div>
+</div>
+</div>
+<!-- Eco-Pledge Curatorial Note -->
+<div class="p-3 rounded-lg bg-surface-container flex items-start gap-2.5">
+<span class="material-symbols-outlined text-primary text-[18px] shrink-0 mt-0.5">spa</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          100% học phí được dùng để bù đắp dấu chân carbon và hỗ trợ chuỗi thu gom vỏ nhuyễn thể tại làng bè Cần Thơ.
+        </p>
+</div>
+</div>
+<!-- Sticky Bottom Sheet Action Footer -->
+<div class="absolute inset-x-0 bottom-0 bg-surface-bright/95 backdrop-blur-md px-margin py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.06)] flex flex-col gap-2">
+<div class="flex items-baseline justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">TỔNG CỘNG (1 VÉ TIÊU CHUẨN)</span>
+<div class="flex items-baseline gap-1">
+<span class="font-title-editorial text-title-editorial text-primary font-bold" id="display-total">150.000</span>
+<span class="font-body-sm text-body-sm text-primary font-semibold">đ</span>
+</div>
+</div>
+<!-- Checkout CTA Button -->
+<button class="w-full py-3.5 px-6 rounded-full bg-primary-container text-on-primary font-body-md text-body-md font-semibold tracking-wide flex items-center justify-center gap-2 active:scale-[0.98] transition-transform shadow-md" id="btn-checkout" type="button">
+<span>Tiếp tục thanh toán qua payOS</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Trust Microcopy -->
+<div class="flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[13px] text-secondary">verified_user</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant text-center">
+          Bảo mật thanh toán bởi payOS · Vé QR gửi tức thì qua SMS &amp; Email
+        </span>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Countdown Timer Simulation
+  (function() {
+    let timeLeft = 14 * 60 + 59;
+    const timerEl = document.getElementById('countdown-timer');
+    if (!timerEl) return;
+    
+    const interval = setInterval(function() {
+      if (timeLeft <= 0) {
+        clearInterval(interval);
+        timerEl.innerText = "Hết hạn";
+        return;
+      }
+      timeLeft--;
+      const m = Math.floor(timeLeft / 60);
+      const s = timeLeft % 60;
+      timerEl.innerText = (m < 10 ? '0' + m : m) + ':' + (s < 10 ? '0' + s : s);
+    }, 1000);
+
+    // Ticket Stepper Logic
+    let qty = 1;
+    const pricePerUnit = 150000;
+    const qtyEl = document.getElementById('ticket-qty');
+    const totalEl = document.getElementById('display-total');
+    const btnInc = document.getElementById('btn-inc');
+    const btnDec = document.getElementById('btn-dec');
+
+    function updateView() {
+      if (qtyEl) qtyEl.innerText = qty.toString();
+      if (totalEl) totalEl.innerText = (qty * pricePerUnit).toLocaleString('vi-VN');
+      if (btnDec) {
+        if (qty <= 1) {
+          btnDec.setAttribute('disabled', 'true');
+        } else {
+          btnDec.removeAttribute('disabled');
+        }
+      }
+    }
+
+    if (btnInc) {
+      btnInc.addEventListener('click', function() {
+        if (qty < 2) {
+          qty++;
+          updateView();
+        }
+      });
+    }
+
+    if (btnDec) {
+      btnDec.addEventListener('click', function() {
+        if (qty > 1) {
+          qty--;
+          updateView();
+        }
+      });
+    }
+  })();
+</script></main></body></html>

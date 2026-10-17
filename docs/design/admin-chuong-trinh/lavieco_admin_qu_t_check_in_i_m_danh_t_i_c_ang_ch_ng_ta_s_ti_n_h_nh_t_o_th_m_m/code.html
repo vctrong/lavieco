@@ -1,0 +1,730 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><meta content="web_dashboard" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&amp;family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,400&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={"darkMode":"class","theme":{"extend":{"colors":{"surface-tint":"#006c4e","on-tertiary-container":"#454100","surface-container-highest":"#e1e3df","on-error-container":"#93000a","on-secondary":"#ffffff","on-primary-fixed-variant":"#00513a","tertiary-container":"#b7ae41","on-tertiary":"#ffffff","tertiary-fixed":"#f0e672","on-error":"#ffffff","on-surface-variant":"#3d4a43","surface":"#f8faf6","outline":"#6c7a72","primary-fixed":"#75fac7","inverse-surface":"#2e312f","on-tertiary-fixed-variant":"#4d4800","on-secondary-container":"#425582","surface-container-low":"#f2f4f0","outline-variant":"#bbcac1","secondary-fixed-dim":"#b3c6fa","surface-container-lowest":"#ffffff","surface-container":"#eceeeb","error-container":"#ffdad6","primary-container":"#10b183","on-secondary-fixed":"#011944","tertiary-fixed-dim":"#d3ca59","on-surface":"#191c1a","tertiary":"#676000","surface-variant":"#e1e3df","primary-fixed-dim":"#55ddac","on-primary-container":"#003c2a","inverse-primary":"#55ddac","secondary-fixed":"#d9e2ff","background":"#f8faf6","primary":"#006c4e","error":"#ba1a1a","on-primary":"#ffffff","on-background":"#191c1a","on-tertiary-fixed":"#1f1c00","surface-container-high":"#e7e9e5","on-primary-fixed":"#002115","secondary-container":"#b8cbff","on-secondary-fixed-variant":"#324672","inverse-on-surface":"#eff1ed","surface-bright":"#f8faf6","surface-dim":"#d8dbd7","secondary":"#4b5d8b"},"borderRadius":{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},"spacing":{"space-md":"1rem","space-xl":"3rem","space-lg":"1.75rem","gutter-desktop":"3rem","margin-desktop":"4.5rem","margin":"1.25rem","gutter-tablet":"2rem","gutter":"1.5rem","space-xs":"0.25rem","margin-tablet":"2.5rem","space-sm":"0.5rem"},"fontFamily":{"body-sm":["Be Vietnam Pro"],"display-hero-mobile":["Fraunces"],"headline-md":["Fraunces"],"headline-sm":["Fraunces"],"display-hero":["Fraunces"],"body-md":["Be Vietnam Pro"],"body-lg":["Be Vietnam Pro"],"title-editorial":["Fraunces"],"headline-lg-mobile":["Fraunces"],"label-caps":["Be Vietnam Pro"],"metadata-curatorial":["Be Vietnam Pro"],"headline-lg":["Fraunces"]},"fontSize":{"body-sm":["13px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero-mobile":["40px",{"lineHeight":"48px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-md":["32px",{"lineHeight":"42px","letterSpacing":"-0.01em","fontWeight":"400"}],"headline-sm":["24px",{"lineHeight":"32px","fontWeight":"500"}],"display-hero":["64px",{"lineHeight":"76px","letterSpacing":"-0.02em","fontWeight":"400"}],"body-md":["15px",{"lineHeight":"26px","fontWeight":"400"}],"body-lg":["18px",{"lineHeight":"31px","fontWeight":"300"}],"title-editorial":["20px",{"lineHeight":"30px","fontWeight":"400"}],"headline-lg-mobile":["30px",{"lineHeight":"38px","letterSpacing":"-0.01em","fontWeight":"400"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.12em","fontWeight":"600"}],"metadata-curatorial":["11px",{"lineHeight":"16px","letterSpacing":"0.06em","fontWeight":"500"}],"headline-lg":["44px",{"lineHeight":"54px","letterSpacing":"-0.015em","fontWeight":"400"}]}}}};</script></head><body class="bg-surface font-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container-lowest z-50 flex flex-col justify-between py-6 px-4 shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col gap-6"><div class="px-3 flex items-center gap-3"><div class="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-headline-sm font-semibold"><span class="material-symbols-outlined text-[22px] text-on-primary-container">spa</span></div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-title-editorial tracking-tight text-on-surface font-bold">LAVIECO</span><span class="w-2 h-2 rounded-full bg-tertiary-fixed"></span></div><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">The Living Gallery · Operations</span></div></div><div class="px-3"><div class="bg-surface-container-low px-3 py-2 rounded-DEFAULT flex items-center justify-between"><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant">Niên khoá 2026</span><span class="font-metadata-curatorial text-metadata-curatorial text-primary uppercase font-bold tracking-wider">Khu bảo tồn</span></div></div><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary-container font-bold rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.08)]"><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tong-quan" href="#"><span class="material-symbols-outlined text-[20px]">space_dashboard</span><span class="font-body-md text-body-md">Tổng quan</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="chuong-trinh" href="#"><span class="material-symbols-outlined text-[20px]">local_florist</span><span class="font-body-md text-body-md">Chương trình</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="don-hang" href="#"><span class="material-symbols-outlined text-[20px]">receipt_long</span><span class="font-body-md text-body-md">Đơn hàng &amp; payOS</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="nguoi-tham-du" href="#"><span class="material-symbols-outlined text-[20px]">group</span><span class="font-body-md text-body-md">Người tham dự</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="quet-check-in" href="#"><span class="material-symbols-outlined text-[20px]">qr_code_scanner</span><span class="font-body-md text-body-md">Quét Check-in</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="bao-cao-tai-chinh" href="#"><span class="material-symbols-outlined text-[20px]">finance</span><span class="font-body-md text-body-md">Báo cáo &amp; Tài chính</span></a><a class="flex items-center gap-3 px-3 py-2.5 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="cai-dat-he-thong" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-body-md text-body-md">Cài đặt hệ thống</span></a></nav></div><div class="flex flex-col gap-3 px-3"><div class="bg-surface-container-low p-3 rounded-DEFAULT flex items-center justify-between"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Cổng payOS trực tuyến</span></div><span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">99.9%</span></div><div class="pt-2 border-t border-surface-container-highest/60 flex items-center justify-between"><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/80">Mã định danh khoá: Nº 2026-HQ</span><span class="material-symbols-outlined text-on-surface-variant text-[16px]">eco</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/85 backdrop-blur-xl z-40 px-8 flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.03)]"><div class="flex items-center gap-6 flex-1 max-w-xl"><div class="relative w-full flex items-center"><span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[20px]">search</span><input class="w-full pl-10 pr-4 py-2 bg-surface-container-low text-on-surface placeholder:text-on-surface-variant/70 rounded-full font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/40 transition-all" placeholder="Tìm mã đơn, tên học viên, workshop..." type="search"></div><div class="flex items-center gap-2 bg-surface-container-low px-3 py-1.5 rounded-full shrink-0"><span class="material-symbols-outlined text-primary text-[18px]">storefront</span><select class="bg-transparent text-on-surface font-body-sm text-body-sm focus:outline-none cursor-pointer pr-1"><option>Cần Thơ (Sông Hậu)</option><option>Sài Gòn (Thảo Cầm Viên)</option><option>Hà Nội (Hồ Tây)</option></select></div></div><div class="flex items-center gap-5 shrink-0"><button class="relative p-2 rounded-full hover:bg-surface-container-high transition-colors text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[22px]">notifications</span><span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-tertiary-container"></span></button><div class="h-5 w-px bg-surface-container-highest"></div><div class="flex items-center gap-3"><div class="text-right"><div class="font-body-md text-body-md text-on-surface font-semibold leading-tight">Võ Chí Trọng</div><div class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">Quản trị kỹ thuật</div></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 bg-surface px-8 py-8"><div class="flex flex-col w-full">
+<!-- Dynamic Top Ambient Accent -->
+<div class="relative w-full mb-8">
+<div class="absolute -top-10 left-1/4 w-96 h-32 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -top-6 right-10 w-72 h-32 bg-tertiary-fixed/20 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Curator Desk Overline & Live Header -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-6 pb-6 border-b-0">
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-3">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-metadata-curatorial text-metadata-curatorial uppercase tracking-widest">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+            Bàn Đón Tiếp · Xưởng Nghệ Thuật LAVIECO Cần Thơ
+          </span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">
+            Niên khoá 2026 · Sông Hậu
+          </span>
+</div>
+<div class="flex items-baseline gap-4 mt-1">
+<h1 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">
+            Quét Check-in tại Cửa
+          </h1>
+<span class="font-title-editorial text-title-editorial italic text-primary">
+            Chủ Nhật, 15.03.2026
+          </span>
+</div>
+</div>
+<!-- Action Quick Bar & Terminal ID -->
+<div class="flex items-center gap-4 shrink-0">
+<div class="bg-surface-container-lowest px-4 py-2.5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.08)] flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">Trạm Kiểm Soát Nº 01</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Cửa Tây · Gian Gốm Sò</span>
+</div>
+</div>
+<button class="flex items-center gap-2 bg-surface-container-high hover:bg-surface-container-highest text-on-surface px-4 py-2.5 rounded-full transition-all" id="audioBtn" onclick="toggleAudioFeedback()">
+<span class="material-symbols-outlined text-[18px] text-primary" id="audioIcon">volume_up</span>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase font-semibold">Âm báo: Bật</span>
+</button>
+</div>
+</div>
+<!-- Live Event & Workshop Control Selector -->
+<div class="mt-6 p-4 lg:p-5 rounded-DEFAULT bg-surface-container-lowest shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+<div class="flex items-center gap-4 flex-1">
+<div class="w-12 h-12 rounded-DEFAULT bg-primary text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">water_ec</span>
+</div>
+<div class="flex flex-col flex-1">
+<div class="flex items-center gap-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary uppercase font-bold tracking-wider">Hồ sơ giám tuyển WS-2026-CT04</span>
+<span class="text-on-surface-variant/40">·</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Phòng thực nghiệm Sinh thái</span>
+</div>
+<div class="flex items-center gap-3 mt-0.5">
+<select class="bg-transparent font-title-editorial text-title-editorial text-on-surface font-semibold focus:outline-none cursor-pointer hover:text-primary transition-colors">
+<option selected="">Workshop làm chậu cây từ bột vỏ sò Tây Đô (08:30 - 11:30)</option>
+<option>Chế tác tranh màu nước từ phù sa Cửu Long (14:00 - 17:00)</option>
+<option>Lên men enzym nhuộm vải lụa thô truyền thống (18:00 - 20:30)</option>
+</select>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px] pointer-events-none -ml-2">unfold_more</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4 shrink-0">
+<div class="flex items-center gap-2.5 px-4 py-2 rounded-full bg-primary-container/20 text-on-primary-container">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-container opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="font-label-caps text-label-caps uppercase tracking-wider text-on-primary-container font-bold">CỬA ĐANG MỞ ĐÓN KHÁCH</span>
+</div>
+<div class="h-8 w-px bg-surface-container-highest hidden sm:block"></div>
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="material-symbols-outlined text-[18px]">schedule</span>
+<span class="">Bắt đầu sau <strong class="text-on-surface font-semibold">14 phút</strong></span>
+</div>
+</div>
+</div>
+</div>
+<!-- Realtime Statistics Bento Plinth -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-5 mb-8">
+<!-- Big Realtime Metric -->
+<div class="md:col-span-7 bg-surface-container-lowest p-6 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col justify-between relative overflow-hidden">
+<div class="absolute right-0 top-0 translate-x-8 -translate-y-8 w-44 h-44 bg-surface-container-low rounded-full opacity-60 pointer-events-none"></div>
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container"></span>
+<span class="font-label-caps text-label-caps uppercase text-on-surface-variant tracking-widest font-semibold">Tiến độ sỉ số thực tế</span>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial px-2.5 py-1 bg-surface-container-high rounded-full text-on-surface-variant">Tỉ lệ lắp đầy: 70%</span>
+</div>
+<div class="flex flex-col sm:flex-row sm:items-baseline justify-between gap-3 my-2">
+<div class="flex items-baseline gap-2">
+<span class="font-headline-lg text-headline-lg text-primary font-bold tracking-tight">14</span>
+<span class="font-headline-md text-headline-md text-on-surface-variant/40">/</span>
+<span class="font-headline-md text-headline-md text-on-surface font-medium">20</span>
+<span class="font-body-md text-body-md text-on-surface-variant uppercase tracking-wider ml-1">Học viên tại xưởng</span>
+</div>
+<div class="flex items-center gap-2 text-tertiary"><span class="material-symbols-outlined text-[20px] text-tertiary">pending</span><span class="font-body-sm text-body-sm font-semibold">Chưa check-in: 6</span></div>
+</div>
+<!-- Segmented Curatorial Progress Bar -->
+<div class="mt-4 flex flex-col gap-2">
+<div class="w-full h-3 rounded-full bg-surface-container-high overflow-hidden flex relative p-0.5">
+<!-- 14 Present (Emerald) -->
+<div class="h-full rounded-full bg-primary-container transition-all duration-700 ease-out shadow-[0_0_12px_rgba(16,177,131,0.5)]" style="width: 70%"></div>
+<!-- Current Threshold Indicator Pin -->
+<div class="absolute top-0 bottom-0 left-[70%] -ml-1 w-2 h-full bg-tertiary-fixed rounded-full shadow-sm"></div>
+</div>
+<div class="flex items-center justify-between font-metadata-curatorial text-metadata-curatorial text-on-surface-variant pt-1">
+<span class="">0 (Mở cửa)</span>
+<span class="text-primary font-semibold">14 Đã check-in</span>
+<span class="">Mục tiêu tối đa: 20 chỗ</span>
+</div>
+</div>
+</div>
+<!-- Quick Stats Metric 2: Material Sets Ready -->
+<div class="md:col-span-5 grid grid-cols-2 gap-4">
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.04)] flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">Học liệu trọn gói</span>
+<span class="material-symbols-outlined text-primary text-[20px]">inventory_2</span>
+</div>
+<div class="my-2">
+<div class="font-headline-md text-headline-md text-on-surface font-semibold">14 / 20</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Đã phát bàn giao</div>
+</div>
+<div class="flex items-center gap-1.5 text-primary font-metadata-curatorial text-metadata-curatorial font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="">Bột vỏ sò &amp; Cọ vẽ sẵn</span>
+</div>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.04)] flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase tracking-wider">Cổng payOS Check</span>
+<span class="material-symbols-outlined text-secondary text-[20px]">credit_score</span>
+</div>
+<div class="my-2">
+<div class="font-headline-md text-headline-md text-on-surface font-semibold">100%</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">Đã đối soát cước</div>
+</div>
+<div class="flex items-center gap-1.5 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>
+<span class="">20 vé quyết toán đủ</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Primary Double-Column Operative Chamber -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT PORTAL: QR Scanner Cam & Code Entry (7 cols) -->
+<div class="lg:col-span-6 xl:col-span-5 flex flex-col gap-6">
+<!-- Scanner Optical Chamber -->
+<div class="bg-surface-container-lowest p-6 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.08)] flex flex-col gap-5">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">center_focus_strong</span>
+<span class="font-title-editorial text-title-editorial text-on-surface font-semibold">Ống Kính Nhận Diện QR</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="px-2.5 py-1 bg-surface-container-high rounded-full font-metadata-curatorial text-metadata-curatorial text-on-surface font-semibold">
+              HD WebCam 60 FPS
+            </span>
+</div>
+</div>
+<!-- Camera Viewfinder Box with Laser Scan -->
+<div class="relative w-full aspect-square max-h-[380px] bg-inverse-surface rounded-[24px] overflow-hidden flex items-center justify-center shadow-inner group">
+<!-- Ambient camera mock lens feed -->
+<div class="absolute inset-0 bg-cover bg-center opacity-40 mix-blend-screen scale-105 transition-transform duration-1000 group-hover:scale-100" data-alt="Close up top down atmospheric museum desk camera viewport showing artisanal recycled textured paper with QR code watermark and soft studio warm spotlight on dark slate table" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA7wHycRuWXibAvfA0auotOsj9f0AE_5TuW99gSfQEfAubHEWkQCp1Q1ieemcJ4azvqMM7xE5u_nELaJNoZH61IhRqT8BzcU2V2keWBDapDIYRfd-qi0HBLCAiTbIkL1cy2edMDV83Pl9L9n6yr1RTHwGshpDctmwh1H22leqYXcY2czKtOLud3h3PXOl5Vy59yuJMhLjfFzCb3_DhNFYJlNrwNSAnLe8Q2IxkMeMs')"></div>
+<!-- Subtle Curatorial Watermark grid -->
+<div class="absolute inset-0 bg-[radial-gradient(#10B183_1px,transparent_1px)] [background-size:24px_24px] opacity-15"></div>
+<!-- Viewfinder Bounding Corner Reticles (24px curvature) -->
+<div class="absolute inset-10 pointer-events-none">
+<!-- Top Left -->
+<div class="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-primary-container rounded-tl-[24px]"></div>
+<!-- Top Right -->
+<div class="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-primary-container rounded-tr-[24px]"></div>
+<!-- Bottom Left -->
+<div class="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-primary-container rounded-bl-[24px]"></div>
+<!-- Bottom Right -->
+<div class="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-primary-container rounded-br-[24px]"></div>
+<!-- Central QR Target Overlay Outline -->
+<div class="absolute inset-6 rounded-DEFAULT border-2 border-dashed border-primary-fixed-dim/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-fixed-dim/40 text-[64px] animate-pulse">qr_code_2</span>
+</div>
+</div>
+<!-- Sweeping Emerald Laser Line -->
+<div class="absolute left-6 right-6 h-0.5 bg-primary-container shadow-[0_0_16px_4px_rgba(16,177,131,0.85)] z-20 animate-[scanLaser_2.6s_ease-in-out_infinite]"></div>
+<!-- Camera Status Overlay Pill -->
+<div class="absolute bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-inverse-surface/80 backdrop-blur-md text-inverse-on-surface flex items-center gap-2 shadow-md">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-widest text-primary-fixed">Đang dò mã QR điện tử...</span>
+</div>
+<!-- Quick Flip Camera Button -->
+<button class="absolute top-4 right-4 w-9 h-9 rounded-full bg-inverse-surface/70 hover:bg-inverse-surface text-inverse-on-surface flex items-center justify-center backdrop-blur transition-all" title="Đổi camera">
+<span class="material-symbols-outlined text-[18px]">flip_camera_ios</span>
+</button>
+</div>
+<!-- Manual Ticket Code Input Strip -->
+<div class="flex flex-col gap-2 pt-2">
+<div class="flex items-center justify-between">
+<label class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant font-semibold" for="manualCode">
+              Hoặc nhập mã định danh vé thủ công
+            </label>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/60">VD: LVC-26-0001</span>
+</div>
+<form class="flex gap-2" onsubmit="handleManualCheckin(event)">
+<div class="relative flex-1">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">tag</span>
+<input class="w-full pl-11 pr-4 py-3 bg-surface-container-low text-on-surface rounded-full font-body-md text-body-md uppercase tracking-wider focus:outline-none focus:ring-2 focus:ring-primary-container focus:bg-surface-container-lowest transition-all" id="manualCode" placeholder="Nhập mã vé (VD: LVC-26-0001)..." type="text" value="LVC-26-0001">
+</div>
+<button class="px-6 py-3 rounded-full bg-primary text-on-primary font-body-md text-body-md font-semibold hover:scale-[1.02] shadow-[0_8px_20px_-6px_rgba(0,108,78,0.4)] transition-all flex items-center gap-2 shrink-0" type="submit">
+<span class="">Xác nhận</span>
+<span class="material-symbols-outlined text-[18px]">login</span>
+</button>
+</form>
+</div>
+</div>
+<!-- SCAN RESULT FEEDBACK CARDS -->
+<div class="flex flex-col gap-4">
+<!-- 1. PRIMARY RESULT: SUCCESS VALID PASS (Mint Mist & Bright Emerald) -->
+<div class="p-6 rounded-DEFAULT bg-[#EAF8F3] shadow-[0_20px_40px_-16px_rgba(16,177,131,0.22)] flex flex-col gap-4 relative overflow-hidden transition-all duration-300" id="resultSuccess">
+<div class="absolute top-0 right-0 translate-x-4 -translate-y-4 w-28 h-28 bg-primary-container/20 rounded-full blur-xl pointer-events-none"></div>
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center font-bold shadow-sm">
+<span class="material-symbols-outlined text-[24px]">check</span>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<span class="font-label-caps text-label-caps text-primary font-bold uppercase tracking-wider">KẾT QUẢ GẦN NHẤT</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">08:16:04 (Vừa xong)</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">
+                  HỢP LỆ — Nguyễn Minh Khang
+                </h3>
+</div>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial px-3 py-1 rounded-full bg-primary-container text-on-primary-container font-bold uppercase tracking-widest">
+              LVC-26-0001
+            </span>
+</div>
+<!-- Ticket Curatorial Specs Table -->
+<div class="grid grid-cols-2 gap-3 pt-2 text-on-surface-variant">
+<div class="bg-surface-container-lowest/80 p-3 rounded-DEFAULT backdrop-blur-sm">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider block text-on-surface-variant/70">Hạng Vé &amp; Gói Học</span>
+<span class="font-body-sm text-body-sm font-semibold text-on-surface">Vé tiêu chuẩn · Có học liệu trọn gói</span>
+</div>
+<div class="bg-surface-container-lowest/80 p-3 rounded-DEFAULT backdrop-blur-sm">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase tracking-wider block text-on-surface-variant/70">Cổng Thanh Toán payOS</span>
+<span class="font-body-sm text-body-sm font-semibold text-primary">Đã thanh toán (380.000₫)</span>
+</div>
+</div>
+<!-- Reception Desk Note Box -->
+<div class="p-3.5 rounded-DEFAULT bg-primary-container/15 flex items-start gap-3"><span class="material-symbols-outlined text-primary text-[20px] shrink-0 mt-0.5">assignment_ind</span><div class="flex flex-col"><span class="font-label-caps text-label-caps uppercase text-primary font-bold">Ghi chú tiếp đón &amp; Học liệu:</span><p class="font-body-md text-body-md text-on-surface mt-0.5 font-medium">Trao tạp dề Size M &amp; bộ dụng cụ chế tác vỏ sò Tây Đô.</p></div></div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary">print</span>
+              Đã in thẻ tên lưu niệm tự động
+            </span>
+<button class="px-4 py-1.5 rounded-full bg-surface-container-lowest text-on-surface hover:bg-surface text-body-sm font-body-sm font-medium transition-all shadow-sm">
+              Xem chi tiết hồ sơ
+            </button>
+</div>
+</div>
+<!-- Secondary Warning & Error Mock Previewers for Desk Operators -->
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between px-2">
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-on-surface-variant/80 tracking-wider">
+              Trạng thái phụ mẫu (Cảnh báo quét)
+            </span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant/50">Mô phỏng phản hồi</span>
+</div>
+<!-- Warning: Already Used -->
+<div class="p-4 rounded-DEFAULT bg-error-container/30 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-error-container text-on-error-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-body-sm font-bold text-error">CẢNH BÁO: VÉ ĐÃ SỬ DỤNG</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">· lúc 08:12:10</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">LVC-26-0008 · Học viên: Trần Lê Gia Hân</span>
+</div>
+</div>
+<button class="px-3 py-1 rounded-full bg-error text-on-error font-metadata-curatorial text-metadata-curatorial font-semibold hover:opacity-90">
+              Kiểm tra lại
+            </button>
+</div>
+<!-- Error: Invalid Code -->
+<div class="p-4 rounded-DEFAULT bg-surface-container-high/80 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-inverse-surface text-inverse-on-surface flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">close</span>
+</div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm font-bold text-on-surface">MÃ VÉ KHÔNG HỢP LỆ HOẶC SAI NIÊN KHOÁ</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Mã không tồn tại trên hệ thống payOS · Kiểm tra link email</span>
+</div>
+</div>
+<button class="px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+              Tra cứu SĐT
+            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT PORTAL: Live Attendance List & Fast Manual Switch (7 cols) -->
+<div class="lg:col-span-6 xl:col-span-7 flex flex-col gap-5">
+<!-- List Shell Card -->
+<div class="bg-surface-container-lowest p-6 rounded-DEFAULT shadow-[0_16px_36px_-12px_rgba(32,52,95,0.06)] flex flex-col gap-6">
+<!-- Section Header & Filter Tabs -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface font-semibold tracking-tight">
+              Danh Sách Học Viên Tại Xưởng
+            </h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+              Đồng bộ dữ liệu thời gian thực với quầy đón khách Cần Thơ
+            </p>
+</div>
+<!-- Quick Filters Pills -->
+<div class="flex items-center gap-2 bg-surface-container-low p-1 rounded-full shrink-0">
+
+<button class="flex items-center gap-2 px-4 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps font-semibold transition-all" id="filterPendingBtn" onclick="filterAttendees('pending')">
+<span class="">Chưa đến (6)</span>
+</button>
+<button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps font-semibold transition-all" id="filterAllBtn" onclick="filterAttendees('all')">
+<span class="">Tất cả (20)</span>
+</button>
+</div>
+</div>
+<!-- Search & Filter Options Bar -->
+<div class="flex flex-col sm:flex-row items-center gap-3">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">person_search</span>
+<input class="w-full pl-11 pr-4 py-2.5 bg-surface-container-low text-on-surface rounded-full font-body-sm text-body-sm focus:outline-none focus:ring-2 focus:ring-primary-container/50 transition-all placeholder:text-on-surface-variant/60" id="searchAttendeeInput" oninput="handleSearch(this.value)" placeholder="Tìm theo tên học viên, số điện thoại, mã vé..." type="search">
+</div>
+<div class="flex items-center gap-2 shrink-0 w-full sm:w-auto">
+
+<button class="flex-1 sm:flex-initial flex items-center justify-center gap-2 px-4 py-2.5 bg-surface-container-low hover:bg-surface-container-high rounded-full font-body-sm text-body-sm text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">file_download</span>
+<span class="">Xuất danh sách</span>
+</button>
+</div>
+</div>
+<!-- Attendee Flow Table / Scrollable Roster -->
+<div class="flex flex-col gap-3 max-h-[560px] overflow-y-auto pr-1">
+<!-- Item 1: Checked in (Latest) -->
+<div class="attendee-card arrived p-4 rounded-DEFAULT bg-surface-container-lowest hover:bg-[#EAF8F3]/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Warm natural portrait of young Vietnamese male student in linen shirt smiling quietly in art workshop" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPHUWCpMg80twQgZT9GLleaAch5JHLRfOxefIwQeasp81IwVZIvlp0TY4FRM3ua9mfwzXc_bqJ0aJi3sO7XeFSobrTYI7qJgbntWXmm3xnAKsuKkLWSaZjH8HKIete3s4bcP3p3wjyF2TZl0cDGzSxz3MdejT4wsxVRNuYkkQBXrMjPOnMEJsOH66QRjQIXpyBMHSjrP-mAE9MnwGXMXcmHG_FGfSn-0Tk00XiMak">
+</div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-[12px] font-bold shadow-sm">
+                  ✓
+                </div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-bold text-on-surface truncate">Nguyễn Minh Khang</span>
+
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial mt-0.5">
+<span class="">0908 123 456</span>
+<span class="">·</span>
+<span class="font-mono text-primary font-semibold">LVC-26-0001</span>
+<span class="">·</span>
+
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+<div class="flex flex-col text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">Đã vào cửa</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">08:16:04</span>
+</div>
+<!-- Manual Toggle Switch Active -->
+<button class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-primary-container transition-colors duration-200 ease-in-out focus:outline-none p-0.5 shadow-sm" data-status="true" onclick="toggleCheckinStatus(this)" title="Bấm để hoàn tác check-in">
+<span class="translate-x-5 pointer-events-none inline-block h-6 w-6 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center text-primary text-[12px]">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</button>
+</div>
+</div>
+<!-- Item 2: Checked in earlier -->
+<div class="attendee-card arrived p-4 rounded-DEFAULT bg-surface-container-lowest hover:bg-[#EAF8F3]/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Curatorial portrait of young Vietnamese woman with elegant ceramic earrings and loose hair" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIizAx-u3UNa8k8IwrQ0dxizX7dfRo7XaxaP9CJuQgFWdwRofE5EBCq7Wmu6dL4UVANPYeYnh1L-HFNtpONeTS4Pm4LTAJcMXAA-CppQE12HDBccta8HPLdDe-_5GYx5vuBTK2Qacw41TTpA21vJjIfNXB6sMlEmXq-40RkpSE5xcRqUna_-UhIxaG8SacP3S1J52u0DmgsaCzu3rwo9AcZQwX6s0Gt_1--TD9igQ">
+</div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-[12px] font-bold shadow-sm">
+                  ✓
+                </div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-bold text-on-surface truncate">Lê Thảo My</span>
+
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial mt-0.5">
+<span class="">0918 887 234</span>
+<span class="">·</span>
+<span class="font-mono text-primary font-semibold">LVC-26-0002</span>
+<span class="">·</span>
+
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+<div class="flex flex-col text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">Đã vào cửa</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">08:14:20</span>
+</div>
+<button class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-primary-container transition-colors duration-200 ease-in-out focus:outline-none p-0.5 shadow-sm" data-status="true" onclick="toggleCheckinStatus(this)" title="Bấm để hoàn tác check-in">
+<span class="translate-x-5 pointer-events-none inline-block h-6 w-6 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center text-primary text-[12px]">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</button>
+</div>
+</div>
+<!-- Item 3: Checked in earlier -->
+<div class="attendee-card arrived p-4 rounded-DEFAULT bg-surface-container-lowest hover:bg-[#EAF8F3]/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Calm portrait of an elderly Vietnamese artist mentor wearing spectacles and indigo shirt" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDQ-Z5PuAoO1wk0KeS9Enspp0AKWVAArut_2MWd37tAfWWTHIGlhrjZztWQ0Bymu1xfM4WigezTNhxXhST9hLk5KfqTbh70sOIH_8KQfpiZkvxCmfRxbv1sEiSJQHD7i0izJ8JtuUp-8gV2-yFh5jOMBM5xxpmAstxxUrIpnbNNqz2pMvMNZiqFyNWljj94ksLUQxRj0tt0dS9L3zDE3EoikCjgrFundO_rIbpfKu8">
+</div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-[12px] font-bold shadow-sm">
+                  ✓
+                </div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-bold text-on-surface truncate">Võ Hoài Bảo Sơn</span>
+
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial mt-0.5">
+<span class="">0972 554 112</span>
+<span class="">·</span>
+<span class="font-mono text-primary font-semibold">LVC-26-0003</span>
+<span class="">·</span>
+
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+<div class="flex flex-col text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">Đã vào cửa</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">08:09:55</span>
+</div>
+<button class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-primary-container transition-colors duration-200 ease-in-out focus:outline-none p-0.5 shadow-sm" data-status="true" onclick="toggleCheckinStatus(this)">
+<span class="translate-x-5 pointer-events-none inline-block h-6 w-6 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center text-primary text-[12px]">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</button>
+</div>
+</div>
+<!-- Item 4: NOT YET ARRIVED (Pending) -->
+<div class="attendee-card pending p-4 rounded-DEFAULT bg-surface-container-low/70 hover:bg-surface-container-high transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-highest flex items-center justify-center text-on-surface-variant font-headline-sm font-semibold">
+                  ĐN
+                </div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center text-[11px]">
+                  •
+                </div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-semibold text-on-surface truncate">Đặng Ngọc Kim Cương</span>
+
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial mt-0.5">
+<span class="">0939 122 899</span>
+<span class="">·</span>
+<span class="font-mono text-on-surface-variant font-semibold">LVC-26-0015</span>
+<span class="">·</span>
+
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+<div class="flex flex-col text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary font-bold">Chưa điểm danh</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Đang di chuyển</span>
+</div>
+<!-- Manual Toggle Switch Inactive: Click to mark present manually -->
+<button class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-surface-container-highest transition-colors duration-200 ease-in-out focus:outline-none p-0.5 shadow-sm" data-status="false" onclick="toggleCheckinStatus(this)" title="Bấm để check-in thủ công cho học viên không có điện thoại">
+<span class="translate-x-0 pointer-events-none inline-block h-6 w-6 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</div>
+<!-- Item 5: NOT YET ARRIVED (Pending) -->
+<div class="attendee-card pending p-4 rounded-DEFAULT bg-surface-container-low/70 hover:bg-surface-container-high transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-highest flex items-center justify-center text-on-surface-variant font-headline-sm font-semibold">
+                  PT
+                </div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-surface-container-highest text-on-surface-variant flex items-center justify-center text-[11px]">
+                  •
+                </div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-semibold text-on-surface truncate">Phan Thanh Tùng</span>
+
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial mt-0.5">
+<span class="">0987 441 229</span>
+<span class="">·</span>
+<span class="font-mono text-on-surface-variant font-semibold">LVC-26-0016</span>
+<span class="">·</span>
+
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+<div class="flex flex-col text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary font-bold">Chưa điểm danh</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">Đã nhắn Zalo</span>
+</div>
+<button class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-surface-container-highest transition-colors duration-200 ease-in-out focus:outline-none p-0.5 shadow-sm" data-status="false" onclick="toggleCheckinStatus(this)" title="Bấm để check-in thủ công cho học viên không có điện thoại">
+<span class="translate-x-0 pointer-events-none inline-block h-6 w-6 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out"></span>
+</button>
+</div>
+</div>
+<!-- Item 6: Checked in earlier -->
+<div class="attendee-card arrived p-4 rounded-DEFAULT bg-surface-container-lowest hover:bg-[#EAF8F3]/60 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-[0_2px_12px_rgba(0,0,0,0.02)]">
+<div class="flex items-center gap-3.5 min-w-0">
+<div class="relative shrink-0">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-high">
+<img class="w-full h-full object-cover" data-alt="Portrait of an enthusiastic art student with round glasses holding sketch pad" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVtzFBMFiZf_ToUZ5Bn38F0ofJZ0T0D4X99MpPrIY_HUJRKfhuYqSd_FdQuBaHR1YgQG5aOxyHAcvHKYUqfd6t1N4Pxqa4YI7Z1w3nYkZ0t2TR8OnY31I_54l113vOsZoOvNgCQKbPoeIEYXHob2wmBFPgaCqtG-h9aLxD8v_UjHvW5Ow0Q7Amvmwz5eq_JCvnHXkt9j1rTUouyj1A4COxSpkyXpQfApiGjl3OSnw">
+</div>
+<div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center text-[12px] font-bold shadow-sm">
+                  ✓
+                </div>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-2">
+<span class="font-body-md text-body-md font-bold text-on-surface truncate">Hoàng Diệu Anh</span>
+
+</div>
+<div class="flex items-center gap-2 text-on-surface-variant font-metadata-curatorial text-metadata-curatorial mt-0.5">
+<span class="">0945 332 108</span>
+<span class="">·</span>
+<span class="font-mono text-primary font-semibold">LVC-26-0004</span>
+<span class="">·</span>
+
+</div>
+</div>
+</div>
+<div class="flex items-center justify-between sm:justify-end gap-4 shrink-0">
+<div class="flex flex-col text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold">Đã vào cửa</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant">08:05:11</span>
+</div>
+<button class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer rounded-full bg-primary-container transition-colors duration-200 ease-in-out focus:outline-none p-0.5 shadow-sm" data-status="true" onclick="toggleCheckinStatus(this)">
+<span class="translate-x-5 pointer-events-none inline-block h-6 w-6 transform rounded-full bg-surface-container-lowest shadow ring-0 transition duration-200 ease-in-out flex items-center justify-center text-primary text-[12px]">
+<span class="material-symbols-outlined text-[14px]">check</span>
+</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Footer Help Note & Fast Manual Assistance -->
+<div class="pt-4 border-t-0 bg-surface-container-low p-4 rounded-DEFAULT flex flex-col sm:flex-row items-center justify-between gap-3">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-primary text-[20px]">help_outline</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">
+              Học viên quên mang mã hoặc điện thoại hết pin? Tra cứu bằng Số điện thoại đặt chỗ hoặc CMND.
+            </span>
+</div>
+<button class="px-4 py-2 rounded-full bg-surface-container-highest text-on-surface font-metadata-curatorial text-metadata-curatorial uppercase font-semibold hover:bg-surface-container-high transition-colors shrink-0">
+            Tra cứu CMND/SĐT
+          </button>
+</div>
+</div>
+<!-- Workshop Room Physical Layout Map Miniature -->
+
+</div>
+</div>
+<!-- Keyframe animation for sweeping laser scanner -->
+<style>
+    @keyframes scanLaser {
+      0% {
+        top: 15%;
+        opacity: 0.3;
+      }
+      50% {
+        top: 85%;
+        opacity: 1;
+      }
+      100% {
+        top: 15%;
+        opacity: 0.3;
+      }
+    }
+  </style>
+<!-- Interactive Logic for Admin Check-in Screen -->
+<script>
+    let soundEnabled = true;
+
+    function toggleAudioFeedback() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('audioBtn');
+      const icon = document.getElementById('audioIcon');
+      if (soundEnabled) {
+        icon.innerText = 'volume_up';
+        btn.querySelector('span:last-child').innerText = 'Âm báo: Bật';
+      } else {
+        icon.innerText = 'volume_off';
+        btn.querySelector('span:last-child').innerText = 'Âm báo: Tắt';
+      }
+    }
+
+    function handleManualCheckin(e) {
+      e.preventDefault();
+      const input = document.getElementById('manualCode');
+      const val = input.value.trim().toUpperCase();
+      if (!val) return;
+
+      const successCard = document.getElementById('resultSuccess');
+      successCard.classList.remove('opacity-40');
+      successCard.classList.add('scale-[1.01]');
+      
+      setTimeout(() => {
+        successCard.classList.remove('scale-[1.01]');
+      }, 300);
+
+      // Flash pulse visual
+      if (soundEnabled) {
+        // Mock beep effect
+        try {
+          const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(880, audioCtx.currentTime);
+          gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.12);
+        } catch(err) {
+          // Silent fallback
+        }
+      }
+    }
+
+    function toggleCheckinStatus(btn) {
+      const isChecked = btn.getAttribute('data-status') === 'true';
+      const circle = btn.querySelector('span');
+      const parentRow = btn.closest('.attendee-card');
+
+      if (isChecked) {
+        // Toggle to unchecked
+        btn.setAttribute('data-status', 'false');
+        btn.classList.remove('bg-primary-container');
+        btn.classList.add('bg-surface-container-highest');
+        circle.classList.remove('translate-x-5');
+        circle.classList.add('translate-x-0');
+        circle.innerHTML = '';
+        if (parentRow) {
+          parentRow.classList.remove('arrived');
+          parentRow.classList.add('pending');
+        }
+      } else {
+        // Toggle to checked
+        btn.setAttribute('data-status', 'true');
+        btn.classList.remove('bg-surface-container-highest');
+        btn.classList.add('bg-primary-container');
+        circle.classList.remove('translate-x-0');
+        circle.classList.add('translate-x-5');
+        circle.innerHTML = '<span class="material-symbols-outlined text-[14px]">check</span>';
+        if (parentRow) {
+          parentRow.classList.remove('pending');
+          parentRow.classList.add('arrived');
+        }
+      }
+    }
+
+    function filterAttendees(type) {
+      const allRows = document.querySelectorAll('.attendee-card');
+      const arrivedBtn = document.getElementById('filterArrivedBtn');
+      const pendingBtn = document.getElementById('filterPendingBtn');
+      const allBtn = document.getElementById('filterAllBtn');
+
+      [arrivedBtn, pendingBtn, allBtn].forEach(b => {
+        b.className = 'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps font-semibold transition-all';
+      });
+
+      if (type === 'arrived') {
+        arrivedBtn.className = 'flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps font-bold transition-all shadow-sm';
+        allRows.forEach(row => {
+          row.style.display = row.classList.contains('arrived') ? 'flex' : 'none';
+        });
+      } else if (type === 'pending') {
+        pendingBtn.className = 'flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps font-bold transition-all shadow-sm';
+        allRows.forEach(row => {
+          row.style.display = row.classList.contains('pending') ? 'flex' : 'none';
+        });
+      } else {
+        allBtn.className = 'flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps font-bold transition-all shadow-sm';
+        allRows.forEach(row => {
+          row.style.display = 'flex';
+        });
+      }
+    }
+
+    function handleSearch(query) {
+      const q = query.toLowerCase().trim();
+      const allRows = document.querySelectorAll('.attendee-card');
+      allRows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(q) ? 'flex' : 'none';
+      });
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low/70 py-6 px-8 mt-12"><div class="flex flex-col md:flex-row items-center justify-between gap-4"><div class="flex items-center gap-3"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">Hệ thống vận hành bình thường · Cổng payOS trực tuyến 2026</span></div><div class="flex items-center gap-6 font-metadata-curatorial text-metadata-curatorial text-on-surface-variant"><span class="uppercase tracking-widest">LAVIECO Curatorial Living System</span><span class="">Bảo lưu mọi quyền tác quyền sinh thái</span></div></div></footer></div>
+
+</body></html>

@@ -415,7 +415,7 @@ export const TEXT = {
 |---|---|---|---|
 | `/` | Trang chủ | ISR | `home` |
 | `/cau-chuyen` | Câu chuyện, sáu người kể chuyện | ISR | `story` |
-| `/chuong-trinh` | Bốn nấc thang giá trị, form đăng ký khóa học | ISR + form | `programs` |
+| `/chuong-trinh` | Danh sách sự kiện; bốn nấc thang rút gọn thành một dải đầu trang; mục "Chương trình đã diễn ra" (Phase 2) | Động + cache tag `program:events` | `events` |
 | `/bo-suu-tap` | Bộ sưu tập, lọc theo nhóm | ISR | `collection` |
 | `/bo-suu-tap/[slug]` | Chi tiết tác phẩm/combo | ISR | `collection` |
 | `/tac-dong` | Từ Cần Thơ ra biển lớn | ISR | `impact` |
@@ -426,11 +426,12 @@ export const TEXT = {
 | `/dang-ky` · `/dang-nhap` · `/quen-mat-khau` | Tài khoản Member: đăng ký (OTP), đăng nhập, Google, đặt lại mật khẩu | Động | `auth` |
 | `/tai-khoan` | Không gian thành viên (hồ sơ; Vé của tôi từ Phase 6) | Động | `account` |
 | `/api/auth/google/start` · `/api/auth/google/callback` · `/api/auth/refresh` | Google OAuth (PKCE), làm mới phiên | Động | `auth` |
+| `/xem-truoc/chuong-trinh/[token]` | Xem trước sự kiện (mọi trạng thái) bằng token 10 phút; chỉ origin `admin` được nhúng (CSP `frame-ancestors`), `noindex` | Động, không cache | `events` |
 | `/chuong-trinh/[slug]`, `/chuong-trinh/[slug]/dang-ky`, `/chuong-trinh/thanh-toan/...`, `/ve/[token]`, `/tra-cuu-ve`, `/chuong-trinh/truong-hoc` | Phân hệ Chương trình (Phase 2 → 6, `05-programs-module.md`) | Động | `events`, `checkout`, `tickets`, `ticket-lookup` |
 | `/api/payments/payos/webhook` | Webhook payOS, chuyển raw body sang `program-service` (ADR-015) | Động | `checkout` |
 | **`/c/[code]`** | **Phân giải QR, trả `302`** | Động | `qr-resolver` |
 | `/api/leads` · `/api/waitlist` · `/api/handbook-stats` | BFF cho form và thống kê | Động | trong tính năng tương ứng |
-| `/api/revalidate` | Webhook làm mới cache (HMAC) | Động | `lib` |
+| `/api/revalidate` | Webhook làm mới cache: HMAC-SHA256 trên `<timestamp>.<body>`, lệch ≤ 5 phút, chỉ nhận `tags` (hợp đồng `revalidateRequestSchema`) | Động | `lib/revalidate.ts` |
 
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).
 - Các đường dẫn tiếng Việt không dấu ở trên là đề xuất; tên URL chuẩn và chiến lược tiền tố ngôn ngữ chốt ở PQ3.
@@ -446,7 +447,8 @@ export const TEXT = {
 | `navigation` | Thanh điều hướng viên nang (Tide Dock), chân trang |
 | `home` | Các phần của trang chủ (hero, từ vỏ đến tác phẩm, nấc thang giá trị, bằng chứng nhỏ, tác động) |
 | `team` | Phần "Sáu người kể chuyện": **dữ liệu tĩnh** (`constants/members.ts`) + ảnh ở `public/images/team/`; được `app/` ghép vào trang chủ và trang Câu chuyện |
-| `story`, `programs`, `impact` | Trang giới thiệu và trang chương trình |
+| `story`, `programs`, `impact` | Trang giới thiệu; `programs` dành cho mô tả `program_pages` (content-service) |
+| `events` | `/chuong-trinh` (danh sách, lọc bằng link/GET form), `/chuong-trinh/[slug]`, xem trước, `/chuong-trinh/truong-hoc` (ghép form `contact` ở `app/`). Đọc qua `unstable_cache` với tag `program:events`, `program:events:<slug>` |
 | `collection` | Danh sách, bộ lọc, chi tiết tác phẩm, "trong hộp có gì", tác phẩm liên quan |
 | `handbook` | Trình đọc: mục lục chương, kết xuất khối, lật trang, ghi chú, đánh dấu, cỡ chữ, chế độ tối, tiến độ; `storage` cục bộ |
 | `contact` | Form hợp tác |
@@ -468,13 +470,14 @@ apps/admin/src/
 │       ├── layout.tsx               # requireStaff() + AdminShell (khung gộp chung)
 │       ├── page.tsx                 # tổng quan
 │       ├── events/  orders/  checkin/   # phân hệ Chương trình (Phase 2 → 6); UI ghi "Chương trình"
+│       │   # events/: danh sách, new/, [id]/ (soạn), [id]/preview/ (iframe web), types/ (loại chương trình)
 │       ├── leads/                   # danh sách, chi tiết
 │       ├── handbook/                # chương, soạn, duyệt
 │       ├── works/                   # tác phẩm, story card
 │       ├── qr/                      # mã QR, thống kê
 │       ├── programs/  pages/        # mô tả chương trình công khai (program_pages), trang tĩnh
 │       ├── media/
-│       ├── site/                    # cấu hình site, "sắp ra mắt", nội dung đồng ý, loại chương trình
+│       ├── site/                    # cấu hình site, "sắp ra mắt", nội dung đồng ý
 │       ├── users/                   # người dùng, vai trò, lời mời
 │       └── audit/                   # nhật ký hoạt động
 ├── features/
@@ -487,6 +490,8 @@ apps/admin/src/
 
 `apps/admin/public/` chỉ chứa logo và tài sản tối thiểu của giao diện quản trị.
 
+- **Loại chương trình** quản lý ở `/events/types` (quyền `program:write`), không ở `/site`: Coordinator không có `site:read` (D3, 18/10/2026).
+- **Xem trước sự kiện** (`/events/[id]/preview`): trang admin (cần `program:read`) là link chia sẻ cho đồng đội; trang tạo token 10 phút và nhúng `web` `/xem-truoc/chuong-trinh/<token>` trong iframe (D2).
 - **Ẩn/hiện theo quyền chỉ để trải nghiệm.** Hàng rào thật nằm ở service (P5 ở `02`). Dùng `can(user, "lead:write")` từ `@lavieco/shared/permissions` để ẩn nút; **không** dựa vào đó để bảo vệ.
 - Các thao tác nhạy cảm (xuất lead, xuất người đăng ký, hoàn tiền, đổi vai trò, thu hồi QR) đi qua bước xác thực lại (step-up, `02` §9.2).
 - Đăng nhập staff 2 bước: mật khẩu → `mfaToken` trong cookie httpOnly 5 phút → TOTP hoặc mã khôi phục. Mục điều hướng chưa có màn hình hiện "Sắp có" (`features/shell/constants/nav.ts`), không để link chết.
@@ -570,7 +575,7 @@ flowchart LR
 | Service | Module (`src/modules/`) |
 |---|---|
 | `identity-service` | `auth` (staff 2 bước, member, Google) · `users` · `invitations` · `sessions` · `otp` · `security` · `signing-keys` · `audit` · `outbox` (đã dựng, Phase 1) |
-| `program-service` | `events` · `event-types` · `ticketing` · `orders` · `tickets` · `checkin` · `registrations` · `payments` · `outbox` · `idempotency` · `jobs` (ADR-014, dựng từ Phase 2) |
+| `program-service` | `events` · `event-types` · `ticketing` · `outbox` (đã dựng, Phase 2) · `orders` · `tickets` · `checkin` · `registrations` · `payments` · `idempotency` · `jobs` (Phase 3 → 6, ADR-014). Use case loại vé nằm ở `events` (chủ sở hữu sự kiện); `ticketing` giữ repository và quy tắc chỗ ngồi |
 | `content-service` | `handbook` · `catalog` (tác phẩm, nhóm, story card) · `qr` · `programs-public` · `pages` · `site-settings` · `media` · `consent` · `outbox` |
 | `lead-service` | `leads` · `gift-requests` · `waitlist` · `internal-notes` · `idempotency` · `outbox` |
 
@@ -874,7 +879,72 @@ Thứ tự khuyến nghị để có thứ chạy được sớm và ít làm l�
 | 8 | Hoàn thiện `web` theo landing đã chốt (các tính năng còn lại), SEO, hiệu năng, truy cập được | Đạt ngưỡng Core Web Vitals ở `01` §9 |
 | 9 | Staging: Docker, CI/CD, giám sát QR, sao lưu + diễn tập khôi phục | Smoke QR sau triển khai chạy tự động |
 
-**Trạng thái (17/10/2026):** bước 1–4 xong trong Phase 1 của phân hệ Chương trình (`05-programs-module.md` §9). `identity-service` đã có cả Member/OTP/Google; `apps/admin` có đăng nhập 2 bước và khung chung. `content-service`, `lead-service` vẫn là khung rỗng. Lộ trình tiếp theo do `05` §9 dẫn (Phase 2: `program-service` + CRUD sự kiện), bước 5–9 ở trên làm song song khi cần.
+### 15.1 Trạng thái hiện tại (17/10/2026)
+
+Lộ trình đang chạy theo các phase của phân hệ Chương trình (`05-programs-module.md` §9). Bước 5–9 ở bảng trên làm xen vào khi cần.
+
+| Phase | Trạng thái | Ghi chú |
+|---|---|---|
+| **1** Auth + nền | **Xong**, đã duyệt. Nhánh `feat/phase1-foundation-auth` (chưa merge) | Gồm bước 1–4 ở bảng trên. `identity-service`: staff 2FA, Member (OTP email, Google), OTP dùng chung, phiên, audit. `web`: `/dang-ky`, `/dang-nhap`, `/quen-mat-khau`, `/tai-khoan`. `admin`: đăng nhập 2 bước, kích hoạt lời mời, khung chung. `content-service`, `lead-service` vẫn là khung rỗng. |
+| **2** `program-service` + CRUD sự kiện | **Xong, chờ duyệt.** Nhánh `feat/phase2-events` | Phạm vi ở 15.2. `program-service` (`event-types`, `events`, `ticketing`, `outbox`), admin `/events` (danh sách, soạn, form builder, loại vé, xem trước, nhân bản, `/events/types`), web `/chuong-trinh`, `/chuong-trinh/[slug]`, `/chuong-trinh/truong-hoc`, xem trước, `/api/revalidate`. Ảnh bìa dùng hình minh hoạ (`TODO(media)`). |
+| **2b** Module `media` (tải ảnh bìa) | **Việc tiếp theo, bắt buộc trước khi mở cho người dùng thật** | Quyết định D1 (18/10/2026): `content-service` `media` (kiểm tra loại theo nội dung, xoá EXIF, giới hạn dung lượng, object storage); `events.cover` trỏ tới media; admin bật ô tải ảnh bìa; web hiển thị bằng `next/image`. |
+| 3 → 6 | Chưa bắt đầu | Checkout miễn phí + vé QR + email → check-in + Excel → payOS → Vé của tôi, hoàn tiền, dashboard. **TODO(phase-3):** không phát hành vé/email cho sự kiện trực tuyến khi `onlineUrl` còn trống (khi xuất bản chỉ là cảnh báo). |
+
+### 15.2 Phase 2: phạm vi
+
+Dựng **`program-service`** theo công thức §13.3: database `lavieco_program`, tài khoản `svc_program`, `.env.example`, `migrations/`, compose, CI, client trong `api-clients`, service token cho `web` và `admin`. Khai báo `@AllowServices` / `@RequirePermission` cho mọi route.
+
+1. **Loại chương trình do admin quản lý** (`event_types`, trong Cài đặt). Seed: Workshop, Talkshow, Triển lãm. Permission `program:write`.
+2. **CRUD sự kiện** (`events`, miền tên `events`; UI ghi "Chương trình"):
+   - Thông tin, thời gian, hình thức `online`/`offline` (trường riêng), địa điểm/link, lưu ý an toàn, diễn giả, chương trình, FAQ, chính sách huỷ, ảnh bìa.
+   - Ảnh bìa: kiểm tra loại theo nội dung, xóa EXIF. Nếu `content-service` `media` chưa có thì ghi `TODO(media)` và hỏi trước khi chọn cách làm.
+3. **Loại vé** (`ticket_types`): giá VND số nguyên, `quantity` (`null` = không giới hạn), giai đoạn mở bán, `maxPerOrder`. `isFree` tính từ giá.
+4. **Form builder** kiểu Google Form, gắn theo sự kiện:
+   - Loại câu hỏi: text ngắn, đoạn văn, chọn một, chọn nhiều, dropdown; có bắt buộc, mô tả phụ, kéo-thả sắp xếp.
+   - Trường cố định không xoá được: họ tên, email, SĐT, đồng ý dữ liệu, đã đọc lưu ý an toàn.
+   - Đã có người đăng ký thì chỉ được thêm hoặc ẩn câu, không xoá hay đổi kiểu (BR-17). `id` câu hỏi bất biến.
+5. **Vòng đời** `draft → published → closed | ended`:
+   - **Preview** render đúng giao diện công khai, chỉ ai có `program:read` xem được, có link gửi đồng đội.
+   - Tự xuất bản, không cần người duyệt thứ hai. "Gỡ xuất bản" về `draft` chỉ khi chưa có người đăng ký.
+6. **Nhân bản chương trình**: tạo bản nháp mới, copy thông tin, loại vé và form.
+7. **Admin** (`/events`): danh sách có lọc/phân trang, tạo/sửa, xem trước, nhân bản. Bám bố cục `docs/design/admin-chuong-trinh/` (quản lý chương trình, tạo/sửa chương trình) nhưng style theo `packages/ui`.
+8. **Web**:
+   - `/chuong-trinh`: danh sách sự kiện đã xuất bản, bốn nấc thang rút gọn thành một section đầu trang.
+   - `/chuong-trinh/[slug]`: trang chi tiết, tự thiết kế vì chưa có màn.
+   - Chuyển form trường học UC-06 sang `/chuong-trinh/truong-hoc` (form có thể vẫn chưa nối `lead-service`).
+   - Cache tag `program:events`, `program:events:<slug>`, làm mới khi xuất bản.
+9. **Test bắt buộc:**
+   - Máy trạng thái sự kiện, kể cả gỡ xuất bản khi đã có đăng ký bị từ chối.
+   - Quy tắc sửa form sau khi có đăng ký.
+   - Nhân bản.
+   - Mỗi endpoint từ chối khi thiếu permission.
+   - Endpoint công khai không lộ bản nháp/sự kiện chưa xuất bản.
+   - Test tích hợp với MongoDB thật.
+
+**Xong khi:** tạo chương trình ở admin (có loại vé và form) → xem trước → xuất bản → thấy được trên `web` ở `/chuong-trinh` và `/chuong-trinh/[slug]`; nhân bản ra bản nháp mới.
+
+**Điều chỉnh khi duyệt kế hoạch (18/10/2026), đã áp dụng:**
+
+- D1 ảnh bìa: schema có `cover`, Phase 2 dùng hình minh hoạ; module `media` là điều kiện trước khi mở cho người dùng thật (Phase 2b ở 15.1).
+- D2 xem trước: token 10 phút + iframe; chỉ `/xem-truoc/*` cho phép origin admin nhúng, mọi trang khác chặn nhúng (`X-Frame-Options: DENY` và `frame-ancestors 'none'`).
+- D3 loại chương trình ở `/events/types`. D4 mô tả là văn bản thuần (TODO PQ5).
+- `safetyNotes` không bắt buộc; trường cố định còn 4 (họ tên, email, SĐT, đồng ý dữ liệu), ô "đã đọc lưu ý an toàn" chỉ hiện khi có lưu ý.
+- Thiếu `onlineUrl` là cảnh báo, không chặn xuất bản.
+- Miễn phí = có loại vé giá 0 (`docs/03` §9.2).
+- Công khai: không hiện số chỗ khi `quantity = null`; "Còn X chỗ" chỉ khi còn ≤ 10; "Hết chỗ" khi 0.
+- Sự kiện đã diễn ra (`kind: past`): không vé, không form, bỏ điều kiện bắt đầu ở tương lai (nhưng phải đã kết thúc), xuất bản thẳng vào `ended`, chỉ hiện ở mục "Chương trình đã diễn ra".
+
+### 15.3 Session sau cần đọc trước khi bắt đầu Phase 2
+
+1. `CLAUDE.md` (bản tóm tắt; nhất là mục 5, 6 (BR-12 → 17), 8, 9, 10 (DQ8)).
+2. `docs/05-programs-module.md`: mục **"Quyết định bổ sung (17/10/2026)"** (thắng các mục cũ), §4 (mô hình dữ liệu, đọc kèm quy ước `03`), §6 (API gợi ý), §9 (lộ trình).
+3. `docs/03` §9.2 (phác thảo `lavieco_program`) và §8.1 (DQ8: tách PII khỏi trường tài chính ngay từ schema).
+4. `docs/04` §6 (bố cục service, luật S1–S10), §13.2 → 13.5 (thêm endpoint, service, collection, permission), §15 (mục này).
+5. ADR-014 (program-service, miền `events`), ADR-018 (service token, decorator truy cập), ADR-019 (công cụ backend). ADR-017 chỉ cần ở Phase 4.
+6. `docs/01`: UC-32, BR-17, ma trận quyền phần Chương trình (§4.4).
+7. Ảnh trong `docs/design/admin-chuong-trinh/`: `lavieco_admin_qu_n_l_ch_ng_tr_nh_ng_k`, `lavieco_admin_t_o_s_a_ch_ng_tr_nh`, `lavieco_danh_s_ch_ch_ng_tr_nh_h_c_xanh_b_ng_i_tay`. Chỉ lấy bố cục và luồng; bỏ mọi thứ mâu thuẫn với docs (danh sách ở `05`).
+8. **Mã mẫu để bắt chước:** `services/identity-service` (bố cục module, `useFactory`, `*.model.ts` + `*Persistence`, migration, test tích hợp `src/test/support/test-app.ts`), `apps/admin/src/features/shell` (khung, điều hướng: đổi `available` của mục `events` thành `true`), `apps/web/src/features/auth` (Server Action + Zod + `outcomes.ts`).
+9. `docs/runbooks/chay-local.md`. Nhớ thêm biến của `program-service` vào runbook và `.env.example`.
 
 **Định nghĩa "khung xong" (sau bước 5):** `npm run dev:infra && npm run dev` chạy đủ 5 thành phần; quét một QR mẫu ra đúng nội dung; CI xanh; đã có ít nhất một ADR được duyệt.
 
@@ -923,3 +993,5 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.3 | 20/09/2026 | Đổi công cụ quản lý gói từ pnpm sang npm workspaces (bỏ `pnpm-workspace.yaml`, dùng trường `workspaces`; lệnh `pnpm x` → `npm run x`) | V.C. Trọng |
 | v0.4 | 21/09/2026 | Chốt định dạng module: `packages/ui` xuất source (chỉ cho app Next.js, `transpilePackages`), các gói của service phát hành ESM+CJS (ADR-012); thêm mục 10.4 về `deps:check` và `tsconfig.depcruise.json` | V.C. Trọng |
 | v0.5 | 17/10/2026 | Phase 1: `program-service` trong bảng 6.5; quyền truy cập endpoint qua `@RequirePermission`/`@RequireStaff`/`@RequireMember`/`@AllowServices`/`@PublicEndpoint` (ADR-018); `application/` không import Nest/Mongoose, nối bằng `useFactory`, port từ `@lavieco/service-kit/ports`; model đăng ký trong `infrastructure` (S1); công cụ test Vitest + swc + Testcontainers (ADR-019); `deps:check` thêm luật service và cấu hình riêng cho admin; cây thư mục, bản đồ route `web`/`admin`, S8–S10, biến môi trường, use case → nơi viết code, trạng thái lộ trình | V.C. Trọng |
+| v0.5.1 | 17/10/2026 | §15.1–15.3: Phase 1 xong; phạm vi Phase 2 (program-service + CRUD sự kiện) và danh sách cần đọc trước cho session sau | V.C. Trọng |
+| v0.6 | 18/10/2026 | Phase 2 xong: bản đồ route `web` (`events`, xem trước, `/api/revalidate`) và `admin` (`/events/*`, loại chương trình ở `/events/types`), module `program-service` đã dựng, trạng thái lộ trình và Phase 2b (`media` bắt buộc trước khi mở cho người dùng thật), các điều chỉnh khi duyệt kế hoạch | V.C. Trọng |

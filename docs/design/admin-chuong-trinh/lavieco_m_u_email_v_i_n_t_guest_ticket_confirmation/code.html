@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>LAVIECO — Vé điện tử Workshop</title>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f2f4f0; font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #1E2A32; -webkit-font-smoothing: antialiased; }
+    .email-container { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 24px; overflow: hidden; box-shadow: 0 12px 40px rgba(32, 52, 95, 0.08); border: 1px solid rgba(16, 177, 131, 0.15); }
+    .header { background: #20345F; padding: 36px 32px 30px; text-align: center; color: #ffffff; position: relative; }
+    .brand { font-size: 22px; font-weight: 700; letter-spacing: 3px; color: #ffffff; text-decoration: none; }
+    .brand-dot { color: #10B183; }
+    .tagline { font-size: 11px; text-transform: uppercase; letter-spacing: 2px; color: #E7DD6A; margin-top: 6px; }
+    .headline { font-family: 'Fraunces', Georgia, serif; font-size: 24px; font-weight: 400; margin: 24px 0 6px; color: #ffffff; }
+    .headline em { font-style: italic; color: #10B183; font-family: 'Fraunces', serif; }
+    .subtext { font-size: 13px; color: rgba(255,255,255,0.75); line-height: 1.5; margin: 0; }
+    .ticket-wrapper { padding: 32px 28px; background: #F8FAF6; }
+    .ticket-card { background: #ffffff; border-radius: 20px; border: 1px solid #e2e8df; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.03); }
+    .ticket-body { padding: 24px; }
+    .ticket-label { font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; color: #10B183; background: #EAF8F3; padding: 4px 10px; border-radius: 100px; display: inline-block; }
+    .program-title { font-family: 'Fraunces', Georgia, serif; font-size: 20px; color: #20345F; margin: 12px 0 16px; font-weight: 600; line-height: 1.35; }
+    .info-grid { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+    .info-grid td { padding: 8px 0; font-size: 13px; vertical-align: top; }
+    .info-title { color: #6e7973; width: 35%; }
+    .info-value { color: #1E2A32; font-weight: 600; }
+    .perforated-line { border-top: 2px dashed #d8dbd7; position: relative; margin: 0; }
+    .perforated-notch-left { position: absolute; left: -10px; top: -10px; width: 20px; height: 20px; background: #F8FAF6; border-radius: 50%; }
+    .perforated-notch-right { position: absolute; right: -10px; top: -10px; width: 20px; height: 20px; background: #F8FAF6; border-radius: 50%; }
+    .qr-section { padding: 28px 24px; text-align: center; background: #ffffff; }
+    .qr-box { display: inline-block; padding: 12px; background: #ffffff; border: 1px solid #e0e5df; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+    .qr-code { width: 160px; height: 160px; display: block; margin: 0 auto; }
+    .ticket-code { font-family: monospace; font-size: 18px; font-weight: 700; color: #20345F; letter-spacing: 3px; margin: 14px 0 4px; }
+    .qr-hint { font-size: 11px; color: #6e7973; margin: 0; }
+    .cta-button { display: block; width: 220px; margin: 24px auto 0; padding: 14px 20px; background: #10B183; color: #ffffff; text-decoration: none; border-radius: 100px; font-weight: 600; font-size: 14px; text-align: center; letter-spacing: 0.5px; box-shadow: 0 6px 16px rgba(16,177,131,0.3); }
+    .account-banner { margin-top: 28px; background: #EAF8F3; border: 1px dashed #10B183; border-radius: 16px; padding: 20px; text-align: center; }
+    .account-banner h4 { margin: 0 0 6px; font-size: 14px; color: #20345F; font-weight: 700; }
+    .account-banner p { margin: 0 0 14px; font-size: 12px; color: #43514a; line-height: 1.5; }
+    .btn-create-acc { display: inline-block; padding: 8px 18px; background: #20345F; color: #ffffff; text-decoration: none; border-radius: 100px; font-size: 12px; font-weight: 600; }
+    .footer { padding: 28px; text-align: center; font-size: 11px; color: #8a9690; line-height: 1.6; border-top: 1px solid #eef2ec; }
+  </style>
+</head>
+<body>
+  <div class="email-container">
+    <div class="header">
+      <div class="brand">LAVIECO<span class="brand-dot"> ●</span></div>
+      <div class="tagline">Học viện Nghệ thuật Xanh & Di sản Vỏ sò Tây Đô</div>
+      <h1 class="headline">Vé xác nhận tham gia <em>workshop</em></h1>
+      <p class="subtext">Cảm ơn bạn đã đồng hành cùng vòng đời tái sinh của bột vỏ sò sông Hậu.</p>
+    </div>
+    
+    <div class="ticket-wrapper">
+      <div class="ticket-card">
+        <div class="ticket-body">
+          <span class="ticket-label">Nº 01 · VÉ CHÍNH THỨC</span>
+          <div class="program-title">Workshop làm chậu cây từ bột vỏ sò Tây Đô</div>
+          
+          <table class="info-grid">
+            <tr>
+              <td class="info-title">Người tham dự</td>
+              <td class="info-value">Nguyễn Minh Khang</td>
+            </tr>
+            <tr>
+              <td class="info-title">Thời gian</td>
+              <td class="info-value">Chủ Nhật, 15.03.2026 · 08:30 – 11:30</td>
+            </tr>
+            <tr>
+              <td class="info-title">Địa điểm</td>
+              <td class="info-value">Xưởng LAVIECO, 45B Đường 30/4, P. An Lạc, Q. Ninh Kiều, Cần Thơ</td>
+            </tr>
+            <tr>
+              <td class="info-title">Hạng vé</td>
+              <td class="info-value">Vé tiêu chuẩn (150.000 đ · Đã thanh toán payOS)</td>
+            </tr>
+          </table>
+        </div>
+        
+        <div class="perforated-line">
+          <div class="perforated-notch-left"></div>
+          <div class="perforated-notch-right"></div>
+        </div>
+        
+        <div class="qr-section">
+          <div class="qr-box">
+            <svg class="qr-code" viewBox="0 0 100 100">
+              <rect width="100" height="100" fill="#ffffff"/>
+              <!-- Mock stylized SVG QR code with emerald center -->
+              <rect x="10" y="10" width="24" height="24" fill="#20345F" rx="3"/>
+              <rect x="15" y="15" width="14" height="14" fill="#ffffff" rx="1"/>
+              <rect x="18" y="18" width="8" height="8" fill="#10B183" rx="1"/>
+              
+              <rect x="66" y="10" width="24" height="24" fill="#20345F" rx="3"/>
+              <rect x="71" y="15" width="14" height="14" fill="#ffffff" rx="1"/>
+              <rect x="74" y="18" width="8" height="8" fill="#10B183" rx="1"/>
+              
+              <rect x="10" y="66" width="24" height="24" fill="#20345F" rx="3"/>
+              <rect x="15" y="71" width="14" height="14" fill="#ffffff" rx="1"/>
+              <rect x="18" y="74" width="8" height="8" fill="#10B183" rx="1"/>
+              
+              <rect x="42" y="12" width="6" height="6" fill="#20345F"/>
+              <rect x="52" y="18" width="6" height="6" fill="#20345F"/>
+              <rect x="42" y="28" width="6" height="6" fill="#20345F"/>
+              <rect x="52" y="38" width="6" height="6" fill="#20345F"/>
+              
+              <!-- Center emblem -->
+              <circle cx="50" cy="50" r="10" fill="#10B183"/>
+              <circle cx="50" cy="50" r="4" fill="#ffffff"/>
+              
+              <rect x="40" y="66" width="6" height="6" fill="#20345F"/>
+              <rect x="52" y="72" width="6" height="6" fill="#20345F"/>
+              <rect x="68" y="44" width="6" height="6" fill="#20345F"/>
+              <rect x="78" y="52" width="6" height="6" fill="#20345F"/>
+              <rect x="70" y="70" width="8" height="8" fill="#20345F"/>
+              <rect x="82" y="80" width="8" height="8" fill="#20345F"/>
+            </svg>
+          </div>
+          <div class="ticket-code">LVC - 26 - 0001</div>
+          <p class="qr-hint">☀ Vui lòng tăng độ sáng màn hình điện thoại khi quét tại bàn tiếp đón</p>
+          
+          <a href="#" class="cta-button">Xem vé trực tuyến</a>
+        </div>
+      </div>
+      
+      <!-- Account CTA Banner -->
+      <div class="account-banner">
+        <h4>Tạo tài khoản để quản lý vé dễ hơn</h4>
+        <p>Bạn đang sử dụng vé với tư cách khách. Đặt mật khẩu cho email <strong>khang.eco@taydo.vn</strong> để lưu trữ tập trung, xem lại lịch sử và đặt vé nhanh chóng lần sau.</p>
+        <a href="#" class="btn-create-acc">Tạo tài khoản lưu vé</a>
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p>© 2026 LAVIECO · Bến Ninh Kiều, Cần Thơ<br>Hệ thống vé điện tử được bảo vệ và đồng bộ tự động qua cổng thanh toán payOS.<br>Cần hỗ trợ tại xưởng? Liên hệ hotline: 0292 388 2026</p>
+    </div>
+  </div>
+</body>
+</html>

@@ -21,7 +21,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: "operations",
     items: [
       { id: "overview", href: "/", permission: null, available: true },
-      { id: "events", href: "/events", permission: "program:read", available: false },
+      { id: "events", href: "/events", permission: "program:read", available: true },
       { id: "orders", href: "/orders", permission: "order:read", available: false },
       { id: "checkin", href: "/checkin", permission: "checkin:perform", available: false },
     ],

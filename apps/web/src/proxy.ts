@@ -1,14 +1,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { adminOrigin } from "@/lib/env";
 import { MEMBER_COOKIES } from "@/lib/session-cookies";
 
 const ACCOUNT_PREFIX = "/tai-khoan";
 const SIGN_IN_PAGES = new Set(["/dang-nhap", "/dang-ky"]);
+/** Event preview: the only page another origin (admin) may embed (D2). */
+const PREVIEW_PREFIX = "/xem-truoc/";
 
 const SECURITY_HEADERS: Record<string, string> = {
   "x-content-type-options": "nosniff",
   "referrer-policy": "strict-origin-when-cross-origin",
-  "x-frame-options": "DENY",
   "permissions-policy": "camera=(), microphone=(), geolocation=()",
 };
 
@@ -34,7 +36,23 @@ export function proxy(request: NextRequest) {
   }
 
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) response.headers.set(name, value);
+  setFramingHeaders(response, pathname);
   return response;
+}
+
+/**
+ * Every page refuses to be framed, except the preview, which only the admin origin
+ * may embed. Without a valid ADMIN_APP_URL the preview is not frameable either.
+ */
+function setFramingHeaders(response: NextResponse, pathname: string) {
+  const admin = pathname.startsWith(PREVIEW_PREFIX) ? adminOrigin() : null;
+  if (admin) {
+    response.headers.set("content-security-policy", `frame-ancestors ${admin}`);
+    response.headers.set("x-robots-tag", "noindex, nofollow");
+    return;
+  }
+  response.headers.set("x-frame-options", "DENY");
+  response.headers.set("content-security-policy", "frame-ancestors 'none'");
 }
 
 export const config = {
