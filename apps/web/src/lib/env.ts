@@ -5,6 +5,9 @@ import { z } from "zod";
 const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   IDENTITY_SERVICE_URL: z.url(),
+  PROGRAM_SERVICE_URL: z.url(),
+  /** HMAC key shared with the services for `/api/revalidate`; base64 of 32+ bytes. */
+  REVALIDATE_SECRET: z.string().default(""),
   SERVICE_TOKEN_PRIVATE_JWK: z.string().min(2),
   GOOGLE_CLIENT_ID: z.string().default(""),
   GOOGLE_REDIRECT_URI: z.string().default(""),
@@ -40,4 +43,15 @@ export function serverEnv(): ServerEnv {
 export function googleSignInEnabled(): boolean {
   const env = serverEnv();
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_REDIRECT_URI);
+}
+
+const adminOriginSchema = z.url().transform((value) => new URL(value).origin);
+
+/**
+ * Origin of `admin`, the only page allowed to frame the event preview (D2). Parsed on
+ * its own so `proxy.ts` never depends on the other variables; `null` = framing denied.
+ */
+export function adminOrigin(): string | null {
+  const parsed = adminOriginSchema.safeParse(process.env.ADMIN_APP_URL);
+  return parsed.success ? parsed.data : null;
 }
