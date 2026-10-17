@@ -1,7 +1,8 @@
 // Compares every `.env.local` with its `.env.example` (root and each workspace project)
 // and reports, by NAME only, the variables that are missing or still empty, and a dev
 // setup pointing at a production database. Values are never printed. Exit code 1 when
-// something needs attention, so it can gate scripts.
+// something needs attention, so it can gate scripts. Also warns (without failing) about
+// variables of a `.env.example` that docs/06-bien-moi-truong.md does not mention yet.
 //
 //   npm run env:check          report only
 //   npm run env:check -- --fix append missing variables whose example has a default
@@ -48,6 +49,11 @@ function databaseIsolationIssue(local) {
   return /\.mongodb\.net(?=[:/,?]|$)/i.test(uri) && !devDatabase ? "MONGODB_DB" : null;
 }
 
+const envDocPath = join(root, "docs", "06-bien-moi-truong.md");
+const envDoc = existsSync(envDocPath) ? readFileSync(envDocPath, "utf8") : null;
+/** Variables named in `.env.example` files but absent from the env documentation. */
+const undocumented = [];
+
 const isEmpty = (value) => value === undefined || value === "" || value === "''" || value === '""';
 
 let problems = 0;
@@ -56,12 +62,17 @@ for (const dir of projectDirs) {
   if (!existsSync(examplePath)) continue;
   const localPath = join(root, dir, ".env.local");
   const label = dir === "." ? "(root)" : dir.replaceAll("\\", "/");
+  const example = parse(examplePath);
+  if (envDoc !== null) {
+    for (const key of example.keys()) {
+      if (!envDoc.includes(`\`${key}\``)) undocumented.push(`${label}: ${key}`);
+    }
+  }
   if (!existsSync(localPath)) {
     process.stdout.write(`✗ ${label}: no .env.local (run npm run env:init)\n`);
     problems += 1;
     continue;
   }
-  const example = parse(examplePath);
   const local = parse(localPath);
   const missing = [...example.keys()].filter((key) => !local.has(key));
   const appended = [];
@@ -98,9 +109,17 @@ for (const dir of projectDirs) {
   );
 }
 
+if (envDoc === null) {
+  process.stdout.write("\n! docs/06-bien-moi-truong.md not found\n");
+} else if (undocumented.length > 0) {
+  process.stdout.write(
+    `\n! Not documented in docs/06-bien-moi-truong.md (add them in the same commit):\n  ${undocumented.join("\n  ")}\n`,
+  );
+}
+
 if (problems > 0) {
   process.stdout.write(
-    "\nSome variables need attention. Defaults: npm run env:check -- --fix. Secrets: see docs/runbooks/chay-local.md §2.\n",
+    "\nSome variables need attention. Defaults: npm run env:check -- --fix. Secrets: see docs/06-bien-moi-truong.md.\n",
   );
   process.exitCode = 1;
 }

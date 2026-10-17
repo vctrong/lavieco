@@ -73,3 +73,19 @@ export {
   type StaffAccessClaims,
   type TokenPair,
 } from "./tokens";
+export {
+  STEP_UP_HEADER,
+  STEP_UP_TTL_SECONDS,
+  auditEventIngestRequestSchema,
+  emailVerificationClaimsSchema,
+  memberEmailProofRequestSchema,
+  stepUpClaimsSchema,
+  stepUpRequestSchema,
+  stepUpResponseSchema,
+  type AuditEventIngestRequest,
+  type EmailVerificationClaims,
+  type MemberEmailProofRequest,
+  type StepUpClaims,
+  type StepUpRequest,
+  type StepUpResponse,
+} from "./step-up.schema";

@@ -18,6 +18,10 @@ export const ERROR_CATALOG = {
   "auth.mfa_token_invalid": { status: 401, title: "Second-factor step expired or invalid" },
   "auth.mfa_code_invalid": { status: 401, title: "Invalid second-factor code" },
   "auth.session_invalid": { status: 401, title: "Session is invalid or was revoked" },
+  "auth.step_up_required": {
+    status: 403,
+    title: "Re-enter an authenticator code to confirm this action",
+  },
 
   "password.too_weak": { status: 400, title: "Password does not meet the policy" },
 
@@ -55,6 +59,23 @@ export const ERROR_CATALOG = {
     title: "Ticket type change not allowed once seats are taken",
   },
   "ticket_type.limit_reached": { status: 422, title: "Too many ticket types for this event" },
+
+  "order.registration_closed": { status: 409, title: "Event does not take registrations now" },
+  "order.sold_out": { status: 409, title: "Not enough seats left for this order" },
+  "order.items_invalid": { status: 422, title: "Ticket selection is not allowed" },
+  "order.answers_invalid": { status: 422, title: "Registration answers are incomplete or invalid" },
+  "order.consent_required": {
+    status: 422,
+    title: "Data consent (and safety notes, when present) must be accepted",
+  },
+  "order.email_mismatch": {
+    status: 400,
+    title: "The verified email differs from the booker's email",
+  },
+  "order.invalid_state": { status: 409, title: "Order status does not allow this action" },
+
+  "payment.signature_invalid": { status: 400, title: "Payment webhook signature is invalid" },
+  "payment.unavailable": { status: 503, title: "Payment provider is unavailable" },
 
   "media.type_unsupported": { status: 415, title: "Only JPEG, PNG and WebP images are accepted" },
   "media.format_refused": {

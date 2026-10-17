@@ -19,6 +19,8 @@ export const TOKEN_AUDIENCES = {
   mfa: "lavieco:mfa",
   /** Proof that an email address passed an OTP challenge for one purpose. */
   emailVerification: "lavieco:email-verification",
+  /** Five-minute re-confirmation before a sensitive action (ADR-0021). */
+  stepUp: "lavieco:step-up",
 } as const;
 
 /** Claims of a staff access token (EdDSA, short-lived). */

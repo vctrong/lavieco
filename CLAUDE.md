@@ -24,6 +24,7 @@ LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật x
 | Ranh giới service, luồng, bảo mật, xác thực, triển khai, CI                                                 | `docs/02-kien-truc.md`         |
 | Collection, trường, index, giao dịch, quyền riêng tư, migration                                             | `docs/03-co-so-du-lieu.md`     |
 | Đặt file ở đâu, đặt tên, tầng trong service, công thức thêm tính năng/endpoint/service, lộ trình dựng khung | `docs/04-cau-truc-ma-nguon.md` |
+| Biến môi trường (ý nghĩa, cách lấy, dev/prod, liên quan giữa service)                                       | `docs/06-bien-moi-truong.md`   |
 
 Chỉ đọc **phần liên quan** (dùng mục lục), đừng nạp cả bốn file. Tên use case `UC-xx`, business rule `BR-xx` trỏ ngược về `docs/01`.
 
@@ -39,6 +40,7 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 - **`public/` ở gốc mỗi app Next.js**: chỉ cho **tài sản tĩnh cứng trong code** (logo, ảnh thành viên, hình trang trí, ảnh dự phòng) tại `public/images/{brand,team,illustrations,placeholders}/`. Ảnh tải lên **không** để ở đây (đi qua `content-service` `media` → Cloudinary, ADR-020).
 - **Next.js 16+ dùng `src/proxy.ts`** (cùng cấp `src/app/`, export hàm `proxy`). **Không tạo `middleware.ts`.**
 - **`.env.local`** = giá trị thật của máy dev, **gitignore, không bao giờ commit/đọc/in**; `.env.example` là bản mẫu commit. Tạo bằng `npm run env:init`.
+- **Biến môi trường:** danh sách đầy đủ ở `docs/06-bien-moi-truong.md`. Thêm/đổi tên/xoá một biến thì **cùng commit** cập nhật cả ba: schema env của project (`src/config/env.ts` hoặc `src/lib/env*.ts`), `.env.example`, và `docs/06` (bảng + "Lịch sử thay đổi"). `npm run env:check` cảnh báo biến chưa có trong `docs/06`.
 
 ## 4. Lệnh (khi đã dựng khung)
 

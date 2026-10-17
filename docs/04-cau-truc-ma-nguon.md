@@ -637,7 +637,7 @@ flowchart LR
 | Chủ đề | Quy ước |
 |---|---|
 | **Nạp và kiểm tra** | Mỗi service/ứng dụng có **schema Zod cho env**; nạp một lần lúc khởi động (`service-kit`/`lib/env.ts`) và **dừng ngay nếu thiếu hoặc sai**. Không đọc `process.env` rải rác. |
-| **Tệp mẫu** | Mỗi thành phần có `.env.example` liệt kê **mọi biến, kèm mô tả ngắn, không có giá trị bí mật thật**. Thêm biến mới ⇒ cập nhật `.env.example` trong cùng PR. |
+| **Tệp mẫu và tài liệu** | Mỗi thành phần có `.env.example` liệt kê **mọi biến, kèm mô tả ngắn, không có giá trị bí mật thật**. Danh sách đầy đủ (ý nghĩa, cách lấy, dev/prod, liên quan giữa service) ở `docs/06-bien-moi-truong.md`. Thêm/đổi tên/xoá biến ⇒ **cùng commit** cập nhật schema env, `.env.example` và `docs/06`; `npm run env:check` cảnh báo biến chưa có trong `docs/06`. |
 | **`.env.local`** | Mỗi project có `.env.local` (**gitignore**) chứa giá trị thật **chỉ cho máy dev**; tạo bằng `npm run env:init` (không ghi đè). Next.js tự nạp `.env.local`; service NestJS nạp qua module cấu hình của `service-kit` (chỉ khi chạy dev/test). **Staging/production không dùng tệp `.env*`**: biến do nền tảng chạy container cấp từ kho bí mật. |
 | **Không commit bí mật** | `.gitignore` chặn `.env*` trừ `.env.example`; `.dockerignore` loại `.env*` khỏi ảnh Docker. Giá trị thật ở kho bí mật của CI/hosting (`02` §9.6). Có quét bí mật trong CI. |
 | **Next.js** | Biến có tiền tố `NEXT_PUBLIC_` là **công khai** và được nhúng vào bundle lúc **build**, tuyệt đối không chứa bí mật (khi build Docker phải truyền lúc build). Tách `lib/env.ts` (server) và `lib/env.public.ts` (client). |
