@@ -29,11 +29,10 @@ Biến thiếu mà `.env.example` để trống (khóa, secret) phải tự đi�
 ## 2. Sinh khóa
 
 ```
-npm run build -w @lavieco/identity-service
-npm run keys:generate -w @lavieco/identity-service -- identity-service
-npm run keys:generate -w @lavieco/identity-service -- web
-npm run keys:generate -w @lavieco/identity-service -- admin
-npm run keys:generate -w @lavieco/identity-service -- program-service
+npm run keys:generate -- identity-service
+npm run keys:generate -- web
+npm run keys:generate -- admin
+npm run keys:generate -- program-service
 ```
 
 Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32 byte. Đặt vào các tệp như sau:

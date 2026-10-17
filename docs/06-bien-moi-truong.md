@@ -25,7 +25,7 @@ Cột **Bắt buộc**: "Bắt buộc" nghĩa là project từ chối khởi đ�
 
 ### Service token (ADR-018)
 
-Mỗi bên gọi có **một cặp khoá Ed25519** sinh bằng `npm run keys:generate -w @lavieco/identity-service -- <tên bên gọi>`:
+Mỗi bên gọi có **một cặp khoá Ed25519** sinh bằng `npm run keys:generate -- <tên bên gọi>`:
 
 - **Khoá riêng** (JWK có trường `"d"`) chỉ nằm ở **đúng một nơi**: `SERVICE_TOKEN_PRIVATE_JWK` của chính bên gọi.
 - **Khoá công khai** (JWK không có `"d"`) được chép vào `SERVICE_TOKEN_TRUSTED_KEYS` của **mỗi service mà bên đó gọi**, dưới khoá là tên bên gọi.
@@ -74,7 +74,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `IDENTITY_SERVICE_URL` | Bắt buộc | Không | identity-service trên mạng riêng | Tự đặt | Prod: địa chỉ nội bộ, không mở Internet | `http://127.0.0.1:4001` |
 | `PROGRAM_SERVICE_URL` | Bắt buộc | Không | program-service trên mạng riêng | Tự đặt | Như trên | `http://127.0.0.1:4004` |
 | `CONTENT_SERVICE_URL` | Bắt buộc | Không | content-service trên mạng riêng | Tự đặt | Như trên | `http://127.0.0.1:4002` |
-| `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của `web` để ký service token | `npm run keys:generate -w @lavieco/identity-service -- web` → `PRIVATE_JWK` | Mỗi môi trường một cặp khoá riêng | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
+| `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của `web` để ký service token | `npm run keys:generate -- web` → `PRIVATE_JWK` | Mỗi môi trường một cặp khoá riêng | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
 | `GOOGLE_CLIENT_ID` | Tuỳ chọn (trống = ẩn nút Google) | Không | Đăng nhập Google cho member | Google Cloud Console → APIs & Services → Credentials → OAuth client | Dev và prod nên là hai OAuth client | `123-gia.apps.googleusercontent.com` |
 | `GOOGLE_REDIRECT_URI` | Tuỳ chọn | Không | Redirect URI của luồng Google | Tự đặt, phải khớp Google Console và identity | Prod: `https://lavieco.io.vn/api/auth/google/callback` | `http://localhost:3000/api/auth/google/callback` |
 | `TURNSTILE_ENABLED` | Tuỳ chọn (mặc định `false`) | Không | Bật Cloudflare Turnstile cho form công khai | Tự đặt | Chưa bật ở GĐ1 (TODO) | `false` |
@@ -93,7 +93,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `CONTENT_SERVICE_URL` | Bắt buộc | Không | content-service (tải ảnh chương trình) | Tự đặt | Như trên | `http://127.0.0.1:4002` |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Tuỳ chọn | Không | Cloud name trong URL ảnh | Cloudinary Dashboard → API Keys | Dev/prod hai environment | `demo-dev` |
 | `WEB_APP_URL` | Bắt buộc | Không | Origin của `web`, để nhúng trang xem trước | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
-| `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của `admin` | `npm run keys:generate -w @lavieco/identity-service -- admin` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
+| `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của `admin` | `npm run keys:generate -- admin` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | | `info` |
 
 ## `identity-service`: `services/identity-service/.env.local`
@@ -106,7 +106,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `MONGODB_URI` | Bắt buộc | **Có** (prod chứa mật khẩu) | Chuỗi kết nối MongoDB | Dev: mặc định compose. Prod: Atlas → Database → Connect → Drivers, user `svc_identity` | Dev **không bao giờ** trỏ vào database production (docs/04 §11.1) | `mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true` |
 | `MONGODB_DB` | Bắt buộc | Không | Tên database | Tự đặt | Dev trên Atlas: hậu tố `_dev`; prod: không có `_dev` | `lavieco_identity` |
 | `SERVICE_TOKEN_TRUSTED_KEYS` | Tuỳ chọn (mặc định `{}`) | Không (chỉ khoá công khai) | Khoá công khai của `web`, `admin`, `program-service` | Mục "Service token" ở trên | | `'{"web": {...}, "admin": {...}, "program-service": {...}}'` |
-| `JWT_SIGNING_KEYS` | Bắt buộc | **Có** | Mảng JSON khoá riêng ký token người dùng; khoá đầu ký | `npm run keys:generate -w @lavieco/identity-service -- identity-service` → `PRIVATE_JWK`, đặt trong `[ ]` | Xoay khoá: thêm khoá mới lên đầu, giữ khoá cũ tới khi token cũ hết hạn | `'[{"kty":"OKP","crv":"Ed25519","x":"GIA","d":"GIA","kid":"k1"}]'` |
+| `JWT_SIGNING_KEYS` | Bắt buộc | **Có** | Mảng JSON khoá riêng ký token người dùng; khoá đầu ký | `npm run keys:generate -- identity-service` → `PRIVATE_JWK`, đặt trong `[ ]` | Xoay khoá: thêm khoá mới lên đầu, giữ khoá cũ tới khi token cũ hết hạn | `'[{"kty":"OKP","crv":"Ed25519","x":"GIA","d":"GIA","kid":"k1"}]'` |
 | `TOTP_ENCRYPTION_KEY` | Bắt buộc | **Có** | Khoá AES-256-GCM mã hoá bí mật TOTP | `RANDOM_32B` của `keys:generate` | Khác nhau từng môi trường; đổi là mất mọi 2FA đã cài | `VE9UUC1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYS0xMg==` |
 | `OTP_PEPPER` | Bắt buộc | **Có** | Pepper HMAC cho mã OTP và khoá giới hạn tần suất | `RANDOM_32B` của `keys:generate` | Khác nhau từng môi trường | `T1RQLWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYQ==` |
 | `STAFF_ACCESS_TTL_SECONDS` | Tuỳ chọn (mặc định `600`) | Không | Hạn access token staff | Tự đặt | | `600` |
@@ -154,7 +154,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `IDENTITY_JWKS_URL` | Bắt buộc | Không | JWKS của identity | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001/.well-known/jwks.json` |
 | `IDENTITY_SERVICE_URL` | Bắt buộc | Không | identity-service trên mạng riêng: ghi audit (xuất Excel, hoàn tiền) qua outbox | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001` |
 | `CONTENT_SERVICE_URL` | Bắt buộc | Không | content-service (gắn/giải phóng ảnh) | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4002` |
-| `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của program-service | `npm run keys:generate -w @lavieco/identity-service -- program-service` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
+| `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của program-service | `npm run keys:generate -- program-service` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
 | `WEB_APP_URL` | Bắt buộc | Không | Origin của `web`: webhook làm mới cache, link vé trong email, `returnUrl`/`cancelUrl` của payOS | Tự đặt; khi test payOS qua tunnel đặt bằng URL tunnel | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
 | `REVALIDATE_SECRET` | Bắt buộc | **Có** | HMAC webhook làm mới cache, **cùng giá trị** với `web` | `RANDOM_32B` của `keys:generate` | Khác nhau giữa dev và prod | `R2lBLWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYQ==` |
 | `TICKET_LINK_SECRET` | Bắt buộc | **Có** | Khoá HMAC của link đơn/vé trong email (`/ve/[token]`, trang thanh toán, huỷ đơn) | `RANDOM_32B` của `keys:generate` | Khác nhau giữa dev và prod. **Đổi giá trị là mọi link vé đã gửi hết hiệu lực** | `VElDS0VULWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLTE=` |
