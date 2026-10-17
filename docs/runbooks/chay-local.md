@@ -73,6 +73,7 @@ Khóa riêng (có trường `"d"`) chỉ nằm ở đúng một nơi. Service t�
    ```
 
 5. Kiểm tra một lần sau khi tải một ảnh: `https://res.cloudinary.com/<cloud>/image/private/t_lv_w640/<publicId>` trả ảnh; `https://res.cloudinary.com/<cloud>/image/private/<publicId>` (ảnh gốc) và một transformation tự chế (ví dụ `w_2000`) **bị từ chối**.
+   Lưu ý (kiểm chứng 17/10/2026 trên account dev): URL đã bị gọi khi transformation chưa tồn tại có thể bị CDN giữ lỗi `400 Unknown transformation` một lúc; thử bằng ảnh mới tải lên. Cloudinary bỏ `f_auto` khỏi định nghĩa named transformation (chỉ lưu `c_limit,w_…/q_auto`), và Strict chặn `t_lv_w…/f_auto`, nên ảnh hiện phát đúng định dạng gốc (`TODO(media-f-auto)`).
 6. `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` của `web` và `admin` = cloud name dev (không bí mật). Ảnh dev nằm dưới folder `lavieco/dev`, prod dưới `lavieco/prod` (suy ra từ `NODE_ENV`).
 
 ## 3. Chạy
