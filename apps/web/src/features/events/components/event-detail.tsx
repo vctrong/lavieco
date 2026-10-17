@@ -14,6 +14,8 @@ import {
 import type { PublicEventDetail } from "@lavieco/shared/events";
 import { Container, Eyebrow, PearlDot } from "@lavieco/ui";
 
+import { MEDIA_DELIVERY_READY, MediaImage } from "@/shared/components/media-image";
+
 import { EVENTS_PATH, HANDBOOK_PATH } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { formatSchedule, formatShortDate, formatVnd, paragraphsOf } from "../utils/format";
@@ -73,7 +75,10 @@ export function EventDetail({ event }: { event: PublicEventDetail }) {
         <header className="grid gap-10 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
           <CoverArt
             title={event.title}
+            cover={event.cover}
             label={event.type?.name.vi}
+            sizes="(min-width: 768px) 28rem, 100vw"
+            preload
             radius="arch-lg"
             className="aspect-[4/5] w-full max-w-md shadow-hero-arch-soft"
           />
@@ -195,6 +200,28 @@ export function EventDetail({ event }: { event: PublicEventDetail }) {
                           <p className="text-[13px] text-charcoal/65">{speaker.role}</p>
                         ) : null}
                       </div>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+
+            {event.gallery.length > 0 && MEDIA_DELIVERY_READY ? (
+              <section aria-labelledby="hinh-anh">
+                <SectionTitle id="hinh-anh">{t.gallery}</SectionTitle>
+                <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
+                  {event.gallery.map((image) => (
+                    <li
+                      key={image.mediaId}
+                      className="relative aspect-square overflow-hidden rounded-2xl bg-mint-mist"
+                    >
+                      <MediaImage
+                        publicId={image.publicId}
+                        alt={image.alt}
+                        fill
+                        sizes="(min-width: 768px) 20vw, 50vw"
+                        className="object-cover"
+                      />
                     </li>
                   ))}
                 </ul>

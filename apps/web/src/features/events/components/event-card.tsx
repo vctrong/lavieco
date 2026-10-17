@@ -60,7 +60,9 @@ export function EventCard({ event }: { event: PublicEventCard }) {
       <div className="relative">
         <CoverArt
           title={event.title}
+          cover={event.cover}
           label={event.type?.name.vi}
+          sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
           radius="arch-sm"
           className="aspect-[4/3.4] w-full"
         />

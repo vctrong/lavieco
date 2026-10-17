@@ -6,6 +6,7 @@ import { Button, Container, Eyebrow, PearlDot } from "@lavieco/ui";
 
 import { TEXT } from "../constants/text";
 import { getAccountState } from "../server/get-account";
+import { AvatarField } from "./avatar-field";
 import { LogoutButton } from "./logout-button";
 
 const ACCOUNT_PATH = "/tai-khoan";
@@ -51,6 +52,12 @@ export async function AccountPage() {
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
           <article className="rounded-3xl border border-hairline bg-white p-6 shadow-ambient md:p-8">
             <h2 className="mb-6 font-display text-2xl text-deep-blue">{t.profile.title}</h2>
+            <div className="mb-6 border-b border-hairline pb-6">
+              <p className="mb-3 text-[11px] uppercase tracking-museum text-deep-blue/60">
+                {t.avatar.title}
+              </p>
+              <AvatarField avatar={state.avatar} />
+            </div>
             <dl className="space-y-5 text-sm">
               <div>
                 <dt className="mb-1 text-[11px] uppercase tracking-museum text-deep-blue/60">

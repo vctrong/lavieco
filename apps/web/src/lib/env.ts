@@ -6,6 +6,8 @@ const serverEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   IDENTITY_SERVICE_URL: z.url(),
   PROGRAM_SERVICE_URL: z.url(),
+  /** content-service: the member's avatar (ADR-0020). */
+  CONTENT_SERVICE_URL: z.url(),
   /** HMAC key shared with the services for `/api/revalidate`; base64 of 32+ bytes. */
   REVALIDATE_SECRET: z.string().default(""),
   SERVICE_TOKEN_PRIVATE_JWK: z.string().min(2),
