@@ -15,6 +15,13 @@ export type CallOptions<TSchema extends z.ZodType | undefined> = {
   body?: unknown;
   /** Multipart body (image uploads, ADR-0020); fetch sets the boundary itself. */
   form?: FormData;
+  /**
+   * JSON text sent byte for byte (the payOS webhook is forwarded untouched, ADR-0015).
+   * Takes the place of `body`.
+   */
+  rawJson?: string;
+  /** Extra request headers, e.g. the step-up token (ADR-0021). */
+  headers?: Record<string, string>;
   /** Overrides the client timeout (uploads take longer than JSON calls). */
   timeoutMs?: number;
   /** Response schema; omit for `204 No Content`. */
@@ -35,10 +42,15 @@ export type HttpClientOptions = {
   fetchImpl?: typeof fetch;
 };
 
+/** A file answered by a service (Excel export). */
+export type DownloadedFile = { body: ArrayBuffer; contentType: string; fileName: string | null };
+
 export type HttpClient = {
   call<TSchema extends z.ZodType | undefined = undefined>(
     options: CallOptions<TSchema>,
   ): Promise<TSchema extends z.ZodType ? z.output<TSchema> : void>;
+  /** GET of a binary response; errors are Problem Details like `call`. */
+  download(options: Omit<CallOptions<undefined>, "schema" | "method">): Promise<DownloadedFile>;
 };
 
 const RETRYABLE_STATUS = new Set([502, 503, 504]);
@@ -64,14 +76,20 @@ export function createHttpClient({
       options.auth.kind === "service"
         ? `Bearer ${await signer.tokenFor(audience)}`
         : `Bearer ${options.auth.accessToken}`;
-    if (options.body !== undefined && !options.form) headers["content-type"] = "application/json";
+    if ((options.body !== undefined || options.rawJson !== undefined) && !options.form) {
+      headers["content-type"] = "application/json";
+    }
+    Object.assign(headers, options.headers);
     if (options.requestId) headers["x-request-id"] = options.requestId;
     if (options.idempotencyKey) headers["idempotency-key"] = options.idempotencyKey;
 
     return fetchImpl(`${root}${options.path}`, {
       method: options.method,
       headers,
-      body: options.form ?? (options.body === undefined ? undefined : JSON.stringify(options.body)),
+      body:
+        options.form ??
+        options.rawJson ??
+        (options.body === undefined ? undefined : JSON.stringify(options.body)),
       signal: AbortSignal.timeout(options.timeoutMs ?? timeoutMs),
     });
   }
@@ -104,7 +122,29 @@ export function createHttpClient({
     );
   }
 
-  return { call: call as HttpClient["call"] };
+  async function download(
+    options: Omit<CallOptions<undefined>, "schema" | "method">,
+  ): Promise<DownloadedFile> {
+    let response: Response;
+    try {
+      response = await attempt({ ...options, method: "GET" });
+    } catch (error) {
+      throw new ServiceUnavailableError(`${audience} unreachable: GET ${options.path}`, {
+        cause: error,
+      });
+    }
+    if (!response.ok) {
+      await readResponse(response, undefined);
+    }
+    const disposition = response.headers.get("content-disposition") ?? "";
+    return {
+      body: await response.arrayBuffer(),
+      contentType: response.headers.get("content-type") ?? "application/octet-stream",
+      fileName: /filename="([^"]+)"/.exec(disposition)?.[1] ?? null,
+    };
+  }
+
+  return { call: call as HttpClient["call"], download };
 }
 
 async function readResponse(response: Response, schema: z.ZodType | undefined): Promise<unknown> {

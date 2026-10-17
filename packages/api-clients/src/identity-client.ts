@@ -7,6 +7,7 @@ import {
   otpChallengeVerifyResponseSchema,
   staffLoginResponseSchema,
   staffProfileSchema,
+  stepUpResponseSchema,
   tokenPairSchema,
   type InvitationAcceptRequest,
   type InvitationInspectRequest,
@@ -134,12 +135,33 @@ export function createIdentityClient(options: IdentityClientOptions) {
         body,
         requestId,
       }),
+    /** Checkout proof of the signed-in member's verified email (ADR-0021). */
+    memberEmailProof: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/members/me/email-proofs`,
+        auth: user(accessToken),
+        body: { purpose: "checkout" },
+        schema: otpChallengeVerifyResponseSchema,
+        requestId,
+      }),
     getMemberProfile: (accessToken: string, requestId?: string) =>
       http.call({
         method: "GET",
         path: `${V1}/members/me`,
         auth: user(accessToken),
         schema: memberProfileSchema,
+        requestId,
+      }),
+
+    /** Step-up before a sensitive action: fresh TOTP code, 5-minute token (ADR-0021). */
+    stepUp: (accessToken: string, code: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/staff/step-up`,
+        auth: user(accessToken),
+        body: { code },
+        schema: stepUpResponseSchema,
         requestId,
       }),
 

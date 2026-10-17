@@ -1,4 +1,18 @@
 import {
+  checkinResponseSchema,
+  checkinStatsSchema,
+  orderCreateResponseSchema,
+  orderDetailSchema,
+  orderListSchema,
+  orderViewSchema,
+  payosWebhookResponseSchema,
+  registrationListSchema,
+  ticketLookupResponseSchema,
+  type CheckinRequest,
+  type OrderCreateRequest,
+  type OrderListQuery,
+  type OrderRefundRequest,
+  type RegistrationListQuery,
   eventListSchema,
   eventPreviewTokenSchema,
   eventSchema,
@@ -20,6 +34,8 @@ import {
   type TicketTypeCreateRequest,
   type TicketTypeUpdateRequest,
 } from "@lavieco/shared/events";
+
+import { STEP_UP_HEADER } from "@lavieco/shared/identity";
 
 import { createHttpClient, type HttpClientOptions } from "./http-client";
 
@@ -240,6 +256,160 @@ export function createProgramClient(options: ProgramClientOptions) {
         path: `${V1}/event-previews/${segment(token)}`,
         auth: service,
         schema: publicEventDetailSchema,
+        requestId,
+      }),
+
+    // --- public: checkout, orders behind a signed link, ticket lookup (`web`) ---
+    createOrder: (body: OrderCreateRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/orders`,
+        auth: service,
+        body,
+        schema: orderCreateResponseSchema,
+        // The payOS link is created inside the call.
+        timeoutMs: 20_000,
+        requestId,
+      }),
+    getOrderByLink: (token: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/order-links/${segment(token)}`,
+        auth: service,
+        schema: orderViewSchema,
+        requestId,
+      }),
+    cancelOrderByLink: (token: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/order-links/${segment(token)}/cancel`,
+        auth: service,
+        schema: orderViewSchema,
+        idempotent: true,
+        requestId,
+      }),
+    reconcileOrderByLink: (token: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/order-links/${segment(token)}/reconcile`,
+        auth: service,
+        schema: orderViewSchema,
+        timeoutMs: 20_000,
+        requestId,
+      }),
+    lookupTickets: (verificationToken: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/ticket-lookups`,
+        auth: service,
+        body: { verificationToken },
+        schema: ticketLookupResponseSchema,
+        requestId,
+      }),
+    /** The payOS webhook body exactly as received: its signature is checked by the service. */
+    forwardPayosWebhook: (rawJson: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/payment-webhooks/payos`,
+        auth: service,
+        rawJson,
+        schema: payosWebhookResponseSchema,
+        timeoutMs: 15_000,
+        requestId,
+      }),
+
+    // --- admin: orders, registrations, check-in ---
+    listOrders: (accessToken: string, query: Partial<OrderListQuery>, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/orders${queryString(query)}`,
+        auth: user(accessToken),
+        schema: orderListSchema,
+        requestId,
+      }),
+    getOrder: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/orders/${segment(id)}`,
+        auth: user(accessToken),
+        schema: orderDetailSchema,
+        requestId,
+      }),
+    reconcileOrder: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/orders/${segment(id)}/reconcile`,
+        auth: user(accessToken),
+        schema: orderDetailSchema,
+        timeoutMs: 20_000,
+        requestId,
+      }),
+    resendTickets: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/orders/${segment(id)}/resend-tickets`,
+        auth: user(accessToken),
+        requestId,
+      }),
+    refundOrder: (
+      accessToken: string,
+      id: string,
+      body: OrderRefundRequest,
+      stepUpToken: string,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/orders/${segment(id)}/refund`,
+        auth: user(accessToken),
+        body,
+        headers: { [STEP_UP_HEADER]: stepUpToken },
+        schema: orderDetailSchema,
+        requestId,
+      }),
+    listRegistrations: (
+      accessToken: string,
+      eventId: string,
+      query: Partial<RegistrationListQuery>,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/events/${segment(eventId)}/registrations${queryString(query)}`,
+        auth: user(accessToken),
+        schema: registrationListSchema,
+        requestId,
+      }),
+    exportRegistrations: (
+      accessToken: string,
+      eventId: string,
+      options: { includeRefunded: boolean; stepUpToken: string },
+      requestId?: string,
+    ) =>
+      http.download({
+        path: `${V1}/events/${segment(eventId)}/registrations/export${queryString({
+          includeRefunded: options.includeRefunded,
+        })}`,
+        auth: user(accessToken),
+        headers: { [STEP_UP_HEADER]: options.stepUpToken },
+        timeoutMs: 30_000,
+        requestId,
+      }),
+    checkIn: (accessToken: string, body: CheckinRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/checkins`,
+        auth: user(accessToken),
+        body,
+        schema: checkinResponseSchema,
+        requestId,
+      }),
+    getCheckinStats: (accessToken: string, eventId: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/events/${segment(eventId)}/checkin-stats`,
+        auth: user(accessToken),
+        schema: checkinStatsSchema,
         requestId,
       }),
   };

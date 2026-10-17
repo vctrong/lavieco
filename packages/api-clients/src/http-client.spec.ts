@@ -136,3 +136,68 @@ describe("createHttpClient", () => {
     ).rejects.toBeInstanceOf(ServiceUnavailableError);
   });
 });
+
+describe("raw bodies, extra headers and downloads", () => {
+  it("sends a raw JSON body byte for byte with extra headers", async () => {
+    const fetchImpl = vi.fn(async (_url: string | URL | Request, _init?: RequestInit) =>
+      ok({ received: true }),
+    );
+    const client = createHttpClient({
+      baseUrl: "http://svc",
+      audience: "program-service",
+      signer,
+      fetchImpl,
+    });
+    const raw = '{"data":{"amount":1000,"orderCode":1},"signature":"x"}';
+    await client.call({
+      method: "POST",
+      path: "/hook",
+      auth: { kind: "service" },
+      rawJson: raw,
+      headers: { "x-step-up-token": "t" },
+      schema: z.object({ received: z.literal(true) }),
+    });
+    const init = fetchImpl.mock.calls[0]![1]!;
+    expect(init.body).toBe(raw);
+    expect((init.headers as Record<string, string>)["x-step-up-token"]).toBe("t");
+  });
+
+  it("downloads a file with its name, and turns errors into Problem Details", async () => {
+    const file = new Response(new Uint8Array([1, 2, 3]), {
+      headers: {
+        "content-type": "application/vnd.ms-excel",
+        "content-disposition": 'attachment; filename="LAVIECO_x_2026-10-20.xlsx"',
+      },
+    });
+    const client = createHttpClient({
+      baseUrl: "http://svc",
+      audience: "program-service",
+      signer,
+      fetchImpl: vi.fn(async () => file),
+    });
+    const downloaded = await client.download({ path: "/f", auth: { kind: "service" } });
+    expect(downloaded.fileName).toBe("LAVIECO_x_2026-10-20.xlsx");
+    expect(new Uint8Array(downloaded.body)).toEqual(new Uint8Array([1, 2, 3]));
+
+    const failing = createHttpClient({
+      baseUrl: "http://svc",
+      audience: "program-service",
+      signer,
+      fetchImpl: vi.fn(
+        async () =>
+          new Response(
+            JSON.stringify({
+              type: "t",
+              title: "x",
+              status: 403,
+              code: "auth.step_up_required",
+            }),
+            { status: 403, headers: { "content-type": "application/problem+json" } },
+          ),
+      ),
+    });
+    await expect(
+      failing.download({ path: "/f", auth: { kind: "service" } }),
+    ).rejects.toBeInstanceOf(ServiceProblemError);
+  });
+});

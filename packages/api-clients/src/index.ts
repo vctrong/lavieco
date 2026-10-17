@@ -10,6 +10,7 @@ export {
   type CallAuth,
   type CallOptions,
   type HttpClient,
+  type DownloadedFile,
   type HttpClientOptions,
 } from "./http-client";
 export {
