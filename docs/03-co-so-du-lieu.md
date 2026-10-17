@@ -96,6 +96,11 @@
 | | `outbox` | Việc cần làm bất đồng bộ (email, audit) | tạm thời (có TTL) |
 | | `idempotency_keys` | Khóa chống gửi trùng | tạm thời (TTL 48 giờ) |
 | | `counters` | Bộ đếm tuần tự (mã lead) | 1 |
+| **program** | `event_types` | Loại chương trình do admin quản lý | vài |
+| | `events` | Chương trình (workshop, talkshow, triển lãm), kèm form đăng ký nhúng | chục–trăm/năm |
+| | `ticket_types` | Loại vé theo chương trình, bộ đếm `sold`/`held` | ≤ 10 mỗi chương trình |
+| | `preview_tokens` | Token xem trước 10 phút (chỉ lưu băm) | tạm thời (TTL) |
+| | `outbox` | Làm mới cache `web`; sau này email vé | tạm thời (TTL) |
 
 \* Ước lượng giả định (AR1 ở `02`), chưa phải số đo. Với quy mô này **không cần sharding**; thiết kế tập trung vào đúng đắn và bảo mật, không phải cực đại hóa thông lượng.
 
@@ -649,6 +654,8 @@ Yêu cầu **replica set** (`02` §8.1). Các thao tác dùng giao dịch nhiề
 | `content_revisions`, `qr_codes` | Vô thời hạn | Bất biến / lưu trữ |
 | `otp_codes` | Hết hạn + 1 ngày | TTL `purgeAt` |
 | `rate_limit_buckets` | Hết cửa sổ (tối đa 10 phút) | TTL `expiresAt` |
+| `preview_tokens` | 10 phút | TTL `expiresAt`; truy vấn còn kiểm tra hạn |
+| `events` nháp bị xoá (`discarded`) | Vô thời hạn | Xoá mềm, không lộ ra ngoài, nhả `slug` |
 | `users` (member) | Tới khi người dùng yêu cầu xóa tài khoản | Xóa/ẩn danh hóa theo 8.2 |
 | Dữ liệu cá nhân của đơn/vé (`lavieco_program`): họ tên, email, SĐT người đặt, câu trả lời form (`order_answers`), ghi chú | **24 tháng kể từ khi chương trình kết thúc** (DQ8, đã chốt) | **Ẩn danh hóa** bằng job định kỳ (làm ở phase có đơn hàng). Đơn và vé vẫn còn, chỉ mất PII. |
 | Dữ liệu tài chính không chứa PII: `orderCode`, `amount`, `paidAt`, mã đối soát payOS, trạng thái hoàn tiền, `refundedAt` (`orders`, `payment_events`) | **Tối thiểu 10 năm** (DQ8, đã chốt) | Giữ nguyên, không xóa. Cần xác nhận lại với kế toán khi LAVIECO có pháp nhân. |
@@ -699,22 +706,41 @@ Chưa thiết kế chi tiết; nêu để đảm bảo thiết kế GĐ1 không 
 
 Đề xuất: collection **`reader_states`** thuộc `content-service` (không thuộc `identity`), khóa theo `userId`, chứa ghi chú, đánh dấu, tiến độ. Lý do: dữ liệu neo vào `pageId`/`blockId` của cẩm nang mà `content-service` hiểu; quyền riêng tư (BR-11) thực thi bằng `ownerId` ở service. Mỗi bản ghi có **ID sinh phía client (UUID)**, `updatedAt`, cờ xóa mềm để gộp từ IndexedDB theo *last-write-wins* từng bản ghi. Điều này đã được phản ánh ở `02` §4.2.
 
-### 9.2 Database `lavieco_program` (GĐ1, phác thảo; chốt ở Phase 2)
+### 9.2 Database `lavieco_program` (GĐ1; Phase 2 đã chốt 4 collection đầu)
 
-Theo `05-programs-module.md` và các quyết định 17/10/2026. Tiền là số nguyên VND; mọi tài liệu có `schemaVersion`, `createdAt`, `updatedAt`, `revision` khi nhiều người sửa.
+Theo `05-programs-module.md` và các quyết định 17–18/10/2026. Tiền là số nguyên VND; mọi tài liệu có `schemaVersion`, `createdAt`, `updatedAt`; tài liệu nhiều người sửa có `revision` (khóa lạc quan, sai → `409`). Hợp đồng Zod ở `packages/shared/src/events`.
+
+**Đã dựng (Phase 2):**
+
+| Collection | Trường chính | Index |
+|---|---|---|
+| `event_types` | `key` (sinh từ tên tiếng Việt, không đổi), `name: LocalizedText`, `sortOrder`, `archivedAt` (lưu trữ thay vì xoá), `revision`. Seed bằng migration: `workshop`, `talkshow`, `trien-lam`. | `idx_event_types_key_uq`, `idx_event_types_sort_order` |
+| `events` | `kind` (`standard` \| `past`), `slug`, `status` (`draft` · `published` · `closed` · `ended`), `title`, `searchKey`, `typeId`, `format` (`online` \| `offline`), `startAt`, `endAt`, `venue { name, address, mapUrl }` \| null, `onlineUrl` \| null, `summary`, `description` (văn bản thuần, TODO PQ5), `safetyNotes` (không bắt buộc), `cancellationPolicy`, `speakers` ≤ 10, `agenda` ≤ 30, `faq` ≤ 20, `cover` \| null (TODO media), `form.questions` ≤ 30, `pricing { isFree, priceFrom }`, `publishedAt`, `firstPublishedAt`, `statusHistory` ≤ 100, `discarded`/`discardedAt`, `revision`, `createdBy`/`updatedBy` (`{ userId }`) | `idx_events_slug_uq` (partial `discarded: false`), `idx_events_status_start_at`, `idx_events_type_id_status` |
+| `ticket_types` | `eventId`, `name`, `description`, `price`, `quantity` (`null` = không giới hạn), `saleStartAt`/`saleEndAt`, `maxPerOrder` ≤ 20, `sortOrder`, `hidden`, `sold`, `held`, `revision` | `idx_ticket_types_event_id_sort_order` |
+| `preview_tokens` | `tokenHash` (SHA-256), `eventId`, `createdBy`, `expiresAt` (+10 phút) | `idx_preview_tokens_token_hash_uq`, `idx_preview_tokens_expires_at` (TTL) |
+| `outbox` | Job `web.revalidate_event` `{ slug }` | như các service khác |
+
+Quy tắc dữ liệu:
+
+- **Miễn phí** = chương trình có **ít nhất một loại vé đang hiện với giá 0**. `pricing.isFree` và `pricing.priceFrom` (giá thấp nhất của vé đang hiện) **được tính từ `ticket_types` và lưu sẵn** trên `events` trong cùng giao dịch mỗi khi loại vé đổi, để trang công khai lọc được. Trường này không tăng `revision`.
+- **"Đã có người đăng ký"** = tổng `sold + held > 0` trên các loại vé. Khi đó: không gỡ xuất bản; form chỉ thêm/ẩn/sửa chữ/sắp xếp câu hỏi và thêm lựa chọn (BR-17); giá vé cố định, `quantity` không dưới `sold + held`, vé chỉ ẩn chứ không xoá.
+- **Trường cố định của form** không lưu trong `form.questions`: họ tên, email, SĐT, đồng ý dữ liệu; ô "đã đọc lưu ý an toàn" chỉ có khi `safetyNotes` khác rỗng.
+- **`slug`** sinh từ tiêu đề nếu không nhập; khoá lại sau lần xuất bản đầu (`firstPublishedAt`).
+- **`kind: past`** (sự kiện đã diễn ra trước khi có hệ thống): không loại vé, không form; xuất bản thẳng vào `ended`, chỉ hiện ở mục "Chương trình đã diễn ra".
+- `onlineUrl` **không bao giờ** có trong phản hồi công khai. Phản hồi công khai cũng không có `form`, tác giả, lịch sử, `revision`, bộ đếm thô (chỉ "còn ≤ 10 chỗ"/"hết chỗ").
+- `createdBy`/`updatedBy` chỉ lưu `userId`: token staff không mang tên hiển thị để chụp lại.
+
+**Phác thảo cho Phase 3 → 6** (chưa dựng):
 
 | Collection | Nội dung chính | Ghi chú |
 |---|---|---|
-| `event_types` | Loại chương trình do admin quản lý (seed: Workshop, Talkshow, Triển lãm) | `program:write` |
-| `events` | `slug`, tiêu đề, `typeId`, `format` (`online` \| `offline`), thời gian, địa điểm/link online, mô tả, lưu ý an toàn, diễn giả, chương trình, FAQ, chính sách huỷ; `status` (`draft` · `published` · `closed` · `ended`); `form` (câu hỏi tuỳ chỉnh, ≤ 30, mỗi câu có `id` bất biến, `hidden`) | Không theo mẫu publishable (BR-17). `isFree` tính từ giá vé. |
-| `ticket_types` | `eventId`, tên, `price` (VND), `quantity` (`null` = không giới hạn), `sold`, `held`, giai đoạn mở bán, `maxPerOrder` | Giữ chỗ nguyên tử bằng `$expr` |
 | `orders` | `orderCode` (số, payOS), `eventId`, `userId?`, `buyer { name, email, emailNormalized, phone, phoneNormalized }`, `isGuardian`, `items` (bản chụp giá), `amount`, `status`, `expiresAt`, thông tin payOS tối thiểu | Không có thông tin người tham dự (BR-13) |
 | `order_answers` | Câu trả lời form tuỳ chỉnh **theo đơn**, khóa theo `questionId` | Xuất Excel kể cả câu đã ẩn |
 | `tickets` | `code` ngắn ngẫu nhiên (ví dụ `LVC-7K3Q9M`), `orderId`, `ticketTypeId`, `qrToken` (≥ 32 byte ngẫu nhiên), `status` (`valid` · `used` · `void`), `checkedInAt`, `checkedInBy` | Không có PII trên vé |
 | `payment_events` | `orderCode`, `type`, các trường cần đối soát (số tiền, mã tham chiếu, thời điểm), `verified` | Không lưu nguyên payload có tên người chuyển |
+| `idempotency_keys` | Như các service khác | Checkout |
 
 **Lưu giữ (DQ8, 8.1).** Thiết kế schema sao cho PII (khối `buyer`, `order_answers`, ghi chú) **tách khỏi** trường tài chính. Job ẩn danh chỉ cần xóa/ghi đè các trường PII: đặt `buyer` về giá trị ẩn danh, thêm `anonymizedAt`. `orderCode`, `amount`, `paidAt`, mã đối soát, trạng thái hoàn tiền giữ ≥ 10 năm. Mốc tính 24 tháng là `endAt` của sự kiện. Job làm ở phase có đơn hàng.
-| `outbox`, `idempotency_keys` | Như các service khác | |
 
 ## 10. Vận hành: migration, index, quyền truy cập
 
@@ -811,4 +837,5 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 | v0.1 | 20/09/2026 | Bản nháp đầu: 3 database Giai đoạn 1, mẫu publishable, index, vòng đời và quyền riêng tư, định hướng GĐ2–3 | V.C. Trọng |
 | v0.2 | 20/09/2026 | Đồng bộ với `02`, `04`: `OutboxModule`/`NotifyModule` ở `service-kit`, email mời gửi trực tiếp, đổi tham chiếu câu hỏi sang `AQ`, bỏ mục "cần cập nhật" đã áp dụng | V.C. Trọng |
 | v0.4 | 17/10/2026 | Member + OTP: `users` (`googleSub`, `emailVerifiedAt`, `consent`), `otp_codes`, `rate_limit_buckets`, `outbox` của identity; phác thảo `lavieco_program` (9.2); tài khoản DB `svc_program`; Atlas; migration runner; DQ8 chốt (PII đơn/vé 24 tháng sau khi chương trình kết thúc rồi ẩn danh; dữ liệu tài chính không PII ≥ 10 năm) | V.C. Trọng |
+| v0.5 | 18/10/2026 | Phase 2: chốt `event_types`, `events`, `ticket_types`, `preview_tokens` của `lavieco_program` (9.2), định nghĩa "miễn phí" và "đã có người đăng ký", sự kiện lưu trữ `kind: past`, bảng lưu giữ cho token xem trước và nháp bị xoá | V.C. Trọng |
 | v0.3 | 20/09/2026 | Bỏ khóa `team` và khối `team_members` khỏi `pages` (Đội ngũ là dữ liệu tĩnh); ghi chú ranh giới `media` và `public/` | V.C. Trọng |

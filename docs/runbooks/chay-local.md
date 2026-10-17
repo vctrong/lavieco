@@ -1,6 +1,6 @@
 # Runbook: chạy hệ thống trên máy dev
 
-Áp dụng từ Phase 1 (17/10/2026): `identity-service`, `web`, `admin`. Giá trị thật chỉ nằm trong các tệp `.env.local` (gitignore); **không commit, không dán vào chat/issue**.
+Áp dụng từ Phase 1 (17/10/2026): `identity-service`, `web`, `admin`; từ Phase 2 (18/10/2026) thêm `program-service`. Giá trị thật chỉ nằm trong các tệp `.env.local` (gitignore); **không commit, không dán vào chat/issue**.
 
 ## 1. Chuẩn bị
 
@@ -24,8 +24,14 @@ Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32
 | `services/identity-service` | `JWT_SIGNING_KEYS` | `[<PRIVATE_JWK của identity-service>]`, bọc trong dấu nháy đơn |
 | | `SERVICE_TOKEN_TRUSTED_KEYS` | `{"web": <PUBLIC_JWK của web>, "admin": <PUBLIC_JWK của admin>}`, bọc trong dấu nháy đơn |
 | | `TOTP_ENCRYPTION_KEY`, `OTP_PEPPER` | hai giá trị `RANDOM_32B` |
+| `services/program-service` | `SERVICE_TOKEN_TRUSTED_KEYS` | giống của `identity-service`: `{"web": <PUBLIC_JWK của web>, "admin": <PUBLIC_JWK của admin>}` |
+| | `REVALIDATE_SECRET` | một giá trị `RANDOM_32B` (dùng chung với `web`) |
+| | `IDENTITY_JWKS_URL`, `WEB_APP_URL` | giữ mặc định trong `.env.example` |
 | `apps/web` | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của web>` |
+| | `REVALIDATE_SECRET` | **cùng giá trị** với `program-service` |
+| | `PROGRAM_SERVICE_URL`, `ADMIN_APP_URL` | giữ mặc định (`ADMIN_APP_URL` là origin duy nhất được nhúng trang xem trước) |
 | `apps/admin` | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của admin>` |
+| | `PROGRAM_SERVICE_URL`, `WEB_APP_URL` | giữ mặc định |
 
 Khóa riêng (có trường `"d"`) chỉ nằm ở đúng một nơi. Service từ chối nếu `SERVICE_TOKEN_TRUSTED_KEYS` chứa khóa riêng.
 
@@ -34,7 +40,8 @@ Khóa riêng (có trường `"d"`) chỉ nằm ở đúng một nơi. Service t�
 ```
 npm run dev:infra                                      # Mongo replica set, MinIO, Mailpit
 npm run db:migrate -w @lavieco/identity-service        # tạo index (idempotent, chạy lại an toàn)
-npm run dev                                            # web :3000, admin :3001, identity :4001
+npm run build -w @lavieco/program-service && npm run db:migrate -w @lavieco/program-service   # index + seed loại chương trình
+npm run dev                                            # web :3000, admin :3001, identity :4001, program :4004
 ```
 
 - Email (mã OTP, thông báo) xem ở Mailpit: http://localhost:8025
@@ -46,6 +53,7 @@ npm run dev                                            # web :3000, admin :3001,
 ```
 npm run lint && npm run typecheck && npm run test && npm run deps:check
 npm run test:int -w @lavieco/identity-service          # cần Docker (Testcontainers)
+npm run test:int -w @lavieco/program-service           # cần Docker (Testcontainers)
 npm run gen:openapi                                    # sinh docs/api/*.openapi.json
 ```
 

@@ -24,7 +24,7 @@
 
 - Chỉ thu thông tin **người đặt** (họ tên, email, SĐT) + số lượng vé. Không thu tên từng người tham dự; mỗi vé vẫn có QR riêng.
 - Chương trình cho trẻ em: người đặt là phụ huynh/người giám hộ, có ô xác nhận. Không thu thông tin của trẻ (BR-08).
-- **Không** thu dị ứng, cân nặng, CCCD hay dữ liệu sức khoẻ. Thay bằng mục "Lưu ý an toàn" trên trang chi tiết (bột vỏ sò, nhựa epoxy, có phát găng tay/khẩu trang), ô "Tôi đã đọc lưu ý an toàn" ở checkout, và ô ghi chú tự do không bắt buộc.
+- **Không** thu dị ứng, cân nặng, CCCD hay dữ liệu sức khoẻ. Thay bằng mục "Lưu ý an toàn" trên trang chi tiết (bột vỏ sò, nhựa epoxy, có phát găng tay/khẩu trang), ô "Tôi đã đọc lưu ý an toàn" ở checkout **khi chương trình có lưu ý an toàn** (lưu ý không bắt buộc, chốt 18/10/2026), và ô ghi chú tự do không bắt buộc.
 - Câu trả lời form tuỳ chỉnh gắn **theo đơn**. Có ô đồng ý xử lý dữ liệu (BR-06). Turnstile chuẩn bị sẵn, bật khi có spam.
 
 **Route.**
@@ -37,11 +37,14 @@
 - Vòng đời `draft → published → closed | ended`. Admin tự xem trước (trang preview đúng giao diện công khai, chỉ ai có `program:read` xem được, có link gửi cho đồng đội) rồi tự xuất bản, không cần người duyệt thứ hai. Được "Gỡ xuất bản" về `draft` khi chưa có người đăng ký.
 - **Form builder** kiểu Google Form, gắn theo chương trình:
   - Loại câu hỏi: text ngắn, đoạn văn, chọn một, chọn nhiều, dropdown; có bắt buộc, mô tả phụ, kéo-thả.
-  - Trường cố định luôn có: họ tên, email, SĐT, đồng ý dữ liệu, đã đọc lưu ý an toàn.
+  - Trường cố định luôn có: họ tên, email, SĐT, đồng ý dữ liệu. Ô "đã đọc lưu ý an toàn" chỉ hiện khi chương trình có lưu ý an toàn.
   - Đã có người đăng ký thì chỉ được thêm hoặc ẩn câu hỏi, không xoá hay đổi kiểu. Câu trả lời cũ vẫn xuất ra Excel.
 - **Loại chương trình** do admin quản lý trong Cài đặt (seed: Workshop, Talkshow, Triển lãm). Hình thức **online/offline** là trường riêng.
 - Có nút **Nhân bản chương trình** (tạo nháp mới, copy thông tin, loại vé và form).
-- `isFree` tính ra từ giá vé. Triển lãm không giới hạn chỗ: `quantity = null`. Không làm danh sách chờ.
+- `isFree` tính ra từ giá vé: **miễn phí = có loại vé đang hiện giá 0**. Triển lãm không giới hạn chỗ: `quantity = null`. Không làm danh sách chờ.
+- Trang công khai: không hiện số chỗ khi `quantity = null`; "Còn X chỗ" chỉ khi còn ≤ 10; "Hết chỗ" khi 0.
+- **Sự kiện đã diễn ra** (`kind: past`, chốt 18/10/2026): ghi lại chương trình diễn ra trước khi có hệ thống. Không loại vé, không form, bỏ điều kiện bắt đầu ở tương lai (nhưng phải đã kết thúc), xuất bản thẳng vào `ended`, chỉ hiện ở mục "Chương trình đã diễn ra".
+- Thiếu link trực tuyến chỉ là **cảnh báo** khi xuất bản; Phase 3 không phát hành vé/email cho sự kiện trực tuyến khi link còn trống.
 - Chương trình online: link nằm trong email vé và trên trang vé, gửi nhắc lại 24 giờ trước.
 
 **Khác.**

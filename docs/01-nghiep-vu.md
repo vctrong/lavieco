@@ -528,9 +528,9 @@ Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định b�
 | Mã | Luồng chính tóm tắt | Quy tắc |
 |---|---|---|
 | UC-09 | Đăng ký tài khoản: tên, email, mật khẩu, ô đồng ý → mã 6 số qua email → tài khoản tạo xong và đăng nhập. Hoặc Google (chỉ Member). Quên mật khẩu bằng OTP email. | BR-06, BR-12 |
-| UC-30 | Chọn chương trình → chọn loại vé, số lượng → nhập thông tin người đặt, câu hỏi tuỳ chỉnh, tick ô đồng ý và ô đã đọc lưu ý an toàn → OTP email (bỏ qua nếu Member có email đã xác thực) → giữ chỗ 15 phút → thanh toán VietQR. Chương trình miễn phí thì phát vé ngay. | BR-06, BR-08, BR-12 → 15 |
+| UC-30 | Chọn chương trình → chọn loại vé, số lượng → nhập thông tin người đặt, câu hỏi tuỳ chỉnh, tick ô đồng ý (và ô đã đọc lưu ý an toàn nếu chương trình có lưu ý) → OTP email (bỏ qua nếu Member có email đã xác thực) → giữ chỗ 15 phút → thanh toán VietQR. Chương trình miễn phí thì phát vé ngay. | BR-06, BR-08, BR-12 → 15 |
 | UC-31 | Vé gửi qua email (mỗi vé một QR). Xem lại bằng link ký số, tra cứu bằng email + OTP, hoặc trong Vé của tôi. | BR-16 |
-| UC-32 | Soạn sự kiện → xem trước → tự xuất bản (không cần người duyệt thứ hai) → đóng/kết thúc. Gỡ xuất bản khi chưa có đăng ký; nhân bản sự kiện. | BR-17 |
+| UC-32 | Soạn sự kiện → xem trước → tự xuất bản (không cần người duyệt thứ hai) → đóng/kết thúc. Gỡ xuất bản khi chưa có đăng ký; nhân bản sự kiện. Ghi lại **sự kiện đã diễn ra** trước khi có hệ thống: không vé, không form, xuất bản thẳng vào "đã kết thúc". | BR-17 |
 | UC-33 | Xem người đăng ký theo từng sự kiện, xuất Excel (step-up + audit). Xem đơn, đối soát payOS; hoàn tiền thủ công rồi cập nhật trạng thái. | BR-04, BR-06 |
 | UC-34 | Quét QR (hoặc nhập mã vé) → hợp lệ / đã dùng / không hợp lệ; hiện bộ đếm đã check-in / tổng. | BR-16 |
 
@@ -769,3 +769,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.3 | 20/09/2026 | Đội ngũ là nội dung tĩnh (UC-08, A8) | V.C. Trọng |
 | v0.4 | 16/10/2026 | Đồng bộ định vị v1.3: ba lớp giá trị (thêm Lớp Truyền thông, chưa có tính năng GĐ1), cập nhật nhóm sản phẩm minh chứng | V.C. Trọng |
 | v0.5 | 17/10/2026 | Phân hệ Chương trình vào GĐ1 (ADR-014): Member (UC-09 lên GĐ1), UC-30 → 34, BR-12 → 17, quyền mới trong ma trận, A1 cập nhật, A9 | V.C. Trọng |
+| v0.6 | 18/10/2026 | UC-32: sự kiện đã diễn ra (lưu trữ); UC-30: ô lưu ý an toàn chỉ khi chương trình có lưu ý | V.C. Trọng |

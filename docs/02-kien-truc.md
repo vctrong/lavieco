@@ -298,6 +298,8 @@ Chưa cần ở GĐ1. Khi cần (điều kiện ở mục 14):
 >
 > **Webhook payOS** không đi thẳng vào service: Route Handler `web/api/payments/payos/webhook` chuyển nguyên raw body tới `program-service`, và service xác minh chữ ký bằng checksum key (ADR-015).
 
+> **Làm mới cache `web`** đi theo chiều ngược lại, qua mạng riêng: service ghi job `web.revalidate_*` vào outbox trong cùng giao dịch, worker gọi `POST web/api/revalidate` với chữ ký HMAC-SHA256 trên `<timestamp>.<body>` (`REVALIDATE_SECRET`, lệch ≤ 5 phút). `web` chỉ nhận danh sách tag (hợp đồng `revalidateRequestSchema` ở `shared`), không nhận đường dẫn. Đang dùng: `program-service` với tag `program:events`, `program:events:<slug>` (Phase 2).
+
 ### 6.4 Chịu lỗi & suy giảm êm
 
 | Sự cố | Hành vi mong muốn |
@@ -473,7 +475,7 @@ flowchart LR
     a["admin"]
   end
   subgraph z3["Vùng 3: Mạng riêng"]
-    s["identity, content, lead"]
+    s["identity, content, lead, program"]
   end
   subgraph z4["Vùng 4: Dữ liệu"]
     d["MongoDB, object storage"]
@@ -486,6 +488,8 @@ flowchart LR
 ```
 
 Quy tắc: dữ liệu đi qua **mỗi ranh giới** đều bị validate lại; không vùng nào tin mặc định vùng ngoài nó.
+
+**Nhúng trang (clickjacking).** Mọi trang của `web` và `admin` từ chối bị nhúng (`X-Frame-Options: DENY`; `web` thêm `frame-ancestors 'none'`). Ngoại lệ duy nhất: `web` `/xem-truoc/*` (xem trước sự kiện bằng token 10 phút) cho phép **đúng origin `admin`** (`frame-ancestors <ADMIN_APP_URL>`), kèm `noindex`. Thiếu `ADMIN_APP_URL` hợp lệ thì trang xem trước cũng từ chối bị nhúng.
 
 ### 9.2 Xác thực (AuthN)
 
@@ -838,3 +842,4 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 | v0.2 | 20/09/2026 | Đồng bộ với `01`, `03`, `04`: sửa số thành phần (5), thêm mục 3.4 (gói dùng chung), module `consent`/`outbox`/`sessions`/`signing-keys`, permission `site:read`, audit qua outbox, CI/local env, ADR-012, đổi mã câu hỏi sang `AQ` | V.C. Trọng |
 | v0.3 | 20/09/2026 | Thêm `proxy.ts` (không phải hàng rào bảo mật), tài sản tĩnh, `.env.local`; Đội ngũ là dữ liệu tĩnh | V.C. Trọng |
 | v0.4 | 17/10/2026 | Phân hệ Chương trình vào GĐ1: 6 thành phần, `program-service` (ADR-014), payOS (ADR-015), Member + Google + OTP (ADR-016), service token theo bên gọi (ADR-018), 6 permission mới, AQ5 chốt, AR2/AR5 | V.C. Trọng |
+| v0.5 | 18/10/2026 | Phase 2: luồng làm mới cache service → `web/api/revalidate` (HMAC, qua outbox); chính sách nhúng trang, ngoại lệ xem trước sự kiện cho origin `admin`; `program` trong vùng mạng riêng | V.C. Trọng |
