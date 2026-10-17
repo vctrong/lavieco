@@ -96,6 +96,8 @@ export const orderCreateRequestSchema = z.object({
   consentVersion: consentVersionSchema,
   /** Required only when the event has safety notes. */
   safetyAcknowledged: z.boolean().default(false),
+  /** Required (true) when the event is for children; stored as `buyer.isGuardian`. */
+  isGuardian: z.boolean().default(false),
   verificationToken: z.string().min(10).max(4096),
 });
 export type OrderCreateRequest = z.infer<typeof orderCreateRequestSchema>;

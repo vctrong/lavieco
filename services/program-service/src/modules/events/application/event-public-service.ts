@@ -29,6 +29,7 @@ export type PublicRegistrationInfo = {
   blocker: RegistrationBlocker | null;
   questions: FormQuestion[];
   safetyAcknowledgementRequired: boolean;
+  guardianConfirmationRequired: boolean;
 };
 
 export type PublicEventDetailBundle = PublicEventBundle & { registration: PublicRegistrationInfo };
@@ -87,5 +88,6 @@ function registrationInfo(
     blocker: registrationBlocker(event, ticketTypes, now),
     questions: checkoutQuestions(event.form.questions),
     safetyAcknowledgementRequired: needsSafetyAcknowledgement(event),
+    guardianConfirmationRequired: event.forChildren,
   };
 }

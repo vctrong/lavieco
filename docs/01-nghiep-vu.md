@@ -200,6 +200,7 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Xem vé của tôi | — | ✓ | ✓ | ✓ | — | — | — | — |
 | Tạo/sửa/xuất bản sự kiện, loại vé, form | — | — | — | — | ✓ | — | ✓ | — |
 | Xem đơn vé, đối soát payOS | — | — | — | — | ✓ | — | ✓ | đọc |
+| Xem danh sách người đăng ký (có dữ liệu cá nhân) | — | — | — | — | ✓ | — | ✓ | đọc |
 | Hoàn tiền, huỷ vé | — | — | — | — | ✓ | — | ✓ | — |
 | Xuất danh sách người đăng ký | — | — | — | — | ✓ | — | ✓ | — |
 | Check-in tại cửa | — | — | — | — | ✓ | — | ✓ | — |

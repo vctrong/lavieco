@@ -73,7 +73,11 @@ export class CheckoutService {
       throw new DomainError("order.registration_closed", undefined, { reason: blocker });
     }
     if (needsSafetyAcknowledgement(event) && !input.safetyAcknowledged) {
-      throw new DomainError("order.consent_required");
+      throw new DomainError("order.consent_required", undefined, { reason: "safety" });
+    }
+    // Events for children are booked by a parent or guardian (docs/05, BR-08).
+    if (event.forChildren && !input.isGuardian) {
+      throw new DomainError("order.consent_required", undefined, { reason: "guardian" });
     }
     const priced = priceOrder(ticketTypes, input.items, now);
     const answers = validateAnswers(checkoutQuestions(event.form.questions), input.answers);
@@ -109,6 +113,7 @@ export class CheckoutService {
               emailNormalized,
               phone: input.buyer.phone.trim(),
               phoneNormalized: normalizePhone(input.buyer.phone)!,
+              isGuardian: event.forChildren && input.isGuardian,
             },
             items: priced.items,
             amount: priced.amount,

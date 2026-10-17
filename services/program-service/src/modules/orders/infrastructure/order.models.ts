@@ -29,6 +29,7 @@ export const orderSchema = new Schema(
           emailNormalized: { type: String, required: true },
           phone: { type: String, required: true },
           phoneNormalized: { type: String, required: true },
+          isGuardian: { type: Boolean, default: false },
         },
         { _id: false },
       ),

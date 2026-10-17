@@ -74,6 +74,11 @@ const detailsShape = {
   /** Optional. When set, the checkout asks to confirm it was read. */
   safetyNotes: z.string().trim().max(EVENT_LIMITS.safetyNotesMax).default(""),
   cancellationPolicy: z.string().trim().max(EVENT_LIMITS.cancellationPolicyMax).default(""),
+  /**
+   * A programme for children: the booker confirms being their parent or guardian at
+   * checkout. Nothing about the children themselves is ever asked (BR-08).
+   */
+  forChildren: z.boolean().default(false),
   speakers: z.array(eventSpeakerSchema).max(EVENT_LIMITS.speakersMax).default([]),
   agenda: z.array(eventAgendaItemSchema).max(EVENT_LIMITS.agendaMax).default([]),
   faq: z.array(eventFaqItemSchema).max(EVENT_LIMITS.faqMax).default([]),
@@ -143,6 +148,7 @@ export const eventSchema = z.object({
   description: z.string(),
   safetyNotes: z.string(),
   cancellationPolicy: z.string(),
+  forChildren: z.boolean(),
   speakers: z.array(eventSpeakerSchema),
   agenda: z.array(eventAgendaItemSchema),
   faq: z.array(eventFaqItemSchema),

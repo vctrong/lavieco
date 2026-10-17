@@ -29,7 +29,10 @@ const idPipe = new ZodValidationPipe(objectIdSchema);
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 const iso = (date: Date | null) => (date ? date.toISOString() : null);
 
-/** Registrations of one event (`admin`): list with `program:read`, export with step-up. */
+/**
+ * Registrations of one event (`admin`). The list shows the bookers' personal data, so
+ * it needs `order:read` (not `program:read`); the export adds step-up.
+ */
 @ApiTags("registrations")
 @Controller("internal/v1/events/:id/registrations")
 export class RegistrationsController {
@@ -39,7 +42,7 @@ export class RegistrationsController {
   ) {}
 
   @Get()
-  @RequirePermission("program:read")
+  @RequirePermission("order:read")
   @ApiOperation({ summary: "One row per ticket, a column per question (hidden ones too)" })
   @ApiZodResponse(200, registrationListSchema)
   async list(

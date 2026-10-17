@@ -533,9 +533,9 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `user:manage` | ✓ | — | — | — |
 | `audit:read` | ✓ | — | — | ✓ |
 | `privacy:process` (xử lý yêu cầu xóa dữ liệu) | ✓ | — | — | — |
-| `program:read` (sự kiện, loại vé, người đăng ký) | ✓ | ✓ | ✓ | ✓ |
+| `program:read` (sự kiện, loại vé, form; **không** gồm dữ liệu người đăng ký) | ✓ | ✓ | ✓ | ✓ |
 | `program:write` (tạo/sửa/xuất bản sự kiện, loại chương trình) | ✓ | — | ✓ | — |
-| `order:read` (đơn vé, đối soát) | ✓ | — | ✓ | ✓ |
+| `order:read` (đơn vé, đối soát, danh sách người đăng ký có PII) | ✓ | — | ✓ | ✓ |
 | `order:refund` (hoàn tiền, huỷ vé) | ✓ | — | ✓ | — |
 | `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
 | `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |

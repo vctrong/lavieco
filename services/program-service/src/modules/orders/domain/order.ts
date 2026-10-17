@@ -34,6 +34,8 @@ export type OrderBuyer = {
   emailNormalized: string;
   phone: string;
   phoneNormalized: string;
+  /** Confirmed "Tôi là phụ huynh/người giám hộ" (events for children, BR-08). */
+  isGuardian: boolean;
 };
 
 /** payOS payment link, only what the payment page and reconciliation need. */

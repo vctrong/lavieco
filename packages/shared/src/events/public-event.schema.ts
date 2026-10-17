@@ -73,6 +73,8 @@ export const publicRegistrationSchema = z.object({
   blocker: registrationBlockerSchema.nullable(),
   questions: z.array(publicFormQuestionSchema),
   safetyAcknowledgementRequired: z.boolean(),
+  /** `forChildren`: the booker must tick "Tôi là phụ huynh/người giám hộ". */
+  guardianConfirmationRequired: z.boolean(),
 });
 export type PublicRegistration = z.infer<typeof publicRegistrationSchema>;
 

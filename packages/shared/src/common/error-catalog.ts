@@ -49,6 +49,10 @@ export const ERROR_CATALOG = {
   "event.slug_locked": { status: 409, title: "Slug cannot change after the event was published" },
   "event.type_unavailable": { status: 422, title: "Event type does not exist or is archived" },
   "event.past_event_restricted": { status: 409, title: "Past events have no tickets or form" },
+  "event.online_url_locked": {
+    status: 409,
+    title: "The online link of an event with sold tickets can be changed, not removed",
+  },
   "event.discard_not_allowed": {
     status: 409,
     title: "Only never-published drafts can be discarded",

@@ -67,7 +67,7 @@ describe("free registration (Phase 3 'done when')", () => {
     // The answers are stored with the order, nothing about attendees (BR-13).
     const order = await t.db.collection("orders").findOne({ orderCode: created.order.orderCode });
     expect(Object.keys(order!.buyer).sort()).toEqual(
-      ["email", "emailNormalized", "fullName", "phone", "phoneNormalized"].sort(),
+      ["email", "emailNormalized", "fullName", "isGuardian", "phone", "phoneNormalized"].sort(),
     );
     const answers = await t.db.collection("order_answers").findOne({ orderId: order!._id });
     expect(answers!.answers).toEqual([{ questionId, value: "Facebook" }]);
@@ -340,5 +340,70 @@ describe("ticket lookup and access", () => {
       .get("/internal/v1/order-links/6650a1b2c3d4e5f6a7b8c9d0.abc")
       .set("authorization", bearer(await t.staffToken(["super_admin"])))
       .expect(403);
+  });
+});
+
+describe("events for children and online links", () => {
+  it("asks the booker to confirm being a parent or guardian, and stores it", async () => {
+    const { event, ticketTypeIds } = await publishedEvent(t, { details: { forChildren: true } });
+    const detail = await t
+      .http()
+      .get(`/internal/v1/published-events/${event.slug}`)
+      .set("authorization", await web())
+      .expect(200);
+    expect(detail.body.registration.guardianConfirmationRequired).toBe(true);
+    const items = [{ ticketTypeId: ticketTypeIds[0]!, quantity: 1 }];
+    const missing = await book(t, { slug: event.slug, items });
+    expect(missing.status).toBe(422);
+    expect(missing.body).toMatchObject({ code: "order.consent_required", reason: "guardian" });
+    const ok = await book(t, { slug: event.slug, items, extra: { isGuardian: true } });
+    expect(ok.status).toBe(201);
+    const order = await t.db.collection("orders").findOne({ orderCode: ok.body.order.orderCode });
+    expect(order?.buyer.isGuardian).toBe(true);
+  });
+
+  it("lets the online link change but not disappear once tickets are sold", async () => {
+    const { event, ticketTypeIds } = await publishedEvent(t, {
+      details: { format: "online", venue: null, onlineUrl: "https://meet.example/lavieco-1" },
+    });
+    expect(
+      (
+        await book(t, {
+          slug: event.slug,
+          items: [{ ticketTypeId: ticketTypeIds[0]!, quantity: 1 }],
+        })
+      ).status,
+    ).toBe(201);
+    const staff = bearer(await t.staffToken(["coordinator"]));
+    const current = await t
+      .http()
+      .get(`/internal/v1/events/${event.id}`)
+      .set("authorization", staff);
+    const base = {
+      title: current.body.title,
+      typeId: current.body.typeId,
+      format: "online",
+      startAt: current.body.startAt,
+      endAt: current.body.endAt,
+      venue: null,
+      summary: current.body.summary,
+    };
+    const removed = await t
+      .http()
+      .put(`/internal/v1/events/${event.id}`)
+      .set("authorization", staff)
+      .send({ ...base, onlineUrl: null, revision: current.body.revision });
+    expect(removed.status).toBe(409);
+    expect(removed.body.code).toBe("event.online_url_locked");
+    const moved = await t
+      .http()
+      .put(`/internal/v1/events/${event.id}`)
+      .set("authorization", staff)
+      .send({
+        ...base,
+        onlineUrl: "https://meet.example/lavieco-2",
+        revision: current.body.revision,
+      });
+    expect(moved.status).toBe(200);
   });
 });

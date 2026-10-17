@@ -856,6 +856,10 @@
                     "type": "string",
                     "maxLength": 3000
                   },
+                  "forChildren": {
+                    "default": false,
+                    "type": "boolean"
+                  },
                   "speakers": {
                     "default": [],
                     "maxItems": 10,
@@ -1092,6 +1096,9 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "forChildren": {
+                      "type": "boolean"
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -1530,6 +1537,7 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
@@ -1680,6 +1688,9 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "forChildren": {
+                      "type": "boolean"
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -2118,6 +2129,7 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
@@ -2256,6 +2268,10 @@
                     "default": "",
                     "type": "string",
                     "maxLength": 3000
+                  },
+                  "forChildren": {
+                    "default": false,
+                    "type": "boolean"
                   },
                   "speakers": {
                     "default": [],
@@ -2491,6 +2507,9 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "forChildren": {
+                      "type": "boolean"
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -2929,6 +2948,7 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
@@ -3171,6 +3191,9 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "forChildren": {
+                      "type": "boolean"
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -3609,6 +3632,7 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
@@ -3790,6 +3814,9 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "forChildren": {
+                      "type": "boolean"
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -4228,6 +4255,7 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
@@ -4378,6 +4406,9 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "forChildren": {
+                      "type": "boolean"
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -4816,6 +4847,7 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
@@ -6239,13 +6271,17 @@
                         },
                         "safetyAcknowledgementRequired": {
                           "type": "boolean"
+                        },
+                        "guardianConfirmationRequired": {
+                          "type": "boolean"
                         }
                       },
                       "required": [
                         "open",
                         "blocker",
                         "questions",
-                        "safetyAcknowledgementRequired"
+                        "safetyAcknowledgementRequired",
+                        "guardianConfirmationRequired"
                       ],
                       "additionalProperties": false
                     }
@@ -6755,13 +6791,17 @@
                         },
                         "safetyAcknowledgementRequired": {
                           "type": "boolean"
+                        },
+                        "guardianConfirmationRequired": {
+                          "type": "boolean"
                         }
                       },
                       "required": [
                         "open",
                         "blocker",
                         "questions",
-                        "safetyAcknowledgementRequired"
+                        "safetyAcknowledgementRequired",
+                        "guardianConfirmationRequired"
                       ],
                       "additionalProperties": false
                     }
@@ -6907,6 +6947,10 @@
                     "maxLength": 64
                   },
                   "safetyAcknowledged": {
+                    "default": false,
+                    "type": "boolean"
+                  },
+                  "isGuardian": {
                     "default": false,
                     "type": "boolean"
                   },

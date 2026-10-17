@@ -76,6 +76,7 @@ function toPublicRecord(doc: Partial<EventDoc> & { _id: Types.ObjectId }): Publi
     description: doc.description ?? "",
     safetyNotes: doc.safetyNotes ?? "",
     cancellationPolicy: doc.cancellationPolicy ?? "",
+    forChildren: doc.forChildren ?? false,
     speakers: doc.speakers ?? [],
     agenda: doc.agenda ?? [],
     faq: doc.faq ?? [],

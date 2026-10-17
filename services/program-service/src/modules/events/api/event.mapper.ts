@@ -54,6 +54,7 @@ export function toEventDto(snapshot: EventSnapshot): EventView {
     description: event.description,
     safetyNotes: event.safetyNotes,
     cancellationPolicy: event.cancellationPolicy,
+    forChildren: event.forChildren,
     speakers: event.speakers,
     agenda: event.agenda,
     faq: event.faq,
@@ -153,6 +154,7 @@ export function toPublicDetailDto(bundle: PublicEventDetailBundle): PublicEventD
         options: question.options.map((option) => ({ id: option.id, label: option.label })),
       })),
       safetyAcknowledgementRequired: registration.safetyAcknowledgementRequired,
+      guardianConfirmationRequired: registration.guardianConfirmationRequired,
     },
   };
 }

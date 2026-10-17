@@ -128,6 +128,20 @@ describe("registrations and Excel export (step-up + audit)", () => {
     expect(list.columns.map((column) => column.label)).toEqual(["Bạn đến từ đâu?"]);
   });
 
+  it("shows the bookers' personal data to order:read only (not to every program:read)", async () => {
+    const { event } = await freeOrder(1);
+    await t
+      .http()
+      .get(`/internal/v1/events/${event.id}/registrations`)
+      .set("authorization", bearer(await t.staffToken(["content_editor"])))
+      .expect(403);
+    await t
+      .http()
+      .get(`/internal/v1/events/${event.id}/registrations`)
+      .set("authorization", bearer(await t.staffToken(["auditor"])))
+      .expect(200);
+  });
+
   it("refuses the export without a step-up of the same session", async () => {
     const { event } = await freeOrder(1);
     const session = await t.staffSession(["coordinator"]);

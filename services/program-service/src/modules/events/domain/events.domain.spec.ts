@@ -29,6 +29,7 @@ function content(overrides: Partial<EventContent> = {}): EventContent {
     description: "",
     safetyNotes: "",
     cancellationPolicy: "",
+    forChildren: false,
     speakers: [],
     agenda: [],
     faq: [],

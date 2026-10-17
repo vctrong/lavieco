@@ -37,6 +37,7 @@ function toRecord(doc: OrderDoc): OrderRecord {
       emailNormalized: doc.buyer.emailNormalized,
       phone: doc.buyer.phone,
       phoneNormalized: doc.buyer.phoneNormalized,
+      isGuardian: doc.buyer.isGuardian ?? false,
     },
     items: doc.items.map((item) => ({
       ticketTypeId: item.ticketTypeId.toHexString(),
