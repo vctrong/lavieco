@@ -27,6 +27,8 @@ export const auditEventSchema = new Schema(
       default: null,
     },
     meta: { type: Schema.Types.Mixed, default: {} },
+    /** `<service>:<eventId>` of an event sent by another service (ADR-0021); absent otherwise. */
+    sourceEventId: { type: String },
   },
   { collection: "audit_events", timestamps: false, minimize: false },
 );
@@ -37,6 +39,15 @@ auditEventSchema.index({ action: 1, at: -1 }, { name: "idx_audit_events_action_a
 auditEventSchema.index(
   { "target.type": 1, "target.id": 1, at: -1 },
   { name: "idx_audit_events_target_at" },
+);
+
+auditEventSchema.index(
+  { sourceEventId: 1 },
+  {
+    name: "idx_audit_events_source_event_id_uq",
+    unique: true,
+    partialFilterExpression: { sourceEventId: { $type: "string" } },
+  },
 );
 
 /** Registers the model; imported by the module file so only infrastructure touches Mongoose (S1). */

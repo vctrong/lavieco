@@ -67,6 +67,8 @@ export type MemberEmailProofRequest = z.infer<typeof memberEmailProofRequestSche
  * small and never holds personal data; identity fills the actor's email itself.
  */
 export const auditEventIngestRequestSchema = z.object({
+  /** Id chosen by the sender: outbox retries record the event only once. */
+  eventId: z.uuid(),
   at: isoDateTimeSchema,
   action: z
     .string()

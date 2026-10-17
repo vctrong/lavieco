@@ -35,7 +35,7 @@ Mỗi bên gọi có **một cặp khoá Ed25519** sinh bằng `npm run keys:gen
 |---|---|
 | `apps/web` (`"web"`) | `identity-service`, `program-service` |
 | `apps/admin` (`"admin"`) | `identity-service`, `program-service` |
-| `program-service` (`"program-service"`) | `content-service` (gắn/giải phóng ảnh) |
+| `program-service` (`"program-service"`) | `content-service` (gắn/giải phóng ảnh), `identity-service` (ghi audit qua outbox, ADR-021) |
 
 Lời gọi thay mặt người dùng (avatar của member, tải ảnh của staff) dùng **token người dùng**, không dùng service token, nên `content-service` không cần khoá của `web`/`admin`.
 
@@ -105,7 +105,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | | `info` |
 | `MONGODB_URI` | Bắt buộc | **Có** (prod chứa mật khẩu) | Chuỗi kết nối MongoDB | Dev: mặc định compose. Prod: Atlas → Database → Connect → Drivers, user `svc_identity` | Dev **không bao giờ** trỏ vào database production (docs/04 §11.1) | `mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true` |
 | `MONGODB_DB` | Bắt buộc | Không | Tên database | Tự đặt | Dev trên Atlas: hậu tố `_dev`; prod: không có `_dev` | `lavieco_identity` |
-| `SERVICE_TOKEN_TRUSTED_KEYS` | Tuỳ chọn (mặc định `{}`) | Không (chỉ khoá công khai) | Khoá công khai của bên được gọi vào | Mục "Service token" ở trên | | `'{"web": {...}, "admin": {...}}'` |
+| `SERVICE_TOKEN_TRUSTED_KEYS` | Tuỳ chọn (mặc định `{}`) | Không (chỉ khoá công khai) | Khoá công khai của `web`, `admin`, `program-service` | Mục "Service token" ở trên | | `'{"web": {...}, "admin": {...}, "program-service": {...}}'` |
 | `JWT_SIGNING_KEYS` | Bắt buộc | **Có** | Mảng JSON khoá riêng ký token người dùng; khoá đầu ký | `npm run keys:generate -w @lavieco/identity-service -- identity-service` → `PRIVATE_JWK`, đặt trong `[ ]` | Xoay khoá: thêm khoá mới lên đầu, giữ khoá cũ tới khi token cũ hết hạn | `'[{"kty":"OKP","crv":"Ed25519","x":"GIA","d":"GIA","kid":"k1"}]'` |
 | `TOTP_ENCRYPTION_KEY` | Bắt buộc | **Có** | Khoá AES-256-GCM mã hoá bí mật TOTP | `RANDOM_32B` của `keys:generate` | Khác nhau từng môi trường; đổi là mất mọi 2FA đã cài | `VE9UUC1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYS0xMg==` |
 | `OTP_PEPPER` | Bắt buộc | **Có** | Pepper HMAC cho mã OTP và khoá giới hạn tần suất | `RANDOM_32B` của `keys:generate` | Khác nhau từng môi trường | `T1RQLWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYQ==` |
@@ -166,3 +166,4 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | 18/10/2026 | `content-service`: tất cả; `web`/`admin`: `CONTENT_SERVICE_URL`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`; `program-service`: `CONTENT_SERVICE_URL`, `SERVICE_TOKEN_PRIVATE_JWK` | Thêm | Phase 2b, `feat/phase2b-media` |
 | 18/10/2026 | Root: biến MinIO | Xoá (ADR-020) | Phase 2b, `feat/phase2b-media` |
 | 17/10/2026 | (tài liệu này được tạo, chưa đổi biến) | | Phase 3, `feat/phase3-registration-payos` |
+| 17/10/2026 | `identity-service`: `SERVICE_TOKEN_TRUSTED_KEYS` phải có thêm khoá công khai `"program-service"` | Đổi nội dung (không đổi tên) | Phase 3, `feat/phase3-registration-payos` |

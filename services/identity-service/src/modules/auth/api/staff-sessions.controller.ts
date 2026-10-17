@@ -14,9 +14,12 @@ import {
   staffLoginResponseSchema,
   staffMfaRequestSchema,
   staffProfileSchema,
+  stepUpRequestSchema,
+  stepUpResponseSchema,
   tokenPairSchema,
   type StaffLoginRequest,
   type StaffMfaRequest,
+  type StepUpRequest,
 } from "@lavieco/shared/identity";
 
 import { StaffAuthService } from "../application/staff-auth-service";
@@ -45,6 +48,20 @@ export class StaffSessionsController {
   @ApiZodResponse(200, tokenPairSchema)
   verify(@ZodBody(staffMfaRequestSchema) body: StaffMfaRequest) {
     return this.auth.verifySecondFactor(body.mfaToken, body.code);
+  }
+
+  @Post("staff/step-up")
+  @HttpCode(200)
+  @RequireStaff()
+  @ApiOperation({
+    summary: "Re-confirm with a TOTP code; returns a 5-minute step-up token (ADR-0021)",
+  })
+  @ApiZodResponse(200, stepUpResponseSchema)
+  stepUp(
+    @CurrentPrincipal() principal: StaffPrincipal,
+    @ZodBody(stepUpRequestSchema) body: StepUpRequest,
+  ) {
+    return this.auth.stepUp(principal.userId, principal.sessionId, body.code);
   }
 
   @Get("staff/me")

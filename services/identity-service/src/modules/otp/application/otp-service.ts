@@ -11,7 +11,7 @@ import {
 
 import { constantTimeEqual, hmacSha256, randomDigits, randomToken } from "../../security";
 import type { TokenSigner } from "../../signing-keys";
-import type { UserRepository } from "../../users";
+import { canStartMemberLogin, type UserRepository } from "../../users";
 import { checkAttempt, mailFor } from "../domain/otp-challenge";
 import type { OtpMailer, OtpRepository, RateLimiter } from "./ports/otp.ports";
 
@@ -106,6 +106,32 @@ export class OtpService {
         subject: challengeId,
         ttlSeconds: OTP_RULES.verificationTtlSeconds,
         claims: { email: challenge.emailNormalized, purpose: challenge.purpose },
+      },
+      now,
+    );
+    return { verificationToken: proof.token, expiresAt: proof.expiresAt.toISOString() };
+  }
+
+  /**
+   * Proof of a signed-in member's own verified email, in the same format as an OTP
+   * proof, so the checkout skips the code (docs/05 §2, ADR-0021). The consumer keeps
+   * it single use by its `sub`; refused when the email was never verified.
+   */
+  async issueMemberProof(
+    userId: string,
+    purpose: Extract<OtpPurpose, "checkout">,
+    now = new Date(),
+  ): Promise<OtpChallengeVerifyResponse> {
+    const user = await this.users.findById(userId);
+    if (!user || !canStartMemberLogin(user) || user.emailVerifiedAt === null) {
+      throw new DomainError("otp.verification_invalid");
+    }
+    const proof = await this.signer.sign(
+      {
+        audience: TOKEN_AUDIENCES.emailVerification,
+        subject: randomToken(16),
+        ttlSeconds: OTP_RULES.verificationTtlSeconds,
+        claims: { email: user.emailNormalized, purpose, uid: user.id },
       },
       now,
     );

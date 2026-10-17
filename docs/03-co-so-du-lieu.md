@@ -284,9 +284,9 @@ Email mời gửi **trực tiếp** qua `NotifyModule` (`@lavieco/service-kit`),
 ```
 
 - **Không sửa, không xóa** từ ứng dụng. Thực thi bằng **vai trò DB riêng** cho collection này chỉ có `find` + `insert` (mục 10.3).
-- Ghi qua endpoint nội bộ của `identity-service`; các service khác đưa vào **outbox cục bộ** trước (mục 7.2) để không mất audit khi `identity-service` tạm ngưng.
+- Ghi qua endpoint nội bộ của `identity-service` (`POST /internal/v1/audit-events`, ADR-021); các service khác đưa vào **outbox cục bộ** trước (mục 7.2) để không mất audit khi `identity-service` tạm ngưng. Sự kiện từ service khác có `sourceEventId` = `<service>:<eventId>` (unique, partial) để outbox gửi lại không ghi hai lần; email người thực hiện do identity điền từ `userId`.
 - Danh sách hành động cần ghi: `02` §9.7.
-- **Index:** `{ at: -1 }` · `{ "actor.userId": 1, at: -1 }` · `{ action: 1, at: -1 }` · `{ "target.type": 1, "target.id": 1, at: -1 }`.
+- **Index:** `{ at: -1 }` · `{ "actor.userId": 1, at: -1 }` · `{ action: 1, at: -1 }` · `{ "target.type": 1, "target.id": 1, at: -1 }` · `idx_audit_events_source_event_id_uq` (`sourceEventId`, partial).
 - **Thời hạn lưu giữ:** chưa chốt (DQ2).
 
 ### 4.4b `otp_codes` và `rate_limit_buckets` (OTP email dùng chung, ADR-016)
