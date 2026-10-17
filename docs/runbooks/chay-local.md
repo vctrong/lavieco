@@ -51,8 +51,10 @@ Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32
 | `apps/web` | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của web>` |
 | | `REVALIDATE_SECRET` | **cùng giá trị** với `program-service` |
 | | `PROGRAM_SERVICE_URL`, `ADMIN_APP_URL` | giữ mặc định (`ADMIN_APP_URL` là origin duy nhất được nhúng trang xem trước) |
+| | `CONTENT_SERVICE_URL`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | mặc định; cloud name **dev** (mục 2.1, trống thì web dùng ảnh minh hoạ) |
 | `apps/admin` | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của admin>` |
-| | `PROGRAM_SERVICE_URL`, `WEB_APP_URL` | giữ mặc định |
+| | `PROGRAM_SERVICE_URL`, `WEB_APP_URL`, `CONTENT_SERVICE_URL` | giữ mặc định |
+| | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | cloud name **dev** (mục 2.1) |
 
 | `services/content-service` | `SERVICE_TOKEN_TRUSTED_KEYS` | `{"program-service": <PUBLIC_JWK của program-service>}` (sinh bằng `keys:generate -- program-service`) |
 | | `CLOUDINARY_*` | khoá của product environment **dev** (mục 2.1) |

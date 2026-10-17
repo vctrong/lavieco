@@ -43,7 +43,7 @@ Phase 2b cần tải ảnh thật: ảnh bìa và thư viện ảnh của chươ
 
 - Không còn bucket/CDN tự vận hành, không có MinIO ở local; lập trình viên cần khoá của product environment dev (`docs/runbooks/chay-local.md`).
 - `program-service` trở thành bên gọi của `content-service` (`@AllowServices("program-service")` cho `attach`/`release`), cần `SERVICE_TOKEN_PRIVATE_JWK` và `CONTENT_SERVICE_URL`.
-- `web`/`admin` hiển thị ảnh bằng `next/image` với loader dựng URL named transformation; cần `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` (không bí mật) và CSP `img-src https://res.cloudinary.com`.
+- `web`/`admin` hiển thị ảnh bằng `next/image` với loader dựng URL named transformation; cần `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` (không bí mật). Hiện CSP chỉ có `frame-ancestors`; khi thêm `img-src` thì phải cho phép `https://res.cloudinary.com`.
 - Cloudinary lỗi: tải ảnh mới thất bại (`503`); ảnh đã có vẫn phục vụ từ CDN của Cloudinary.
 - Có thể có ảnh mồ côi khi `attach` thành công nhưng giao dịch lưu chương trình thất bại; chấp nhận ở GĐ1 (hiếm, chi phí nhỏ), ghi nhận nếu cần job đối soát sau.
 
