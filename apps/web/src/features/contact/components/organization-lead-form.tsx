@@ -4,6 +4,7 @@ import { FiArrowRight } from "react-icons/fi";
 
 import { CheckboxField, PearlDot, SelectField, TextareaField, TextField } from "@lavieco/ui";
 
+import { HoneypotField } from "@/shared/components/honeypot-field";
 import { useLeadForm } from "@/shared/hooks/use-lead-form";
 
 import { submitOrganizationLead } from "../actions/submit-organization-lead";
@@ -35,9 +36,7 @@ export function OrganizationLeadForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      <div aria-hidden="true" className="absolute -left-[9999px]">
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-      </div>
+      <HoneypotField />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <TextField
           label={t.fields.name.label}

@@ -4,6 +4,7 @@ import { FiArrowRight } from "react-icons/fi";
 
 import { CheckboxField, PearlDot, SelectField, TextField } from "@lavieco/ui";
 
+import { HoneypotField } from "@/shared/components/honeypot-field";
 import { useLeadForm } from "@/shared/hooks/use-lead-form";
 
 import { submitGiftRequest } from "../actions/submit-gift-request";
@@ -35,9 +36,7 @@ export function GiftRequestForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
-      <div aria-hidden="true" className="absolute -left-[9999px]">
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-      </div>
+      <HoneypotField />
       <TextField
         label={t.fields.name.label}
         name="name"

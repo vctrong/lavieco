@@ -5,6 +5,7 @@ import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 
 import { cn } from "@lavieco/ui";
 
+import { HoneypotField } from "@/shared/components/honeypot-field";
 import { useLeadForm } from "@/shared/hooks/use-lead-form";
 
 import { submitWaitlist } from "../actions/submit-waitlist";
@@ -27,9 +28,7 @@ export function WaitlistForm() {
 
   return (
     <form onSubmit={handleSubmit} noValidate className="w-full max-w-md">
-      <div aria-hidden="true" className="absolute -left-[9999px]">
-        <input type="text" name="website" tabIndex={-1} autoComplete="off" />
-      </div>
+      <HoneypotField />
 
       <div
         className={cn(
