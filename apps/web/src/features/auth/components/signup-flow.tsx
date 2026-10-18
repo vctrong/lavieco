@@ -51,7 +51,8 @@ export function SignupFlow({ next, googleEnabled, turnstileSiteKey, urlError }: 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alert, setAlert] = useState<string | null>(urlError);
   const [notice, setNotice] = useState<string | null>(null);
-  const resendIn = useCountdown(pending?.resendAvailableAt ?? null);
+  // The code step never renders on the server, so the clock is always known here.
+  const resendIn = useCountdown(pending?.resendAvailableAt ?? null) ?? 0;
 
   const sendCode = async (input: Record<string, unknown>) => {
     setBusy(true);

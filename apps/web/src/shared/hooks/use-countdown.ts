@@ -1,24 +1,49 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 /**
- * Whole seconds left until `untilIso` (0 once passed). Only a clock tick lives in
- * state; the remaining time is derived from it on each render.
+ * One shared second clock. While someone listens it only moves on its 1 s tick, so two
+ * reads in one render agree (useSyncExternalStore needs a stable snapshot).
  */
-export function useCountdown(untilIso: string | null): number {
-  const [now, setNow] = useState(() => Date.now());
+const listeners = new Set<() => void>();
+let nowSeconds = 0;
+let timer: ReturnType<typeof setInterval> | undefined;
 
-  useEffect(() => {
-    if (!untilIso) return;
-    const until = Date.parse(untilIso);
-    const timer = setInterval(() => {
-      const current = Date.now();
-      setNow(current);
-      if (current >= until) clearInterval(timer);
+const currentSecond = () => Math.floor(Date.now() / 1000);
+
+function subscribeClock(listener: () => void) {
+  if (listeners.size === 0) {
+    nowSeconds = currentSecond();
+    timer = setInterval(() => {
+      nowSeconds = currentSecond();
+      listeners.forEach((notify) => notify());
     }, 1000);
-    return () => clearInterval(timer);
-  }, [untilIso]);
+  }
+  listeners.add(listener);
+  return () => {
+    listeners.delete(listener);
+    if (listeners.size === 0) clearInterval(timer);
+  };
+}
 
-  return untilIso ? Math.max(0, Math.ceil((Date.parse(untilIso) - now) / 1000)) : 0;
+const noSubscription = () => () => {};
+const readClock = () => (listeners.size > 0 ? nowSeconds : currentSecond());
+// The server and the first (hydrating) render do not know "now": a clock read there
+// differs from the server's HTML and React throws a hydration mismatch.
+const readServerClock = () => null;
+
+/**
+ * Whole seconds left until `untilIso`: 0 without a deadline or once passed, `null` while
+ * a server-rendered page hydrates (show a placeholder, the real value follows at once).
+ */
+export function useCountdown(untilIso: string | null): number | null {
+  const now = useSyncExternalStore(
+    untilIso ? subscribeClock : noSubscription,
+    readClock,
+    readServerClock,
+  );
+  if (!untilIso) return 0;
+  if (now === null) return null;
+  return Math.max(0, Math.ceil(Date.parse(untilIso) / 1000 - now));
 }

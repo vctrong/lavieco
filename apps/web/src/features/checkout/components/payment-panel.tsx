@@ -213,7 +213,9 @@ export function PaymentPanel({
         <p className="inline-flex items-center gap-2 rounded-full bg-mint-mist px-4 py-1.5 text-[13px] text-deep-blue">
           <FiClock aria-hidden="true" size={14} />
           {t.expiresIn}
-          <strong className="font-display text-lg tabular-nums">{formatCountdown(left)}</strong>
+          <strong className="font-display text-lg tabular-nums">
+            {left === null ? t.countdownPending : formatCountdown(left)}
+          </strong>
         </p>
       </div>
 

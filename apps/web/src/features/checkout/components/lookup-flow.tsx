@@ -31,7 +31,8 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
   const [emailError, setEmailError] = useState<string | undefined>();
   const [alert, setAlert] = useState<string | null>(null);
   const [result, setResult] = useState<TicketLookupResponse["items"] | null>(null);
-  const resendIn = useCountdown(pending?.resendAvailableAt ?? null);
+  // The code step never renders on the server, so the clock is always known here.
+  const resendIn = useCountdown(pending?.resendAvailableAt ?? null) ?? 0;
   const codeFormRef = useRef<HTMLFormElement>(null);
 
   const sendCode = async (values: Record<string, unknown>) => {

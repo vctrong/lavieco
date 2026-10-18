@@ -62,6 +62,8 @@ export const TEXT = {
       title: "Quét mã để thanh toán",
       waiting: "Đang chờ chuyển khoản…",
       expiresIn: "Giữ chỗ còn",
+      /** Shown for an instant while the page hydrates, before the clock is known. */
+      countdownPending: "--:--",
       orderCode: "Mã đơn",
       qrAlt: "Mã VietQR để chuyển khoản cho đơn này",
       scanHint:

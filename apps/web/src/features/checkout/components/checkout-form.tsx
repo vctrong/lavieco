@@ -60,7 +60,8 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alert, setAlert] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
-  const resendIn = useCountdown(pending?.resendAvailableAt ?? null);
+  // The code step never renders on the server, so the clock is always known here.
+  const resendIn = useCountdown(pending?.resendAvailableAt ?? null) ?? 0;
   const codeFormRef = useRef<HTMLFormElement>(null);
   const stepTopRef = useRef<HTMLDivElement>(null);
   const shownStep = useRef(step);
