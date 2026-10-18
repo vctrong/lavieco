@@ -21,7 +21,7 @@ import { FormAlert } from "@/shared/components/form-alert";
 import { useCountdown } from "@/shared/hooks/use-countdown";
 
 import { cancelOrder, reconcileOrder } from "../actions/order";
-import { CHECKOUT_ROUTES, PAYMENT_POLL_MS } from "../constants/config";
+import { CHECKOUT_ROUTES, PAYMENT_POLL_MS, PAYMENT_RECONCILE_EVERY } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { formatCountdown, formatVnd } from "../utils/format";
 import { messageFor } from "./messages";
@@ -109,7 +109,15 @@ export function PaymentPanel({
 
   useEffect(() => {
     if (order.status !== "pending") return;
+    let tick = 0;
     const timer = setInterval(async () => {
+      tick += 1;
+      if (tick % PAYMENT_RECONCILE_EVERY === 0) {
+        // The webhook may be late or lost: ask payOS itself now and then.
+        const result = await reconcileOrder(token).catch(() => null);
+        if (result?.status === "ok") setOrder(result.order);
+        return;
+      }
       try {
         const response = await fetch(CHECKOUT_ROUTES.orderStatusApi(token), { cache: "no-store" });
         if (!response.ok) return;

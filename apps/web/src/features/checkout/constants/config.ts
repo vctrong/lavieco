@@ -9,6 +9,13 @@ export const OTP_LENGTH = 6;
 /** The payment page polls the order every 3 s (docs/05 §5.1). */
 export const PAYMENT_POLL_MS = 3_000;
 
+/**
+ * Every 5th poll (15 s) asks payOS through program-service instead of reading the order:
+ * a late or lost webhook still confirms a QR payment (BR-15: server-side payOS query).
+ * The service throttles public reconciles to one per order every 10 s.
+ */
+export const PAYMENT_RECONCILE_EVERY = 5;
+
 export const CHECKOUT_ROUTES = {
   event: (slug: string) => `/chuong-trinh/${slug}`,
   checkout: (slug: string) => `/chuong-trinh/${slug}/dang-ky`,
