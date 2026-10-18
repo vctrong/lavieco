@@ -32,6 +32,19 @@ export const ORDER_STATUSES = ["pending", "paid", "expired", "cancelled", "refun
 export const orderStatusSchema = z.enum(ORDER_STATUSES);
 export type OrderStatus = z.infer<typeof orderStatusSchema>;
 
+/**
+ * What people read for an order: a free order (amount 0) that went through is
+ * "confirmed", since nothing was paid. Used by web, admin, the Excel export and email.
+ */
+export type OrderDisplayStatus = OrderStatus | "confirmed";
+
+export function orderDisplayStatus(order: {
+  status: OrderStatus;
+  amount: number;
+}): OrderDisplayStatus {
+  return order.status === "paid" && order.amount === 0 ? "confirmed" : order.status;
+}
+
 export const TICKET_STATUSES = ["valid", "used", "void"] as const;
 export const ticketStatusSchema = z.enum(TICKET_STATUSES);
 export type TicketStatus = z.infer<typeof ticketStatusSchema>;
@@ -185,6 +198,8 @@ export const ticketLookupResponseSchema = z.object({
       accessToken: orderAccessTokenSchema,
       orderCode: z.number().int(),
       status: orderStatusSchema,
+      /** VND; 0 for a free order (shown as "confirmed", not "paid"). */
+      amount: z.number().int(),
       ticketCount: z.number().int(),
       event: z.object({ title: z.string(), startAt: isoDateTimeSchema }),
     }),

@@ -57,6 +57,7 @@ export class RegistrationsController {
         orderId: order.id,
         orderCode: order.orderCode,
         orderStatus: order.status,
+        orderAmount: order.amount,
         buyer: {
           fullName: order.buyer.fullName,
           email: order.buyer.email,

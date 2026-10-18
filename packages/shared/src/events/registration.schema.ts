@@ -26,6 +26,8 @@ export const registrationRowSchema = z.object({
   orderId: objectIdSchema,
   orderCode: z.number().int(),
   orderStatus: orderStatusSchema,
+  /** VND; 0 for a free order (shown as "confirmed", not "paid"). */
+  orderAmount: z.number().int(),
   buyer: z.object({ fullName: z.string(), email: z.string(), phone: z.string() }),
   ticketCode: z.string(),
   ticketTypeName: z.string(),

@@ -4,6 +4,7 @@ import { FiAlertTriangle, FiArrowRight } from "react-icons/fi";
 import {
   ORDER_FLAG_FILTERS,
   ORDER_STATUSES,
+  orderDisplayStatus,
   type EventListItem,
   type OrderList,
 } from "@lavieco/shared/events";
@@ -84,7 +85,10 @@ export function OrdersListPage({ filters, page, events, refundCount }: OrdersLis
           defaultValue={filters.status ?? ""}
           options={[
             any,
-            ...ORDER_STATUSES.map((status) => ({ value: status, label: t.orderStatus[status] })),
+            ...ORDER_STATUSES.map((status) => ({
+              value: status,
+              label: status === "paid" ? t.statusFilter.paid : t.orderStatus[status],
+            })),
           ]}
         />
         <SelectField
@@ -160,7 +164,7 @@ export function OrdersListPage({ filters, page, events, refundCount }: OrdersLis
                     {order.amount === 0 ? t.free : formatVnd(order.amount)}
                   </td>
                   <td className="space-y-1 px-5 py-4">
-                    <OrderStatusBadge status={order.status} />
+                    <OrderStatusBadge status={orderDisplayStatus(order)} />
                     {order.flags.refundRequired ? (
                       <p className="text-[11.5px] font-semibold text-deep-blue">
                         {t.orders.flags.refund_required}

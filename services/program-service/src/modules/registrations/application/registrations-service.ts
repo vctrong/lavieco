@@ -1,10 +1,11 @@
 import type { UnitOfWork } from "@lavieco/service-kit/ports";
 import { DomainError } from "@lavieco/shared";
-import type {
-  OrderStatus,
-  RegistrationExportQuery,
-  RegistrationListQuery,
-  TicketStatus,
+import {
+  orderDisplayStatus,
+  type OrderDisplayStatus,
+  type RegistrationExportQuery,
+  type RegistrationListQuery,
+  type TicketStatus,
 } from "@lavieco/shared/events";
 import type { Role } from "@lavieco/shared/permissions";
 
@@ -37,9 +38,10 @@ export interface WorkbookWriter {
   write(sheet: Sheet): Promise<Buffer>;
 }
 
-const ORDER_STATUS_TEXT: Record<OrderStatus, string> = {
+const ORDER_STATUS_TEXT: Record<OrderDisplayStatus, string> = {
   pending: "Chờ thanh toán",
   paid: "Đã thanh toán",
+  confirmed: "Đã xác nhận",
   expired: "Hết hạn",
   cancelled: "Đã huỷ",
   refunded: "Đã hoàn tiền",
@@ -131,7 +133,7 @@ export class RegistrationsService {
           row.ticket.ticketTypeName,
           row.ticket.code,
           String(row.order.orderCode),
-          ORDER_STATUS_TEXT[row.order.status],
+          ORDER_STATUS_TEXT[orderDisplayStatus(row.order)],
           row.ticket.checkedInAt
             ? `${TICKET_STATUS_TEXT.used} ${DATE_TIME.format(row.ticket.checkedInAt)}`
             : TICKET_STATUS_TEXT[row.ticket.status],

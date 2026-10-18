@@ -1,4 +1,4 @@
-import type { OrderStatus, RegistrationBlocker } from "@lavieco/shared/events";
+import type { OrderDisplayStatus, RegistrationBlocker } from "@lavieco/shared/events";
 
 /** UI copy of registration, payment, tickets and ticket lookup (docs/05 §5). */
 export const TEXT = {
@@ -126,10 +126,11 @@ export const TEXT = {
     orderStatus: {
       pending: "Chờ thanh toán",
       paid: "Đã thanh toán",
+      confirmed: "Đã xác nhận",
       expired: "Hết hạn",
       cancelled: "Đã huỷ",
       refunded: "Đã hoàn tiền",
-    } satisfies Record<OrderStatus, string>,
+    } satisfies Record<OrderDisplayStatus, string>,
     blockers: {
       not_open: "Chương trình chưa mở đăng ký.",
       online_link_pending: "Sắp mở đăng ký.",

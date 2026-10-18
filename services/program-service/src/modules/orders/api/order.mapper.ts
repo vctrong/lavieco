@@ -70,6 +70,7 @@ export function toLookupDto(
       accessToken,
       orderCode: order.orderCode,
       status: order.status,
+      amount: order.amount,
       ticketCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
       event: { title: event.title, startAt: event.startAt.toISOString() },
     })),

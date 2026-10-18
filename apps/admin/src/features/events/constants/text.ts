@@ -41,6 +41,12 @@ export const TEXT = {
       noVenue: "Chưa có địa điểm",
       edit: "Sửa",
       preview: "Xem trước",
+      shortcuts: {
+        label: (title: string) => `Vận hành: ${title}`,
+        registrations: "Người đăng ký",
+        orders: "Đơn hàng",
+        checkin: "Check-in",
+      },
       empty: "Chưa có chương trình nào khớp bộ lọc.",
       next: "Trang sau",
       first: "Về trang đầu",

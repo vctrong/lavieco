@@ -1,4 +1,9 @@
-import type { OrderStatus, PaymentOutcome, TicketStatus } from "@lavieco/shared/events";
+import type {
+  OrderDisplayStatus,
+  OrderStatus,
+  PaymentOutcome,
+  TicketStatus,
+} from "@lavieco/shared/events";
 
 /** UI copy of orders, registrations and door check-in (docs/05 §5.6–5.8). */
 export const TEXT = {
@@ -155,10 +160,15 @@ export const TEXT = {
     orderStatus: {
       pending: "Chờ thanh toán",
       paid: "Đã thanh toán",
+      confirmed: "Đã xác nhận",
       expired: "Hết hạn",
       cancelled: "Đã huỷ",
       refunded: "Đã hoàn tiền",
-    } satisfies Record<OrderStatus, string>,
+    } satisfies Record<OrderDisplayStatus, string>,
+    /** The status filter matches both paid and free orders that went through. */
+    statusFilter: { paid: "Đã thanh toán / xác nhận" } satisfies Partial<
+      Record<OrderStatus, string>
+    >,
     ticketStatus: {
       valid: "Chưa check-in",
       used: "Đã check-in",

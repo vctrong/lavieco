@@ -323,6 +323,8 @@ describe("ticket lookup and access", () => {
       .expect(200);
     const lookup = ticketLookupResponseSchema.parse(res.body);
     expect(lookup.items).toHaveLength(1);
+    // Free order: web shows it as "confirmed", never "paid".
+    expect(lookup.items[0]).toMatchObject({ status: "paid", amount: 0 });
     expect((await view(lookup.items[0]!.accessToken)).tickets).toHaveLength(1);
 
     const wrongPurpose = await t

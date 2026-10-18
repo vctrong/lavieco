@@ -125,6 +125,7 @@ describe("registrations and Excel export (step-up + audit)", () => {
       .expect(200);
     const list = registrationListSchema.parse(res.body);
     expect(list.items).toHaveLength(2);
+    expect(list.items[0]).toMatchObject({ orderStatus: "paid", orderAmount: 0 });
     expect(list.columns.map((column) => column.label)).toEqual(["Bạn đến từ đâu?"]);
   });
 
@@ -206,6 +207,8 @@ describe("registrations and Excel export (step-up + audit)", () => {
       `'=HYPERLINK("http://evil.example","bam")`,
     );
     expect(sheet.getRow(1).getCell(11).value).toBe("Bạn đến từ đâu?");
+    // A free order went through: "confirmed", not "paid".
+    expect(sheet.getRow(2).getCell(8).value).toBe("Đã xác nhận");
 
     await drainOutbox(t);
     const event1 = audited.find(

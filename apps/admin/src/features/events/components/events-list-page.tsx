@@ -2,12 +2,15 @@ import Link from "next/link";
 import {
   FiArrowRight,
   FiCalendar,
+  FiCamera,
   FiEdit2,
   FiEye,
   FiImage,
+  FiList,
   FiMapPin,
   FiPlus,
   FiSettings,
+  FiShoppingBag,
   FiVideo,
 } from "react-icons/fi";
 
@@ -25,6 +28,7 @@ import { Button, SelectField, TextField, cn } from "@lavieco/ui";
 
 import { TEXT } from "../constants/text";
 import type { EventListFilters } from "../types";
+import { eventShortcuts } from "../utils/event-shortcuts";
 import { formatRange, formatVnd } from "../utils/format";
 import { PageHeader } from "./page-header";
 import { StatusBadge } from "./status-badge";
@@ -176,9 +180,20 @@ function Seats({ event }: { event: EventListItem }) {
   );
 }
 
-function EventRow({ event, typeName }: { event: EventListItem; typeName: string | null }) {
+const SHORTCUT_ICONS = { registrations: FiList, orders: FiShoppingBag, checkin: FiCamera };
+
+function EventRow({
+  event,
+  typeName,
+  staff,
+}: {
+  event: EventListItem;
+  typeName: string | null;
+  staff: StaffProfile;
+}) {
   const t = TEXT.vi;
   const Place = event.format === "online" ? FiVideo : FiMapPin;
+  const shortcuts = eventShortcuts(event, staff);
   return (
     <li className="grid gap-4 border-b border-hairline px-5 py-5 last:border-b-0 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1.4fr)_minmax(0,1fr)_auto_auto] lg:items-center lg:gap-6">
       <div className="flex min-w-0 items-center gap-4">
@@ -238,6 +253,26 @@ function EventRow({ event, typeName }: { event: EventListItem; typeName: string 
           {t.list.preview}
         </Link>
       </div>
+      {shortcuts.length > 0 ? (
+        <nav
+          aria-label={t.list.shortcuts.label(event.title)}
+          className="flex flex-wrap gap-x-4 gap-y-2 text-[12.5px] lg:col-span-5 lg:justify-end"
+        >
+          {shortcuts.map((shortcut) => {
+            const Icon = SHORTCUT_ICONS[shortcut.key];
+            return (
+              <Link
+                key={shortcut.key}
+                href={shortcut.href}
+                className="inline-flex items-center gap-1.5 font-medium text-deep-blue/75 underline-offset-4 hover:text-emerald-brand hover:underline"
+              >
+                <Icon aria-hidden="true" size={13} />
+                {t.list.shortcuts[shortcut.key]}
+              </Link>
+            );
+          })}
+        </nav>
+      ) : null}
     </li>
   );
 }
@@ -290,6 +325,7 @@ export function EventsListPage({ staff, filters, page, types }: EventsListPagePr
                 key={event.id}
                 event={event}
                 typeName={typeNames.get(event.typeId) ?? null}
+                staff={staff}
               />
             ))}
           </ul>

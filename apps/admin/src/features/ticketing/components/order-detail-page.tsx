@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FiAlertTriangle, FiArrowLeft, FiInfo } from "react-icons/fi";
 
-import type { OrderDetail } from "@lavieco/shared/events";
+import { orderDisplayStatus, type OrderDetail } from "@lavieco/shared/events";
 import type { StaffProfile } from "@lavieco/shared/identity";
 import { can } from "@lavieco/shared/permissions";
 
@@ -47,7 +47,7 @@ export function OrderDetailPage({ order, staff }: { order: OrderDetail; staff: S
         }
         eyebrow={t.detail.eyebrow(order.orderCode)}
         title={order.event.title}
-        actions={<OrderStatusBadge status={order.status} />}
+        actions={<OrderStatusBadge status={orderDisplayStatus(order)} />}
       />
 
       <div className="mb-6 space-y-3">

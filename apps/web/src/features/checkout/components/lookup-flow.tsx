@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useId, useRef, useState, type FormEvent } from "react";
 import { FiArrowRight, FiMail } from "react-icons/fi";
 
-import type { TicketLookupResponse } from "@lavieco/shared/events";
+import { orderDisplayStatus, type TicketLookupResponse } from "@lavieco/shared/events";
 import { Button, TextField } from "@lavieco/ui";
 
 import { FormAlert } from "@/shared/components/form-alert";
@@ -88,7 +88,7 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
                   <p className="font-semibold text-deep-blue">{item.event.title}</p>
                   <p className="text-[13px] text-charcoal/65">
                     {formatDate(item.event.startAt)} · {t.lookup.tickets(item.ticketCount)} ·{" "}
-                    {t.orderStatus[item.status]}
+                    {t.orderStatus[orderDisplayStatus(item)]}
                   </p>
                 </div>
                 <Link

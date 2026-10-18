@@ -8390,6 +8390,11 @@
                               "refunded"
                             ]
                           },
+                          "amount": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "ticketCount": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -8418,6 +8423,7 @@
                           "accessToken",
                           "orderCode",
                           "status",
+                          "amount",
                           "ticketCount",
                           "event"
                         ],
@@ -9945,6 +9951,11 @@
                               "refunded"
                             ]
                           },
+                          "orderAmount": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "buyer": {
                             "type": "object",
                             "properties": {
@@ -10001,6 +10012,7 @@
                           "orderId",
                           "orderCode",
                           "orderStatus",
+                          "orderAmount",
                           "buyer",
                           "ticketCode",
                           "ticketTypeName",

@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { checkinRequestSchema, ticketCodeSchema } from "./checkin.schema";
-import { orderCreateRequestSchema } from "./order.schema";
+import { orderCreateRequestSchema, orderDisplayStatus } from "./order.schema";
 
 const valid = {
   eventSlug: "workshop-vo-so",
@@ -56,5 +56,18 @@ describe("check-in input", () => {
         .success,
     ).toBe(false);
     expect(checkinRequestSchema.safeParse({ eventId, qrToken: "a".repeat(43) }).success).toBe(true);
+  });
+});
+
+describe("orderDisplayStatus", () => {
+  it("calls a free order that went through confirmed, a paid one paid", () => {
+    expect(orderDisplayStatus({ status: "paid", amount: 0 })).toBe("confirmed");
+    expect(orderDisplayStatus({ status: "paid", amount: 150_000 })).toBe("paid");
+  });
+
+  it("leaves every other status as it is, free or not", () => {
+    for (const status of ["pending", "expired", "cancelled", "refunded"] as const) {
+      expect(orderDisplayStatus({ status, amount: 0 })).toBe(status);
+    }
   });
 });

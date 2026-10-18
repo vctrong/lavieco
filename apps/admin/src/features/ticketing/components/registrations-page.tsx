@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { FiArrowLeft, FiCamera } from "react-icons/fi";
 
-import type { EventView, RegistrationList } from "@lavieco/shared/events";
+import { orderDisplayStatus, type EventView, type RegistrationList } from "@lavieco/shared/events";
 import type { StaffProfile } from "@lavieco/shared/identity";
 import { can } from "@lavieco/shared/permissions";
 import { Button, CheckboxField, TextField } from "@lavieco/ui";
@@ -150,7 +150,12 @@ export function RegistrationsPage({ event, list, staff, query }: RegistrationsPa
                     </Link>
                   </td>
                   <td className="px-4 py-3">
-                    <OrderStatusBadge status={row.orderStatus} />
+                    <OrderStatusBadge
+                      status={orderDisplayStatus({
+                        status: row.orderStatus,
+                        amount: row.orderAmount,
+                      })}
+                    />
                   </td>
                   <td className="px-4 py-3 text-[12.5px] text-charcoal/75">
                     {row.checkedInAt
