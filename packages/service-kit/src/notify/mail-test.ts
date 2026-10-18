@@ -1,3 +1,4 @@
+import { emailParagraph, escapeHtml, renderEmail } from "./email";
 import type { MailEnv } from "./mail-env";
 import { SmtpEmailSender } from "./notify.module";
 import { describeSmtpError } from "./smtp-diagnostics";
@@ -36,16 +37,26 @@ async function check(
     return { ok: false, step: `kết nối ${via}`, reason: describeSmtpError(error) };
   }
   try {
-    await sender.send({
-      to,
-      subject: `LAVIECO: kiểm tra gửi email (${service})`,
-      text:
-        `Email này được gửi bằng lệnh npm run mail:test từ ${service} lúc ` +
-        `${new Date().toISOString()}. Nhận được nghĩa là cấu hình SMTP của ${service} đã đúng. ` +
-        "Không cần trả lời.",
-    });
+    await sender.send({ to, ...mailTestEmail(service, new Date()) });
   } catch (error) {
     return { ok: false, step: "gửi email", reason: describeSmtpError(error) };
   }
   return { ok: true, via };
+}
+
+/** The test message, in the shared layout so `mail:test` also shows how emails render. */
+export function mailTestEmail(service: string, at: Date) {
+  const lines = [
+    `Email này được gửi bằng lệnh npm run mail:test từ ${service} lúc ${at.toISOString()}.`,
+    `Nhận được nghĩa là cấu hình SMTP của ${service} đã đúng. Không cần trả lời.`,
+  ];
+  return renderEmail({
+    subject: `LAVIECO: kiểm tra gửi email (${service})`,
+    preheader: `Cấu hình SMTP của ${service} đã gửi được thư.`,
+    eyebrow: "Kiểm tra cấu hình",
+    heading: "Gửi email thành công",
+    bodyHtml: lines.map((line) => emailParagraph(escapeHtml(line))).join(""),
+    textLines: lines,
+    reason: "Đây là email kiểm tra cấu hình gửi thư, chỉ gửi khi đội vận hành chạy lệnh kiểm tra.",
+  });
 }

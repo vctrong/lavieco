@@ -1,0 +1,82 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`accountExistsEmail > uses the shared layout with its links > html 1`] = `
+"<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Email này đã có tài khoản LAVIECO</title>
+<style>@media (max-width:620px){.lv-pad{padding-left:20px!important;padding-right:20px!important}.lv-h1{font-size:24px!important;line-height:32px!important}}</style>
+</head>
+<body style="margin:0;padding:0;background:#F8FAF6">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#F8FAF6;font-size:1px;line-height:1px">Bạn có thể đăng nhập hoặc đặt lại mật khẩu.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F8FAF6" style="background:#F8FAF6"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #DFE3EA;border-radius:16px;border-collapse:separate;overflow:hidden">
+<tr><td align="center" bgcolor="#FFFFFF" style="padding:28px 32px 18px;background:#FFFFFF"><a href="http://localhost:3000" style="text-decoration:none"><img src="cid:logo@lavieco" width="180" height="34" alt="LAVIECO" style="display:block;border:0;width:180px;height:34px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:24px;color:#20345F"></a><p style="margin:10px 0 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#55606A">Giáo dục sáng tạo xanh, thông qua nghệ thuật</p></td></tr>
+<tr><td height="3" bgcolor="#E7DD6A" style="height:3px;background:#E7DD6A;font-size:0;line-height:0">&nbsp;</td></tr>
+<tr><td class="lv-pad" style="padding:32px 40px 16px">
+<p style="margin:0 0 12px"><span style="display:inline-block;padding:4px 12px;border:1px solid #10B183;border-radius:999px;background:#EAF8F3;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;font-weight:bold;letter-spacing:1px;color:#20345F">Tài khoản</span></p><h1 class="lv-h1" style="margin:0 0 16px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:28px;line-height:36px;font-weight:normal;color:#20345F">Email này đã có tài khoản</h1>
+<p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;">Có người vừa yêu cầu tạo tài khoản LAVIECO bằng địa chỉ email này, nhưng email đã có tài khoản.</p><table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:8px auto 24px"><tr><td align="center" bgcolor="#10B183" style="border-radius:999px;background:#10B183"><a href="http://localhost:3000/dang-nhap" style="display:inline-block;padding:14px 32px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:20px;font-weight:bold;color:#20345F;text-decoration:none;border-radius:999px">Đăng nhập</a></td></tr></table><p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;">Quên mật khẩu? <a href="http://localhost:3000/quen-mat-khau" style="color:#20345F;font-weight:bold;text-decoration:underline">Đặt lại mật khẩu</a>.</p><p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;font-size:13px;line-height:20px;color:#55606A;">Nếu không phải bạn, bạn có thể bỏ qua email này.</p>
+</td></tr>
+<tr><td class="lv-pad" bgcolor="#20345F" style="padding:24px 40px;background:#20345F;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:13px;line-height:21px;color:#FFFFFF">
+<p style="margin:0 0 8px;font-weight:bold">LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật</p>
+<p style="margin:0 0 12px"><a href="http://localhost:3000" style="color:#FFFFFF;text-decoration:underline">localhost:3000</a> · <a href="mailto:lavieco@gmail.com" style="color:#FFFFFF;text-decoration:underline">lavieco@gmail.com</a> · Hotline/Zalo 0336 922 235</p>
+<p style="margin:0;font-size:12px;line-height:19px;color:#EAF8F3">Bạn nhận email này vì có yêu cầu tạo tài khoản bằng địa chỉ email này trên website LAVIECO.</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>"
+`;
+
+exports[`otpCodeEmail > matches the snapshot > html 1`] = `
+"<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Mã xác thực LAVIECO: 482913</title>
+<style>@media (max-width:620px){.lv-pad{padding-left:20px!important;padding-right:20px!important}.lv-h1{font-size:24px!important;line-height:32px!important}}</style>
+</head>
+<body style="margin:0;padding:0;background:#F8FAF6">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#F8FAF6;font-size:1px;line-height:1px">Mã để xác nhận email nhận vé chương trình LAVIECO, hiệu lực 10 phút.&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F8FAF6" style="background:#F8FAF6"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #DFE3EA;border-radius:16px;border-collapse:separate;overflow:hidden">
+<tr><td align="center" bgcolor="#FFFFFF" style="padding:28px 32px 18px;background:#FFFFFF"><a href="http://localhost:3000" style="text-decoration:none"><img src="cid:logo@lavieco" width="180" height="34" alt="LAVIECO" style="display:block;border:0;width:180px;height:34px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:24px;color:#20345F"></a><p style="margin:10px 0 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#55606A">Giáo dục sáng tạo xanh, thông qua nghệ thuật</p></td></tr>
+<tr><td height="3" bgcolor="#E7DD6A" style="height:3px;background:#E7DD6A;font-size:0;line-height:0">&nbsp;</td></tr>
+<tr><td class="lv-pad" style="padding:32px 40px 16px">
+<p style="margin:0 0 12px"><span style="display:inline-block;padding:4px 12px;border:1px solid #10B183;border-radius:999px;background:#EAF8F3;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;font-weight:bold;letter-spacing:1px;color:#20345F">Mã xác thực</span></p><h1 class="lv-h1" style="margin:0 0 16px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:28px;line-height:36px;font-weight:normal;color:#20345F">Xác minh email của bạn</h1>
+<p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;">Xin chào, đây là mã để <strong>xác nhận email nhận vé chương trình LAVIECO</strong>:</p><table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:8px auto 20px"><tr><td align="center" style="padding:16px 28px;background:#EAF8F3;border:1px dashed #10B183;border-radius:14px;font-family:Consolas,'Courier New',monospace;font-size:34px;line-height:40px;font-weight:bold;letter-spacing:10px;color:#20345F">482913</td></tr></table><p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;">Mã có hiệu lực trong 10 phút và chỉ dùng được một lần.</p><p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;font-size:13px;line-height:20px;color:#55606A;">Nếu bạn không thực hiện yêu cầu này, bạn có thể bỏ qua email. Đừng chia sẻ mã cho bất kỳ ai, kể cả người tự xưng là LAVIECO.</p><p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;font-size:13px;line-height:20px;color:#55606A;">Cần hỗ trợ? Liên hệ <a href="mailto:lavieco@gmail.com" style="color:#20345F;font-weight:bold;text-decoration:underline">lavieco@gmail.com</a>.</p>
+</td></tr>
+<tr><td class="lv-pad" bgcolor="#20345F" style="padding:24px 40px;background:#20345F;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:13px;line-height:21px;color:#FFFFFF">
+<p style="margin:0 0 8px;font-weight:bold">LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật</p>
+<p style="margin:0 0 12px"><a href="http://localhost:3000" style="color:#FFFFFF;text-decoration:underline">localhost:3000</a> · <a href="mailto:lavieco@gmail.com" style="color:#FFFFFF;text-decoration:underline">lavieco@gmail.com</a> · Hotline/Zalo 0336 922 235</p>
+<p style="margin:0;font-size:12px;line-height:19px;color:#EAF8F3">Bạn nhận email này vì có yêu cầu mã xác thực bằng địa chỉ email này trên website LAVIECO.</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>"
+`;
+
+exports[`otpCodeEmail > matches the snapshot > text 1`] = `
+"Xác minh email của bạn
+
+Xin chào,
+
+Mã xác thực để xác nhận email nhận vé chương trình LAVIECO của bạn là: 482913
+Mã có hiệu lực trong 10 phút và chỉ dùng được một lần.
+
+Nếu bạn không thực hiện yêu cầu này, bạn có thể bỏ qua email. Đừng chia sẻ mã cho bất kỳ ai, kể cả người tự xưng là LAVIECO.
+Cần hỗ trợ? Liên hệ lavieco@gmail.com.
+
+--
+LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật
+localhost:3000 · lavieco@gmail.com · Hotline/Zalo 0336 922 235
+Bạn nhận email này vì có yêu cầu mã xác thực bằng địa chỉ email này trên website LAVIECO."
+`;

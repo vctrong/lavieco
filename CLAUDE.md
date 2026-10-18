@@ -52,6 +52,7 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 | `npm run admin:create -- --email … --name "…"`              | Tạo Super Admin đầu tiên (link kích hoạt một lần, bắt buộc cài 2FA)                             |
 | `npm run keys:generate -- <tên bên gọi>`                    | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)               |
 | `npm run mail:test -- <email>`                              | Gửi thử một email qua SMTP của identity + program (dev: Mailpit; gửi thật: `docs/06`)           |
+| `npm run mail:preview`                                      | Dựng mọi email từ dữ liệu giả vào `.mail-preview/`, xem ở `http://localhost:3999` (không gửi)   |
 | `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                                   |
 | `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                                   |
 | `npm run build`                                             | Build (Turborepo cache)                                                                         |
@@ -111,7 +112,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Cấu trúc theo tính năng** `features/<tên>/{components,constants,hooks,server,actions,schemas.ts,types.ts,index.ts}`:
   - F1: import tính năng khác/`app` **chỉ qua `index.ts`**. F2: tính năng **không import tính năng khác** (dùng chung → `@lavieco/ui` hoặc `src/shared/`). F3: chỉ `server/`, `actions/` được gọi `@lavieco/api-clients` và `lib/env`. F4: file `server/` bắt đầu bằng `import "server-only"`.
 - **Chữ giao diện KHÔNG viết cứng trong JSX**: nằm ở `features/<tên>/constants/text.ts`, dạng `{ vi: {...} }` (sẵn sàng thêm `en`). Component đọc constants của chính tính năng, không truyền chữ xuống nhiều tầng props. **Nội dung biên tập** (cẩm nang, tác phẩm, trang giới thiệu) đến từ `content-service`; trang thiết yếu có bản chữ dự phòng trong constants.
-- **Màu/font/bo góc chỉ từ design token** (`packages/ui/src/styles/theme.css`, Tailwind v4 `@theme`). Lớp token: `emerald-brand` `#10B183`, `mint-mist` `#EAF8F3`, `deep-blue` `#20345F`, `canary` `#E7DD6A`, `soft-white` `#F8FAF6`, `charcoal` `#1E2A32`. **Không hex rời, không `bg-[#...]`, không `style={{color:"#..."}}`.** Hex chỉ được ở `theme.css`.
+- **Màu/font/bo góc chỉ từ design token** (`packages/ui/src/styles/theme.css`, Tailwind v4 `@theme`). Lớp token: `emerald-brand` `#10B183`, `mint-mist` `#EAF8F3`, `deep-blue` `#20345F`, `canary` `#E7DD6A`, `soft-white` `#F8FAF6`, `charcoal` `#1E2A32`. **Không hex rời, không `bg-[#...]`, không `style={{color:"#..."}}`.** Hex chỉ được ở `theme.css` (ngoại lệ: email HTML dùng bản sao token ở `service-kit` `notify/email/email-tokens.ts`; email luôn dùng bố cục chung `renderEmail`).
 - **Không sửa `globals.css` khi làm tính năng** (chỉ `@import` token). Muốn đổi token: PR riêng ở `packages/ui`.
 - **Icon:** chỉ `react-icons/fi` (Feather), **không SVG inline cho icon**. Cần icon Feather không có: hỏi (PQ2), đừng tự thêm thư viện icon.
 - **Font:** Fraunces (`--font-display`) + Be Vietnam Pro (`--font-sans`) qua `next/font`.
