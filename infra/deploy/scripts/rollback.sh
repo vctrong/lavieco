@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Goes back to an earlier image tag without running migrations (docs/runbooks/deploy-oracle.md §8).
+# Goes back to an earlier image tag without running migrations (docs/runbooks/deploy-vps.md §7).
 #
 #   rollback.sh            the last successful tag before the one recorded as current
 #   rollback.sh <tag>      a given tag (see deployments.log)

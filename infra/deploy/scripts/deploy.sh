@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploys one image tag on the production server (docs/runbooks/deploy-oracle.md §6).
+# Deploys one image tag on the production server (docs/runbooks/deploy-vps.md §6).
 #
 #   deploy.sh <image-tag> [--skip-migrate]
 #

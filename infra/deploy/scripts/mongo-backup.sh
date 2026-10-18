@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# mongodump of the LAVIECO databases into a dated, gzipped archive (docs/runbooks/deploy-oracle.md §9).
-# Works for Atlas and for the optional "mongo" profile; the connection string comes from
+# mongodump of the LAVIECO databases into a dated, gzipped archive (docs/runbooks/deploy-vps.md §8).
+# Atlas only (production has no self-hosted MongoDB); the connection string comes from
 # /opt/lavieco/env/backup.env (a read-only `backup` user) and is never on the command line.
 #
 #   mongo-backup.sh            (cron: 0 19 * * * = 02:00 Asia/Ho_Chi_Minh)
@@ -19,8 +19,8 @@ umask 077
 mkdir -p "$DEST"
 trap 'rm -f "$FILE.partial"' EXIT
 
-# On the stack's backend network so the "mongo" profile is reachable by name.
-docker run --rm --network lavieco_backend --env-file "$ROOT/env/backup.env" mongo:8.0 \
+# Default bridge network (Atlas is reached over the Internet), capped like the stack.
+docker run --rm --memory 256m --env-file "$ROOT/env/backup.env" mongo:8.0 \
   sh -c 'exec mongodump --quiet --uri="$BACKUP_MONGODB_URI" --archive --gzip' > "$FILE.partial"
 mv "$FILE.partial" "$FILE"
 
