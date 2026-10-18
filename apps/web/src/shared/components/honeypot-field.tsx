@@ -1,8 +1,9 @@
 /**
- * Field humans never see or fill; bots that fill it are ignored server-side. Browsers
- * ignore `autocomplete="off"` and password managers fill any visible-to-them `website`
- * box, which silently turned real bookings into "bot" ones: the extra attributes ask
- * Chrome, 1Password, LastPass, Bitwarden and Dashlane to leave it alone.
+ * Field humans never see or fill; bots that fill it are ignored server-side. Chrome
+ * autofill ignores `autocomplete="off"` and once put the buyer's email in this box,
+ * which silently turned a real booking into a "bot" one (no OTP sent). Autofill and
+ * password managers skip read-only fields; scripts posting the form still fill it. The
+ * data attributes are the password managers' own ignore hints.
  */
 export function HoneypotField() {
   return (
@@ -11,6 +12,7 @@ export function HoneypotField() {
         type="text"
         name="website"
         tabIndex={-1}
+        readOnly
         autoComplete="off"
         data-1p-ignore="true"
         data-lpignore="true"
