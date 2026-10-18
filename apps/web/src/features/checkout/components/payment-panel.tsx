@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   FiAlertCircle,
   FiCheck,
@@ -128,6 +128,17 @@ export function PaymentPanel({
     }
   }, [order.status, order.tickets.length, router, token]);
 
+  // The long QR panel gives way to a short result: keep it in view (the buyer may have
+  // scrolled down to the cancel button) and move focus there.
+  const settledRef = useRef<HTMLDivElement>(null);
+  const wasPending = useRef(initial.status === "pending");
+  useEffect(() => {
+    if (!wasPending.current || order.status === "pending") return;
+    wasPending.current = false;
+    settledRef.current?.scrollIntoView({ block: "start" });
+    settledRef.current?.focus({ preventScroll: true });
+  }, [order.status]);
+
   const handleCancel = async () => {
     setBusy(true);
     setAlert(null);
@@ -155,7 +166,11 @@ export function PaymentPanel({
           ? FiXCircle
           : FiAlertCircle;
     return (
-      <div className="space-y-5 rounded-3xl border border-hairline bg-white p-6 md:p-8">
+      <div
+        ref={settledRef}
+        tabIndex={-1}
+        className="scroll-mt-24 space-y-5 rounded-3xl border border-hairline bg-white p-6 outline-none md:p-8"
+      >
         <p role="status" className="flex items-start gap-3 text-[15px] text-deep-blue">
           <Icon aria-hidden="true" size={20} className="mt-0.5 shrink-0 text-emerald-brand" />
           {message}

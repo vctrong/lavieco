@@ -1,8 +1,8 @@
 import "server-only";
 
-import type { z } from "zod";
+import { ZodError, type z } from "zod";
 
-import { isServiceProblem } from "@lavieco/api-clients";
+import { isServiceProblem, ServiceUnavailableError } from "@lavieco/api-clients";
 import type { ErrorCode } from "@lavieco/shared";
 
 import { webLogger } from "@/lib/services";
@@ -45,8 +45,25 @@ export function toCheckoutError(error: unknown, context: string): CheckoutError 
   webLogger().warn("checkout step failed", {
     context,
     errorCode: isServiceProblem(error) ? error.code : "unavailable",
+    ...(isServiceProblem(error) ? {} : failureKind(error)),
   });
   return { status: "error", reason: "unavailable" };
+}
+
+/**
+ * Why a call failed, without the request path (it carries the signed order link) or
+ * any response value: the kind of failure and, for a contract drift, the field paths.
+ */
+function failureKind(error: unknown): Record<string, unknown> {
+  if (!(error instanceof ServiceUnavailableError)) return { failure: "unexpected" };
+  if (error.cause instanceof ZodError) {
+    return {
+      failure: "contract",
+      paths: error.cause.issues.slice(0, 5).map((issue) => issue.path.join(".")),
+    };
+  }
+  const status = /^unexpected status (\d+)$/.exec(error.message)?.[1];
+  return status ? { failure: "status", status: Number(status) } : { failure: "unreachable" };
 }
 
 /** First Zod message per top-level field (`buyer.email` → `email`), for inline errors. */

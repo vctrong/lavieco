@@ -248,7 +248,12 @@ describe("paid orders: hold, cancel, expiry", () => {
       .post(`/internal/v1/order-links/${created.accessToken}/cancel`)
       .set("authorization", await web())
       .expect(200);
-    expect(cancelled.body.status).toBe("cancelled");
+    // web reads this with the shared schema: a drift shows the buyer "system busy".
+    expect(orderViewSchema.parse(cancelled.body)).toMatchObject({
+      status: "cancelled",
+      payment: null,
+      tickets: [],
+    });
     expect(await seats(ticketTypeIds[0]!)).toEqual({ sold: 0, held: 0 });
     await drainOutbox(t);
     expect(t.payments.cancelled).toContain(created.order.orderCode);

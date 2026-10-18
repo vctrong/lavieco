@@ -118,6 +118,48 @@ describe("createHttpClient", () => {
     expect((init.headers as Record<string, string>).authorization).toBe("Bearer abc");
   });
 
+  it("retries an idempotent POST (order cancel) while the service restarts", async () => {
+    const refused = new TypeError("fetch failed", { cause: new Error("ECONNREFUSED") });
+    const fetchImpl = vi
+      .fn<typeof fetch>()
+      .mockRejectedValueOnce(refused)
+      .mockResolvedValueOnce(ok({ status: "cancelled" }));
+    const client = createHttpClient({
+      baseUrl: "http://svc",
+      audience: "program-service",
+      signer,
+      fetchImpl,
+    });
+    const result = await client.call({
+      method: "POST",
+      path: "/internal/v1/order-links/t/cancel",
+      auth: { kind: "service" },
+      idempotent: true,
+      schema: z.object({ status: z.string() }),
+    });
+    expect(result).toEqual({ status: "cancelled" });
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+  });
+
+  it("gives up as unreachable when every attempt is refused", async () => {
+    const fetchImpl = vi.fn<typeof fetch>().mockRejectedValue(new TypeError("fetch failed"));
+    const client = createHttpClient({
+      baseUrl: "http://svc",
+      audience: "program-service",
+      signer,
+      fetchImpl,
+    });
+    await expect(
+      client.call({
+        method: "POST",
+        path: "/internal/v1/order-links/t/cancel",
+        auth: { kind: "service" },
+        idempotent: true,
+      }),
+    ).rejects.toThrow(/unreachable/);
+    expect(fetchImpl).toHaveBeenCalledTimes(3);
+  });
+
   it("rejects a response that breaks the contract", async () => {
     const fetchImpl = vi.fn(async () => ok({ value: "nope" }));
     const client = createHttpClient({

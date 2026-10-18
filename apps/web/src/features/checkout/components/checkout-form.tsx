@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useId, useMemo, useRef, useState, type FormEvent } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { FiEdit2, FiLock, FiMail, FiMinus, FiPlus } from "react-icons/fi";
 
 import { ORDER_LIMITS, type PublicEventDetail } from "@lavieco/shared/events";
@@ -62,6 +62,17 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
   const [notice, setNotice] = useState<string | null>(null);
   const resendIn = useCountdown(pending?.resendAvailableAt ?? null);
   const codeFormRef = useRef<HTMLFormElement>(null);
+  const stepTopRef = useRef<HTMLDivElement>(null);
+  const shownStep = useRef(step);
+
+  // Changing step swaps a long form for a short one: bring its top into view and move
+  // focus there, or the buyer is left at the bottom of an empty page.
+  useEffect(() => {
+    if (shownStep.current === step) return;
+    shownStep.current = step;
+    stepTopRef.current?.scrollIntoView({ block: "start" });
+    stepTopRef.current?.focus({ preventScroll: true });
+  }, [step]);
 
   const lines = useMemo(
     () =>
@@ -227,7 +238,11 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
 
   if (step === "code" && draft && pending) {
     return (
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
+      <div
+        ref={stepTopRef}
+        tabIndex={-1}
+        className="grid scroll-mt-24 gap-8 outline-none lg:grid-cols-[minmax(0,1fr)_22rem]"
+      >
         <form
           ref={codeFormRef}
           onSubmit={handleCode}
@@ -289,7 +304,11 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
+    <div
+      ref={stepTopRef}
+      tabIndex={-1}
+      className="grid scroll-mt-24 gap-8 outline-none lg:grid-cols-[minmax(0,1fr)_22rem]"
+    >
       <form onSubmit={handleSubmit} noValidate className="space-y-8">
         <HoneypotField />
         <section
