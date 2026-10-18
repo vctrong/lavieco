@@ -58,6 +58,9 @@
 - Danh sách người đăng ký (có PII) cần `order:read`; xuất Excel cần `registration:export` + step-up + audit, ô bắt đầu bằng `= + - @` được vô hiệu hoá.
 - Check-in: cập nhật nguyên tử `valid → used`; quét lại trả "đã check-in lúc …"; camera dùng `BarcodeDetector`, dự phòng `jsqr`.
 - Runbook thanh toán thật qua tunnel: `docs/runbooks/payos.md`.
+- Đơn miễn phí (`amount = 0`) đã xong hiện **"Đã xác nhận"**, không phải "Đã thanh toán", ở `/tra-cuu-ve`, admin (đơn hàng, người đăng ký) và cột trạng thái của file Excel (`orderDisplayStatus` trong `shared`). Trạng thái lưu trong DB vẫn là `paid`.
+- Danh sách `/events` có liên kết nhanh Người đăng ký, Đơn hàng (`order:read`) và Check-in (`checkin:perform`, ẩn khi đã kết thúc) trên mỗi chương trình đã rời nháp.
+- Email (OTP và vé) gửi qua SMTP cấu hình bằng env; dev mặc định Mailpit, gửi thật theo `docs/06` mục "Gửi email thật (SMTP)", kiểm tra bằng `npm run mail:test -- <email>`.
 
 **Khác.**
 
