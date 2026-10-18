@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { connection } from "next/server";
 import { FiAlertCircle, FiAlertTriangle, FiExternalLink, FiInfo } from "react-icons/fi";
 
 import { Button, cn } from "@lavieco/ui";
@@ -227,7 +228,10 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
 }
 
 /** `/tra-cuu-ve` (docs/05 §5.4). */
-export function LookupPage() {
+export async function LookupPage() {
+  // Rendered per request: the Turnstile key is runtime configuration, absent while
+  // prerendering at build (no runtime secrets in CI or in the image build).
+  await connection();
   const t = TEXT.vi.lookup;
   return (
     <CheckoutShell eyebrow={t.eyebrow} title={t.title} step={null}>

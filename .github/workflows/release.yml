@@ -1,0 +1,94 @@
+name: Release
+
+# Builds the five linux/amd64 production images and pushes them to GHCR
+# (docs/runbooks/deploy-vps.md):
+#   ghcr.io/<owner>/lavieco-<name>:<commit SHA>   the tag deployed with IMAGE_TAG
+#   ghcr.io/<owner>/lavieco-<name>:latest         main only, convenience; deploys always pin a SHA
+#
+# Triggers: push to main, or "Run workflow" on any ref. No deploy step yet: the VPS pulls
+# the images itself (infra/deploy/scripts/deploy.sh <sha>).
+#
+# Repository variables (public, inlined into the web/admin bundles):
+#   NEXT_PUBLIC_SITE_URL, NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME.
+# No application secret ever passes through this workflow: they live in /opt/lavieco/env
+# on the server. GITHUB_TOKEN is the only credential, scoped to packages:write.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            dockerfile: apps/web/Dockerfile
+          - name: admin
+            dockerfile: apps/admin/Dockerfile
+          - name: identity-service
+            dockerfile: services/identity-service/Dockerfile
+          - name: content-service
+            dockerfile: services/content-service/Dockerfile
+          - name: program-service
+            dockerfile: services/program-service/Dockerfile
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check public build variables
+        if: ${{ matrix.name == 'web' || matrix.name == 'admin' }}
+        env:
+          CLOUD_NAME: ${{ vars.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+        run: |
+          if [ -z "$CLOUD_NAME" ]; then
+            echo "::error::Repository variable NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME is not set"
+            exit 1
+          fi
+
+      - name: Image name
+        id: image
+        # GHCR names must be lowercase.
+        run: echo "ref=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/lavieco-${{ matrix.name }}" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.dockerfile }}
+          platforms: linux/amd64
+          push: true
+          tags: |
+            ${{ steps.image.outputs.ref }}:${{ github.sha }}
+            ${{ github.ref == 'refs/heads/main' && format('{0}:latest', steps.image.outputs.ref) || '' }}
+          labels: |
+            org.opencontainers.image.source=${{ github.server_url }}/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+          # Public values inlined into web/admin; ignored by the service images.
+          build-args: |
+            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL || 'https://lavieco.io.vn' }}
+            NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=${{ vars.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+
+      - name: Summary
+        run: echo "\`${{ steps.image.outputs.ref }}:${{ github.sha }}\`" >> "$GITHUB_STEP_SUMMARY"

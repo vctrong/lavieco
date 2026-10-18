@@ -208,6 +208,28 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `PAYOS_API_KEY` | Tuỳ chọn (như trên) | **Có** | API key gọi payOS (tạo link, đối soát, huỷ link) | Như trên | Như trên | `gia-api-key-0000` |
 | `PAYOS_CHECKSUM_KEY` | Tuỳ chọn (như trên) | **Có** | Khoá HMAC xác minh chữ ký webhook; **chỉ ở program-service** | Như trên | Như trên; lộ thì đổi ngay trên my.payos.vn | `gia-checksum-key-0000` |
 
+## Production trên máy chủ (`infra/env/prod`, ADR-022 đang đề xuất)
+
+Production không dùng `.env.local`.
+
+- **Biến của ứng dụng:** vẫn là các biến ở các bảng trên. Giá trị nằm trong `/opt/lavieco/env/<tên>.env` trên máy chủ, mỗi container một tệp. Mẫu (chỉ tên biến) ở `infra/env/prod/`.
+- **URL giữa các service:** dùng tên service nội bộ của compose (`http://identity-service:4001`, `http://content-service:4002`, `http://program-service:4004`, `IDENTITY_JWKS_URL=http://identity-service:4001/.well-known/jwks.json`). URL lộ ra trình duyệt, email, Google, payOS (`WEB_APP_URL`, `ADMIN_APP_URL`, `GOOGLE_REDIRECT_URI`) dùng tên miền công khai.
+- **Hướng dẫn đầy đủ:** `docs/runbooks/deploy-vps.md`.
+
+Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển khai. Ứng dụng không đọc các biến này.
+
+| Biến | Ở đâu | Bí mật | Ý nghĩa |
+|---|---|---|---|
+| `GHCR_OWNER`, `IMAGE_TAG` | `/opt/lavieco/compose.env` (mẫu `infra/env/prod/compose.env.example`) | Không | Image `ghcr.io/<GHCR_OWNER>/lavieco-<tên>:<IMAGE_TAG>`; `deploy.sh` ghi lại `IMAGE_TAG` sau mỗi lần deploy thành công |
+| `ACME_EMAIL` | `compose.env` | Không | Email tài khoản Let's Encrypt của Caddy (thông báo chứng chỉ sắp hết hạn) |
+| `NODE_OPTIONS` | Đặt sẵn trong `compose.prod.yml` (không ở tệp env) | Không | `--max-old-space-size` của từng container, thấp hơn `mem_limit` |
+| `GOMEMLIMIT` | Đặt sẵn trong `compose.prod.yml` (caddy) | Không | Giới hạn mềm bộ nhớ của Caddy |
+| `MONGODB_URI` (tài khoản `migrator`) | `migrate.env` | **Có** | Chỉ nạp vào container migrate, ghi đè URI của service (`docs/03` §10.3) |
+| `BACKUP_MONGODB_URI` | `backup.env` | **Có** | Tài khoản `backup` chỉ đọc, dùng cho `mongo-backup.sh` |
+| `BACKUP_DIR`, `BACKUP_RETENTION_DAYS` | Biến shell khi chạy `mongo-backup.sh` (tuỳ chọn) | Không | Mặc định `/opt/lavieco/backups`, 14 ngày |
+| `PORT`, `HOSTNAME` | Đặt sẵn trong image `web`/`admin` (`3000`/`3001`, `0.0.0.0`) | Không | Cổng và địa chỉ lắng nghe của `server.js` (Next standalone) |
+| `NEXT_PUBLIC_SITE_URL`, `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | **Biến repository GitHub** (build arg của `release.yml`) | Không | Nhúng vào bundle lúc build image, không nằm trong tệp env trên máy chủ |
+
 ## Lịch sử thay đổi
 
 | Ngày | Biến | Thay đổi | Phase / nhánh |
@@ -222,3 +244,5 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | 17/10/2026 | `program-service`: `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY` | Thêm (payOS, ADR-015) | Phase 3, `feat/phase3-registration-payos` |
 | 17/10/2026 | `program-service`: `IDENTITY_SERVICE_URL` | Thêm (audit qua outbox, ADR-021) | Phase 3, `feat/phase3-registration-payos` |
 | 18/10/2026 | `identity-service`, `program-service`: `SMTP_USER`, `SMTP_PASS`, `SMTP_PORT`, `SMTP_SECURE` | Không đổi tên; thêm kiểm tra chéo (thiếu nửa thông tin đăng nhập, sai cặp cổng/TLS thì từ chối khởi động), bắt buộc TLS khi đăng nhập tới máy chủ ngoài, lệnh `npm run mail:test`, hướng dẫn Gmail/nhà cung cấp | Phase 3, `feat/phase3-registration-payos` |
+| 18/10/2026 | Hạ tầng deploy: `GHCR_OWNER`, `IMAGE_TAG`, `LAVIECO_ENV_DIR`, `LAVIECO_CERT_DIR`, `COMPOSE_PROFILES`, `migrate.env`/`MONGODB_URI`, `BACKUP_MONGODB_URI`, `BACKUP_DIR`, `BACKUP_RETENTION_DAYS`, `MONGO_INITDB_ROOT_*`, `PORT`/`HOSTNAME` của image Next, secrets `DEPLOY_*` | Thêm (không đổi biến của ứng dụng) | `chore/deploy-oracle` |
+| 18/10/2026 | Hạ tầng deploy chuyển sang VPS amd64: mẫu env dời về `infra/env/prod/`; thêm `ACME_EMAIL`, `NODE_OPTIONS`/`GOMEMLIMIT` trong compose; xoá `LAVIECO_ENV_DIR`, `LAVIECO_CERT_DIR`, `COMPOSE_PROFILES`, `MONGO_INITDB_ROOT_*` (bỏ profile `mongo`), secrets `DEPLOY_*` (chưa có bước SSH deploy) | Đổi hạ tầng (không đổi biến của ứng dụng) | `chore/deploy-oracle` |

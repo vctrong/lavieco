@@ -1,0 +1,203 @@
+# Production stack on one VPS (docs/02 §12.2 option B, draft ADR-0022): Ubuntu 24.04,
+# 2 vCPU, 2 GB RAM, linux/amd64; MongoDB on Atlas. Internet → caddy (the only published
+# ports) → web/admin → services, all on one private network.
+# Runbook: docs/runbooks/deploy-vps.md. On the server this file lives at
+# /opt/lavieco/infra/compose/compose.prod.yml and is always run with the compose variables:
+#
+#   docker compose --env-file /opt/lavieco/compose.env -f /opt/lavieco/infra/compose/compose.prod.yml up -d
+#
+# Images: ghcr.io/<GHCR_OWNER>/lavieco-<name>:<IMAGE_TAG>, built for linux/amd64 by
+# .github/workflows/release.yml; the VPS only pulls, it never builds. Configuration: one
+# env file per container in /opt/lavieco/env (never in the repo; templates in infra/env/prod/).
+#
+# Memory budget (2 GB host, swap recommended): the limits add up to ~1.8 GB. Each Node
+# heap cap (--max-old-space-size) sits well under its container limit so V8 collects
+# garbage before the kernel OOM-kills the container (buffers, sharp/libvips and code live
+# outside the heap). Healthchecks use busybox wget, not `node -e`: a second Node process
+# per check would cost ~40 MB inside the same limit.
+#
+# Profile "migrate": one-off `db:migrate` containers (infra/deploy/scripts/deploy.sh runs them).
+name: lavieco
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+# Shared by every Node container: no published port, no extra privileges.
+x-node: &node
+  restart: unless-stopped
+  logging: *logging
+  networks: [internal]
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-healthcheck: &healthcheck
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  start_period: 40s
+
+x-migrate: &migrate
+  <<: *node
+  restart: "no"
+  profiles: ["migrate"]
+  command: ["node", "--enable-source-maps", "dist/cli/migrate.js"]
+  mem_limit: 192m
+  environment:
+    NODE_OPTIONS: --max-old-space-size=128
+
+services:
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    logging: *logging
+    networks: [internal]
+    security_opt:
+      - no-new-privileges:true
+    # The ONLY published ports of the stack (P4: services never face the Internet).
+    # 443/udp: HTTP/3.
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      # Let's Encrypt account e-mail (expiry notices), from compose.env.
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL}
+      # Go runtime soft limit, the counterpart of --max-old-space-size below.
+      GOMEMLIMIT: 48MiB
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Certificates and ACME account: losing them means re-issuing (rate limits).
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      web:
+        condition: service_healthy
+      admin:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      # Caddy's admin API listens on localhost inside the container only.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      start_period: 10s
+    mem_limit: 64m
+
+  web:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-web:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: /opt/lavieco/env/web.env
+    environment:
+      NODE_OPTIONS: --max-old-space-size=256
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+      program-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      # Served by Next itself and skipped by proxy.ts: proves the server is up without
+      # depending on the services (their health is checked on their own containers).
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/icon.png"]
+    mem_limit: 384m
+
+  admin:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-admin:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: /opt/lavieco/env/admin.env
+    environment:
+      NODE_OPTIONS: --max-old-space-size=224
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+      program-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      # Public in proxy.ts and rendered without calling a service.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3001/login"]
+    mem_limit: 320m
+
+  identity-service:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-identity-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: /opt/lavieco/env/identity-service.env
+    environment:
+      NODE_OPTIONS: --max-old-space-size=192
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4001/health/ready"]
+    mem_limit: 256m
+
+  content-service:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-content-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: /opt/lavieco/env/content-service.env
+    environment:
+      NODE_OPTIONS: --max-old-space-size=320
+    depends_on:
+      identity-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4002/health/ready"]
+    # Uploads up to 8 MB are decoded by sharp outside the V8 heap (ADR-0020): the largest
+    # gap between heap cap and container limit.
+    mem_limit: 448m
+
+  program-service:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-program-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: /opt/lavieco/env/program-service.env
+    environment:
+      NODE_OPTIONS: --max-old-space-size=224
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4004/health/ready"]
+    mem_limit: 320m
+
+  # --- profile "migrate": run once per deploy, before `up` (infra/deploy/scripts/deploy.sh).
+  # Same image and env file as the service (the CLI validates the whole service config),
+  # then migrate.env overrides MONGODB_URI with the `migrator` account: index/collection
+  # rights stay out of the running services (docs/03 §10.3). Migrations are idempotent.
+  identity-migrate:
+    <<: *migrate
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-identity-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file:
+      - /opt/lavieco/env/identity-service.env
+      - /opt/lavieco/env/migrate.env
+
+  content-migrate:
+    <<: *migrate
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-content-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file:
+      - /opt/lavieco/env/content-service.env
+      - /opt/lavieco/env/migrate.env
+
+  program-migrate:
+    <<: *migrate
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-program-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file:
+      - /opt/lavieco/env/program-service.env
+      - /opt/lavieco/env/migrate.env
+
+networks:
+  # Not `internal: true`: the services need outbound access to Atlas, SMTP, Cloudinary and
+  # payOS. Only caddy publishes ports; the Caddyfile routes to web/admin only.
+  internal: {}
+
+volumes:
+  caddy_data:
+  caddy_config:

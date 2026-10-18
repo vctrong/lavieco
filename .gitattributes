@@ -1,0 +1,5 @@
+# Files executed on the Linux server must keep LF endings, even from a Windows checkout.
+*.sh text eol=lf
+Caddyfile text eol=lf
+infra/compose/*.yml text eol=lf
+infra/deploy/** text eol=lf
