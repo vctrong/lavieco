@@ -39,7 +39,10 @@ export function OrderSummary({ order }: { order: OrderView }) {
             {t.ticket.bookedBy}
           </dt>
           <dd className="mt-1 font-semibold text-deep-blue">{order.buyer.fullName}</dd>
-          <dd className="break-all text-[13px] text-charcoal/70">{order.buyer.email}</dd>
+          {/* Masked by program-service: anyone holding the order link sees this page. */}
+          <dd className="break-all text-[13px] text-charcoal/70">
+            {order.buyer.emailMasked} · {order.buyer.phoneMasked}
+          </dd>
         </div>
       </dl>
       <ul className="space-y-2 border-t border-hairline pt-4 text-[14px] text-charcoal/80">

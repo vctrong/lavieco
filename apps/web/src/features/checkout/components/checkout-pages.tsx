@@ -1,9 +1,8 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { FiAlertCircle, FiExternalLink, FiInfo } from "react-icons/fi";
+import { FiAlertCircle, FiAlertTriangle, FiExternalLink, FiInfo } from "react-icons/fi";
 
-import { Button } from "@lavieco/ui";
+import { Button, cn } from "@lavieco/ui";
 
 import { turnstileSiteKey } from "@/lib/turnstile";
 
@@ -11,12 +10,15 @@ import { CHECKOUT_ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { getCheckoutEvent, getOrder, verifiedMember } from "../server/orders";
 import { qrDataUrl } from "../server/qr";
-import { formatDateTime } from "../utils/format";
+import { formatDateTime, formatSchedule } from "../utils/format";
+import { ticketState } from "../utils/ticket-state";
 import { CheckoutForm } from "./checkout-form";
 import { CheckoutShell } from "./checkout-shell";
 import { LookupFlow } from "./lookup-flow";
 import { OrderSummary } from "./order-summary";
 import { PaymentPanel } from "./payment-panel";
+import { PrintButton } from "./print-button";
+import { TicketCard, type TicketCardData } from "./ticket-card";
 
 /** `/chuong-trinh/[slug]/dang-ky`: the checkout of one published event. */
 export async function CheckoutPage({ slug }: { slug: string }) {
@@ -76,18 +78,41 @@ export async function PaymentPage({
   );
 }
 
-/** `/ve/[token]`: the tickets of a paid order, each with its QR (rendered, not stored). */
+/**
+ * `/ve/[token]`: the tickets of an order, each as a pass with its QR (rendered here, never
+ * stored) and its state. Void tickets (refunded order) come without `qrToken`, so no QR
+ * is drawn for them anywhere, print included. Several tickets: swipe on phones (with
+ * anchor chips, no JS needed), stacked from `md`; printed one per page.
+ */
 export async function TicketPage({ token, justBooked }: { token: string; justBooked: boolean }) {
   const order = await getOrder(token);
   if (!order) notFound();
   const t = TEXT.vi.ticket;
-  const tickets = await Promise.all(
-    order.tickets.map(async (ticket) => ({ ...ticket, image: await qrDataUrl(ticket.qrToken) })),
+  const tickets: TicketCardData[] = await Promise.all(
+    order.tickets.map(async (ticket) => ({
+      code: ticket.code,
+      ticketTypeName: ticket.ticketTypeName,
+      state: ticketState(ticket, order.status),
+      checkedInAt: ticket.checkedInAt ? formatDateTime(ticket.checkedInAt) : null,
+      qrImage: ticket.qrToken ? await qrDataUrl(ticket.qrToken, 560) : null,
+    })),
   );
+  const online = order.event.format === "online";
+  const event = {
+    title: order.event.title,
+    schedule: formatSchedule(order.event.startAt, order.event.endAt),
+    place: online
+      ? t.online
+      : order.event.venue
+        ? `${order.event.venue.name}, ${order.event.venue.address}`
+        : "",
+    online,
+  };
+  const many = tickets.length > 1;
   return (
     <CheckoutShell eyebrow={t.eyebrow} title={order.event.title} step={justBooked ? 2 : null}>
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <div className="space-y-6">
+        <div className="min-w-0 space-y-6">
           {order.status === "refunded" ? (
             <p className="flex items-start gap-3 rounded-3xl bg-canary/25 p-5 text-[14px] text-deep-blue">
               <FiAlertCircle aria-hidden="true" size={18} className="mt-0.5 shrink-0" />
@@ -103,7 +128,10 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
             </div>
           ) : null}
           {justBooked && tickets.length > 0 ? (
-            <p role="status" className="rounded-3xl bg-mint-mist p-5 text-[14px] text-deep-blue">
+            <p
+              role="status"
+              className="rounded-3xl bg-mint-mist p-5 text-[14px] text-deep-blue print:hidden"
+            >
               {t.emailSent}
             </p>
           ) : null}
@@ -121,37 +149,78 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
               </a>
             </p>
           ) : null}
-          <ul className="grid gap-5 sm:grid-cols-2">
-            {tickets.map((ticket) => (
-              <li
-                key={ticket.code}
-                className="flex flex-col items-center gap-3 rounded-3xl border border-hairline bg-white p-6 text-center"
-              >
-                <p className="font-semibold text-deep-blue">{ticket.ticketTypeName}</p>
-                <Image
-                  src={ticket.image}
-                  alt={t.qrAlt(ticket.code)}
-                  width={220}
-                  height={220}
-                  unoptimized
-                  className={ticket.status === "valid" ? "" : "opacity-40"}
-                />
-                <p className="font-display text-xl tracking-[0.15em] text-deep-blue">
-                  {ticket.code}
-                </p>
-                <p className="text-[12.5px] text-charcoal/65">
-                  {ticket.checkedInAt
-                    ? t.checkedInAt(formatDateTime(ticket.checkedInAt))
-                    : t.status[ticket.status]}
-                </p>
-              </li>
-            ))}
-          </ul>
           {tickets.length > 0 ? (
-            <p className="text-[12.5px] leading-relaxed text-charcoal/65">{t.keepSafe}</p>
+            <div className="flex flex-wrap items-center justify-between gap-3 print:hidden">
+              {many ? (
+                <nav aria-label={t.switcher} className="-mx-1 min-w-0 flex-1 md:hidden">
+                  <ul className="flex gap-2 overflow-x-auto px-1 pb-1">
+                    {tickets.map((ticket, index) => (
+                      <li key={ticket.code} className="shrink-0">
+                        <a
+                          href={`#ve-${ticket.code}`}
+                          className="inline-flex rounded-full border border-hairline bg-white px-3 py-1.5 text-[12.5px] font-semibold text-deep-blue hover:border-deep-blue/40 focus-visible:outline-2 focus-visible:outline-emerald-brand"
+                        >
+                          {t.position(index + 1, tickets.length)}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              ) : null}
+              <div className="ml-auto">
+                <PrintButton />
+              </div>
+            </div>
+          ) : null}
+          {tickets.length > 0 ? (
+            <ol
+              className={cn(
+                "flex gap-4 md:block md:space-y-6 print:block print:space-y-0",
+                many &&
+                  "-mx-4 snap-x snap-mandatory overflow-x-auto px-4 pb-2 sm:-mx-6 sm:px-6 md:mx-0 md:overflow-visible md:px-0 md:pb-0",
+              )}
+            >
+              {tickets.map((ticket, index) => (
+                <li
+                  key={ticket.code}
+                  className={cn(
+                    "print:break-after-page print:last:break-after-auto",
+                    many
+                      ? "w-[86%] max-w-sm shrink-0 snap-center md:w-auto md:max-w-none"
+                      : "w-full",
+                  )}
+                >
+                  <TicketCard
+                    ticket={ticket}
+                    index={index + 1}
+                    total={tickets.length}
+                    event={event}
+                    bookerName={order.buyer.fullName}
+                  />
+                </li>
+              ))}
+            </ol>
+          ) : null}
+          {order.event.safetyNotes ? (
+            <section className="rounded-3xl border border-canary bg-canary/20 p-5 print:hidden">
+              <h2 className="flex items-center gap-2 font-display text-lg text-deep-blue">
+                <FiAlertTriangle aria-hidden="true" size={17} />
+                {t.safetyTitle}
+              </h2>
+              <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed text-charcoal/85">
+                {order.event.safetyNotes}
+              </p>
+            </section>
+          ) : null}
+          {tickets.some((ticket) => ticket.state === "valid") ? (
+            <p className="text-[12.5px] leading-relaxed text-charcoal/65 print:text-charcoal">
+              {t.keepSafe}
+            </p>
           ) : null}
         </div>
-        <OrderSummary order={order} />
+        <div className="print:hidden">
+          <OrderSummary order={order} />
+        </div>
       </div>
     </CheckoutShell>
   );

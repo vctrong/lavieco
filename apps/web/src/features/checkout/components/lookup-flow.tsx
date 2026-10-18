@@ -1,10 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useId, useRef, useState, type FormEvent } from "react";
-import { FiArrowRight, FiMail } from "react-icons/fi";
+import { FiMail } from "react-icons/fi";
 
-import { orderDisplayStatus, type TicketLookupResponse } from "@lavieco/shared/events";
+import {
+  orderDisplayStatus,
+  type OrderDisplayStatus,
+  type TicketLookupResponse,
+} from "@lavieco/shared/events";
 import { Button, TextField } from "@lavieco/ui";
 
 import { FormAlert } from "@/shared/components/form-alert";
@@ -18,6 +21,16 @@ import { CHECKOUT_ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { formatDate } from "../utils/format";
 import { messageFor } from "./messages";
+import { TicketStub, type ChipTone } from "./ticket-card";
+
+const ORDER_TONES: Record<OrderDisplayStatus, ChipTone> = {
+  paid: "valid",
+  confirmed: "valid",
+  pending: "attention",
+  refunded: "attention",
+  expired: "muted",
+  cancelled: "muted",
+};
 
 type Pending = { email: string; challengeId: string; resendAvailableAt: string };
 
@@ -79,28 +92,23 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
         {result.length === 0 ? (
           <p className="text-[14px] text-charcoal/70">{t.lookup.empty}</p>
         ) : (
-          <ul className="divide-y divide-hairline">
-            {result.map((item) => (
-              <li
-                key={item.orderCode}
-                className="flex flex-wrap items-center justify-between gap-3 py-4"
-              >
-                <div>
-                  <p className="font-semibold text-deep-blue">{item.event.title}</p>
-                  <p className="text-[13px] text-charcoal/65">
-                    {formatDate(item.event.startAt)} · {t.lookup.tickets(item.ticketCount)} ·{" "}
-                    {t.orderStatus[orderDisplayStatus(item)]}
-                  </p>
-                </div>
-                <Link
-                  href={CHECKOUT_ROUTES.ticket(item.accessToken)}
-                  className="inline-flex items-center gap-1.5 text-[13px] font-semibold text-deep-blue hover:text-emerald-brand"
-                >
-                  {t.lookup.open}
-                  <FiArrowRight aria-hidden="true" size={14} />
-                </Link>
-              </li>
-            ))}
+          <ul className="space-y-4">
+            {result.map((item) => {
+              const status = orderDisplayStatus(item);
+              return (
+                <li key={item.orderCode}>
+                  <TicketStub
+                    href={CHECKOUT_ROUTES.ticket(item.accessToken)}
+                    title={item.event.title}
+                    date={formatDate(item.event.startAt)}
+                    status={{ label: t.orderStatus[status], tone: ORDER_TONES[status] }}
+                    ticketCount={t.lookup.tickets(item.ticketCount)}
+                    orderCode={t.lookup.orderCode(item.orderCode)}
+                    openLabel={t.lookup.open}
+                  />
+                </li>
+              );
+            })}
           </ul>
         )}
         <button
