@@ -51,6 +51,7 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 | `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003), program (4004) |
 | `npm run admin:create -- --email … --name "…"`              | Tạo Super Admin đầu tiên (link kích hoạt một lần, bắt buộc cài 2FA)                             |
 | `npm run keys:generate -- <tên bên gọi>`                    | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)               |
+| `npm run mail:test -- <email>`                              | Gửi thử một email qua SMTP của identity + program (dev: Mailpit; gửi thật: `docs/06`)           |
 | `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                                   |
 | `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                                   |
 | `npm run build`                                             | Build (Turborepo cache)                                                                         |

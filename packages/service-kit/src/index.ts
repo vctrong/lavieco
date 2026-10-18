@@ -41,9 +41,12 @@ export {
   EMAIL_SENDER,
   NotifyModule,
   SmtpEmailSender,
+  mailConfigIssue,
   mailEnvSchema,
   type MailEnv,
 } from "./notify/notify.module";
+export { runMailTest, type MailTestResult } from "./notify/mail-test";
+export { describeSmtpError } from "./notify/smtp-diagnostics";
 export { OUTBOX_MODEL, OUTBOX_RETENTION_DAYS, outboxSchema } from "./outbox/outbox.model";
 export { OUTBOX_PORT, OutboxModule } from "./outbox/outbox.module";
 export {

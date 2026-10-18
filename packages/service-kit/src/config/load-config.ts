@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { mailConfigIssue } from "../notify/mail-env";
+
 /** Variables every service reads. Each service extends this with its own (docs/04 §8). */
 export const baseServiceEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
@@ -39,6 +41,8 @@ export function loadConfig<TSchema extends z.ZodType>(
   }
   const isolation = databaseIsolationIssue(parsed.data as DatabaseEnv);
   if (isolation) throw new ConfigError([isolation]);
+  const mail = mailConfigIssue(parsed.data as Parameters<typeof mailConfigIssue>[0]);
+  if (mail) throw new ConfigError([mail]);
   return parsed.data;
 }
 

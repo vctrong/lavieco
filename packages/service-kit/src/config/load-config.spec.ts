@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { z } from "zod";
 
 import {
   ConfigError,
@@ -74,5 +75,28 @@ describe("loadConfig", () => {
       expect((error as ConfigError).invalidKeys).toEqual(["MONGODB_DB"]);
       expect((error as Error).message).not.toContain("secret");
     }
+  });
+});
+
+describe("loadConfig: mail settings that cannot work together", () => {
+  const schema = baseServiceEnvSchema.extend({
+    SMTP_HOST: z.string(),
+    SMTP_PORT: z.string(),
+    SMTP_USER: z.string().optional(),
+    SMTP_PASS: z.string().optional(),
+  });
+  const env = {
+    PORT: "4004",
+    MONGODB_URI: LOCAL_URI,
+    MONGODB_DB: "lavieco_program",
+    SMTP_HOST: "smtp.example.test",
+    SMTP_PORT: "587",
+  };
+
+  it("names SMTP_PASS when only the user is filled, never the value", () => {
+    expect(() => loadConfig(schema, { ...env, SMTP_USER: "user@example.test" })).toThrow(
+      new ConfigError(["SMTP_PASS"]),
+    );
+    expect(loadConfig(schema, env).SMTP_HOST).toBe("smtp.example.test");
   });
 });
