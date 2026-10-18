@@ -50,6 +50,7 @@ export function CheckinScanner({
   const [checking, setChecking] = useState(false);
   const [alert, setAlert] = useState<string | null>(null);
   const [manualError, setManualError] = useState<string | undefined>();
+  const resultRef = useRef<HTMLElement>(null);
 
   const submit = useCallback(
     async (input: { qrToken: string } | { code: string }) => {
@@ -101,6 +102,12 @@ export function CheckinScanner({
   };
 
   useEffect(() => stopCamera, [stopCamera]);
+
+  // A code typed at the bottom of the page gets its answer above the camera: bring it
+  // into view, or the door team never sees "already used".
+  useEffect(() => {
+    if (result) resultRef.current?.scrollIntoView({ block: "nearest" });
+  }, [result]);
 
   useEffect(() => {
     if (!cameraOn) return;
@@ -188,6 +195,7 @@ export function CheckinScanner({
 
       {result ? (
         <section
+          ref={resultRef}
           role="status"
           className={cn("space-y-3 rounded-3xl border-2 p-6 text-deep-blue", tone)}
         >
