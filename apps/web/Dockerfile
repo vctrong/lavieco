@@ -2,7 +2,7 @@
 # Production image of `web`. Build from the repository root:
 #   docker build -f apps/web/Dockerfile --build-arg NEXT_PUBLIC_SITE_URL=https://lavieco.io.vn .
 # No .env* file is ever copied into the image (.dockerignore); server configuration comes
-# from the runtime (infra/deploy/env/web.env.example). NEXT_PUBLIC_* are public values
+# from the runtime (infra/env/prod/web.env.example). NEXT_PUBLIC_* are public values
 # inlined into the bundle at build time, so they are build args, never secrets.
 ARG NODE_IMAGE=node:24-alpine
 ARG TURBO_VERSION=2.11.2
@@ -45,5 +45,5 @@ EXPOSE 3000
 # /icon.png is served by Next itself and skipped by proxy.ts: it proves the server is up
 # without depending on the services (their own health is checked by compose).
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
-  CMD ["node", "-e", "fetch('http://127.0.0.1:3000/icon.png').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+  CMD ["wget", "-q", "-O", "/dev/null", "http://127.0.0.1:3000/icon.png"]
 CMD ["node", "server.js"]

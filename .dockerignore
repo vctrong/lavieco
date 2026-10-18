@@ -1,7 +1,9 @@
 # Never ship environment files into an image (CLAUDE §11); only .env.example is allowed.
 **/.env*
 !**/.env.example
-# Key material and certificates (docs/runbooks/deploy-oracle.md): never in an image.
+# Server-side env files (/opt/lavieco/env/<name>.env) if one is ever copied next to the repo.
+**/*.env
+# Key material and certificates (docs/runbooks/deploy-vps.md): never in an image.
 **/*.pem
 **/*.key
 **/secrets
