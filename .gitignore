@@ -66,3 +66,6 @@ secrets/
 docs_temp/
 docs/design/png tach nen/
 docs/design/png vien trang/
+
+# npm run mail:preview output (rendered from made-up data)
+/.mail-preview/

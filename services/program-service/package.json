@@ -13,6 +13,7 @@
     "test:int": "vitest run --config vitest.int.config.ts",
     "db:migrate": "node --env-file-if-exists=.env.local dist/cli/migrate.js",
     "mail:test": "node --env-file-if-exists=.env.local dist/cli/mail-test.js",
+    "mail:preview": "node -r @swc-node/register src/test/mail-preview.ts",
     "payos:webhook": "node --env-file-if-exists=.env.local dist/cli/payos-webhook.js",
     "gen:openapi": "node dist/openapi.js"
   },

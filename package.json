@@ -30,6 +30,7 @@
     "keys:generate": "npm run build -w @lavieco/identity-service && npm run keys:generate -w @lavieco/identity-service --",
     "payos:webhook": "npm run build -w @lavieco/program-service && npm run payos:webhook -w @lavieco/program-service --",
     "mail:test": "node infra/scripts/mail-test.mjs",
+    "mail:preview": "node infra/scripts/mail-preview.mjs",
     "format": "prettier --write .",
     "prepare": "husky"
   },

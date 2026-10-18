@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_blank" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600&amp;family=Fraunces:opsz,wght@9..144,300;400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{"colors":{"on-error":"#ffffff","on-background":"#191c1a","on-tertiary-fixed":"#1f1c00","surface-variant":"#e1e3df","inverse-surface":"#2e312f","surface-dim":"#d8dbd7","primary-fixed-dim":"#55ddac","tertiary-fixed":"#f0e672","secondary-fixed":"#d9e2ff","surface-container-lowest":"#ffffff","primary":"#006c4e","error":"#ba1a1a","tertiary-container":"#b7ae41","on-tertiary-container":"#454100","on-primary":"#ffffff","on-secondary-fixed":"#011944","on-secondary-container":"#425582","surface-container":"#eceeeb","surface":"#f8faf6","background":"#f8faf6","surface-container-low":"#f2f4f0","surface-container-highest":"#e1e3df","outline-variant":"#bbcac1","secondary-container":"#b8cbff","primary-container":"#10b183","inverse-on-surface":"#eff1ed","inverse-primary":"#55ddac","on-error-container":"#93000a","on-tertiary":"#ffffff","surface-container-high":"#e7e9e5","surface-bright":"#f8faf6","error-container":"#ffdad6","primary-fixed":"#75fac7","secondary":"#4b5d8b","on-primary-container":"#003c2a","on-primary-fixed":"#002115","secondary-fixed-dim":"#b3c6fa","tertiary-fixed-dim":"#d3ca59","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#4d4800","on-surface":"#191c1a","on-secondary-fixed-variant":"#324672","on-primary-fixed-variant":"#00513a","on-surface-variant":"#3d4a43","outline":"#6c7a72","tertiary":"#676000","surface-tint":"#006c4e"},"borderRadius":{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},"spacing":{"space-xs":"0.25rem","margin-desktop":"4.5rem","gutter":"1.5rem","space-lg":"1.75rem","gutter-desktop":"3rem","margin":"1.25rem","space-xl":"3rem","space-sm":"0.5rem","space-md":"1rem","margin-tablet":"2.5rem","gutter-tablet":"2rem"},"fontFamily":{"headline-lg":["Fraunces"],"body-sm":["Be Vietnam Pro"],"display-hero":["Fraunces"],"headline-lg-mobile":["Fraunces"],"metadata-curatorial":["Be Vietnam Pro"],"display-hero-mobile":["Fraunces"],"body-md":["Be Vietnam Pro"],"headline-sm":["Fraunces"],"body-lg":["Be Vietnam Pro"],"title-editorial":["Fraunces"],"headline-md":["Fraunces"],"label-caps":["Be Vietnam Pro"]},"fontSize":{"headline-lg":["44px",{"lineHeight":"54px","letterSpacing":"-0.015em","fontWeight":"400"}],"body-sm":["13px",{"lineHeight":"22px","fontWeight":"400"}],"display-hero":["64px",{"lineHeight":"76px","letterSpacing":"-0.02em","fontWeight":"400"}],"headline-lg-mobile":["30px",{"lineHeight":"38px","letterSpacing":"-0.01em","fontWeight":"400"}],"metadata-curatorial":["11px",{"lineHeight":"16px","letterSpacing":"0.06em","fontWeight":"500"}],"display-hero-mobile":["40px",{"lineHeight":"48px","letterSpacing":"-0.01em","fontWeight":"400"}],"body-md":["15px",{"lineHeight":"26px","fontWeight":"400"}],"headline-sm":["24px",{"lineHeight":"32px","fontWeight":"500"}],"body-lg":["18px",{"lineHeight":"31px","fontWeight":"300"}],"title-editorial":["20px",{"lineHeight":"30px","fontWeight":"400"}],"headline-md":["32px",{"lineHeight":"42px","letterSpacing":"-0.01em","fontWeight":"400"}],"label-caps":["12px",{"lineHeight":"16px","letterSpacing":"0.12em","fontWeight":"600"}]}}}}</script></head><body class="min-h-full bg-surface text-on-surface antialiased selection:bg-primary-fixed selection:text-on-primary-fixed relative overflow-x-hidden"><div class="pointer-events-none fixed inset-0 z-0 overflow-hidden"><div class="absolute -top-[25%] left-1/2 -translate-x-1/2 w-[1000px] h-[700px] rounded-full bg-gradient-to-b from-primary-fixed-dim/15 via-surface-container-low/40 to-transparent blur-3xl"></div><div class="absolute top-1/3 -left-[10%] w-[600px] h-[600px] rounded-full bg-secondary-fixed/20 blur-3xl"></div><div class="absolute bottom-0 right-0 w-[700px] h-[500px] rounded-full bg-tertiary-fixed/15 blur-3xl"></div><div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,rgba(255,255,255,0.8)_0%,transparent_70%)]"></div></div><main class="relative z-10 w-full min-h-screen flex flex-col justify-center items-center"><div class="flex flex-col w-full">
+<!-- Interactive View Switcher Logic and Laser Simulation Styles -->
+<style>
+    @keyframes pulseGlow {
+      0%, 100% { opacity: 0.35; transform: scale(1); }
+      50% { opacity: 0.85; transform: scale(1.08); }
+    }
+    @keyframes laserSweep {
+      0% { transform: translateY(-100%); opacity: 0; }
+      15% { opacity: 0.95; }
+      85% { opacity: 0.95; }
+      100% { transform: translateY(320%); opacity: 0; }
+    }
+    .ticket-card {
+      transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+    }
+    .ticket-card:hover {
+      transform: translateY(-4px) scale(1.006);
+    }
+    .scanning-active .laser-line {
+      display: block !important;
+      animation: laserSweep 1.8s infinite ease-in-out;
+    }
+  </style>
+<!-- Curatorial Header & Exhibition Context -->
+<header class="w-full max-w-7xl mx-auto px-6 lg:px-12 pt-10 pb-8 text-center flex flex-col items-center">
+<!-- Archive Metadata Badge -->
+<div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-surface-container-high/70 backdrop-blur-md shadow-sm mb-6">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<span class="w-2 h-2 rounded-full bg-primary -ml-4"></span>
+<span class="font-metadata-curatorial text-metadata-curatorial tracking-widest text-on-surface-variant uppercase">
+        Nº 04 · BỘ SƯU TẬP VÉ ĐIỆN TỬ ĐỘC BẢN 2026 · HỌC VIỆN NGHỆ THUẬT XANH LAVIECO
+      </span>
+</div>
+<!-- Editorial Title -->
+<h1 class="font-display-hero text-headline-lg lg:text-display-hero text-on-surface max-w-4xl tracking-tight leading-tight mb-4">
+      Bốn Khúc Biến Tấu Vé Điện Tử: <span class="italic font-normal text-primary">Nghệ Thuật, Sinh Thái</span> &amp; Nghi Thức Tiếp Đón
+    </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-3xl font-light mb-8 leading-relaxed">
+      Mỗi tấm vé là một ấn phẩm lưu niệm độc bản — kết nối chất cảm giấy thô mộc, ánh nhũ kim loại Canary và công nghệ mã QR quét cửa chuẩn xác, tạo tác riêng cho cộng đồng giám sát xanh.
+    </p>
+<!-- Interactive Filter Bar -->
+<div class="flex flex-wrap items-center justify-center gap-2 p-1.5 bg-surface-container-low/90 rounded-full shadow-sm max-w-3xl">
+<button class="filter-pill font-body-sm text-body-sm px-5 py-2 rounded-full bg-primary text-on-primary font-medium shadow-sm transition-all flex items-center gap-1.5" id="btn-all" onclick="filterTickets('all')">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed"></span>
+        Tất cả 4 biến thể
+      </button>
+<button class="filter-pill font-body-sm text-body-sm px-5 py-2 rounded-full text-on-surface hover:bg-surface-container font-medium transition-all" id="btn-gala" onclick="filterTickets('gala')">
+        01. Emerald Gala
+      </button>
+<button class="filter-pill font-body-sm text-body-sm px-5 py-2 rounded-full text-on-surface hover:bg-surface-container font-medium transition-all" id="btn-gallery" onclick="filterTickets('gallery')">
+        02. Gallery Pass
+      </button>
+<button class="filter-pill font-body-sm text-body-sm px-5 py-2 rounded-full text-on-surface hover:bg-surface-container font-medium transition-all" id="btn-deco" onclick="filterTickets('deco')">
+        03. Botanical Art Deco
+      </button>
+<button class="filter-pill font-body-sm text-body-sm px-5 py-2 rounded-full text-on-surface hover:bg-surface-container font-medium transition-all" id="btn-wallet" onclick="filterTickets('wallet')">
+        04. Mobile Wallet Pass
+      </button>
+</div>
+</header>
+<!-- Global Inspection Floating Bar -->
+<div class="w-full max-w-7xl mx-auto px-6 lg:px-12 py-3 flex items-center justify-between text-on-surface-variant font-metadata-curatorial text-metadata-curatorial uppercase tracking-widest">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-base">verified</span>
+<span>HỆ THỐNG MÃ XÁC THỰC LVC-CRYPT: HOẠT ĐỘNG 100%</span>
+</div>
+<div class="flex items-center gap-4">
+<button class="hover:text-primary transition-colors flex items-center gap-1.5 font-medium cursor-pointer" onclick="toggleAllScanners()">
+<span class="material-symbols-outlined text-base">qr_code_scanner</span>
+<span id="scanner-btn-label">BẬT MÔ PHỎNG QUÉT LASER</span>
+</button>
+<span class="opacity-40">|</span>
+<span class="text-tertiary font-semibold">TỈ LỆ THIẾT KẾ: 1:1 VECTOR CẢM ỨNG</span>
+</div>
+</div>
+<!-- GALLERY TICKETS CONTAINER -->
+<div class="w-full max-w-7xl mx-auto px-4 lg:px-12 py-8 flex flex-col gap-16 lg:gap-24">
+<!-- ========================================================================= -->
+<!-- VARIATION 01: EMERALD GALA (Horizontal Grand Ticket) -->
+<!-- ========================================================================= -->
+<section class="ticket-wrapper flex flex-col items-center w-full" id="ticket-sec-gala">
+<div class="w-full flex items-center justify-between max-w-4xl mb-4 px-2">
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 rounded-full bg-primary/10 text-primary font-label-caps text-label-caps font-semibold">
+            BIẾN THỂ 01
+          </span>
+<h2 class="font-title-editorial text-title-editorial text-on-surface font-semibold">Emerald Gala — Dạ Tiệc Môi Trường</h2>
+</div>
+<div class="flex items-center gap-2 font-body-sm text-body-sm">
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface flex items-center gap-1.5 transition-colors" onclick="triggerFlashScan('gala-card')">
+<span class="material-symbols-outlined text-sm">barcode_scanner</span> Quét Laser
+          </button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface flex items-center gap-1.5 transition-colors" onclick="alert('Đang tạo tệp vector PDF chuẩn in ấn mỹ thuật 300 DPI...')">
+<span class="material-symbols-outlined text-sm">download</span> Tải PDF
+          </button>
+</div>
+</div>
+<!-- Ticket 1 Component (Horizontal ~ 860px max) -->
+<div class="ticket-card relative w-full max-w-4xl rounded-2xl overflow-hidden shadow-2xl flex flex-col md:flex-row bg-gradient-to-br from-primary via-[#004e38] to-[#12233f] text-on-primary" id="gala-card">
+<!-- Laser Beam Simulation Overlay -->
+<div class="laser-line hidden absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-tertiary-fixed to-transparent shadow-[0_0_15px_#f0e672] z-50 pointer-events-none"></div>
+<!-- Terrazzo Mineral Mica Background Pattern (SVG inline) -->
+<div class="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#f0e672_1px,transparent_1px)] [background-size:18px_18px]"></div>
+<div class="absolute inset-0 bg-gradient-to-tr from-black/25 via-transparent to-white/10 pointer-events-none"></div>
+<!-- MAIN TICKET BODY (Left Side) -->
+<div class="relative flex-1 p-8 lg:p-10 flex flex-col justify-between border-r border-dashed border-tertiary-fixed/40">
+<!-- Gilded Fine Double Line Framing -->
+<div class="absolute inset-4 rounded-xl border border-tertiary-fixed/30 pointer-events-none"></div>
+<div class="absolute inset-5 rounded-lg border border-tertiary-fixed/15 pointer-events-none"></div>
+<!-- Top Section: Header & Metadata -->
+<div class="relative z-10 flex items-start justify-between gap-4 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-lowest/10 backdrop-blur-md flex items-center justify-center border border-tertiary-fixed/40 shadow-inner">
+<span class="material-symbols-outlined text-tertiary-fixed text-xl">eco</span>
+</div>
+<div>
+<div class="flex items-center gap-1.5 font-title-editorial text-title-editorial font-bold tracking-wider text-surface-container-lowest">
+                  LAVIECO <span class="w-1.5 h-1.5 rounded-full bg-primary-fixed-dim"></span>
+</div>
+<div class="font-metadata-curatorial text-metadata-curatorial tracking-widest text-surface-variant/80 uppercase">
+                  Art to learn green · Art to create green
+                </div>
+</div>
+</div>
+<!-- Gilded Status Badge -->
+<div class="px-3 py-1 rounded-full border border-tertiary-fixed/60 bg-tertiary-fixed/10 text-tertiary-fixed font-label-caps text-label-caps uppercase tracking-widest">
+              VÉ TIÊU CHUẨN ĐẶC CÁCH
+            </div>
+</div>
+<!-- Middle Section: Event Typography -->
+<div class="relative z-10 my-4">
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary-fixed uppercase tracking-widest block mb-1">
+              CHƯƠNG TRÌNH THỰC HÀNH NGHỆ THUẬT TÁI SINH
+            </span>
+<h3 class="font-headline-lg text-headline-lg lg:text-[40px] lg:leading-[48px] text-surface-container-lowest font-normal italic tracking-tight mb-3">
+              Workshop: Gốm Tái Sinh — Nặn Chậu Cây Từ Vật Liệu Tái Chế
+            </h3>
+<p class="font-body-md text-body-md text-surface-variant/90 font-light flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-fixed-dim text-lg">nature_people</span>
+              Đồng kiến tạo không gian sống tuần hoàn với nghệ nhân bản địa Đồng Bằng Sông Cửu Long.
+            </p>
+</div>
+<!-- Bottom Section: Attendee, Logistics & Price Grid -->
+<div class="relative z-10 pt-6 mt-4 border-t border-white/10 grid grid-cols-2 lg:grid-cols-3 gap-4">
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">NGƯỜI THAM DỰ</span>
+<span class="font-headline-sm text-headline-sm text-surface-container-lowest font-medium tracking-wide">Võ Chí Trọng</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">THỜI GIAN</span>
+<span class="font-body-md text-body-md text-surface-container-lowest font-medium block">Chủ Nhật, 08.11.2026</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary-fixed-dim">14:00 – 17:00</span>
+</div>
+<div class="col-span-2 lg:col-span-1">
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">HẠNG VÉ &amp; CHI PHÍ</span>
+<span class="font-headline-sm text-headline-sm text-tertiary-fixed font-semibold">250.000đ</span>
+<span class="inline-flex items-center gap-1 font-metadata-curatorial text-metadata-curatorial text-primary-fixed px-2 py-0.5 rounded bg-primary/40 ml-1">
+<span class="material-symbols-outlined text-xs">check_circle</span> ĐÃ THANH TOÁN
+              </span>
+</div>
+<div class="col-span-2 lg:col-span-3 pt-2 text-surface-variant/80 font-body-sm text-body-sm flex items-start gap-1.5">
+<span class="material-symbols-outlined text-tertiary-fixed text-base shrink-0 mt-0.5">location_on</span>
+<span><strong>Địa điểm:</strong> Xưởng Nghệ thuật Thực nghiệm LAVIECO, 45B Đường 30/4, P. An Lạc, Q. Ninh Kiều, Cần Thơ</span>
+</div>
+</div>
+</div>
+<!-- RIGHT SIDE: TEAR-OFF STUB WITH CONCAVE NOTCHES -->
+<div class="relative w-full md:w-72 bg-[#021c17] p-8 flex flex-col justify-between items-center text-center">
+<!-- Perforation Circle Cutouts on Top and Bottom seam -->
+<div class="hidden md:block absolute -left-4 -top-4 w-8 h-8 rounded-full bg-surface shadow-inner z-30"></div>
+<div class="hidden md:block absolute -left-4 -bottom-4 w-8 h-8 rounded-full bg-surface shadow-inner z-30"></div>
+<div class="relative z-10 w-full flex items-center justify-between mb-4">
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary-fixed tracking-widest uppercase">CUỐNG SOÁT VÉ</span>
+<span class="font-label-caps text-label-caps text-surface-variant/80">LVC-2026</span>
+</div>
+<!-- Crisp Scannable High-Contrast QR Module -->
+<div class="relative z-10 p-3 bg-white rounded-xl shadow-lg border border-tertiary-fixed/30 group">
+<!-- Simulated Authentic SVG QR Code with Emerald Accent Center -->
+<svg class="w-36 h-36" fill="none" viewbox="0 0 140 140" xmlns="http://www.w3.org/2000/svg">
+<rect fill="white" height="140" width="140"></rect>
+<!-- Finder 1 -->
+<rect fill="#002115" height="35" rx="4" width="35" x="10" y="10"></rect>
+<rect fill="white" height="21" width="21" x="17" y="17"></rect>
+<rect fill="#006c4e" height="9" width="9" x="23" y="23"></rect>
+<!-- Finder 2 -->
+<rect fill="#002115" height="35" rx="4" width="35" x="95" y="10"></rect>
+<rect fill="white" height="21" width="21" x="102" y="17"></rect>
+<rect fill="#006c4e" height="9" width="9" x="108" y="23"></rect>
+<!-- Finder 3 -->
+<rect fill="#002115" height="35" rx="4" width="35" x="10" y="95"></rect>
+<rect fill="white" height="21" width="21" x="17" y="102"></rect>
+<rect fill="#006c4e" height="9" width="9" x="23" y="108"></rect>
+<!-- QR Data Matrix Pixels -->
+<g fill="#191c1a">
+<rect height="6" width="6" x="52" y="12"></rect>
+<rect height="6" width="12" x="64" y="12"></rect>
+<rect height="6" width="6" x="82" y="12"></rect>
+<rect height="6" width="18" x="52" y="24"></rect>
+<rect height="12" width="6" x="76" y="24"></rect>
+<rect height="12" width="6" x="52" y="36"></rect>
+<rect height="6" width="18" x="64" y="42"></rect>
+<rect height="18" width="6" x="12" y="52"></rect>
+<rect height="6" width="12" x="24" y="52"></rect>
+<rect height="6" width="18" x="42" y="52"></rect>
+<rect height="6" width="6" x="66" y="52"></rect>
+<rect height="12" width="12" x="78" y="52"></rect>
+<rect height="6" width="6" x="96" y="52"></rect>
+<rect height="6" width="18" x="108" y="52"></rect>
+<rect height="12" width="6" x="18" y="70"></rect>
+<rect height="6" width="18" x="30" y="64"></rect>
+<rect height="18" width="6" x="54" y="64"></rect>
+<rect height="6" width="12" x="66" y="70"></rect>
+<rect height="6" width="18" x="90" y="70"></rect>
+<rect height="12" width="12" x="114" y="64"></rect>
+<rect height="6" width="12" x="52" y="88"></rect>
+<rect height="12" width="6" x="70" y="88"></rect>
+<rect height="6" width="12" x="82" y="94"></rect>
+<rect height="18" width="6" x="52" y="100"></rect>
+<rect height="6" width="18" x="64" y="106"></rect>
+<rect height="12" width="6" x="88" y="106"></rect>
+<rect height="12" width="12" x="100" y="94"></rect>
+<rect height="6" width="12" x="118" y="88"></rect>
+<rect height="18" width="6" x="100" y="112"></rect>
+<rect height="6" width="18" x="112" y="118"></rect>
+<rect height="6" width="18" x="64" y="124"></rect>
+<rect height="6" width="6" x="88" y="124"></rect>
+</g>
+<!-- Center Decorative Eco Dot -->
+<circle cx="70" cy="70" fill="#f8faf6" r="10"></circle>
+<circle cx="70" cy="70" fill="#10b183" r="7"></circle>
+</svg>
+</div>
+<div class="relative z-10 mt-3">
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">MÃ SỐ BẢO MẬT</span>
+<span class="font-label-caps text-label-caps tracking-widest text-tertiary-fixed font-mono font-bold">LVC-2611-0428</span>
+<p class="font-metadata-curatorial text-[9px] text-surface-variant/60 leading-tight mt-1 max-w-[180px]">
+              GIỮ NGUYÊN VẸN KHI VÀO CỬA · QUÉT 1 LẦN DUY NHẤT
+            </p>
+</div>
+<div class="relative z-10 w-full pt-4 mt-3 border-t border-white/10 text-center font-metadata-curatorial text-[10px] text-surface-variant/60">
+            lavieco.io.vn · lavieco@gmail.com
+          </div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- VARIATION 02: GALLERY PASS (Swiss Precision, Vertical Museum Card) -->
+<!-- ========================================================================= -->
+<section class="ticket-wrapper flex flex-col items-center w-full" id="ticket-sec-gallery">
+<div class="w-full flex items-center justify-between max-w-md mb-4 px-2">
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 rounded-full bg-secondary/10 text-secondary font-label-caps text-label-caps font-semibold">
+            BIẾN THỂ 02
+          </span>
+<h2 class="font-title-editorial text-title-editorial text-on-surface font-semibold">Gallery Pass — Tinh Hoa Viện Bảo Tàng</h2>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-body-sm flex items-center gap-1" onclick="triggerFlashScan('gallery-card')">
+<span class="material-symbols-outlined text-sm">barcode_scanner</span> Quét
+        </button>
+</div>
+<!-- Ticket 2 Component (Vertical Heavy Rag Paper ~ 420px wide) -->
+<div class="ticket-card relative w-full max-w-[420px] rounded-2xl bg-surface-container-lowest text-on-surface shadow-2xl overflow-hidden flex flex-col" id="gallery-card">
+<!-- Laser Beam Simulation Overlay -->
+<div class="laser-line hidden absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary to-transparent shadow-[0_0_15px_#10b183] z-50 pointer-events-none"></div>
+<!-- Left Accent Spine Block (Solid Emerald Brand Column) -->
+<div class="absolute left-0 top-0 bottom-0 w-3.5 bg-primary"></div>
+<!-- Upper Gallery Header -->
+<div class="pt-8 pb-5 pl-8 pr-6 border-b border-surface-container">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-bold tracking-wider text-primary">LAVIECO</span>
+<span class="w-2 h-2 rounded-full bg-tertiary-container"></span>
+</div>
+<span class="px-2.5 py-1 rounded-sm bg-surface-container text-on-surface-variant font-metadata-curatorial text-metadata-curatorial tracking-wider uppercase">
+              THẺ THAM QUAN
+            </span>
+</div>
+<p class="font-metadata-curatorial text-metadata-curatorial tracking-widest text-on-surface-variant uppercase">
+            Art to learn green. Art to create green
+          </p>
+</div>
+<!-- Architectural Exhibition Typo Body -->
+<div class="px-8 py-6 flex-1 flex flex-col justify-between">
+<div>
+<div class="font-metadata-curatorial text-metadata-curatorial text-primary tracking-widest uppercase mb-1">
+              PHIÊN THỰC HÀNH NGHỆ THUẬT SỐ 04
+            </div>
+<h3 class="font-headline-md text-headline-md text-on-surface leading-tight font-normal mb-3">
+              Gốm Tái Sinh — Nặn Chậu Cây Từ Vật Liệu Tái Chế
+            </h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+              Khám phá kỹ thuật nhào trộn men khoáng tự nhiên và xỉ tro bản địa trên nền cốt liệu đất sét phù sa Cần Thơ.
+            </p>
+</div>
+<!-- Large Minimalist Date Anchor -->
+<div class="my-6 p-4 rounded-xl bg-surface-container-low flex items-center justify-between">
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase block">NGÀY TRÌNH DIỄN</span>
+<span class="font-headline-md text-headline-md font-light text-on-surface">08.11.2026</span>
+</div>
+<div class="text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase block">KHUNG GIỜ</span>
+<span class="font-title-editorial text-title-editorial text-primary font-semibold">14:00 – 17:00</span>
+</div>
+</div>
+<!-- Specimen & Attendee Curatorial Meta -->
+<div class="space-y-3 font-body-sm text-body-sm pb-4">
+<div class="flex justify-between items-baseline border-b border-surface-container-low pb-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">NGƯỜI THAM GIA</span>
+<span class="font-headline-sm text-headline-sm font-medium text-on-surface">Võ Chí Trọng</span>
+</div>
+<div class="flex justify-between items-baseline border-b border-surface-container-low pb-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase">CHI PHÍ VÉ</span>
+<span class="font-body-md text-body-md font-semibold text-primary">250.000đ · ĐÃ THANH TOÁN</span>
+</div>
+<div class="pt-1">
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface-variant uppercase block mb-0.5">KHÔNG GIAN TIẾP ĐÓN</span>
+<span class="font-body-sm text-body-sm text-on-surface leading-snug block">
+                Xưởng Nghệ thuật Thực nghiệm LAVIECO, 45B Đường 30/4, P. An Lạc, Q. Ninh Kiều, Cần Thơ
+              </span>
+</div>
+</div>
+</div>
+<!-- HORIZONTAL PERFORATED TEAR-OFF LINE WITH SIDE NOTCHES -->
+<div class="relative w-full border-t border-dashed border-outline-variant/60 flex items-center justify-between">
+<div class="absolute -left-3 -top-3 w-6 h-6 rounded-full bg-surface shadow-inner z-20"></div>
+<div class="absolute -right-3 -top-3 w-6 h-6 rounded-full bg-surface shadow-inner z-20"></div>
+</div>
+<!-- Bottom Curatorial Stub -->
+<div class="p-8 bg-surface-container-low/60 flex items-center justify-between gap-4">
+<div class="flex-1">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary uppercase font-bold tracking-wider block">
+              CUỐNG SOÁT VÉ
+            </span>
+<span class="font-label-caps text-label-caps text-on-surface font-mono font-bold block mt-1">
+              LVC-2611-0428
+            </span>
+<span class="font-metadata-curatorial text-[10px] text-on-surface-variant/80 block mt-1">
+              lavieco.io.vn · lavieco@gmail.com
+            </span>
+</div>
+<!-- Compact Monochromatic QR -->
+<div class="p-2 bg-white rounded-lg shadow-sm border border-surface-container-highest">
+<svg class="w-16 h-16" fill="none" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<rect fill="white" height="100" width="100"></rect>
+<rect fill="#191c1a" height="28" width="28" x="5" y="5"></rect>
+<rect fill="white" height="18" width="18" x="10" y="10"></rect>
+<rect fill="#191c1a" height="10" width="10" x="14" y="14"></rect>
+<rect fill="#191c1a" height="28" width="28" x="67" y="5"></rect>
+<rect fill="white" height="18" width="18" x="72" y="10"></rect>
+<rect fill="#191c1a" height="10" width="10" x="76" y="14"></rect>
+<rect fill="#191c1a" height="28" width="28" x="5" y="67"></rect>
+<rect fill="white" height="18" width="18" x="10" y="72"></rect>
+<rect fill="#191c1a" height="10" width="10" x="14" y="76"></rect>
+<!-- Micro matrix dots -->
+<rect fill="#191c1a" height="8" width="8" x="40" y="10"></rect>
+<rect fill="#191c1a" height="8" width="8" x="52" y="10"></rect>
+<rect fill="#191c1a" height="8" width="16" x="40" y="25"></rect>
+<rect fill="#191c1a" height="8" width="18" x="10" y="45"></rect>
+<rect fill="#191c1a" height="8" width="8" x="35" y="45"></rect>
+<rect fill="#10b183" height="8" width="14" x="48" y="40"></rect>
+<rect fill="#191c1a" height="8" width="20" x="70" y="45"></rect>
+<rect fill="#191c1a" height="12" width="12" x="40" y="65"></rect>
+<rect fill="#191c1a" height="8" width="15" x="60" y="65"></rect>
+<rect fill="#191c1a" height="12" width="12" x="80" y="65"></rect>
+<rect fill="#191c1a" height="8" width="25" x="40" y="85"></rect>
+<rect fill="#191c1a" height="12" width="8" x="72" y="82"></rect>
+</svg>
+</div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- VARIATION 03: BOTANICAL ART DECO (VIP Ceremonial Pass) -->
+<!-- ========================================================================= -->
+<section class="ticket-wrapper flex flex-col items-center w-full" id="ticket-sec-deco">
+<div class="w-full flex items-center justify-between max-w-4xl mb-4 px-2">
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 rounded-full bg-tertiary-container/20 text-tertiary font-label-caps text-label-caps font-semibold">
+            BIẾN THỂ 03
+          </span>
+<h2 class="font-title-editorial text-title-editorial text-on-surface font-semibold">Botanical Art Deco — Nghi Thức Khách Quý VIP</h2>
+</div>
+<div class="flex items-center gap-2 font-body-sm text-body-sm">
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface flex items-center gap-1.5 transition-colors" onclick="triggerFlashScan('deco-card')">
+<span class="material-symbols-outlined text-sm">barcode_scanner</span> Quét Laser
+          </button>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface flex items-center gap-1.5 transition-colors" onclick="alert('Đã sẵn sàng chứng thư khách mời danh dự dạng in khắc kẽm!')">
+<span class="material-symbols-outlined text-sm">share</span> Chia sẻ
+          </button>
+</div>
+</div>
+<!-- Ticket 3 Component (Deco Symmetric Velvet Luxury) -->
+<div class="ticket-card relative w-full max-w-4xl rounded-3xl bg-[#0e1c2e] text-[#f8faf6] shadow-2xl overflow-hidden flex flex-col md:flex-row border border-tertiary-fixed/30" id="deco-card">
+<!-- Laser Beam Simulation Overlay -->
+<div class="laser-line hidden absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-tertiary-fixed to-transparent shadow-[0_0_15px_#f0e672] z-50 pointer-events-none"></div>
+<!-- Geometric Botanical Corner Accents (Fine Canary Line-Art SVGs) -->
+<svg class="absolute top-2 left-2 w-20 h-20 text-tertiary-fixed/40 pointer-events-none" fill="none" stroke="currentColor" stroke-width="1.2" viewbox="0 0 100 100">
+<path d="M10,10 L90,10 M10,10 L10,90"></path>
+<path d="M18,18 L70,18 M18,18 L18,70"></path>
+<circle cx="28" cy="28" r="6"></circle>
+<!-- Stylized Fern Frond Deco -->
+<path d="M28,28 Q45,25 60,15 M28,28 Q25,45 15,60 M28,28 L50,50"></path>
+</svg>
+<svg class="absolute top-2 right-2 w-20 h-20 text-tertiary-fixed/40 pointer-events-none rotate-90" fill="none" stroke="currentColor" stroke-width="1.2" viewbox="0 0 100 100">
+<path d="M10,10 L90,10 M10,10 L10,90"></path>
+<path d="M18,18 L70,18 M18,18 L18,70"></path>
+<circle cx="28" cy="28" r="6"></circle>
+<path d="M28,28 Q45,25 60,15 M28,28 Q25,45 15,60 M28,28 L50,50"></path>
+</svg>
+<!-- MAIN CEREMONIAL REGISTRATION (Left Side) -->
+<div class="relative flex-1 p-8 lg:p-12 flex flex-col justify-between border-r border-dashed border-tertiary-fixed/30">
+<!-- Top Centered Emblem -->
+<div class="text-center relative z-10">
+<div class="inline-flex items-center gap-2 px-4 py-1 rounded-full border border-tertiary-fixed/40 bg-tertiary-fixed/10 mb-3">
+<span class="material-symbols-outlined text-xs text-tertiary-fixed">stars</span>
+<span class="font-metadata-curatorial text-metadata-curatorial tracking-widest text-tertiary-fixed uppercase font-semibold">
+                VÉ VIP KHÁCH MỜI ĐẶC CÁCH
+              </span>
+<span class="material-symbols-outlined text-xs text-tertiary-fixed">stars</span>
+</div>
+<div class="flex items-center justify-center gap-2 font-headline-sm text-headline-sm tracking-widest text-[#f8faf6]">
+              L A V I E C O
+            </div>
+<p class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 tracking-widest uppercase mt-0.5">
+              Art to learn green. Art to create green
+            </p>
+</div>
+<!-- Middle Botanical Typography Core -->
+<div class="text-center my-6 relative z-10 px-4">
+<div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-tertiary-fixed to-transparent mx-auto mb-4"></div>
+<h3 class="font-headline-lg text-headline-lg lg:text-[38px] lg:leading-[46px] font-normal text-tertiary-fixed italic mb-3">
+              Workshop: Gốm Tái Sinh — Nặn Chậu Cây Từ Vật Liệu Tái Chế
+            </h3>
+<p class="font-body-md text-body-md text-surface-variant font-light max-w-xl mx-auto">
+              Đặc quyền tham vấn trực tiếp cùng nghệ nhân phục dựng men đất cổ và nhận trọn bộ dụng cụ tạo tác gốm sinh thái mang về.
+            </p>
+<div class="w-16 h-0.5 bg-gradient-to-r from-transparent via-tertiary-fixed to-transparent mx-auto mt-4"></div>
+</div>
+<!-- Bottom Grid Info -->
+<div class="relative z-10 pt-4 border-t border-tertiary-fixed/20 grid grid-cols-1 md:grid-cols-3 gap-4 text-center md:text-left">
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary-fixed/70 uppercase block">KHÁCH MỜI DANH DỰ</span>
+<span class="font-headline-sm text-headline-sm font-medium text-surface-bright">Võ Chí Trọng</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary-fixed/70 uppercase block">NGÀY &amp; KHUNG GIỜ</span>
+<span class="font-body-md text-body-md text-surface-bright font-medium block">Chủ Nhật, 08.11.2026</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary-fixed-dim">14:00 – 17:00</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-tertiary-fixed/70 uppercase block">TRẠNG THÁI</span>
+<span class="font-body-md text-body-md font-semibold text-tertiary-fixed">250.000đ</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary-fixed-dim block">ĐÃ THANH TOÁN (VIP SEAT)</span>
+</div>
+<div class="col-span-1 md:col-span-3 pt-2 text-center text-surface-variant/80 font-body-sm text-body-sm">
+<strong>Địa điểm:</strong> Xưởng Nghệ thuật Thực nghiệm LAVIECO, 45B Đường 30/4, P. An Lạc, Q. Ninh Kiều, Cần Thơ
+            </div>
+</div>
+</div>
+<!-- RIGHT STUB: LUXURY WAX SEAL & SCANNER ZONE -->
+<div class="relative w-full md:w-80 bg-[#07101c] p-8 flex flex-col justify-between items-center text-center">
+<!-- Circular Cutouts on Tear Seam -->
+<div class="hidden md:block absolute -left-4 -top-4 w-8 h-8 rounded-full bg-surface shadow-inner z-30"></div>
+<div class="hidden md:block absolute -left-4 -bottom-4 w-8 h-8 rounded-full bg-surface shadow-inner z-30"></div>
+<!-- Gilded Curatorial Seal -->
+<div class="relative z-10 flex flex-col items-center">
+<div class="w-16 h-16 rounded-full border border-tertiary-fixed/60 flex items-center justify-center p-1 bg-gradient-to-br from-tertiary-fixed/20 to-transparent shadow-lg mb-2">
+<div class="w-full h-full rounded-full border border-dashed border-tertiary-fixed/50 flex flex-col items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-fixed text-lg">spa</span>
+<span class="font-metadata-curatorial text-[7px] text-tertiary-fixed uppercase font-bold tracking-tighter">BẢO TỒN</span>
+</div>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial tracking-widest text-tertiary-fixed uppercase">CUỐNG SOÁT VÉ</span>
+</div>
+<!-- Golden Rimmed Scannable QR -->
+<div class="relative z-10 p-3 bg-surface-container-lowest rounded-xl shadow-2xl border-2 border-tertiary-fixed/60">
+<svg class="w-32 h-32" fill="none" viewbox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+<rect fill="white" height="120" width="120"></rect>
+<!-- Finder Outer & Inner -->
+<rect fill="#07101c" height="30" width="30" x="8" y="8"></rect>
+<rect fill="white" height="18" width="18" x="14" y="14"></rect>
+<rect fill="#676000" height="8" width="8" x="19" y="19"></rect>
+<rect fill="#07101c" height="30" width="30" x="82" y="8"></rect>
+<rect fill="white" height="18" width="18" x="88" y="14"></rect>
+<rect fill="#676000" height="8" width="8" x="93" y="19"></rect>
+<rect fill="#07101c" height="30" width="30" x="8" y="82"></rect>
+<rect fill="white" height="18" width="18" x="14" y="88"></rect>
+<rect fill="#676000" height="8" width="8" x="19" y="93"></rect>
+<!-- Pattern -->
+<g fill="#191c1a">
+<rect height="6" width="12" x="44" y="10"></rect>
+<rect height="6" width="14" x="62" y="10"></rect>
+<rect height="12" width="6" x="44" y="22"></rect>
+<rect height="6" width="20" x="56" y="22"></rect>
+<rect height="6" width="12" x="10" y="44"></rect>
+<rect height="12" width="6" x="28" y="44"></rect>
+<rect height="12" width="12" x="40" y="44"></rect>
+<rect height="6" width="18" x="60" y="44"></rect>
+<rect height="18" width="8" x="84" y="44"></rect>
+<rect height="6" width="12" x="98" y="44"></rect>
+<rect height="6" width="18" x="14" y="62"></rect>
+<rect height="18" width="6" x="38" y="62"></rect>
+<rect height="6" width="18" x="50" y="62"></rect>
+<rect height="12" width="12" x="74" y="62"></rect>
+<rect height="6" width="18" x="92" y="68"></rect>
+<rect height="6" width="14" x="44" y="86"></rect>
+<rect height="14" width="6" x="64" y="86"></rect>
+<rect height="6" width="18" x="76" y="86"></rect>
+<rect height="18" width="10" x="100" y="80"></rect>
+<rect height="12" width="8" x="44" y="98"></rect>
+<rect height="6" width="18" x="58" y="104"></rect>
+<rect height="12" width="14" x="82" y="98"></rect>
+</g>
+<circle cx="60" cy="60" fill="#f0e672" r="7"></circle>
+<circle cx="60" cy="60" fill="#006c4e" r="4"></circle>
+</svg>
+</div>
+<div class="relative z-10 mt-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">KÝ HIỆU LƯU TRỮ</span>
+<span class="font-label-caps text-label-caps tracking-widest text-tertiary-fixed font-mono font-bold">LVC-2611-0428</span>
+<p class="font-metadata-curatorial text-[9px] text-surface-variant/60 leading-tight mt-1">
+              XÁC THỰC BỞI LAVIECO ARCHIVE 2026
+            </p>
+</div>
+<div class="relative z-10 w-full pt-4 mt-2 border-t border-white/10 text-center font-metadata-curatorial text-[10px] text-surface-variant/60">
+            lavieco.io.vn · lavieco@gmail.com
+          </div>
+</div>
+</div>
+</section>
+<!-- ========================================================================= -->
+<!-- VARIATION 04: MOBILE WALLET PASS (Glassy Next-Gen iOS/Android Pass) -->
+<!-- ========================================================================= -->
+<section class="ticket-wrapper flex flex-col items-center w-full" id="ticket-sec-wallet">
+<div class="w-full flex items-center justify-between max-w-sm mb-4 px-2">
+<div class="flex items-center gap-2">
+<span class="px-3 py-1 rounded-full bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps font-semibold">
+            BIẾN THỂ 04
+          </span>
+<h2 class="font-title-editorial text-title-editorial text-on-surface font-semibold">Mobile Wallet Pass</h2>
+</div>
+<button class="px-3 py-1.5 rounded-full bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-body-sm flex items-center gap-1" onclick="triggerFlashScan('wallet-card')">
+<span class="material-symbols-outlined text-sm">barcode_scanner</span> Quét
+        </button>
+</div>
+<!-- Ticket 4 Component (Next-Gen Smartphone Pass ~ 360px wide) -->
+<div class="ticket-card relative w-full max-w-[360px] rounded-[32px] bg-gradient-to-b from-[#143026] via-[#10221c] to-[#0d1714] text-white shadow-[0_24px_50px_-12px_rgba(0,108,78,0.28)] overflow-hidden border border-primary-fixed-dim/30" id="wallet-card">
+<!-- Laser Beam Simulation Overlay -->
+<div class="laser-line hidden absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-primary-fixed to-transparent shadow-[0_0_15px_#75fac7] z-50 pointer-events-none"></div>
+<!-- Glassy Ambient Dynamic Header -->
+<div class="relative p-6 pb-5 bg-gradient-to-r from-primary-container/20 to-secondary-container/20 backdrop-blur-xl border-b border-white/10">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary font-bold font-title-editorial text-sm shadow">
+                L
+              </div>
+<div>
+<span class="font-headline-sm text-headline-sm font-semibold tracking-wide text-white block leading-none">LAVIECO</span>
+<span class="font-metadata-curatorial text-[9px] text-surface-variant/80 tracking-widest uppercase">E-PASS 2026</span>
+</div>
+</div>
+<!-- Live Scanning Pulsing Dot -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-container/30 border border-primary-fixed/40">
+<span class="w-2 h-2 rounded-full bg-primary-fixed animate-ping"></span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-fixed -ml-2.5"></span>
+<span class="font-metadata-curatorial text-[9px] font-bold text-primary-fixed tracking-wider">SẴN SÀNG QUÉT</span>
+</div>
+</div>
+<p class="font-metadata-curatorial text-[10px] text-surface-variant/70 tracking-wider uppercase mt-2">
+            Art to learn green · Art to create green
+          </p>
+</div>
+<!-- Event Typography and Live Details -->
+<div class="p-6">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary-fixed tracking-widest uppercase font-semibold block mb-1">
+            WORKSHOP THỰC HÀNH NGHỆ THUẬT
+          </span>
+<h3 class="font-title-editorial text-title-editorial text-white font-normal leading-snug mb-4">
+            Gốm Tái Sinh — Nặn Chậu Cây Từ Vật Liệu Tái Chế
+          </h3>
+<!-- Details Card Grid -->
+<div class="grid grid-cols-2 gap-3 p-4 rounded-2xl bg-white/5 border border-white/10 mb-5">
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">NGƯỜI THAM GIA</span>
+<span class="font-body-md text-body-md font-medium text-white">Võ Chí Trọng</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">THỜI GIAN</span>
+<span class="font-body-sm text-body-sm font-medium text-white block">08.11.2026</span>
+<span class="font-metadata-curatorial text-primary-fixed-dim text-[11px]">14:00 – 17:00</span>
+</div>
+<div class="col-span-2 pt-2 border-t border-white/10">
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface-variant/70 uppercase block">ĐỊA ĐIỂM TIẾP ĐÓN</span>
+<span class="font-body-sm text-body-sm text-surface-variant leading-tight block mt-0.5">
+                Xưởng Thực nghiệm LAVIECO, 45B Đ. 30/4, P. An Lạc, Q. Ninh Kiều, Cần Thơ
+              </span>
+</div>
+</div>
+<!-- Main Ultra-Clear Smartphone QR Hub -->
+<div class="p-5 bg-white rounded-2xl flex flex-col items-center justify-center text-center shadow-2xl">
+<svg class="w-44 h-44" fill="none" viewbox="0 0 130 130" xmlns="http://www.w3.org/2000/svg">
+<rect fill="white" height="130" width="130"></rect>
+<!-- High-res Finder Elements -->
+<rect fill="#003c2a" height="32" rx="4" width="32" x="10" y="10"></rect>
+<rect fill="white" height="20" width="20" x="16" y="16"></rect>
+<rect fill="#10b183" height="8" width="8" x="22" y="22"></rect>
+<rect fill="#003c2a" height="32" rx="4" width="32" x="88" y="10"></rect>
+<rect fill="white" height="20" width="20" x="94" y="16"></rect>
+<rect fill="#10b183" height="8" width="8" x="100" y="22"></rect>
+<rect fill="#003c2a" height="32" rx="4" width="32" x="10" y="88"></rect>
+<rect fill="white" height="20" width="20" x="16" y="94"></rect>
+<rect fill="#10b183" height="8" width="8" x="22" y="100"></rect>
+<!-- Central Matrix Pattern with Modern Styling -->
+<g fill="#191c1a">
+<rect height="8" width="8" x="50" y="12"></rect>
+<rect height="8" width="14" x="66" y="12"></rect>
+<rect height="8" width="22" x="50" y="26"></rect>
+<rect height="12" width="6" x="76" y="26"></rect>
+<rect height="8" width="12" x="12" y="50"></rect>
+<rect height="14" width="8" x="30" y="50"></rect>
+<rect height="8" width="14" x="44" y="50"></rect>
+<rect height="8" width="16" x="64" y="46"></rect>
+<rect height="16" width="10" x="86" y="50"></rect>
+<rect height="8" width="14" x="104" y="50"></rect>
+<rect height="8" width="18" x="14" y="70"></rect>
+<rect height="8" width="14" x="40" y="66"></rect>
+<rect height="18" width="8" x="60" y="66"></rect>
+<rect height="8" width="16" x="76" y="72"></rect>
+<rect height="8" width="18" x="100" y="70"></rect>
+<rect height="8" width="14" x="50" y="88"></rect>
+<rect height="16" width="8" x="70" y="92"></rect>
+<rect height="8" width="20" x="86" y="88"></rect>
+<rect height="14" width="8" x="50" y="104"></rect>
+<rect height="8" width="18" x="66" y="110"></rect>
+<rect height="14" width="14" x="92" y="104"></rect>
+<rect height="18" width="8" x="110" y="96"></rect>
+</g>
+<!-- Central Eco Leaf Badge in QR -->
+<rect fill="#f8faf6" height="20" rx="10" width="20" x="55" y="55"></rect>
+<circle cx="65" cy="65" fill="#10b183" r="7"></circle>
+</svg>
+<!-- Brightness guidance label -->
+<span class="font-label-caps text-label-caps text-primary tracking-widest font-mono font-bold mt-2">
+              LVC-2611-0428
+            </span>
+<span class="font-metadata-curatorial text-[10px] text-on-surface-variant font-medium">
+              VÉ ĐÃ THANH TOÁN · 250.000đ
+            </span>
+</div>
+<!-- Mobile Action Buttons -->
+<div class="mt-5 space-y-2.5">
+<button class="w-full py-2.5 px-4 rounded-xl bg-white text-black font-body-sm text-body-sm font-semibold flex items-center justify-center gap-2 hover:bg-neutral-200 transition-colors shadow" onclick="alert('Đã tạo liên kết Apple Wallet Pass (.pkpass) thành công!')">
+<span class="material-symbols-outlined text-lg">phone_iphone</span> Thêm vào Apple Wallet
+            </button>
+<button class="w-full py-2.5 px-4 rounded-xl bg-white/10 hover:bg-white/15 text-white font-body-sm text-body-sm font-medium flex items-center justify-center gap-2 transition-colors border border-white/15" onclick="alert('Đã gửi thông tin vé vào Google Wallet của bạn!')">
+<span class="material-symbols-outlined text-lg">account_balance_wallet</span> Google Wallet Pass
+            </button>
+</div>
+<!-- Bottom Micro Support Link -->
+<div class="mt-4 text-center font-metadata-curatorial text-[10px] text-surface-variant/60">
+            Hỗ trợ vé: lavieco.io.vn · lavieco@gmail.com
+          </div>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Curatorial Footnote & Printing Advisory -->
+<footer class="w-full max-w-7xl mx-auto px-6 lg:px-12 py-16 text-center border-t border-surface-container mt-12">
+<div class="flex items-center justify-center gap-2 mb-3">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-headline-sm text-headline-sm font-medium text-on-surface">LAVIECO ARCHIVE &amp; EXHIBITION 2026</span>
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto font-light leading-relaxed mb-6">
+      Tiêu chuẩn thiết kế được tối ưu hóa cho màn hình OLED di động và máy in ấn Offset thân thiện môi trường sử dụng mực đậu nành (Soy Ink) trên giấy mỹ thuật tái sinh không tẩy trắng.
+    </p>
+<div class="inline-flex items-center gap-6 font-metadata-curatorial text-metadata-curatorial tracking-widest text-on-surface-variant uppercase">
+<span>CẦN THƠ · HÀ NỘI · TP. HỒ CHÍ MINH</span>
+<span>·</span>
+<span>BẢN QUYỀN THIẾT KẾ © 2026 LAVIECO</span>
+</div>
+</footer>
+<!-- Interactive JavaScript Controller -->
+<script>
+    // Tab Filter Logic
+    function filterTickets(type) {
+      const tickets = {
+        gala: document.getElementById('ticket-sec-gala'),
+        gallery: document.getElementById('ticket-sec-gallery'),
+        deco: document.getElementById('ticket-sec-deco'),
+        wallet: document.getElementById('ticket-sec-wallet')
+      };
+
+      const buttons = {
+        all: document.getElementById('btn-all'),
+        gala: document.getElementById('btn-gala'),
+        gallery: document.getElementById('btn-gallery'),
+        deco: document.getElementById('btn-deco'),
+        wallet: document.getElementById('btn-wallet')
+      };
+
+      // Reset pill styles
+      Object.values(buttons).forEach(btn => {
+        if (!btn) return;
+        btn.className = 'filter-pill font-body-sm text-body-sm px-5 py-2 rounded-full text-on-surface hover:bg-surface-container font-medium transition-all';
+      });
+
+      // Highlight active button
+      if (buttons[type]) {
+        buttons[type].className = 'filter-pill font-body-sm text-body-sm px-5 py-2 rounded-full bg-primary text-on-primary font-medium shadow-sm transition-all flex items-center gap-1.5';
+      }
+
+      // Show / hide sections
+      if (type === 'all') {
+        Object.values(tickets).forEach(sec => sec.style.display = 'flex');
+      } else {
+        Object.keys(tickets).forEach(key => {
+          if (key === type) {
+            tickets[key].style.display = 'flex';
+            tickets[key].scrollIntoView({ behavior: 'smooth', block: 'center' });
+          } else {
+            tickets[key].style.display = 'none';
+          }
+        });
+      }
+    }
+
+    // Single Card Laser Scan Animation Trigger
+    function triggerFlashScan(cardId) {
+      const card = document.getElementById(cardId);
+      if (!card) return;
+      card.classList.add('scanning-active');
+      setTimeout(() => {
+        card.classList.remove('scanning-active');
+      }, 3600);
+    }
+
+    // Toggle All Laser Scanners Concurrently
+    let isAllScanning = false;
+    function toggleAllScanners() {
+      isAllScanning = !isAllScanning;
+      const cards = document.querySelectorAll('.ticket-card');
+      const label = document.getElementById('scanner-btn-label');
+
+      cards.forEach(card => {
+        if (isAllScanning) {
+          card.classList.add('scanning-active');
+          if (label) label.textContent = 'DỪNG MÔ PHỎNG QUÉT LASER';
+        } else {
+          card.classList.remove('scanning-active');
+          if (label) label.textContent = 'BẬT MÔ PHỎNG QUÉT LASER';
+        }
+      });
+    }
+  </script>
+</div></main></body></html>

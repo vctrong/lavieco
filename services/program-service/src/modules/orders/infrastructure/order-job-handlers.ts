@@ -29,7 +29,9 @@ export class OrderJobHandlers implements OnModuleInit {
 
   onModuleInit() {
     this.worker.register(SEND_TICKETS_JOB, async (payload) => {
-      await this.mailer.sendTickets(String(payload.orderId));
+      await this.mailer.sendTickets(String(payload.orderId), {
+        resend: payload.resend === true,
+      });
     });
     // The order already ended (expired or cancelled): payOS just stops taking money.
     // If the buyer paid in the meantime, payOS refuses to cancel: settle it instead

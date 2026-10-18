@@ -225,7 +225,7 @@ Quy tắc đi kèm:
 | **`shared`** | Zod schema cho request/response và tài liệu công khai; `LocalizedText`, `ActorRef` (`03` §1.2); enum; **bảng vai trò → permission**; hợp đồng sự kiện; mã lỗi; loại khối nội dung (`03` §5.1); hàm thuần túy: chuẩn hóa email/SĐT, tạo `search.key`, kiểm tra định dạng mã QR | Gọi HTTP, truy cập DB, React, NestJS |
 | **`ui`** | **Tệp design token** (`theme.css`); component nguyên thủy không gắn nghiệp vụ (Button, Field, Card khung vòm, Dialog, Toast...); bộ hook giao diện chung | Chữ nội dung, gọi API, kiến thức nghiệp vụ (lead, tác phẩm...) |
 | **`api-clients`** | Client HTTP có kiểu cho từng service: ký/đính service token, timeout, thử lại (chỉ lời gọi idempotent), đọc Problem Details, phân tích phản hồi bằng schema của `shared` | Logic nghiệp vụ, cache giao diện |
-| **`service-kit`** | Phần chung của NestJS: `ZodValidationPipe`, guard xác thực + `@RequirePermission()`, bộ lọc lỗi → Problem Details, module health, module cấu hình (đọc env bằng Zod, dừng khi sai), **`OutboxModule`** (tiến trình đọc outbox, nhận danh sách handler do service đăng ký), **`NotifyModule`** (cổng `EmailSender` + bộ chuyển đổi nhà cung cấp email), module `x-request-id` | Tên collection, quy tắc nghiệp vụ của bất kỳ service nào |
+| **`service-kit`** | Phần chung của NestJS: `ZodValidationPipe`, guard xác thực + `@RequirePermission()`, bộ lọc lỗi → Problem Details, module health, module cấu hình (đọc env bằng Zod, dừng khi sai), **`OutboxModule`** (tiến trình đọc outbox, nhận danh sách handler do service đăng ký), **`NotifyModule`** (cổng `EmailSender` + bộ chuyển đổi nhà cung cấp email) và **`notify/email/`** (bố cục email dùng chung: header logo CID, footer liên hệ + lý do nhận; các khối table/CSS inline; kiểm tra `emailHtmlIssues`; template nghiệp vụ vẫn ở service của nó), module `x-request-id` | Tên collection, quy tắc nghiệp vụ của bất kỳ service nào |
 | **`observability`** | Logger có cấu trúc, **bộ che trường nhạy cảm** (email, SĐT, token...), khởi tạo OpenTelemetry | Đo lường riêng của từng nghiệp vụ |
 | **`config`** | Preset ESLint, tsconfig, Prettier; luật kiểm tra ranh giới (mục 10) | |
 
@@ -359,7 +359,7 @@ export const TEXT = {
 | Chủ đề | Quy ước |
 |---|---|
 | **Tailwind** | Tailwind CSS **v4, cấu hình kiểu CSS-first (`@theme`)** **[kế thừa]**, không dùng `tailwind.config.js` và không dùng bản CDN của prototype. |
-| **Token** | Toàn bộ token ở **một tệp**: `packages/ui/src/styles/theme.css` (bên dưới). **Hex chỉ được xuất hiện trong tệp này.** |
+| **Token** | Toàn bộ token ở **một tệp**: `packages/ui/src/styles/theme.css` (bên dưới). **Hex chỉ được xuất hiện trong tệp này.** Ngoại lệ duy nhất: email HTML chỉ nhận CSS inline, nên `packages/service-kit/src/notify/email/email-tokens.ts` sao chép giá trị token (mỗi giá trị ghi tên token gốc); đổi `theme.css` thì đổi cả tệp này. |
 | **Cấm hex rời** | Không viết `#10B183`, `bg-[#...]`, `style={{ color: "#..." }}` trong component. Dùng lớp token (`bg-emerald-brand`, `text-deep-blue`). Có luật lint chặn (mục 10). |
 | **Font** | Fraunces (tiêu đề) và Be Vietnam Pro (nội dung) nạp bằng cơ chế tự lưu trữ của Next.js (`next/font`), chỉ bộ ký tự cần cho tiếng Việt; gán vào biến `--font-fraunces`, `--font-be-vietnam-pro`. |
 | **Icon** | Chỉ dùng bộ **Feather qua `react-icons`** (`react-icons/fi`) **[kế thừa]**. Không viết SVG inline cho icon. Cần icon Feather không có (ví dụ mã QR): xem PQ2. **Ngoại lệ có quản lý (ADR-013):** logo thương hiệu (Facebook, Zalo, GitHub, LinkedIn, Behance) từ `react-icons/si` và `react-icons/fa6`, chỉ trong `src/features/team/`. |
@@ -758,6 +758,8 @@ Turborepo chạy `--filter="...[origin/main]"` để chỉ xử lý phần bị 
 | `lead-service` | 4003 |
 | `program-service` | 4004 |
 
+**Xem trước email:** `npm run mail:preview` dựng mọi email (OTP, tài khoản, đổi mật khẩu, vé với mọi trường hợp, mail:test) từ dữ liệu giả vào `.mail-preview/` (gitignore) và mở mục lục ở `http://localhost:3999`; không gửi gì, không đọc `.env.local`. Logo email sinh lại bằng `node infra/scripts/email-logo.mjs` khi logo thương hiệu đổi.
+
 **Không có object storage ở local** (ADR-020): ảnh lên product environment Cloudinary **dev**, folder `lavieco/dev`. **Dev không bao giờ trỏ vào database production:** mặc định là Mongo trong compose; nếu dùng Atlas thì chỉ database hậu tố `_dev` (`lavieco_content_dev`...) với user Atlas riêng chỉ có quyền trên `*_dev`. `loadConfig` của `service-kit` từ chối khởi động khi ngoài production mà `MONGODB_URI` trỏ Atlas (`mongodb.net`) với database không có hậu tố `_dev`, và từ chối `_dev` ở production; `npm run env:check` báo cùng lỗi này (chỉ in tên biến).
 
 ### 11.2 Docker cho triển khai
@@ -1001,4 +1003,5 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.5.1 | 17/10/2026 | §15.1–15.3: Phase 1 xong; phạm vi Phase 2 (program-service + CRUD sự kiện) và danh sách cần đọc trước cho session sau | V.C. Trọng |
 | v0.6.1 | 18/10/2026 | Phase 2 đóng; Phase 2b dùng Cloudinary cho ảnh (cần ADR-020 và cập nhật `docs/02` §8.2 khi bắt đầu) | V.C. Trọng |
 | v0.7 | 18/10/2026 | Phase 2b (xong, chờ duyệt): `content-service` + module `media`, ảnh chương trình ở admin, ảnh và avatar ở web, route `/api/media/event-images`, `/api/account/avatar`; ADR-020 (Cloudinary), bỏ MinIO khỏi §11.1 và lệnh `dev:infra`; dev tách khỏi database production (guard ở `loadConfig`, `env:check`); biến Cloudinary; trạng thái lộ trình | V.C. Trọng |
+| v0.8 | 18/10/2026 | Thiết kế lại vé và email: bố cục email dùng chung ở `service-kit` `notify/email/` (ngoại lệ hex có quản lý trong `email-tokens.ts`), lệnh `mail:preview` | V.C. Trọng |
 | v0.6 | 18/10/2026 | Phase 2 xong: bản đồ route `web` (`events`, xem trước, `/api/revalidate`) và `admin` (`/events/*`, loại chương trình ở `/events/types`), module `program-service` đã dựng, trạng thái lộ trình và Phase 2b (`media` bắt buộc trước khi mở cho người dùng thật), các điều chỉnh khi duyệt kế hoạch | V.C. Trọng |

@@ -19,18 +19,18 @@ type CheckoutShellProps = {
 export function CheckoutShell({ eyebrow, title, step, back, children }: CheckoutShellProps) {
   const steps = TEXT.vi.steps;
   return (
-    <section className="bg-soft-white pb-24 pt-dock-clearance">
-      <Container className="pt-8 md:pt-12">
+    <section className="bg-soft-white pb-24 pt-dock-clearance print:bg-white print:p-0">
+      <Container className="pt-8 md:pt-12 print:max-w-none print:p-0">
         {back ? (
           <Link
             href={back.href}
-            className="mb-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-deep-blue/70 hover:text-deep-blue"
+            className="mb-6 inline-flex items-center gap-1.5 text-[13px] font-medium text-deep-blue/70 hover:text-deep-blue print:hidden"
           >
             <FiArrowLeft aria-hidden="true" size={14} />
             {back.label}
           </Link>
         ) : null}
-        <div className="mb-8 flex flex-wrap items-end justify-between gap-6">
+        <div className="mb-8 flex flex-wrap items-end justify-between gap-6 print:mb-4">
           <div>
             <Eyebrow className="mb-3 flex items-center gap-2">
               <PearlDot size="sm" tone="emerald" />
@@ -41,7 +41,7 @@ export function CheckoutShell({ eyebrow, title, step, back, children }: Checkout
             </h1>
           </div>
           {step !== null ? (
-            <ol className="flex flex-wrap items-center gap-2 text-[12.5px]">
+            <ol className="flex flex-wrap items-center gap-2 text-[12.5px] print:hidden">
               {steps.map((label, index) => (
                 <li
                   key={label}

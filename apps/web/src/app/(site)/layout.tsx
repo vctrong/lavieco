@@ -4,11 +4,16 @@ import { Footer, MAIN_CONTENT_ID, SkipLink, TideDock, TideLine } from "@/feature
 export default function SiteLayout({ children }: LayoutProps<"/">) {
   return (
     <>
-      <SkipLink />
-      <TideLine />
-      <TideDock />
+      {/* Site chrome stays off paper (printed tickets). */}
+      <div className="contents print:hidden">
+        <SkipLink />
+        <TideLine />
+        <TideDock />
+      </div>
       <main id={MAIN_CONTENT_ID}>{children}</main>
-      <Footer />
+      <div className="contents print:hidden">
+        <Footer />
+      </div>
     </>
   );
 }

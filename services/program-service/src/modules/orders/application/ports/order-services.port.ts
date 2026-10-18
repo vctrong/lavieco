@@ -64,5 +64,6 @@ export interface OrderLinks {
 
 /** Sends the ticket email of a paid order (QR codes embedded, docs/05 §5.3). */
 export interface TicketMailer {
-  sendTickets(orderId: string): Promise<void>;
+  /** `resend`: sent again by the team, the email says so. */
+  sendTickets(orderId: string, options?: { resend?: boolean }): Promise<void>;
 }

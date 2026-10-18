@@ -9,6 +9,7 @@ import {
   orderCreateResponseSchema,
   orderDetailSchema,
   orderListSchema,
+  orderViewSchema,
   registrationListSchema,
 } from "@lavieco/shared/events";
 import type { AuditEventIngestRequest } from "@lavieco/shared/identity";
@@ -293,8 +294,25 @@ describe("orders in admin", () => {
       .send({ ...body, revision: refunded.body.revision });
     expect(twice.status).toBe(409);
 
+    // The ticket page still lists the tickets, void and with nothing to draw a QR from.
+    const page = orderViewSchema.parse(
+      (
+        await t
+          .http()
+          .get(`/internal/v1/order-links/${created.accessToken}`)
+          .set("authorization", bearer(await t.serviceToken("web")))
+          .expect(200)
+      ).body,
+    );
+    expect(page.status).toBe("refunded");
+    expect(page.tickets.map(({ status, qrToken }) => ({ status, qrToken }))).toEqual([
+      { status: "void", qrToken: null },
+      { status: "void", qrToken: null },
+    ]);
+    expect(page.event).toMatchObject({ onlineUrl: null, safetyNotes: "" });
+
     // A refunded ticket no longer gets in.
-    const door = await scan({ eventId: event.id, qrToken: created.order.tickets[0]!.qrToken });
+    const door = await scan({ eventId: event.id, qrToken: created.order.tickets[0]!.qrToken! });
     expect(door.body.result).toBe("invalid");
 
     await drainOutbox(t);
