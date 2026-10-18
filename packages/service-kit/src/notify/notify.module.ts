@@ -25,6 +25,10 @@ export class SmtpEmailSender implements EmailSender {
       // to TLS (STARTTLS on 587) or the send fails.
       requireTLS: !env.SMTP_SECURE && Boolean(auth) && !isLoopbackHost(env.SMTP_HOST),
       auth,
+      // OTP codes are sent inside the request: reuse a logged-in connection instead of a
+      // new TCP + TLS + login (seconds with a real provider) for every email.
+      pool: true,
+      maxConnections: 2,
       connectionTimeout: 10_000,
       greetingTimeout: 10_000,
       socketTimeout: 20_000,
@@ -34,6 +38,15 @@ export class SmtpEmailSender implements EmailSender {
   /** Connects and logs in without sending anything (`npm run mail:test`). */
   async verify(): Promise<void> {
     await this.transport.verify();
+  }
+
+  /** Closes the pooled connections (end of a CLI run, service shutdown). */
+  close(): void {
+    this.transport.close();
+  }
+
+  onApplicationShutdown(): void {
+    this.close();
   }
 
   async send(message: EmailMessage): Promise<void> {

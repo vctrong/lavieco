@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { runMailTest } from "./mail-test";
 import { describeSmtpError } from "./smtp-diagnostics";
@@ -28,6 +28,8 @@ describe("describeSmtpError", () => {
 });
 
 describe("runMailTest", () => {
+  const close = vi.fn();
+
   const env = {
     MAIL_PROVIDER: "smtp" as const,
     SMTP_HOST: "smtp.example.test",
@@ -41,16 +43,19 @@ describe("runMailTest", () => {
   it("stops at login and explains it, without the login in the result", async () => {
     const result = await runMailTest("program-service", env, "to@example.test", {
       verify: () => Promise.reject(smtpError({ code: "EAUTH", responseCode: 535 })),
+      close,
       send: () => Promise.resolve(),
     });
     expect(result).toMatchObject({ ok: false, step: "kết nối smtp.example.test:587" });
     expect(JSON.stringify(result)).not.toMatch(/secret-pass|user@example\.test/);
+    expect(close).toHaveBeenCalled();
   });
 
   it("sends one message once the login works", async () => {
     const sent: string[] = [];
     const result = await runMailTest("identity-service", env, "to@example.test", {
       verify: () => Promise.resolve(),
+      close,
       send: (message) => {
         sent.push(message.subject);
         return Promise.resolve();

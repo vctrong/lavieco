@@ -89,6 +89,9 @@ export function createIdentityClient(options: IdentityClientOptions) {
         auth: service,
         body,
         schema: otpChallengeCreateResponseSchema,
+        // The code is emailed inside the call: a real SMTP login (Gmail, a provider) takes
+        // seconds, and a client giving up at 5 s showed "busy" while the email went out.
+        timeoutMs: 20_000,
         requestId,
       }),
     verifyOtpChallenge: (body: OtpChallengeVerifyRequest, requestId?: string) =>

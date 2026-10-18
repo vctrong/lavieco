@@ -13,7 +13,21 @@ export async function runMailTest(
   service: string,
   env: MailEnv,
   to: string,
-  sender: Pick<SmtpEmailSender, "verify" | "send"> = new SmtpEmailSender(env),
+  sender: Pick<SmtpEmailSender, "verify" | "send" | "close"> = new SmtpEmailSender(env),
+): Promise<MailTestResult> {
+  try {
+    return await check(service, env, to, sender);
+  } finally {
+    // Pooled connections would keep the CLI process alive.
+    sender.close();
+  }
+}
+
+async function check(
+  service: string,
+  env: MailEnv,
+  to: string,
+  sender: Pick<SmtpEmailSender, "verify" | "send">,
 ): Promise<MailTestResult> {
   const via = `${env.SMTP_HOST}:${env.SMTP_PORT}${env.SMTP_SECURE ? " (TLS)" : ""}`;
   try {
