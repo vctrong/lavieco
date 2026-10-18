@@ -13,7 +13,7 @@ import {
   type EventType,
   type EventView,
 } from "@lavieco/shared/events";
-import { Button, SelectField, TextField, TextareaField, cn } from "@lavieco/ui";
+import { Button, CheckboxField, SelectField, TextField, TextareaField, cn } from "@lavieco/ui";
 
 import { createEvent, updateEvent } from "../actions/events";
 import { TEXT } from "../constants/text";
@@ -395,6 +395,14 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
             error={errors.cancellationPolicy}
             disabled={disabled}
           />
+          <CheckboxField
+            tone="light"
+            label={t.editor.fields.forChildren}
+            checked={values.forChildren}
+            onChange={(e) => set("forChildren", e.target.checked)}
+            disabled={disabled}
+          />
+          <p className="-mt-3 text-[12px] text-charcoal/60">{t.editor.fields.forChildrenHint}</p>
         </div>
       </EditorSection>
 

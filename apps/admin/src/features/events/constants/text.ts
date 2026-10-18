@@ -41,6 +41,12 @@ export const TEXT = {
       noVenue: "Chưa có địa điểm",
       edit: "Sửa",
       preview: "Xem trước",
+      shortcuts: {
+        label: (title: string) => `Vận hành: ${title}`,
+        registrations: "Người đăng ký",
+        orders: "Đơn hàng",
+        checkin: "Check-in",
+      },
       empty: "Chưa có chương trình nào khớp bộ lọc.",
       next: "Trang sau",
       first: "Về trang đầu",
@@ -105,6 +111,9 @@ export const TEXT = {
         onlineUrl: "Link tham gia trực tuyến",
         onlineUrlHint: "Không hiện trên website; chỉ gửi trong email vé và trang vé.",
         safetyNotes: "Nội dung lưu ý an toàn",
+        forChildren: "Chương trình dành cho trẻ em",
+        forChildrenHint:
+          'Khi bật, người đặt phải tick "Tôi là phụ huynh/người giám hộ". Không thu thông tin nào của trẻ.',
         safetyPlaceholder:
           "Ví dụ: Có bột vỏ sò và nhựa epoxy. LAVIECO phát găng tay và khẩu trang.",
         cancellationPolicy: "Chính sách huỷ",
@@ -201,6 +210,8 @@ export const TEXT = {
       duplicate: "Nhân bản",
       discard: "Xoá bản nháp",
       preview: "Xem trước",
+      registrations: "Người đăng ký",
+      checkin: "Check-in",
       saveFirst: "Lưu thay đổi trước khi đổi trạng thái.",
       confirm: {
         publish: "Xuất bản chương trình này lên website?",
@@ -275,6 +286,8 @@ export const TEXT = {
       ticket_locked: "Đã có người đặt vé: không đổi giá hay giảm dưới số đã đặt.",
       ticket_limit: "Tối đa 10 loại vé cho một chương trình.",
       type_name_taken: "Đã có loại chương trình cùng tên.",
+      online_url_locked:
+        "Chương trình trực tuyến đã bán vé: chỉ được đổi sang link khác, không được xoá link hay chuyển sang trực tiếp.",
       media_unavailable: "Một ảnh đã hết hạn hoặc không còn dùng được. Gỡ ảnh đó, tải lại rồi lưu.",
     },
     images: {

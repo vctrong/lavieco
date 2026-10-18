@@ -12,6 +12,7 @@
     "test": "vitest run",
     "test:int": "vitest run --config vitest.int.config.ts",
     "db:migrate": "node --env-file-if-exists=.env.local dist/cli/migrate.js",
+    "mail:test": "node --env-file-if-exists=.env.local dist/cli/mail-test.js",
     "gen:openapi": "node dist/openapi.js",
     "admin:create": "node --env-file-if-exists=.env.local dist/cli/create-super-admin.js",
     "keys:generate": "node dist/cli/generate-keys.js"

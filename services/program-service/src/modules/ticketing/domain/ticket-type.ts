@@ -72,6 +72,19 @@ export function assertCanAddTicketType(existing: readonly TicketTypeRecord[]): v
 export const visible = (ticketTypes: readonly TicketTypeRecord[]) =>
   ticketTypes.filter((ticketType) => !ticketType.hidden);
 
+/** Inside its sale window (open bounds when not set). */
+export function isOnSale(ticketType: TicketTypeRecord, now: Date): boolean {
+  if (ticketType.saleStartAt !== null && ticketType.saleStartAt > now) return false;
+  if (ticketType.saleEndAt !== null && ticketType.saleEndAt <= now) return false;
+  return true;
+}
+
+/** Seats still available, `null` for an unlimited type. */
+export function seatsLeftOf(ticketType: TicketTypeRecord): number | null {
+  if (ticketType.quantity === null) return null;
+  return Math.max(0, ticketType.quantity - taken(ticketType));
+}
+
 /**
  * `isFree` = at least one visible ticket type costs 0 (docs/03 §9.2); `priceFrom` is
  * the lowest visible price. Stored on the event so the public list can filter on it.

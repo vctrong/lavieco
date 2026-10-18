@@ -62,6 +62,7 @@ export const eventSchema = new Schema(
     description: { type: String, default: "" },
     safetyNotes: { type: String, default: "" },
     cancellationPolicy: { type: String, default: "" },
+    forChildren: { type: Boolean, default: false },
     speakers: { type: [{ name: String, role: String, _id: false }], default: [] },
     agenda: { type: [{ time: String, title: String, _id: false }], default: [] },
     faq: { type: [{ question: String, answer: String, _id: false }], default: [] },

@@ -14,6 +14,7 @@ import {
 
 import { isSelectable, type EventTypeRepository } from "../../event-types";
 import type { TicketTypeRepository } from "../../ticketing";
+import { assertOnlineLinkKept } from "../domain/online-link";
 import { duplicateOf } from "../domain/duplicate";
 import { toEventContent, type Actor, type EventRecord } from "../domain/event";
 import { nextStatus } from "../domain/event-lifecycle";
@@ -87,12 +88,15 @@ export class EventAdminService {
       throw new DomainError("event.slug_locked");
     }
     if (current.revision !== input.revision) throw new DomainError("common.conflict");
+    const content = toEventContent(input);
+    const sold = (await this.ticketTypes.listByEvent(id)).reduce((sum, type) => sum + type.sold, 0);
+    assertOnlineLinkKept(current, content, sold);
     const images = await resolveEventImages(this.media, id, current, input);
     const updated = await this.unitOfWork.run(async (tx) => {
       const saved = await this.events.updateContent(
         id,
         input.revision,
-        { content: toEventContent(input), slug, images },
+        { content, slug, images },
         actor,
         tx,
       );

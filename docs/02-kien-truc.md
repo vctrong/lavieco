@@ -503,7 +503,7 @@ Quy tắc: dữ liệu đi qua **mỗi ranh giới** đều bị validate lại;
 | **2FA** | **Bắt buộc với mọi admin**, dùng TOTP (RFC 6238). Mã khôi phục cấp một lần. Nâng lên passkey/WebAuthn khi phù hợp. |
 | **Token** | Access token JWT **ngắn hạn** (ví dụ vài chục phút trở xuống), ký bất đối xứng, kèm `sub`, `roles`, `aud`. Refresh token **xoay vòng**, lưu dạng băm ở `identity-service`, thu hồi được. |
 | **Cookie** | `httpOnly`, `Secure`, `SameSite=Strict`, phạm vi theo host của `admin`. |
-| **Thao tác nhạy cảm** | Xuất danh sách lead, đổi vai trò, thu hồi mã QR: **yêu cầu xác thực lại** (step-up) và ghi audit. |
+| **Thao tác nhạy cảm** | Xuất danh sách lead, đổi vai trò, thu hồi mã QR, xuất Excel người đăng ký, đánh dấu đơn đã hoàn tiền: **yêu cầu xác thực lại** (step-up) và ghi audit. Step-up (ADR-021): nhập lại mã TOTP → identity cấp token 5 phút gắn `sub` + `sid`, gửi qua header `x-step-up-token`; service đích kiểm tra bằng JWKS. Audit của service khác đi qua outbox → `POST /internal/v1/audit-events` của identity. |
 | **Mời admin** | Liên kết mời dùng một lần, hết hạn sau 48 giờ; người được mời tự đặt mật khẩu và cài 2FA (quét QR, xác nhận mã đầu tiên) trước khi tài khoản hoạt động. Super Admin đầu tiên tạo bằng lệnh `npm run admin:create`, cũng đi qua bước này. |
 | **Member** (ADR-016) | Email + mật khẩu sau khi xác thực email bằng OTP 6 số, hoặc Google (chỉ Member, không cho admin). Khóa tạm 15 phút sau 5 lần sai. Access token 15 phút, refresh 30 ngày, cookie `SameSite=Lax`. |
 | **OTP email** | Dùng chung cho `signup`, `reset_password`, `checkout`, `ticket_lookup`: 6 số, chỉ lưu HMAC, hết hạn 5 phút, tối đa 5 lần nhập, 3 lần gửi/10 phút mỗi email, 10 lần/10 phút mỗi IP, chờ 45 giây giữa hai lần gửi. Bộ đếm lưu trong MongoDB (`rate_limit_buckets`, khóa là HMAC, không lưu IP). Phản hồi không tiết lộ email đã có tài khoản hay chưa. |
@@ -533,9 +533,9 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `user:manage` | ✓ | — | — | — |
 | `audit:read` | ✓ | — | — | ✓ |
 | `privacy:process` (xử lý yêu cầu xóa dữ liệu) | ✓ | — | — | — |
-| `program:read` (sự kiện, loại vé, người đăng ký) | ✓ | ✓ | ✓ | ✓ |
+| `program:read` (sự kiện, loại vé, form; **không** gồm dữ liệu người đăng ký) | ✓ | ✓ | ✓ | ✓ |
 | `program:write` (tạo/sửa/xuất bản sự kiện, loại chương trình) | ✓ | — | ✓ | — |
-| `order:read` (đơn vé, đối soát) | ✓ | — | ✓ | ✓ |
+| `order:read` (đơn vé, đối soát, danh sách người đăng ký có PII) | ✓ | — | ✓ | ✓ |
 | `order:refund` (hoàn tiền, huỷ vé) | ✓ | — | ✓ | — |
 | `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
 | `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |

@@ -200,6 +200,7 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Xem vé của tôi | — | ✓ | ✓ | ✓ | — | — | — | — |
 | Tạo/sửa/xuất bản sự kiện, loại vé, form | — | — | — | — | ✓ | — | ✓ | — |
 | Xem đơn vé, đối soát payOS | — | — | — | — | ✓ | — | ✓ | đọc |
+| Xem danh sách người đăng ký (có dữ liệu cá nhân) | — | — | — | — | ✓ | — | ✓ | đọc |
 | Hoàn tiền, huỷ vé | — | — | — | — | ✓ | — | ✓ | — |
 | Xuất danh sách người đăng ký | — | — | — | — | ✓ | — | ✓ | — |
 | Check-in tại cửa | — | — | — | — | ✓ | — | ✓ | — |
@@ -579,7 +580,7 @@ Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định b�
 | **BR-12** | Email người đặt vé và người đăng ký tài khoản phải **xác thực bằng OTP** trước khi tạo đơn/tài khoản, kể cả chương trình miễn phí. | Chống đăng ký ảo, vé gửi đúng người |
 | **BR-13** | Chỉ thu thông tin **người đặt** (họ tên, email, SĐT) và số lượng vé. **Không** thu tên từng người tham dự, dữ liệu sức khoẻ, cân nặng, CCCD. Chương trình cho trẻ em: người đặt là phụ huynh/người giám hộ. | Thu tối thiểu (BR-06), bảo vệ trẻ vị thành niên (BR-08) |
 | **BR-14** | Giữ chỗ **15 phút**, chỉ bắt đầu sau khi OTP thành công; không bán vượt số lượng. | Công bằng, không bán vượt |
-| **BR-15** | Thanh toán chỉ được xác nhận bằng **webhook đã xác minh chữ ký**, không bao giờ bằng trang quay về. Hoàn tiền làm thủ công, hệ thống chỉ cập nhật trạng thái. | An toàn tiền |
+| **BR-15** | Thanh toán chỉ được xác nhận dựa trên **webhook có chữ ký hợp lệ** hoặc **kết quả truy vấn API payOS phía server**; tham số trên `returnUrl` không bao giờ được dùng để xác nhận. Hoàn tiền làm thủ công, hệ thống chỉ cập nhật trạng thái (vé huỷ, trả chỗ; có step-up và audit). | An toàn tiền |
 | **BR-16** | Mỗi vé có **mã QR riêng, ngẫu nhiên**, chỉ check-in được **một lần**. | Chống dùng lại vé |
 | **BR-17** | Sự kiện do người có quyền tự xuất bản, không cần người duyệt thứ hai (khác BR-05). Chỉ gỡ xuất bản khi chưa có người đăng ký. Form đã có người trả lời chỉ được thêm hoặc ẩn câu hỏi. | Không làm mất dữ liệu người đăng ký |
 

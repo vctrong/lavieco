@@ -95,4 +95,43 @@ export class MongoTicketTypeRepository implements TicketTypeRepository {
       .exec();
     return doc ? toRecord(doc) : null;
   }
+
+  async take(id: string, quantity: number, into: "held" | "sold", tx: TxContext) {
+    const result = await this.model
+      .updateOne(
+        {
+          _id: new Types.ObjectId(id),
+          $or: [
+            { quantity: null },
+            { $expr: { $lte: [{ $add: ["$sold", "$held", quantity] }, "$quantity"] } },
+          ],
+        },
+        { $inc: { [into]: quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+    return result.modifiedCount === 1;
+  }
+
+  async convertHeld(id: string, quantity: number, tx: TxContext) {
+    const result = await this.model
+      .updateOne(
+        { _id: new Types.ObjectId(id), held: { $gte: quantity } },
+        { $inc: { held: -quantity, sold: quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+    return result.modifiedCount === 1;
+  }
+
+  async release(id: string, quantity: number, from: "held" | "sold", tx: TxContext) {
+    const result = await this.model
+      .updateOne(
+        { _id: new Types.ObjectId(id), [from]: { $gte: quantity } },
+        { $inc: { [from]: -quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+    return result.modifiedCount === 1;
+  }
 }

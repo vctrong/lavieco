@@ -32,6 +32,7 @@ export function duplicateOf(
       description: source.description,
       safetyNotes: source.safetyNotes,
       cancellationPolicy: source.cancellationPolicy,
+      forChildren: source.forChildren,
       speakers: source.speakers,
       agenda: source.agenda,
       faq: source.faq,

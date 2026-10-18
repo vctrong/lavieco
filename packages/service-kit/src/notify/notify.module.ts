@@ -1,38 +1,39 @@
 import { type DynamicModule, Global, Module } from "@nestjs/common";
 import { createTransport, type Transporter } from "nodemailer";
-import { z } from "zod";
 
 import type { EmailMessage, EmailSender } from "../ports";
+import { isLoopbackHost, type MailEnv } from "./mail-env";
+
+export { mailEnvSchema, mailConfigIssue, type MailEnv } from "./mail-env";
 
 export const EMAIL_SENDER = Symbol("EMAIL_SENDER");
 
-/** Mail settings each sending service adds to its env schema (docs/05 §8). */
-export const mailEnvSchema = z.object({
-  MAIL_PROVIDER: z.enum(["smtp"]).default("smtp"),
-  SMTP_HOST: z.string().min(1),
-  SMTP_PORT: z.coerce.number().int().min(1).max(65535),
-  SMTP_SECURE: z
-    .enum(["true", "false"])
-    .default("false")
-    .transform((value) => value === "true"),
-  SMTP_USER: z.string().optional(),
-  SMTP_PASS: z.string().optional(),
-  MAIL_FROM: z.string().min(3),
-});
-
-export type MailEnv = z.infer<typeof mailEnvSchema>;
-
-/** SMTP through Nodemailer (Mailpit in development). Swap the adapter to change provider. */
+/**
+ * SMTP through Nodemailer: Mailpit in development, a real provider once SMTP_* say so
+ * (docs/06). Swap the adapter to change provider.
+ */
 export class SmtpEmailSender implements EmailSender {
   private readonly transport: Transporter;
 
   constructor(private readonly env: MailEnv) {
+    const auth = env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined;
     this.transport = createTransport({
       host: env.SMTP_HOST,
       port: env.SMTP_PORT,
       secure: env.SMTP_SECURE,
-      auth: env.SMTP_USER ? { user: env.SMTP_USER, pass: env.SMTP_PASS } : undefined,
+      // A password never crosses the network in clear: off-machine logins must upgrade
+      // to TLS (STARTTLS on 587) or the send fails.
+      requireTLS: !env.SMTP_SECURE && Boolean(auth) && !isLoopbackHost(env.SMTP_HOST),
+      auth,
+      connectionTimeout: 10_000,
+      greetingTimeout: 10_000,
+      socketTimeout: 20_000,
     });
+  }
+
+  /** Connects and logs in without sending anything (`npm run mail:test`). */
+  async verify(): Promise<void> {
+    await this.transport.verify();
   }
 
   async send(message: EmailMessage): Promise<void> {

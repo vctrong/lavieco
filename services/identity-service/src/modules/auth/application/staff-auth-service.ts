@@ -1,8 +1,10 @@
 import { DomainError, normalizeEmail } from "@lavieco/shared";
 import {
+  STEP_UP_TTL_SECONDS,
   TOKEN_AUDIENCES,
   type StaffLoginResponse,
   type StaffProfile,
+  type StepUpResponse,
   type TokenPair,
 } from "@lavieco/shared/identity";
 import { permissionsForRoles } from "@lavieco/shared/permissions";
@@ -95,6 +97,46 @@ export class StaffAuthService {
         : {}),
     });
     return this.sessions.issue(user, now);
+  }
+
+  /**
+   * Step-up before a sensitive action (ADR-0021): a fresh TOTP code (never a recovery
+   * code) buys a 5-minute token bound to this user AND this session. Wrong codes count
+   * towards the same lockout as sign-in.
+   */
+  async stepUp(
+    userId: string,
+    sessionId: string,
+    code: string,
+    now = new Date(),
+  ): Promise<StepUpResponse> {
+    const user = await this.users.findById(userId);
+    if (!user || !canStartStaffLogin(user)) throw new DomainError("common.unauthenticated");
+    if (isLocked(user, now)) throw new DomainError("auth.account_locked");
+    if (!(await this.acceptTotp(user, code, now))) {
+      await this.users.recordFailedAttempt(user.id, afterFailedAttempt(user, now));
+      await this.audit.record({
+        action: "staff.step_up",
+        actor: { userId: user.id, email: user.email, roles: user.roles },
+        result: "failure",
+      });
+      throw new DomainError("auth.mfa_code_invalid");
+    }
+    const token = await this.signer.sign(
+      {
+        audience: TOKEN_AUDIENCES.stepUp,
+        subject: user.id,
+        ttlSeconds: STEP_UP_TTL_SECONDS,
+        claims: { sid: sessionId },
+      },
+      now,
+    );
+    await this.audit.record({
+      action: "staff.step_up",
+      actor: { userId: user.id, email: user.email, roles: user.roles },
+      result: "success",
+    });
+    return { stepUpToken: token.token, expiresAt: token.expiresAt.toISOString() };
   }
 
   async profile(userId: string): Promise<StaffProfile> {

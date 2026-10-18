@@ -8,14 +8,15 @@ import { Button, CheckboxField, TextField } from "@lavieco/ui";
 
 import { TurnstileWidget } from "@/shared/components/turnstile-widget";
 
+import { FormAlert } from "@/shared/components/form-alert";
+import { HoneypotField } from "@/shared/components/honeypot-field";
+
 import { login } from "../actions/login";
 import { NEXT_PARAM, ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { loginSchema } from "../schemas";
 import { toClientFieldErrors } from "./field-errors";
-import { FormAlert } from "./form-alert";
 import { GoogleButton } from "./google-button";
-import { HoneypotField } from "./honeypot-field";
 import { messageFor } from "./messages";
 
 type LoginFormProps = {

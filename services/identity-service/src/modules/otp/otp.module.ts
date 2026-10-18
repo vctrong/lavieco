@@ -6,6 +6,7 @@ import type { EmailSender } from "@lavieco/service-kit/ports";
 import type { IdentityEnv } from "../../config/env";
 import { TOKEN_SIGNER, type TokenSigner } from "../signing-keys";
 import { USER_REPOSITORY, UsersModule, type UserRepository } from "../users";
+import { MemberEmailProofsController } from "./api/member-email-proofs.controller";
 import { OtpChallengesController } from "./api/otp-challenges.controller";
 import { OtpService } from "./application/otp-service";
 import {
@@ -24,7 +25,7 @@ import { OTP_SERVICE } from "./otp.tokens";
 
 @Module({
   imports: [otpPersistence, UsersModule],
-  controllers: [OtpChallengesController],
+  controllers: [OtpChallengesController, MemberEmailProofsController],
   providers: [
     { provide: OTP_REPOSITORY, useClass: MongoOtpRepository },
     { provide: RATE_LIMITER, useClass: MongoRateLimiter },

@@ -12,7 +12,7 @@ Nếu phát hiện hai nguồn nói khác nhau, hoặc tài liệu sai so với 
 
 ## 1. Dự án
 
-LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật xanh kết hợp truyền thông** (định vị v1.3): biến phế liệu thành giá trị qua nghệ thuật; vỏ hải sản chỉ là chất liệu minh chứng đầu tiên, thí điểm tại Cần Thơ (không định vị "ven biển"). Tagline: "Giáo dục sáng tạo xanh, thông qua nghệ thuật". Website công khai + **Cẩm nang xanh số** đọc qua **mã QR** trên sản phẩm + thu thập liên hệ hợp tác + quản trị nội bộ. Đang ở **Giai đoạn 1**, giai đoạn dựng khung repo.
+LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật xanh kết hợp truyền thông** (định vị v1.3): biến phế liệu thành giá trị qua nghệ thuật; vỏ hải sản chỉ là chất liệu minh chứng đầu tiên, thí điểm tại Cần Thơ (không định vị "ven biển"). Tagline: "Giáo dục sáng tạo xanh, thông qua nghệ thuật". Website công khai + **Cẩm nang xanh số** đọc qua **mã QR** trên sản phẩm + thu thập liên hệ hợp tác + quản trị nội bộ. Đang ở **Giai đoạn 1**: đã có auth (Phase 1), sự kiện + ảnh (Phase 2/2b), đăng ký/payOS/ngày diễn ra (Phase 3, chờ duyệt); trạng thái chi tiết ở `docs/04` §15.1.
 
 **Ba lớp giá trị (`docs/01` §2.1):** Chứng minh & Vốn · Giáo dục (cốt lõi) · Truyền thông (chưa làm ở GĐ1). **BR-01:** sản phẩm chỉ là _minh chứng_; thông điệp giáo dục đi trước. LAVIECO **không** phải cửa hàng đồ thủ công. Áp dụng cho mọi UI và nội dung bạn viết.
 
@@ -24,6 +24,7 @@ LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật x
 | Ranh giới service, luồng, bảo mật, xác thực, triển khai, CI                                                 | `docs/02-kien-truc.md`         |
 | Collection, trường, index, giao dịch, quyền riêng tư, migration                                             | `docs/03-co-so-du-lieu.md`     |
 | Đặt file ở đâu, đặt tên, tầng trong service, công thức thêm tính năng/endpoint/service, lộ trình dựng khung | `docs/04-cau-truc-ma-nguon.md` |
+| Biến môi trường (ý nghĩa, cách lấy, dev/prod, liên quan giữa service)                                       | `docs/06-bien-moi-truong.md`   |
 
 Chỉ đọc **phần liên quan** (dùng mục lục), đừng nạp cả bốn file. Tên use case `UC-xx`, business rule `BR-xx` trỏ ngược về `docs/01`.
 
@@ -39,6 +40,7 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 - **`public/` ở gốc mỗi app Next.js**: chỉ cho **tài sản tĩnh cứng trong code** (logo, ảnh thành viên, hình trang trí, ảnh dự phòng) tại `public/images/{brand,team,illustrations,placeholders}/`. Ảnh tải lên **không** để ở đây (đi qua `content-service` `media` → Cloudinary, ADR-020).
 - **Next.js 16+ dùng `src/proxy.ts`** (cùng cấp `src/app/`, export hàm `proxy`). **Không tạo `middleware.ts`.**
 - **`.env.local`** = giá trị thật của máy dev, **gitignore, không bao giờ commit/đọc/in**; `.env.example` là bản mẫu commit. Tạo bằng `npm run env:init`.
+- **Biến môi trường:** danh sách đầy đủ ở `docs/06-bien-moi-truong.md`. Thêm/đổi tên/xoá một biến thì **cùng commit** cập nhật cả ba: schema env của project (`src/config/env.ts` hoặc `src/lib/env*.ts`), `.env.example`, và `docs/06` (bảng + "Lịch sử thay đổi"). `npm run env:check` cảnh báo biến chưa có trong `docs/06`.
 
 ## 4. Lệnh (khi đã dựng khung)
 
@@ -48,7 +50,8 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 | `npm run dev:infra`                                         | MongoDB (replica set), Mailpit bằng Docker (ảnh: Cloudinary dev, không container)               |
 | `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003), program (4004) |
 | `npm run admin:create -- --email … --name "…"`              | Tạo Super Admin đầu tiên (link kích hoạt một lần, bắt buộc cài 2FA)                             |
-| `npm run keys:generate -w @lavieco/identity-service`        | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)               |
+| `npm run keys:generate -- <tên bên gọi>`                    | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)               |
+| `npm run mail:test -- <email>`                              | Gửi thử một email qua SMTP của identity + program (dev: Mailpit; gửi thật: `docs/06`)           |
 | `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                                   |
 | `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                                   |
 | `npm run build`                                             | Build (Turborepo cache)                                                                         |
@@ -70,25 +73,25 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 
 ## 6. Quy tắc nghiệp vụ không được vi phạm
 
-| Mã    | Quy tắc                                                                                            |
-| ----- | -------------------------------------------------------------------------------------------------- |
-| BR-01 | Trang tác phẩm luôn có story card và liên kết về Cẩm nang; sản phẩm là minh chứng                  |
-| BR-02 | **Mã QR bất biến**; đích đến đổi ở server; mã bị thu hồi hiện trang thân thiện, không lỗi kỹ thuật |
-| BR-03 | Cẩm nang miễn phí lúc ra mắt nhưng nội dung có `accessLevel` ngay từ đầu                           |
-| BR-04 | Không mất lead; không xóa cứng, chỉ lưu trữ                                                        |
-| BR-05 | Nội dung: nháp → chờ duyệt → xuất bản; **người duyệt khác người soạn**                             |
-| BR-06 | Mọi form có ô đồng ý (lưu phiên bản + thời điểm); thu tối thiểu; có quy trình xóa/xuất             |
-| BR-07 | Lead trùng (SĐT/email chuẩn hóa, trong cửa sổ thời gian) thì gộp, không tạo bản sao                |
-| BR-08 | **Không thu thông tin cá nhân học sinh**, chỉ số lượng                                             |
-| BR-09 | Số liệu tác động chỉ công bố khi có nguồn và được Super Admin duyệt                                |
-| BR-10 | Giá công khai là **khoảng giá niêm yết**, giá chốt do đội xác nhận                                 |
-| BR-11 | Ghi chú cá nhân của người đọc chỉ chủ sở hữu thấy                                                  |
-| BR-12 | Email người đặt vé / người đăng ký tài khoản phải xác thực OTP (kể cả chương trình miễn phí)       |
-| BR-13 | Chỉ thu thông tin **người đặt** + số lượng vé; không tên người tham dự, sức khoẻ, cân nặng, CCCD   |
-| BR-14 | Giữ chỗ 15 phút, chỉ sau khi OTP thành công; không bán vượt                                        |
-| BR-15 | Thanh toán chỉ xác nhận bằng webhook đã xác minh chữ ký; hoàn tiền thủ công                        |
-| BR-16 | Mỗi vé một QR ngẫu nhiên, check-in một lần                                                         |
-| BR-17 | Sự kiện tự xuất bản (không duyệt 2 người); form đã có người trả lời chỉ thêm/ẩn câu hỏi            |
+| Mã    | Quy tắc                                                                                                                                                |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| BR-01 | Trang tác phẩm luôn có story card và liên kết về Cẩm nang; sản phẩm là minh chứng                                                                      |
+| BR-02 | **Mã QR bất biến**; đích đến đổi ở server; mã bị thu hồi hiện trang thân thiện, không lỗi kỹ thuật                                                     |
+| BR-03 | Cẩm nang miễn phí lúc ra mắt nhưng nội dung có `accessLevel` ngay từ đầu                                                                               |
+| BR-04 | Không mất lead; không xóa cứng, chỉ lưu trữ                                                                                                            |
+| BR-05 | Nội dung: nháp → chờ duyệt → xuất bản; **người duyệt khác người soạn**                                                                                 |
+| BR-06 | Mọi form có ô đồng ý (lưu phiên bản + thời điểm); thu tối thiểu; có quy trình xóa/xuất                                                                 |
+| BR-07 | Lead trùng (SĐT/email chuẩn hóa, trong cửa sổ thời gian) thì gộp, không tạo bản sao                                                                    |
+| BR-08 | **Không thu thông tin cá nhân học sinh**, chỉ số lượng                                                                                                 |
+| BR-09 | Số liệu tác động chỉ công bố khi có nguồn và được Super Admin duyệt                                                                                    |
+| BR-10 | Giá công khai là **khoảng giá niêm yết**, giá chốt do đội xác nhận                                                                                     |
+| BR-11 | Ghi chú cá nhân của người đọc chỉ chủ sở hữu thấy                                                                                                      |
+| BR-12 | Email người đặt vé / người đăng ký tài khoản phải xác thực OTP (kể cả chương trình miễn phí)                                                           |
+| BR-13 | Chỉ thu thông tin **người đặt** + số lượng vé; không tên người tham dự, sức khoẻ, cân nặng, CCCD                                                       |
+| BR-14 | Giữ chỗ 15 phút, chỉ sau khi OTP thành công; không bán vượt                                                                                            |
+| BR-15 | Thanh toán chỉ xác nhận bằng webhook có chữ ký hợp lệ hoặc truy vấn API payOS phía server (không bao giờ bằng tham số `returnUrl`); hoàn tiền thủ công |
+| BR-16 | Mỗi vé một QR ngẫu nhiên, check-in một lần                                                                                                             |
+| BR-17 | Sự kiện tự xuất bản (không duyệt 2 người); form đã có người trả lời chỉ thêm/ẩn câu hỏi                                                                |
 
 ## 7. QR: quy tắc riêng (dễ làm sai nhất)
 
@@ -119,7 +122,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Form:** Zod ở client (trải nghiệm) **và** ở Route Handler (an toàn); sinh `Idempotency-Key` (UUID) khi mở form; Turnstile + honeypot.
 - **Ghi chú/đánh dấu Cẩm nang (GĐ1):** IndexedDB sau module `features/handbook/storage`, ID UUID, `updatedAt`, xóa mềm. Không rải truy cập IndexedDB khắp nơi.
 - **Phiên:** member ở `web` (`lib/session.ts`, cookie httpOnly `SameSite=Lax`), staff ở `admin` (`SameSite=Strict`). Server Component không ghi cookie: token hết hạn thì chuyển qua `/api/auth/refresh?tiep=…` (web) hoặc `?next=…` (admin). Đường dẫn quay lại luôn qua `safeNextPath`. Form công khai có honeypot `website` + Turnstile (bật bằng `TURNSTILE_ENABLED`).
-- **Phân hệ Chương trình** (`docs/05`, ADR-014): miền tên `events` trong code (admin `/events`, loại chương trình ở `/events/types`); `programs`/`program_pages` là mô tả công khai của `content-service`. Chỉ thu thông tin người đặt (BR-13), không dữ liệu sức khoẻ/CCCD. Trường cố định của form: họ tên, email, SĐT, đồng ý dữ liệu (+ "đã đọc lưu ý an toàn" chỉ khi có lưu ý). Miễn phí = có loại vé giá 0. Xem trước: `web` `/xem-truoc/chuong-trinh/[token]`, chỉ origin admin được nhúng; mọi trang khác chặn nhúng. Cache tag sự kiện: `program:events`, `program:events:<slug>`.
+- **Phân hệ Chương trình** (`docs/05`, ADR-014): miền tên `events` trong code (admin `/events`, loại chương trình ở `/events/types`); `programs`/`program_pages` là mô tả công khai của `content-service`. Chỉ thu thông tin người đặt (BR-13), không dữ liệu sức khoẻ/CCCD. Trường cố định của form: họ tên, email, SĐT, đồng ý dữ liệu (+ "đã đọc lưu ý an toàn" chỉ khi có lưu ý). Miễn phí = có loại vé giá 0. Xem trước: `web` `/xem-truoc/chuong-trinh/[token]`, chỉ origin admin được nhúng; mọi trang khác chặn nhúng. Cache tag sự kiện: `program:events`, `program:events:<slug>`. Đặt vé (Phase 3): `web` `/chuong-trinh/[slug]/dang-ky` → OTP (member có email đã xác thực thì bỏ qua) → `/chuong-trinh/thanh-toan/[token]` (VietQR, poll 3 giây) hoặc `/ve/[token]`; `/tra-cuu-ve`; webhook payOS `/api/payments/payos/webhook` chỉ chuyển raw body sang service. `forChildren` thì checkout bắt buộc tick "phụ huynh/người giám hộ". Admin: `/orders`, `/events/[id]/registrations` (cần `order:read`; xuất Excel cần `registration:export` + step-up), `/checkin`. Step-up = nhập lại TOTP (ADR-021).
 - **Env:** `NEXT_PUBLIC_*` là công khai (nhúng vào bundle lúc build), **không chứa bí mật**. Đọc env qua `lib/env.ts` (server) / `lib/env.public.ts`. Giá trị thật chỉ ở `.env.local`.
 - **`src/proxy.ts`:** chỉ điều hướng và gắn header nhẹ. `web`: cổng "sắp ra mắt" (rewrite tới `/sap-ra-mat` khi cờ bật và không có Draft Mode), i18n nếu cần, header bảo mật. `admin`: chuyển hướng `/login` khi chưa có phiên, `noindex`, header bảo mật. **Không** logic nghiệp vụ, không DB, không gọi service nặng. **Không phải hàng rào bảo mật**: Route Handler/Server Action/service vẫn tự kiểm tra xác thực và quyền.
 - **Ảnh tĩnh (`public/images/...`):** tên `kebab-case` không dấu (vd `team/vo-chi-trong.jpg`); đường dẫn khai báo ở constants (`src/shared/constants/assets.ts` hoặc `constants/` của tính năng), `alt` ở `text.ts`, không viết đường dẫn trong JSX; hiển thị bằng `next/image`; đổi ảnh thì đổi tên tệp. Favicon/OG/`robots`/`sitemap` dùng tệp quy ước trong `src/app/`, không để ở `public/`.

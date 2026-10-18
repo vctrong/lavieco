@@ -76,6 +76,7 @@ function toPublicRecord(doc: Partial<EventDoc> & { _id: Types.ObjectId }): Publi
     description: doc.description ?? "",
     safetyNotes: doc.safetyNotes ?? "",
     cancellationPolicy: doc.cancellationPolicy ?? "",
+    forChildren: doc.forChildren ?? false,
     speakers: doc.speakers ?? [],
     agenda: doc.agenda ?? [],
     faq: doc.faq ?? [],
@@ -311,6 +312,25 @@ export class MongoEventRepository implements EventRepository {
       .lean<EventDoc>()
       .exec();
     return doc ? toPublicRecord(doc) : null;
+  }
+
+  /** Full record of a public event, for the checkout only (never mapped to a public DTO). */
+  async findPublicFullBySlug(slug: string, tx?: TxContext) {
+    const doc = await this.model
+      .findOne({ slug, discarded: false, status: { $in: PUBLIC_STATUSES } })
+      .session(sessionOf(tx) ?? null)
+      .lean<EventDoc>()
+      .exec();
+    return doc ? toRecord(doc) : null;
+  }
+
+  async findByIds(ids: string[]) {
+    if (ids.length === 0) return [];
+    const docs = await this.model
+      .find({ _id: { $in: ids.map((id) => new Types.ObjectId(id)) } })
+      .lean<EventDoc[]>()
+      .exec();
+    return docs.map(toRecord);
   }
 
   private async updateLive(

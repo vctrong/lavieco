@@ -26,6 +26,7 @@ export type EventContent = {
   description: string;
   safetyNotes: string;
   cancellationPolicy: string;
+  forChildren: boolean;
   speakers: EventDetails["speakers"];
   agenda: EventDetails["agenda"];
   faq: EventDetails["faq"];
@@ -69,6 +70,7 @@ export function toEventContent(details: EventDetails): EventContent {
     description: details.description,
     safetyNotes: details.safetyNotes,
     cancellationPolicy: details.cancellationPolicy,
+    forChildren: details.forChildren,
     speakers: details.speakers,
     agenda: details.agenda,
     faq: details.faq,

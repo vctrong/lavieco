@@ -29,11 +29,10 @@ Biến thiếu mà `.env.example` để trống (khóa, secret) phải tự đi�
 ## 2. Sinh khóa
 
 ```
-npm run build -w @lavieco/identity-service
-npm run keys:generate -w @lavieco/identity-service -- identity-service
-npm run keys:generate -w @lavieco/identity-service -- web
-npm run keys:generate -w @lavieco/identity-service -- admin
-npm run keys:generate -w @lavieco/identity-service -- program-service
+npm run keys:generate -- identity-service
+npm run keys:generate -- web
+npm run keys:generate -- admin
+npm run keys:generate -- program-service
 ```
 
 Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32 byte. Đặt vào các tệp như sau:
@@ -41,10 +40,13 @@ Mỗi lệnh in ra một cặp khóa Ed25519 và hai giá trị ngẫu nhiên 32
 | Tệp `.env.local` | Biến | Giá trị |
 |---|---|---|
 | `services/identity-service` | `JWT_SIGNING_KEYS` | `[<PRIVATE_JWK của identity-service>]`, bọc trong dấu nháy đơn |
-| | `SERVICE_TOKEN_TRUSTED_KEYS` | `{"web": <PUBLIC_JWK của web>, "admin": <PUBLIC_JWK của admin>}`, bọc trong dấu nháy đơn |
+| | `SERVICE_TOKEN_TRUSTED_KEYS` | `{"web": <PUBLIC_JWK của web>, "admin": <PUBLIC_JWK của admin>, "program-service": <PUBLIC_JWK của program-service>}`, bọc trong dấu nháy đơn (program-service ghi audit, ADR-021) |
 | | `TOTP_ENCRYPTION_KEY`, `OTP_PEPPER` | hai giá trị `RANDOM_32B` |
 | `services/program-service` | `SERVICE_TOKEN_TRUSTED_KEYS` | giống của `identity-service`: `{"web": <PUBLIC_JWK của web>, "admin": <PUBLIC_JWK của admin>}` |
 | | `REVALIDATE_SECRET` | một giá trị `RANDOM_32B` (dùng chung với `web`) |
+| | `TICKET_LINK_SECRET` | một giá trị `RANDOM_32B` **khác** (khoá link vé `/ve/[token]`; đổi là link đã gửi hết hiệu lực) |
+| | `SMTP_*`, `MAIL_FROM` | giữ mặc định (Mailpit) |
+| | `PAYOS_CLIENT_ID`, `PAYOS_API_KEY`, `PAYOS_CHECKSUM_KEY` | để trống nếu chỉ test chương trình miễn phí; test thanh toán: xem `docs/runbooks/payos.md` |
 | | `IDENTITY_JWKS_URL`, `WEB_APP_URL` | giữ mặc định trong `.env.example` |
 | | `SERVICE_TOKEN_PRIVATE_JWK` | `<PRIVATE_JWK của program-service>` (gọi `content-service` để gắn/giải phóng ảnh) |
 | | `CONTENT_SERVICE_URL` | giữ mặc định (`http://127.0.0.1:4002`) |
@@ -86,7 +88,9 @@ npm run build -w @lavieco/content-service && npm run db:migrate -w @lavieco/cont
 npm run dev                                            # web :3000, admin :3001, identity :4001, content :4002, program :4004
 ```
 
-- Email (mã OTP, thông báo) xem ở Mailpit: http://localhost:8025
+- Email (mã OTP, thông báo, **email vé có QR**) xem ở Mailpit: http://localhost:8025. Muốn gửi tới hộp thư thật: `docs/06` mục "Gửi email thật (SMTP)", rồi `npm run mail:test -- <email>`.
+- Thử đăng ký (Phase 3): xuất bản một chương trình có loại vé giá 0 ở admin → `http://localhost:3000/chuong-trinh/<slug>` → "Đăng ký ngay" → nhập mã OTP từ Mailpit → trang `/ve/[token]`. Chương trình có phí cần `PAYOS_*` (xem `docs/runbooks/payos.md`). Admin: `/orders`, `/events/<id>/registrations`, `/checkin`.
+- Sau khi sửa biến JSON (`SERVICE_TOKEN_TRUSTED_KEYS`, `JWT_SIGNING_KEYS`, `SERVICE_TOKEN_PRIVATE_JWK`), chạy `npm run env:check`: lệnh báo biến nào sai cú pháp mà không in giá trị.
 - Super Admin đầu tiên: `npm run admin:create -- --email <email> --name "<tên>"`. Lệnh in ra link kích hoạt dùng một lần (48 giờ). Mở link, quét QR bằng ứng dụng xác thực, đặt mật khẩu, lưu 10 mã khôi phục.
 - Google sign-in (tuỳ chọn): đặt `GOOGLE_CLIENT_ID` ở cả `web` và `identity-service`, `GOOGLE_CLIENT_SECRET` chỉ ở `identity-service`, redirect URI `http://localhost:3000/api/auth/google/callback` (phải khớp với Google Console).
 

@@ -47,6 +47,21 @@
 - Thiếu link trực tuyến chỉ là **cảnh báo** khi xuất bản; Phase 3 không phát hành vé/email cho sự kiện trực tuyến khi link còn trống.
 - Chương trình online: link nằm trong email vé và trên trang vé, gửi nhắc lại 24 giờ trước.
 
+**Phase 3 (17/10/2026, gộp Phase 3 + 5 + phần ngày diễn ra của Phase 4).**
+
+- OTP ở `identity-service` trả **bằng chứng có chữ ký** (`aud=lavieco:email-verification`); `program-service` kiểm bằng JWKS, so email trong bằng chứng với email người đặt, purpose `checkout`, còn hạn, và chỉ dùng **một lần** (`orders.verificationId` unique; gửi lại cùng bằng chứng trả về đơn đã tạo). Member có email đã xác thực lấy bằng chứng cùng định dạng (ADR-021) nên bỏ qua OTP.
+- Không có sức chứa tổng của chương trình: sức chứa = tổng `quantity` các loại vé; giữ chỗ kiểm tra theo từng loại trong một giao dịch.
+- Link thanh toán payOS: `description = "LAVIECO"` (giới hạn 9 ký tự với tài khoản không liên kết qua payOS), `expiredAt` (giây, làm tròn xuống) không muộn hơn hạn giữ chỗ.
+- Webhook, trang quay về và nút "Kiểm tra lại thanh toán" dùng **chung một hàm** ghi nhận thanh toán, idempotent theo đơn, có kiểm số tiền (`amountMismatch`). Tiền tới sau khi đơn hết hạn hoặc khách đã huỷ: còn chỗ thì giữ lại chỗ (`latePayment`), hết chỗ thì `paid` + `refundRequired` (admin thấy cảnh báo).
+- Khách huỷ đơn bằng link có chữ ký; huỷ link payOS qua outbox; link đã được trả trong lúc đó thì ghi nhận như trên.
+- `forChildren` (sự kiện cho trẻ em): ô "Tôi là phụ huynh/người giám hộ" bắt buộc, lưu `buyer.isGuardian`.
+- Danh sách người đăng ký (có PII) cần `order:read`; xuất Excel cần `registration:export` + step-up + audit, ô bắt đầu bằng `= + - @` được vô hiệu hoá.
+- Check-in: cập nhật nguyên tử `valid → used`; quét lại trả "đã check-in lúc …"; camera dùng `BarcodeDetector`, dự phòng `jsqr`.
+- Runbook thanh toán thật qua tunnel: `docs/runbooks/payos.md`.
+- Đơn miễn phí (`amount = 0`) đã xong hiện **"Đã xác nhận"**, không phải "Đã thanh toán", ở `/tra-cuu-ve`, admin (đơn hàng, người đăng ký) và cột trạng thái của file Excel (`orderDisplayStatus` trong `shared`). Trạng thái lưu trong DB vẫn là `paid`.
+- Danh sách `/events` có liên kết nhanh Người đăng ký, Đơn hàng (`order:read`) và Check-in (`checkin:perform`, ẩn khi đã kết thúc) trên mỗi chương trình đã rời nháp.
+- Email (OTP và vé) gửi qua SMTP cấu hình bằng env; dev mặc định Mailpit, gửi thật theo `docs/06` mục "Gửi email thật (SMTP)", kiểm tra bằng `npm run mail:test -- <email>`.
+
 **Khác.**
 
 - Tên miền chính thức `lavieco.io.vn` (chốt AQ5).

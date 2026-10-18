@@ -1,7 +1,9 @@
 // Compares every `.env.local` with its `.env.example` (root and each workspace project)
 // and reports, by NAME only, the variables that are missing or still empty, and a dev
 // setup pointing at a production database. Values are never printed. Exit code 1 when
-// something needs attention, so it can gate scripts.
+// something needs attention, so it can gate scripts. Also warns (without failing) about
+// variables of a `.env.example` that docs/06-bien-moi-truong.md does not mention yet,
+// and says (without the address) whether each sending service uses Mailpit or real SMTP.
 //
 //   npm run env:check          report only
 //   npm run env:check -- --fix append missing variables whose example has a default
@@ -48,6 +50,65 @@ function databaseIsolationIssue(local) {
   return /\.mongodb\.net(?=[:/,?]|$)/i.test(uri) && !devDatabase ? "MONGODB_DB" : null;
 }
 
+/**
+ * Same rule as `mailConfigIssue` in @lavieco/service-kit: a half-filled login, or a TLS
+ * mode the port cannot speak. Returns the variable NAME to fix, never its value.
+ */
+function mailConfigIssue(local) {
+  if (!local.has("SMTP_HOST")) return null;
+  const user = unquote(local.get("SMTP_USER"));
+  const pass = unquote(local.get("SMTP_PASS"));
+  if (user && !pass) return "SMTP_PASS";
+  if (pass && !user) return "SMTP_USER";
+  const port = Number(unquote(local.get("SMTP_PORT")));
+  const secure = unquote(local.get("SMTP_SECURE")) === "true";
+  if (port === 465 && !secure) return "SMTP_SECURE";
+  if (secure && (port === 587 || port === 25)) return "SMTP_SECURE";
+  return null;
+}
+
+/**
+ * Where mail goes, without the address: Mailpit on this machine, or a real provider.
+ * Gmail rewrites a From that is not the signed-in account, so that is flagged too.
+ */
+function mailTarget(local) {
+  const host = unquote(local.get("SMTP_HOST"));
+  if (!host) return null;
+  if (/^(localhost|127\.\d+\.\d+\.\d+|::1)$/i.test(host)) return "mail: Mailpit (local)";
+  const from =
+    /<([^>]+)>/.exec(unquote(local.get("MAIL_FROM")))?.[1] ?? unquote(local.get("MAIL_FROM"));
+  const user = unquote(local.get("SMTP_USER"));
+  const gmailMismatch =
+    /(^|\.)gmail\.com$/i.test(host) && from.toLowerCase() !== user.toLowerCase();
+  return gmailMismatch
+    ? "mail: real SMTP; MAIL_FROM should be the Gmail address of SMTP_USER"
+    : "mail: real SMTP (check with npm run mail:test -- <email>)";
+}
+
+const envDocPath = join(root, "docs", "06-bien-moi-truong.md");
+const envDoc = existsSync(envDocPath) ? readFileSync(envDocPath, "utf8") : null;
+/** Variables named in `.env.example` files but absent from the env documentation. */
+const undocumented = [];
+
+/** Variables holding JSON (keys, key maps): checked for syntax, reported by name only. */
+const JSON_VARIABLE = /(_KEYS|_JWK)$/;
+
+/** Names (with the error position) of JSON variables that do not parse. Never the value. */
+function invalidJson(local) {
+  const issues = [];
+  for (const [key, raw] of local) {
+    const value = unquote(raw);
+    if (!JSON_VARIABLE.test(key) || value === "") continue;
+    try {
+      JSON.parse(value);
+    } catch (error) {
+      const position = /position (\d+)/.exec(String(error))?.[1];
+      issues.push(position ? `${key} (character ${Number(position) + 1})` : key);
+    }
+  }
+  return issues;
+}
+
 const isEmpty = (value) => value === undefined || value === "" || value === "''" || value === '""';
 
 let problems = 0;
@@ -56,12 +117,17 @@ for (const dir of projectDirs) {
   if (!existsSync(examplePath)) continue;
   const localPath = join(root, dir, ".env.local");
   const label = dir === "." ? "(root)" : dir.replaceAll("\\", "/");
+  const example = parse(examplePath);
+  if (envDoc !== null) {
+    for (const key of example.keys()) {
+      if (!envDoc.includes(`\`${key}\``)) undocumented.push(`${label}: ${key}`);
+    }
+  }
   if (!existsSync(localPath)) {
     process.stdout.write(`✗ ${label}: no .env.local (run npm run env:init)\n`);
     problems += 1;
     continue;
   }
-  const example = parse(examplePath);
   const local = parse(localPath);
   const missing = [...example.keys()].filter((key) => !local.has(key));
   const appended = [];
@@ -84,23 +150,38 @@ for (const dir of projectDirs) {
     (key) => local.has(key) && isEmpty(local.get(key)) && isEmpty(example.get(key)),
   );
   const isolation = databaseIsolationIssue(local);
+  const badJson = invalidJson(local);
+  const mail = mailConfigIssue(local);
+  const target = mailTarget(local);
   const notes = [];
+  if (badJson.length) notes.push(`invalid JSON: ${badJson.join(", ")}`);
+  if (mail) notes.push(`${mail}: SMTP settings do not fit together (docs/06, "Gửi email thật")`);
   if (isolation) {
     notes.push(`${isolation}: Atlas outside production needs a *_dev database (docs/04 §11.1)`);
   }
   if (appended.length) notes.push(`added with defaults: ${appended.join(", ")}`);
   if (stillMissing.length) notes.push(`missing: ${stillMissing.join(", ")}`);
   if (unset.length) notes.push(`empty (may be optional): ${unset.join(", ")}`);
-  const failed = stillMissing.length > 0 || isolation !== null;
+  if (target) notes.push(target);
+  const failed =
+    stillMissing.length > 0 || isolation !== null || badJson.length > 0 || mail !== null;
   if (failed) problems += 1;
   process.stdout.write(
     `${failed ? "✗" : "✓"} ${label}${notes.length ? `: ${notes.join(" | ")}` : ""}\n`,
   );
 }
 
+if (envDoc === null) {
+  process.stdout.write("\n! docs/06-bien-moi-truong.md not found\n");
+} else if (undocumented.length > 0) {
+  process.stdout.write(
+    `\n! Not documented in docs/06-bien-moi-truong.md (add them in the same commit):\n  ${undocumented.join("\n  ")}\n`,
+  );
+}
+
 if (problems > 0) {
   process.stdout.write(
-    "\nSome variables need attention. Defaults: npm run env:check -- --fix. Secrets: see docs/runbooks/chay-local.md §2.\n",
+    "\nSome variables need attention. Defaults: npm run env:check -- --fix. Secrets: see docs/06-bien-moi-truong.md.\n",
   );
   process.exitCode = 1;
 }

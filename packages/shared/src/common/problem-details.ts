@@ -26,6 +26,11 @@ export const problemDetailsSchema = z.object({
   retryAfterSeconds: z.number().int().nonnegative().optional(),
   /** OTP checks: how many tries remain on this challenge. */
   remainingAttempts: z.number().int().nonnegative().optional(),
+  /** Machine sub-code refining `code`, e.g. why registration is closed. Never personal data. */
+  reason: z
+    .string()
+    .regex(/^[a-z_]{1,40}$/)
+    .optional(),
 });
 
 export type ProblemDetails = z.infer<typeof problemDetailsSchema>;

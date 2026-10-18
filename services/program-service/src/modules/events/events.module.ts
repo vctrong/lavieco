@@ -104,7 +104,7 @@ export class EventsModule {
               inject: [SERVICE_CONFIG],
             },
       ],
-      exports: [MEDIA_ATTACHMENTS],
+      exports: [MEDIA_ATTACHMENTS, EVENT_REPOSITORY],
     };
   }
 }

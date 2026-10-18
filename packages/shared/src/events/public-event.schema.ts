@@ -2,7 +2,7 @@ import { z } from "zod";
 
 import { isoDateTimeSchema, objectIdSchema } from "../common/object-id";
 import { cursorPageSchema } from "../common/pagination";
-import { eventFormatSchema, eventKindSchema, eventStatusSchema } from "./enums";
+import { eventFormatSchema, eventKindSchema, eventStatusSchema, questionTypeSchema } from "./enums";
 import {
   eventAgendaItemSchema,
   eventImageSchema,
@@ -11,6 +11,7 @@ import {
   eventSpeakerSchema,
 } from "./event.schema";
 import { publicEventTypeSchema } from "./event-type.schema";
+import { registrationBlockerSchema } from "./order.schema";
 
 /**
  * Seat information shown publicly: `seatsLeft` is only given when a few seats remain
@@ -52,6 +53,31 @@ export const publicTicketTypeSchema = z.object({
 });
 export type PublicTicketType = z.infer<typeof publicTicketTypeSchema>;
 
+/** A visible custom question as the checkout renders it (hidden ones never leave the service). */
+export const publicFormQuestionSchema = z.object({
+  id: z.uuid(),
+  type: questionTypeSchema,
+  label: z.string(),
+  description: z.string(),
+  required: z.boolean(),
+  options: z.array(z.object({ id: z.uuid(), label: z.string() })),
+});
+export type PublicFormQuestion = z.infer<typeof publicFormQuestionSchema>;
+
+/**
+ * Whether the event takes registrations now, and what the checkout asks besides the
+ * fixed booker fields. `blocker` explains a closed registration ("Sắp mở đăng ký").
+ */
+export const publicRegistrationSchema = z.object({
+  open: z.boolean(),
+  blocker: registrationBlockerSchema.nullable(),
+  questions: z.array(publicFormQuestionSchema),
+  safetyAcknowledgementRequired: z.boolean(),
+  /** `forChildren`: the booker must tick "Tôi là phụ huynh/người giám hộ". */
+  guardianConfirmationRequired: z.boolean(),
+});
+export type PublicRegistration = z.infer<typeof publicRegistrationSchema>;
+
 /**
  * Event page. Deliberately has no `onlineUrl`, no authors, no history, no hidden
  * questions and no raw seat counters.
@@ -68,6 +94,7 @@ export const publicEventDetailSchema = publicEventCardSchema.extend({
   faq: z.array(eventFaqItemSchema),
   gallery: z.array(eventImageSchema),
   ticketTypes: z.array(publicTicketTypeSchema),
+  registration: publicRegistrationSchema,
 });
 export type PublicEventDetail = z.infer<typeof publicEventDetailSchema>;
 

@@ -12,8 +12,12 @@ import { DomainError, isServiceName, type ServiceName } from "@lavieco/shared";
 import {
   IDENTITY_ISSUER,
   TOKEN_AUDIENCES,
+  emailVerificationClaimsSchema,
   memberAccessClaimsSchema,
   staffAccessClaimsSchema,
+  stepUpClaimsSchema,
+  type EmailVerificationClaims,
+  type OtpPurpose,
 } from "@lavieco/shared/identity";
 import { permissionsForRoles } from "@lavieco/shared/permissions";
 
@@ -61,6 +65,47 @@ export class TokenVerifier {
     const claims = memberAccessClaimsSchema.safeParse(payload);
     if (!claims.success) throw new DomainError("common.unauthenticated");
     return { kind: "member", userId: claims.data.sub, sessionId: claims.data.sid };
+  }
+
+  /**
+   * Proof that an email passed OTP (or belongs to a signed-in member) for `purpose`.
+   * Signature, issuer, audience and expiry are checked here; keeping it single use
+   * (by `sub`) is the consumer's job, inside its own transaction (ADR-0021).
+   */
+  async verifyEmailProof(token: string, purpose: OtpPurpose): Promise<EmailVerificationClaims> {
+    let payload: unknown;
+    try {
+      payload = await this.verifyUser(token, TOKEN_AUDIENCES.emailVerification);
+    } catch {
+      throw new DomainError("otp.verification_invalid");
+    }
+    const claims = emailVerificationClaimsSchema.safeParse(payload);
+    if (!claims.success || claims.data.purpose !== purpose) {
+      throw new DomainError("otp.verification_invalid");
+    }
+    return claims.data;
+  }
+
+  /**
+   * Step-up token (ADR-0021): must belong to the same staff member AND session as the
+   * access token of the request. Anything else answers `auth.step_up_required`.
+   */
+  async verifyStepUp(token: string | undefined, staff: StaffPrincipal): Promise<void> {
+    if (!token) throw new DomainError("auth.step_up_required");
+    let payload: unknown;
+    try {
+      payload = await this.verifyUser(token, TOKEN_AUDIENCES.stepUp);
+    } catch {
+      throw new DomainError("auth.step_up_required");
+    }
+    const claims = stepUpClaimsSchema.safeParse(payload);
+    if (
+      !claims.success ||
+      claims.data.sub !== staff.userId ||
+      claims.data.sid !== staff.sessionId
+    ) {
+      throw new DomainError("auth.step_up_required");
+    }
   }
 
   /** Accepts a service token only from `callers`, signed by that caller's key, aimed at us. */

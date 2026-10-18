@@ -3,7 +3,7 @@ import { randomBytes, randomUUID } from "node:crypto";
 import { exportJWK, generateKeyPair } from "jose";
 
 /**
- * `npm run keys:generate -w @lavieco/identity-service`: prints fresh key material for
+ * `npm run keys:generate -- <caller>` (repo root; builds identity-service first): prints fresh key material for
  * a `.env.local` (development) or the secret store (staging/production). Nothing is
  * written to disk. Each component signing service tokens needs its own key pair:
  * the PRIVATE JWK goes to that component, the PUBLIC JWK to the services it calls.

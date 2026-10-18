@@ -24,7 +24,7 @@
    - `@RequireMember()`: token member; handler phải lọc theo `userId` (chống IDOR).
    - `@AllowServices("web", ...)`: service token từ đúng bên gọi.
    - `@PublicEndpoint()`: chỉ health và JWKS (mạng riêng).
-4. Khóa sinh bằng `npm run keys:generate -w @lavieco/identity-service`. Xoay khóa: thêm khóa mới lên đầu danh sách, giữ khóa cũ tới khi token cũ hết hạn.
+4. Khóa sinh bằng `npm run keys:generate -- <tên bên gọi>`. Xoay khóa: thêm khóa mới lên đầu danh sách, giữ khóa cũ tới khi token cũ hết hạn.
 
 ## Hệ quả
 

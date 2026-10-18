@@ -20,6 +20,16 @@ import { AppModule, type AppOverrides } from "../../app.module";
 import { runMigrations } from "../../cli/migrate";
 import { programEnvSchema, type ProgramEnv } from "../../config/env";
 import type { MediaAttachments } from "../../modules/events";
+import {
+  OrderExpiryScheduler,
+  PAYMENT_GATEWAY,
+  type PaymentGateway,
+  type PaymentLink,
+  type PaymentLinkRequest,
+  type PaymentStatus,
+  type VerifiedPayment,
+} from "../../modules/orders";
+import type { EmailMessage, EmailSender } from "@lavieco/service-kit/ports";
 
 /**
  * Stands in for content-service: knows the "uploaded" images, enforces one image per
@@ -57,6 +67,70 @@ export class FakeMediaAttachments implements MediaAttachments {
   }
 }
 
+/** Captures outgoing email instead of sending it. */
+export class FakeEmailSender implements EmailSender {
+  readonly sent: EmailMessage[] = [];
+  async send(message: EmailMessage) {
+    this.sent.push(message);
+  }
+  to(address: string): EmailMessage[] {
+    return this.sent.filter((message) => message.to === address);
+  }
+}
+
+/**
+ * Stands in for payOS: records links and cancellations, and lets a test decide what
+ * `getStatus` answers. Webhook bodies are "signed" with a field the fake checks.
+ */
+export class FakePaymentGateway implements PaymentGateway {
+  enabled = true;
+  failNextLink = false;
+  readonly links: PaymentLinkRequest[] = [];
+  readonly cancelled: number[] = [];
+  readonly statuses = new Map<number, PaymentStatus>();
+
+  async createLink(request: PaymentLinkRequest): Promise<PaymentLink> {
+    if (this.failNextLink) {
+      this.failNextLink = false;
+      throw new Error("payOS down");
+    }
+    this.links.push(request);
+    return {
+      paymentLinkId: `link-${request.orderCode}`,
+      checkoutUrl: `https://pay.payos.vn/web/link-${request.orderCode}`,
+      qrCode: `000201FAKEQR${request.orderCode}`,
+      bin: "970422",
+      accountNumber: "0123456789",
+      accountName: "LAVIECO",
+      description: "LAVIECO",
+      expiresAt: request.expiresAt,
+    };
+  }
+
+  async getStatus(orderCode: number): Promise<PaymentStatus> {
+    return (
+      this.statuses.get(orderCode) ?? {
+        status: "PENDING",
+        amountPaid: 0,
+        paymentLinkId: `link-${orderCode}`,
+        transactions: [],
+      }
+    );
+  }
+
+  async cancel(orderCode: number) {
+    this.cancelled.push(orderCode);
+  }
+
+  async verifyWebhook(body: unknown): Promise<VerifiedPayment> {
+    const webhook = body as { signature?: string; data?: VerifiedPayment };
+    if (webhook.signature !== "valid" || !webhook.data) {
+      throw new DomainError("payment.signature_invalid");
+    }
+    return webhook.data;
+  }
+}
+
 type CallerKey = { privateKey: KeyLike; kid: string };
 
 export type TestApp = {
@@ -66,6 +140,18 @@ export type TestApp = {
   env: ProgramEnv;
   db: mongo.Db;
   media: FakeMediaAttachments;
+  emails: FakeEmailSender;
+  payments: FakePaymentGateway;
+  /** Email proof as identity-service would sign it after an OTP (ADR-0021). */
+  emailProof: (
+    email: string,
+    options?: { purpose?: "checkout" | "ticket_lookup"; uid?: string; id?: string },
+  ) => Promise<string>;
+  /** Step-up token for a staff session (ADR-0021). */
+  stepUpToken: (userId: string, sessionId: string) => Promise<string>;
+  /** Staff access token with a known session id (for step-up tests). */
+  staffSession: (roles: Role[]) => Promise<{ token: string; userId: string; sessionId: string }>;
+  expireHolds: (now?: Date) => Promise<number>;
   /** Staff access token as identity-service would sign it. */
   staffToken: (roles: Role[], userId?: string) => Promise<string>;
   memberToken: (userId?: string) => Promise<string>;
@@ -86,7 +172,7 @@ async function callerKey(name: string) {
  */
 export async function createTestApp(
   mongoUri: string,
-  overrides: Omit<AppOverrides, "logger" | "userKeyResolver"> = {},
+  overrides: Omit<AppOverrides, "logger" | "userKeyResolver" | "emailSender"> = {},
 ): Promise<TestApp> {
   const identity = await generateKeyPair("EdDSA", { crv: "Ed25519" });
   const web = await callerKey("web");
@@ -102,12 +188,19 @@ export async function createTestApp(
     MONGODB_DB: dbName,
     SERVICE_TOKEN_TRUSTED_KEYS: JSON.stringify({ web: web.publicJwk, admin: admin.publicJwk }),
     IDENTITY_JWKS_URL: "http://identity.test/.well-known/jwks.json",
+    IDENTITY_SERVICE_URL: "http://identity.test",
     WEB_APP_URL: "http://web.test",
     REVALIDATE_SECRET: randomBytes(32).toString("base64"),
     CONTENT_SERVICE_URL: "http://content.test",
     SERVICE_TOKEN_PRIVATE_JWK: "unused-in-tests",
+    TICKET_LINK_SECRET: randomBytes(32).toString("base64"),
+    SMTP_HOST: "localhost",
+    SMTP_PORT: "1025",
+    MAIL_FROM: "test@lavieco.test",
   });
   const media = new FakeMediaAttachments();
+  const emails = new FakeEmailSender();
+  const payments = new FakePaymentGateway();
 
   const client = new mongo.MongoClient(mongoUri);
   await client.connect();
@@ -131,7 +224,11 @@ export async function createTestApp(
       AppModule.forRoot(env, {
         outbox: { runWorker: false },
         mediaAttachments: media,
+        paymentGateway: { provide: PAYMENT_GATEWAY, useValue: payments },
+        runOrderExpiry: false,
+        auditSink: { send: async () => undefined },
         ...overrides,
+        emailSender: emails,
         logger,
         userKeyResolver: async () => identity.publicKey,
       }),
@@ -158,6 +255,31 @@ export async function createTestApp(
     env,
     db,
     media,
+    emails,
+    payments,
+    emailProof: (email, options = {}) =>
+      userToken(
+        {
+          email: email.trim().toLowerCase(),
+          purpose: options.purpose ?? "checkout",
+          ...(options.uid ? { uid: options.uid } : {}),
+        },
+        TOKEN_AUDIENCES.emailVerification,
+        options.id ?? randomBytes(16).toString("base64url"),
+      ),
+    stepUpToken: (userId, sessionId) =>
+      userToken({ sid: sessionId }, TOKEN_AUDIENCES.stepUp, userId),
+    staffSession: async (roles) => {
+      const userId = new Types.ObjectId().toHexString();
+      const sessionId = randomUUID();
+      const token = await userToken(
+        { typ: "staff", roles, sid: sessionId },
+        TOKEN_AUDIENCES.staff,
+        userId,
+      );
+      return { token, userId, sessionId };
+    },
+    expireHolds: (now) => app.get(OrderExpiryScheduler).runOnce(now),
     staffToken: (roles, userId = new Types.ObjectId().toHexString()) =>
       userToken({ typ: "staff", roles, sid: randomUUID() }, TOKEN_AUDIENCES.staff, userId),
     memberToken: (userId = new Types.ObjectId().toHexString()) =>

@@ -8,7 +8,10 @@ import type {
 
 import { availabilityOf, seatsOf, type TicketTypeRecord } from "../../ticketing";
 import type { EventSnapshot } from "../application/event-snapshot";
-import type { PublicEventBundle } from "../application/event-public-service";
+import type {
+  PublicEventBundle,
+  PublicEventDetailBundle,
+} from "../application/event-public-service";
 import type { EventRecord } from "../domain/event";
 
 const iso = (date: Date | null) => (date ? date.toISOString() : null);
@@ -51,6 +54,7 @@ export function toEventDto(snapshot: EventSnapshot): EventView {
     description: event.description,
     safetyNotes: event.safetyNotes,
     cancellationPolicy: event.cancellationPolicy,
+    forChildren: event.forChildren,
     speakers: event.speakers,
     agenda: event.agenda,
     faq: event.faq,
@@ -114,8 +118,8 @@ export function toPublicCardDto({ event, type, ticketTypes }: PublicEventBundle)
   };
 }
 
-export function toPublicDetailDto(bundle: PublicEventBundle): PublicEventDetail {
-  const { event, ticketTypes } = bundle;
+export function toPublicDetailDto(bundle: PublicEventDetailBundle): PublicEventDetail {
+  const { event, ticketTypes, registration } = bundle;
   return {
     ...toPublicCardDto(bundle),
     venue: event.venue
@@ -138,5 +142,19 @@ export function toPublicDetailDto(bundle: PublicEventBundle): PublicEventDetail 
       maxPerOrder: ticketType.maxPerOrder,
       availability: availabilityOf([ticketType]),
     })),
+    registration: {
+      open: registration.blocker === null,
+      blocker: registration.blocker,
+      questions: registration.questions.map((question) => ({
+        id: question.id,
+        type: question.type,
+        label: question.label,
+        description: question.description,
+        required: question.required,
+        options: question.options.map((option) => ({ id: option.id, label: option.label })),
+      })),
+      safetyAcknowledgementRequired: registration.safetyAcknowledgementRequired,
+      guardianConfirmationRequired: registration.guardianConfirmationRequired,
+    },
   };
 }

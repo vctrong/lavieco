@@ -15,6 +15,7 @@
     "@lavieco/observability": "*",
     "@lavieco/shared": "*",
     "@lavieco/ui": "*",
+    "jsqr": "1.4.0",
     "next": "16.3.5",
     "qrcode": "^1.5.4",
     "react": "19.2.8",

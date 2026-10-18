@@ -66,7 +66,12 @@ export async function createTestApp(
   const signing = await generateKeyPair("EdDSA", { crv: "Ed25519", extractable: true });
   const web = await callerKey("web");
   const admin = await callerKey("admin");
-  const callers: Partial<Record<ServiceName, CallerKey>> = { web: web.key, admin: admin.key };
+  const program = await callerKey("program-service");
+  const callers: Partial<Record<ServiceName, CallerKey>> = {
+    web: web.key,
+    admin: admin.key,
+    "program-service": program.key,
+  };
 
   const dbName = `lavieco_identity${randomUUID().replace(/-/g, "").slice(0, 8)}`.replace(
     /\d/g,
@@ -78,7 +83,11 @@ export async function createTestApp(
     LOG_LEVEL: "info",
     MONGODB_URI: mongoUri,
     MONGODB_DB: dbName,
-    SERVICE_TOKEN_TRUSTED_KEYS: JSON.stringify({ web: web.publicJwk, admin: admin.publicJwk }),
+    SERVICE_TOKEN_TRUSTED_KEYS: JSON.stringify({
+      web: web.publicJwk,
+      admin: admin.publicJwk,
+      "program-service": program.publicJwk,
+    }),
     JWT_SIGNING_KEYS: JSON.stringify([
       { ...(await exportJWK(signing.privateKey)), kid: "id-test" },
     ]),

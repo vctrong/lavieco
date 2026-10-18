@@ -9,17 +9,18 @@ import { Button, CheckboxField, TextField } from "@lavieco/ui";
 
 import { TurnstileWidget } from "@/shared/components/turnstile-widget";
 
+import { FormAlert } from "@/shared/components/form-alert";
+import { HoneypotField } from "@/shared/components/honeypot-field";
+import { OtpInput } from "@/shared/components/otp-input";
+import { useCountdown } from "@/shared/hooks/use-countdown";
+
 import { completeSignup, requestSignupCode } from "../actions/signup";
 import { NEXT_PARAM, ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { signupDetailsSchema, type SignupDetailsInput } from "../schemas";
-import { useCountdown } from "../hooks/use-countdown";
 import { toClientFieldErrors } from "./field-errors";
-import { FormAlert } from "./form-alert";
 import { GoogleButton } from "./google-button";
-import { HoneypotField } from "./honeypot-field";
 import { messageFor } from "./messages";
-import { OtpInput } from "./otp-input";
 
 type SignupFlowProps = {
   next: string;
@@ -50,7 +51,8 @@ export function SignupFlow({ next, googleEnabled, turnstileSiteKey, urlError }: 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alert, setAlert] = useState<string | null>(urlError);
   const [notice, setNotice] = useState<string | null>(null);
-  const resendIn = useCountdown(pending?.resendAvailableAt ?? null);
+  // The code step never renders on the server, so the clock is always known here.
+  const resendIn = useCountdown(pending?.resendAvailableAt ?? null) ?? 0;
 
   const sendCode = async (input: Record<string, unknown>) => {
     setBusy(true);

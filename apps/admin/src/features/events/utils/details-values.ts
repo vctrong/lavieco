@@ -22,6 +22,7 @@ export type DetailsValues = {
   description: string;
   safetyNotes: string;
   cancellationPolicy: string;
+  forChildren: boolean;
   speakers: { name: string; role: string }[];
   agenda: { time: string; title: string }[];
   faq: { question: string; answer: string }[];
@@ -46,6 +47,7 @@ export function emptyDetails(typeId: string): DetailsValues {
     description: "",
     safetyNotes: "",
     cancellationPolicy: "",
+    forChildren: false,
     speakers: [],
     agenda: [],
     faq: [],
@@ -71,6 +73,7 @@ export function detailsOf(event: EventView): DetailsValues {
     description: event.description,
     safetyNotes: event.safetyNotes,
     cancellationPolicy: event.cancellationPolicy,
+    forChildren: event.forChildren,
     speakers: event.speakers.map((speaker) => ({ ...speaker })),
     agenda: event.agenda.map((item) => ({ ...item })),
     faq: event.faq.map((item) => ({ ...item })),
@@ -114,6 +117,7 @@ export function toDetailsRequest(values: DetailsValues) {
     description: values.description,
     safetyNotes: values.safetyNotes,
     cancellationPolicy: values.cancellationPolicy,
+    forChildren: values.forChildren,
     speakers: values.speakers,
     agenda: values.agenda,
     faq: values.faq,
