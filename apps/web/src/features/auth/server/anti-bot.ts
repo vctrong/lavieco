@@ -1,6 +1,7 @@
 import "server-only";
 
 import { clientIp } from "@/lib/request-meta";
+import { webLogger } from "@/lib/services";
 import { verifyTurnstile } from "@/lib/turnstile";
 
 import { botFieldsSchema } from "../schemas";
@@ -11,7 +12,11 @@ import { botFieldsSchema } from "../schemas";
  */
 export async function checkBot(input: unknown): Promise<"human" | "honeypot" | "challenge_failed"> {
   const parsed = botFieldsSchema.safeParse(input);
-  if (!parsed.success) return "honeypot";
+  if (!parsed.success) {
+    // Logged so a real person caught by an autofilled honeypot can be noticed; no PII.
+    webLogger().warn("public form treated as a bot", { context: "auth", check: "honeypot" });
+    return "honeypot";
+  }
   if (!(await verifyTurnstile(parsed.data.turnstileToken, await clientIp()))) {
     return "challenge_failed";
   }
