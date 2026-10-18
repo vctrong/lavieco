@@ -177,11 +177,11 @@ Index cần có: `Order.orderCode`, `Order.buyer.email`, `Order.status + expires
 Giống 5.1 bước 1–3, sau đó tạo Order `paid` với `amount = 0`, chuyển thẳng `held → sold`, phát hành vé, gửi email. Không gọi payOS.
 
 ### 5.3 Email vé
-Gửi khi đơn chuyển `paid`. Nội dung: tên chương trình, ngày giờ, địa điểm, từng vé (tên người tham dự, loại vé, mã vé, ảnh QR inline/CID), nút "Xem vé" (link `/ve/[token]`, token ký HMAC chứa orderId, hạn dài), CTA tạo tài khoản nếu là khách. Có thể đính kèm file `.ics`.
+Gửi khi đơn chuyển `paid` (và khi đội bấm "Gửi lại vé": cùng nội dung, tiêu đề "Gửi lại vé: …", ghi rõ mã QR không đổi). Dùng bố cục email chung (`service-kit` `notify/email/`: logo CID, footer liên hệ + lý do nhận email, table + CSS inline, rộng ≤ 600px, luôn kèm bản text và preheader, không nạp font từ xa). Nội dung: tên chương trình, ngày giờ, địa điểm (offline) hoặc link tham gia (online), loại vé + số lượng, tổng tiền, mã đơn, trạng thái ("Đã thanh toán", hoặc "Đã xác nhận" cho đơn 0đ), **mỗi vé một khối: loại vé, mã `LVC-XXXXXX`, ảnh QR inline (CID)**, không có tên người tham dự (BR-13), nút "Xem vé trực tuyến" (link `/ve/[token]`, token ký HMAC chứa orderId, hạn dài), lưu ý an toàn nếu chương trình có `safetyNotes`, CTA tạo tài khoản nếu là khách (`userId` rỗng). HTML với 20 vé (tối đa một đơn) phải < 90 KB để Gmail không cắt (có test). `.ics`: để sau (TODO(phase-6)).
 
 ### 5.4 Khách xem lại vé
-- `/ve/[token]`: xác minh chữ ký và hiển thị vé của đơn đó.
-- `/tra-cuu-ve`: nhập email → OTP (`purpose: 'ticket_lookup'`) → liệt kê mọi vé của email đó → CTA tạo tài khoản.
+- `/ve/[token]`: xác minh chữ ký và hiển thị vé của đơn đó, mỗi vé một thẻ (QR lớn, mã vé, trạng thái: hợp lệ / đã check-in lúc… / đã hoàn tiền / đã huỷ), có bản in (mỗi vé một trang). Ai có link đều xem được, nên chỉ hiện **họ tên** người đặt; email và SĐT đã che ở `program-service` (`tr***@gmail.com`, `***789`). Đơn đã hoàn tiền vẫn liệt kê vé (`void`, `qrToken = null`: không vẽ QR ở đâu, kể cả bản in), không có link online và lưu ý an toàn.
+- `/tra-cuu-ve`: nhập email → OTP (`purpose: 'ticket_lookup'`) → liệt kê mọi đơn của email đó bằng thẻ vé dạng gọn (cùng kiểu thẻ với `/ve/[token]`, không có QR) → mở `/ve/[token]` → CTA tạo tài khoản.
 
 ### 5.5 Tạo tài khoản sau khi mua
 - Ở trang thành công: email đã xác thực trong checkout nên chỉ cần đặt mật khẩu (hoặc Google cùng email). Tạo user với `emailVerifiedAt` lấy từ đơn.

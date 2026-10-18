@@ -82,7 +82,7 @@ export class OrderAdminService {
       throw new DomainError("order.invalid_state");
     }
     await this.unitOfWork.run((tx) =>
-      this.outbox.enqueue(tx, { type: SEND_TICKETS_JOB, payload: { orderId } }),
+      this.outbox.enqueue(tx, { type: SEND_TICKETS_JOB, payload: { orderId, resend: true } }),
     );
   }
 

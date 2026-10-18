@@ -142,19 +142,24 @@ export const orderItemViewSchema = z.object({
 });
 export type OrderItemView = z.infer<typeof orderItemViewSchema>;
 
-/** A ticket as its holder sees it: the QR is rendered from `qrToken` on demand, never stored. */
+/**
+ * A ticket as its holder sees it: the QR is rendered from `qrToken` on demand, never
+ * stored. `qrToken` is null on a void ticket (refunded order): no QR is ever drawn for it.
+ */
 export const ticketViewSchema = z.object({
   code: z.string(),
   ticketTypeName: z.string(),
   status: ticketStatusSchema,
-  qrToken: z.string(),
+  qrToken: z.string().nullable(),
   checkedInAt: isoDateTimeSchema.nullable(),
 });
 export type TicketView = z.infer<typeof ticketViewSchema>;
 
 /**
- * What the holder of an order link sees (payment page, `/ve/[token]`). Tickets only
- * once paid; `onlineUrl` only on tickets of an online event, never on public pages.
+ * What the holder of an order link sees (payment page, `/ve/[token]`). Anyone with the
+ * link can open it, so the booker's email and phone come masked (`tr***@gmail.com`,
+ * `***789`). Tickets once paid (and, void, once refunded); `onlineUrl` and
+ * `safetyNotes` only on a paid order with tickets, never on public pages.
  */
 export const orderViewSchema = z.object({
   orderCode: z.number().int(),
@@ -162,7 +167,7 @@ export const orderViewSchema = z.object({
   amount: z.number().int(),
   expiresAt: isoDateTimeSchema,
   paidAt: isoDateTimeSchema.nullable(),
-  buyer: z.object({ fullName: z.string(), email: z.string() }),
+  buyer: z.object({ fullName: z.string(), emailMasked: z.string(), phoneMasked: z.string() }),
   event: z.object({
     slug: z.string(),
     title: z.string(),
@@ -171,6 +176,8 @@ export const orderViewSchema = z.object({
     endAt: isoDateTimeSchema,
     venue: eventVenueSchema.nullable(),
     onlineUrl: z.string().nullable(),
+    /** Empty when the event has none or the order is not paid. */
+    safetyNotes: z.string(),
   }),
   items: z.array(orderItemViewSchema),
   payment: orderPaymentSchema.nullable(),

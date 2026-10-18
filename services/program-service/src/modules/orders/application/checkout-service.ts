@@ -212,7 +212,9 @@ export class CheckoutService {
     const order = await this.orders.findById(orderId);
     const event = order ? (await this.events.findByIds([order.eventId]))[0] : undefined;
     if (!order || !event) throw new DomainError("common.not_found");
-    const tickets = order.status === "paid" ? await this.tickets.listByOrder(order.id) : [];
+    // A refunded order keeps listing its (void) tickets on the ticket page.
+    const hasTickets = order.status === "paid" || order.status === "refunded";
+    const tickets = hasTickets ? await this.tickets.listByOrder(order.id) : [];
     return { order, event, tickets };
   }
 

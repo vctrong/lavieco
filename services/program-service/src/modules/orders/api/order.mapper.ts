@@ -8,23 +8,37 @@ import type {
 import type { EventRecord } from "../../events";
 import type { OrderBundle } from "../application/checkout-service";
 import type { AdminOrderDetail } from "../application/order-admin-service";
+import { maskEmail, maskPhone } from "../domain/masking";
 import { answerText, type OrderRecord } from "../domain/order";
 
 const iso = (date: Date | null) => (date ? date.toISOString() : null);
 
 /**
- * What the holder of an order link sees. Built field by field: the payment QR only
- * while the order is pending, tickets and the online link only once it is paid.
+ * What the holder of an order link sees. Built field by field: the booker's email and
+ * phone masked (anyone with the link can open it), the payment QR only while the order
+ * is pending, the online link and safety notes only once it is paid. A refunded order
+ * still lists its tickets, void and without `qrToken`, so no QR can be drawn for them.
  */
 export function toOrderView({ order, event, tickets }: OrderBundle): OrderView {
   const paid = order.status === "paid";
+  const refunded = order.status === "refunded";
+  const shown = paid
+    ? tickets.filter((ticket) => ticket.status !== "void")
+    : refunded
+      ? tickets
+      : [];
+  const live = paid && shown.length > 0;
   return {
     orderCode: order.orderCode,
     status: order.status,
     amount: order.amount,
     expiresAt: order.expiresAt.toISOString(),
     paidAt: iso(order.paidAt),
-    buyer: { fullName: order.buyer.fullName, email: order.buyer.email },
+    buyer: {
+      fullName: order.buyer.fullName,
+      emailMasked: maskEmail(order.buyer.email),
+      phoneMasked: maskPhone(order.buyer.phone),
+    },
     event: {
       slug: event.slug,
       title: event.title,
@@ -32,7 +46,8 @@ export function toOrderView({ order, event, tickets }: OrderBundle): OrderView {
       startAt: event.startAt.toISOString(),
       endAt: event.endAt.toISOString(),
       venue: event.venue,
-      onlineUrl: paid && tickets.length > 0 && event.format === "online" ? event.onlineUrl : null,
+      onlineUrl: live && event.format === "online" ? event.onlineUrl : null,
+      safetyNotes: live ? event.safetyNotes : "",
     },
     items: order.items.map((item) => ({ ...item })),
     payment:
@@ -47,17 +62,13 @@ export function toOrderView({ order, event, tickets }: OrderBundle): OrderView {
             expiresAt: order.payment.expiresAt.toISOString(),
           }
         : null,
-    tickets: paid
-      ? tickets
-          .filter((ticket) => ticket.status !== "void")
-          .map((ticket) => ({
-            code: ticket.code,
-            ticketTypeName: ticket.ticketTypeName,
-            status: ticket.status,
-            qrToken: ticket.qrToken,
-            checkedInAt: iso(ticket.checkedInAt),
-          }))
-      : [],
+    tickets: shown.map((ticket) => ({
+      code: ticket.code,
+      ticketTypeName: ticket.ticketTypeName,
+      status: ticket.status,
+      qrToken: paid && ticket.status !== "void" ? ticket.qrToken : null,
+      checkedInAt: iso(ticket.checkedInAt),
+    })),
     refundRequired: order.flags.refundRequired,
   };
 }

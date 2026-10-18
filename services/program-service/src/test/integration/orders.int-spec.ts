@@ -61,7 +61,7 @@ describe("free registration (Phase 3 'done when')", () => {
     const [first, second] = created.order.tickets;
     expect(first!.code).toMatch(/^LVC-[0-9A-HJKMNP-TV-Z]{6}$/);
     expect(first!.qrToken).not.toBe(second!.qrToken);
-    expect(Buffer.from(first!.qrToken, "base64url")).toHaveLength(32);
+    expect(Buffer.from(first!.qrToken!, "base64url")).toHaveLength(32);
     expect(await seats(ticketTypeIds[0]!)).toEqual({ sold: 2, held: 0 });
 
     // The answers are stored with the order, nothing about attendees (BR-13).
@@ -75,11 +75,22 @@ describe("free registration (Phase 3 'done when')", () => {
     await drainOutbox(t);
     const [mail] = t.emails.to(BUYER.email);
     expect(mail?.subject).toContain(event.title);
-    expect(mail?.attachments).toHaveLength(2);
+    // The logo, then one QR per ticket, all inline.
+    expect(mail?.attachments).toHaveLength(3);
     expect(mail?.html).toContain(`/ve/${created.accessToken}`);
-    expect(mail?.html).toContain(`cid:${mail!.attachments![0]!.cid}`);
+    for (const attachment of mail!.attachments!)
+      expect(mail?.html).toContain(`cid:${attachment.cid}`);
 
-    expect((await view(created.accessToken)).tickets).toHaveLength(2);
+    // Anyone holding the link sees the booker's name, never the full email or phone.
+    const viewed = await view(created.accessToken);
+    expect(viewed.tickets).toHaveLength(2);
+    expect(viewed.buyer).toEqual({
+      fullName: BUYER.fullName,
+      emailMasked: "kh***@example.test",
+      phoneMasked: "***567",
+    });
+    expect(JSON.stringify(viewed)).not.toContain(BUYER.email);
+    expect(JSON.stringify(viewed)).not.toContain("234 567");
     // Logs never carry the buyer's personal data.
     const logs = t.logs.join("\n");
     for (const value of [BUYER.email, BUYER.fullName, "0901"]) expect(logs).not.toContain(value);

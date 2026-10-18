@@ -8,7 +8,15 @@ import type {
   TicketRepository,
 } from "../application/ports/order-repositories.port";
 import type { OrderLinks, TicketMailer } from "../application/ports/order-services.port";
-import { qrCid, ticketEmail } from "./ticket-email.template";
+import { qrAttachment, ticketEmail } from "./ticket-email.template";
+
+/** 400 px for a 200 px slot (sharp on 2× screens), with a quiet zone of its own. */
+export const QR_IMAGE_OPTIONS = {
+  type: "png",
+  errorCorrectionLevel: "M",
+  margin: 2,
+  width: 400,
+} as const;
 
 /**
  * Renders and sends the ticket email of a paid order (outbox `order.send_tickets`).
@@ -24,7 +32,7 @@ export class SmtpTicketMailer implements TicketMailer {
     private readonly webAppUrl: string,
   ) {}
 
-  async sendTickets(orderId: string): Promise<void> {
+  async sendTickets(orderId: string, options: { resend?: boolean } = {}): Promise<void> {
     const order = await this.orders.findById(orderId);
     // Refunded (or never paid) by the time the job runs: nothing to send.
     if (!order || order.status !== "paid") return;
@@ -35,20 +43,23 @@ export class SmtpTicketMailer implements TicketMailer {
     if (!event || tickets.length === 0) return;
 
     const ticketPageUrl = `${this.webAppUrl}/ve/${this.links.sign(order.id)}`;
-    const mail = ticketEmail({ order, event, tickets, ticketPageUrl });
-    const attachments = await Promise.all(
-      tickets.map(async (ticket) => ({
-        filename: `${ticket.code}.png`,
-        content: await toBuffer(ticket.qrToken, {
-          type: "png",
-          errorCorrectionLevel: "M",
-          margin: 2,
-          width: 400,
-        }),
-        contentType: "image/png",
-        cid: qrCid(ticket),
-      })),
+    const mail = ticketEmail({
+      order,
+      event,
+      tickets,
+      ticketPageUrl,
+      webAppUrl: this.webAppUrl,
+      resend: options.resend === true,
+    });
+    const qrImages = await Promise.all(
+      tickets.map(async (ticket) =>
+        qrAttachment(ticket, await toBuffer(ticket.qrToken, QR_IMAGE_OPTIONS)),
+      ),
     );
-    await this.sender.send({ to: order.buyer.email, ...mail, attachments });
+    await this.sender.send({
+      to: order.buyer.email,
+      ...mail,
+      attachments: [...mail.attachments, ...qrImages],
+    });
   }
 }

@@ -7026,13 +7026,17 @@
                             "fullName": {
                               "type": "string"
                             },
-                            "email": {
+                            "emailMasked": {
+                              "type": "string"
+                            },
+                            "phoneMasked": {
                               "type": "string"
                             }
                           },
                           "required": [
                             "fullName",
-                            "email"
+                            "emailMasked",
+                            "phoneMasked"
                           ],
                           "additionalProperties": false
                         },
@@ -7094,6 +7098,9 @@
                             "onlineUrl": {
                               "nullable": true,
                               "type": "string"
+                            },
+                            "safetyNotes": {
+                              "type": "string"
                             }
                           },
                           "required": [
@@ -7103,7 +7110,8 @@
                             "startAt",
                             "endAt",
                             "venue",
-                            "onlineUrl"
+                            "onlineUrl",
+                            "safetyNotes"
                           ],
                           "additionalProperties": false
                         },
@@ -7199,6 +7207,7 @@
                                 ]
                               },
                               "qrToken": {
+                                "nullable": true,
                                 "type": "string"
                               },
                               "checkedInAt": {
@@ -7538,13 +7547,17 @@
                         "fullName": {
                           "type": "string"
                         },
-                        "email": {
+                        "emailMasked": {
+                          "type": "string"
+                        },
+                        "phoneMasked": {
                           "type": "string"
                         }
                       },
                       "required": [
                         "fullName",
-                        "email"
+                        "emailMasked",
+                        "phoneMasked"
                       ],
                       "additionalProperties": false
                     },
@@ -7606,6 +7619,9 @@
                         "onlineUrl": {
                           "nullable": true,
                           "type": "string"
+                        },
+                        "safetyNotes": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -7615,7 +7631,8 @@
                         "startAt",
                         "endAt",
                         "venue",
-                        "onlineUrl"
+                        "onlineUrl",
+                        "safetyNotes"
                       ],
                       "additionalProperties": false
                     },
@@ -7711,6 +7728,7 @@
                             ]
                           },
                           "qrToken": {
+                            "nullable": true,
                             "type": "string"
                           },
                           "checkedInAt": {
@@ -7822,13 +7840,17 @@
                         "fullName": {
                           "type": "string"
                         },
-                        "email": {
+                        "emailMasked": {
+                          "type": "string"
+                        },
+                        "phoneMasked": {
                           "type": "string"
                         }
                       },
                       "required": [
                         "fullName",
-                        "email"
+                        "emailMasked",
+                        "phoneMasked"
                       ],
                       "additionalProperties": false
                     },
@@ -7890,6 +7912,9 @@
                         "onlineUrl": {
                           "nullable": true,
                           "type": "string"
+                        },
+                        "safetyNotes": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -7899,7 +7924,8 @@
                         "startAt",
                         "endAt",
                         "venue",
-                        "onlineUrl"
+                        "onlineUrl",
+                        "safetyNotes"
                       ],
                       "additionalProperties": false
                     },
@@ -7995,6 +8021,7 @@
                             ]
                           },
                           "qrToken": {
+                            "nullable": true,
                             "type": "string"
                           },
                           "checkedInAt": {
@@ -8106,13 +8133,17 @@
                         "fullName": {
                           "type": "string"
                         },
-                        "email": {
+                        "emailMasked": {
+                          "type": "string"
+                        },
+                        "phoneMasked": {
                           "type": "string"
                         }
                       },
                       "required": [
                         "fullName",
-                        "email"
+                        "emailMasked",
+                        "phoneMasked"
                       ],
                       "additionalProperties": false
                     },
@@ -8174,6 +8205,9 @@
                         "onlineUrl": {
                           "nullable": true,
                           "type": "string"
+                        },
+                        "safetyNotes": {
+                          "type": "string"
                         }
                       },
                       "required": [
@@ -8183,7 +8217,8 @@
                         "startAt",
                         "endAt",
                         "venue",
-                        "onlineUrl"
+                        "onlineUrl",
+                        "safetyNotes"
                       ],
                       "additionalProperties": false
                     },
@@ -8279,6 +8314,7 @@
                             ]
                           },
                           "qrToken": {
+                            "nullable": true,
                             "type": "string"
                           },
                           "checkedInAt": {
