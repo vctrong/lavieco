@@ -1,12 +1,20 @@
 # Never ship environment files into an image (CLAUDE §11); only .env.example is allowed.
 **/.env*
 !**/.env.example
+# Key material and certificates (docs/runbooks/deploy-oracle.md): never in an image.
+**/*.pem
+**/*.key
+**/secrets
 **/node_modules
 **/dist
 **/.next
 **/.turbo
 **/coverage
+# Incremental TypeScript state from a developer machine would confuse the image build.
+**/*.tsbuildinfo
 .git
+.idea
+.mail-preview
 docs
 docs_temp
 e2e
