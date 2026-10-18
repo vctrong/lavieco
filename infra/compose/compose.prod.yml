@@ -1,0 +1,281 @@
+# Production stack on one server (docs/02 §12.2 option B, draft ADR-0022):
+# Cloudflare → caddy (only published ports) → web/admin → services on a private network.
+# Runbook: docs/runbooks/deploy-oracle.md. On the server this file lives at
+# /opt/lavieco/infra/compose/compose.prod.yml and is always run with the compose variables:
+#
+#   docker compose --env-file /opt/lavieco/compose.env -f /opt/lavieco/infra/compose/compose.prod.yml up -d
+#
+# Images: ghcr.io/<GHCR_OWNER>/lavieco-<name>:<IMAGE_TAG>, built for linux/arm64 by
+# .github/workflows/deploy.yml. Configuration: one env file per container in
+# ${LAVIECO_ENV_DIR} (/opt/lavieco/env, never in the repo; templates in infra/deploy/env/).
+#
+# Profiles:
+#   migrate  one-off `db:migrate` containers (infra/deploy/scripts/deploy.sh runs them)
+#   mongo    optional self-hosted MongoDB 8; off by default, production uses Atlas
+name: lavieco
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+# Shared by every Node container: no published port, no extra privileges.
+x-node: &node
+  restart: unless-stopped
+  logging: *logging
+  security_opt:
+    - no-new-privileges:true
+  cap_drop:
+    - ALL
+
+x-healthcheck: &healthcheck
+  interval: 30s
+  timeout: 5s
+  retries: 3
+  start_period: 30s
+
+x-migrate: &migrate
+  <<: *node
+  restart: "no"
+  profiles: ["migrate"]
+  networks: [backend]
+  command: ["node", "--enable-source-maps", "dist/cli/migrate.js"]
+  deploy:
+    resources:
+      limits:
+        memory: 256m
+
+services:
+  caddy:
+    image: caddy:2.10-alpine
+    restart: unless-stopped
+    logging: *logging
+    security_opt:
+      - no-new-privileges:true
+    # The ONLY published ports of the stack (P4: services never face the Internet).
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ../caddy/Caddyfile:/etc/caddy/Caddyfile:ro
+      # Cloudflare Origin Certificate: origin.pem + origin.key (runbook §2), never in the repo.
+      - ${LAVIECO_CERT_DIR:-/opt/lavieco/certs}:/etc/caddy/certs:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks: [edge]
+    depends_on:
+      web:
+        condition: service_healthy
+      admin:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      # Caddy's admin API listens on localhost inside the container only.
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:2019/config/"]
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 256m
+
+  web:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-web:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/web.env
+    networks: [edge, backend]
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+      program-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/icon.png').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+
+  admin:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-admin:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/admin.env
+    networks: [edge, backend]
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+      program-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3001/login').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+    deploy:
+      resources:
+        limits:
+          memory: 768m
+
+  identity-service:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-identity-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/identity-service.env
+    networks: [backend]
+    healthcheck:
+      <<: *healthcheck
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4001/health/ready').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+    deploy:
+      resources:
+        limits:
+          memory: 512m
+
+  content-service:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-content-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/content-service.env
+    networks: [backend]
+    depends_on:
+      identity-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4002/health/ready').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+    deploy:
+      resources:
+        limits:
+          # Uploads up to 8 MB are decoded by sharp in memory (ADR-0020).
+          memory: 1g
+
+  program-service:
+    <<: *node
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-program-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file: ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/program-service.env
+    networks: [backend]
+    depends_on:
+      identity-service:
+        condition: service_healthy
+      content-service:
+        condition: service_healthy
+    healthcheck:
+      <<: *healthcheck
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:4004/health/ready').then((r) => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
+    deploy:
+      resources:
+        limits:
+          memory: 768m
+
+  # --- profile "migrate": run once per deploy, before `up` (infra/deploy/scripts/deploy.sh).
+  # Same image and env file as the service (the CLI validates the whole service config),
+  # then migrate.env overrides MONGODB_URI with the `migrator` account: index/collection
+  # rights stay out of the running services (docs/03 §10.3). Migrations are idempotent.
+  identity-migrate:
+    <<: *migrate
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-identity-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file:
+      - ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/identity-service.env
+      - ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/migrate.env
+
+  content-migrate:
+    <<: *migrate
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-content-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file:
+      - ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/content-service.env
+      - ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/migrate.env
+
+  program-migrate:
+    <<: *migrate
+    image: ghcr.io/${GHCR_OWNER:?set GHCR_OWNER}/lavieco-program-service:${IMAGE_TAG:?set IMAGE_TAG}
+    env_file:
+      - ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/program-service.env
+      - ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/migrate.env
+
+  # --- profile "mongo": self-hosted MongoDB 8, single-node replica set (transactions need
+  # one, docs/02 §8.1). OFF by default: production uses Atlas through MONGODB_URI. To use
+  # it, add COMPOSE_PROFILES=mongo to compose.env and point MONGODB_URI at
+  # mongodb://<user>:<password>@mongo:27017/?replicaSet=rs0&authSource=admin
+  # (one user per service, runbook §9). Back up with infra/deploy/scripts/mongo-backup.sh.
+  mongo:
+    image: mongo:8.0
+    profiles: ["mongo"]
+    restart: unless-stopped
+    logging: *logging
+    security_opt:
+      - no-new-privileges:true
+    env_file: ${LAVIECO_ENV_DIR:-/opt/lavieco/env}/mongo.env
+    # Auth plus a replica set needs a keyfile shared by the members: generated once on
+    # the config volume, readable only by the mongodb user (uid 999 in the image).
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        key=/data/configdb/keyfile
+        if [ ! -s "$$key" ]; then head -c 756 /dev/urandom | base64 > "$$key"; fi
+        chown 999:999 "$$key" && chmod 400 "$$key"
+        exec docker-entrypoint.sh mongod --replSet rs0 --bind_ip_all --keyFile "$$key"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+    networks: [backend]
+    healthcheck:
+      # Initiates the replica set on first start, then reports healthy once PRIMARY.
+      test:
+        - CMD-SHELL
+        - >-
+          mongosh --quiet -u "$$MONGO_INITDB_ROOT_USERNAME" -p "$$MONGO_INITDB_ROOT_PASSWORD"
+          --authenticationDatabase admin --eval
+          "try { rs.status() } catch (e) { rs.initiate({ _id: 'rs0', members: [{ _id: 0, host: 'mongo:27017' }] }) }; quit(db.hello().isWritablePrimary ? 0 : 1)"
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          memory: 2g
+
+networks:
+  # caddy ↔ web/admin.
+  edge: {}
+  # web/admin ↔ services ↔ (optional) mongo. Not `internal`: the services need outbound
+  # access to Atlas, SMTP, Cloudinary and payOS. Nothing on it publishes a port.
+  backend: {}
+
+volumes:
+  caddy-data:
+  caddy-config:
+  mongo-data:
+  mongo-config:

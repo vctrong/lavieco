@@ -1,0 +1,66 @@
+# Edge of the production stack (infra/compose/compose.prod.yml, docs/runbooks/deploy-oracle.md).
+# Cloudflare (proxied DNS, SSL mode "Full (strict)") → this Caddy → web/admin.
+# Only web and admin are routed: no service is ever reachable from outside (P4, docs/02 §3.3).
+{
+	# Admin API stays on localhost inside the container (used by the healthcheck only).
+	admin localhost:2019
+
+	servers {
+		# Only Cloudflare may tell us who the visitor is. Ranges from
+		# https://www.cloudflare.com/ips/ (checked 18/10/2026): update them when Cloudflare
+		# announces a change. A request from any other address keeps its own IP as client IP.
+		trusted_proxies static 173.245.48.0/20 103.21.244.0/22 103.22.200.0/22 103.31.4.0/22 141.101.64.0/18 108.162.192.0/18 190.93.240.0/20 188.114.96.0/20 197.234.240.0/22 198.41.128.0/17 162.158.0.0/15 104.16.0.0/13 104.24.0.0/14 172.64.0.0/13 131.0.72.0/22 2400:cb00::/32 2606:4700::/32 2803:f800::/32 2405:b500::/32 2405:8100::/32 2a06:98c0::/29 2c0f:f248::/32
+		client_ip_headers CF-Connecting-IP
+	}
+}
+
+# Cloudflare Origin Certificate (covers lavieco.io.vn and *.lavieco.io.vn), mounted from
+# /opt/lavieco/certs. No ACME: Cloudflare terminates the public TLS.
+(origin_tls) {
+	tls /etc/caddy/certs/origin.pem /etc/caddy/certs/origin.key
+}
+
+# Headers the apps do not set themselves (they already send nosniff, referrer-policy,
+# permissions-policy and their own framing rules: apps/*/src/proxy.ts). No access log:
+# it would store visitor IPs and the order-link tokens in /ve/[token] URLs.
+(edge_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		-Server
+		-X-Powered-By
+	}
+}
+
+# The apps read the visitor IP from CF-Connecting-IP, else the first X-Forwarded-For
+# (apps/web/src/lib/request-meta.ts) and pass it to identity-service for OTP rate limits.
+# Both are overwritten with the IP Caddy resolved, which only trusts CF-Connecting-IP when
+# the request really comes from Cloudflare, so a direct hit on the origin cannot pick its
+# own IP. x-request-id is set here so every request has one end to end (docs/02 §6.1).
+(upstream_headers) {
+	header_up CF-Connecting-IP {client_ip}
+	header_up X-Forwarded-For {client_ip}
+	header_up X-Request-Id {http.request.uuid}
+}
+
+lavieco.io.vn {
+	import origin_tls
+	import edge_headers
+	reverse_proxy web:3000 {
+		import upstream_headers
+	}
+}
+
+# One canonical host for the public site.
+www.lavieco.io.vn {
+	import origin_tls
+	import edge_headers
+	redir https://lavieco.io.vn{uri} permanent
+}
+
+admin.lavieco.io.vn {
+	import origin_tls
+	import edge_headers
+	reverse_proxy admin:3001 {
+		import upstream_headers
+	}
+}
