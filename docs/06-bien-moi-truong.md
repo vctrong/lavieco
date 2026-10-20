@@ -108,7 +108,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 
 | Tên biến | Bắt buộc | Bí mật | Ý nghĩa | Cách lấy | Dev / Prod | Ví dụ giả |
 |---|---|---|---|---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | Tuỳ chọn (mặc định `http://localhost:3000`) | Không (nhúng vào bundle) | Origin công khai, dùng cho metadata, Open Graph, canonical | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
+| `NEXT_PUBLIC_SITE_URL` | Tuỳ chọn (mặc định `http://localhost:3000`) | Không (nhúng vào bundle) | Origin công khai, dùng cho metadata, Open Graph, canonical và làm gốc mọi URL chuyển hướng | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Tuỳ chọn (trống = dùng ảnh minh hoạ) | Không | Cloud name Cloudinary trong URL ảnh | Cloudinary Dashboard → API Keys → Cloud name | Dev và prod là **hai** product environment khác nhau | `demo-dev` |
 | `IDENTITY_SERVICE_URL` | Bắt buộc | Không | identity-service trên mạng riêng | Tự đặt | Prod: địa chỉ nội bộ, không mở Internet | `http://127.0.0.1:4001` |
 | `PROGRAM_SERVICE_URL` | Bắt buộc | Không | program-service trên mạng riêng | Tự đặt | Như trên | `http://127.0.0.1:4004` |
@@ -131,6 +131,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `PROGRAM_SERVICE_URL` | Bắt buộc | Không | program-service trên mạng riêng | Tự đặt | Như trên | `http://127.0.0.1:4004` |
 | `CONTENT_SERVICE_URL` | Bắt buộc | Không | content-service (tải ảnh chương trình) | Tự đặt | Như trên | `http://127.0.0.1:4002` |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Tuỳ chọn | Không | Cloud name trong URL ảnh | Cloudinary Dashboard → API Keys | Dev/prod hai environment | `demo-dev` |
+| `ADMIN_APP_URL` | Tuỳ chọn (mặc định `http://localhost:3001`) | Không | Origin công khai của chính admin, làm gốc cho mọi URL chuyển hướng (không lấy từ host của request, vốn là `0.0.0.0:3001` sau Caddy) | Tự đặt | Prod: `https://admin.lavieco.io.vn` (đọc lúc chạy từ `admin.env`) | `http://localhost:3001` |
 | `WEB_APP_URL` | Bắt buộc | Không | Origin của `web`, để nhúng trang xem trước | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
 | `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của `admin` | `npm run keys:generate -- admin` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | | `info` |
@@ -246,3 +247,4 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 18/10/2026 | `identity-service`, `program-service`: `SMTP_USER`, `SMTP_PASS`, `SMTP_PORT`, `SMTP_SECURE` | Không đổi tên; thêm kiểm tra chéo (thiếu nửa thông tin đăng nhập, sai cặp cổng/TLS thì từ chối khởi động), bắt buộc TLS khi đăng nhập tới máy chủ ngoài, lệnh `npm run mail:test`, hướng dẫn Gmail/nhà cung cấp | Phase 3, `feat/phase3-registration-payos` |
 | 18/10/2026 | Hạ tầng deploy: `GHCR_OWNER`, `IMAGE_TAG`, `LAVIECO_ENV_DIR`, `LAVIECO_CERT_DIR`, `COMPOSE_PROFILES`, `migrate.env`/`MONGODB_URI`, `BACKUP_MONGODB_URI`, `BACKUP_DIR`, `BACKUP_RETENTION_DAYS`, `MONGO_INITDB_ROOT_*`, `PORT`/`HOSTNAME` của image Next, secrets `DEPLOY_*` | Thêm (không đổi biến của ứng dụng) | `chore/deploy-oracle` |
 | 18/10/2026 | Hạ tầng deploy chuyển sang VPS amd64: mẫu env dời về `infra/env/prod/`; thêm `ACME_EMAIL`, `NODE_OPTIONS`/`GOMEMLIMIT` trong compose; xoá `LAVIECO_ENV_DIR`, `LAVIECO_CERT_DIR`, `COMPOSE_PROFILES`, `MONGO_INITDB_ROOT_*` (bỏ profile `mongo`), secrets `DEPLOY_*` (chưa có bước SSH deploy) | Đổi hạ tầng (không đổi biến của ứng dụng) | `chore/deploy-oracle` |
+| 20/10/2026 | `admin`: `ADMIN_APP_URL` | Thêm (gốc URL chuyển hướng); `web` dùng `NEXT_PUBLIC_SITE_URL` cho chuyển hướng | `fix/redirect-base-url` |

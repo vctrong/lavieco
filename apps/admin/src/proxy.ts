@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { appUrl } from "@/lib/app-url";
 import { STAFF_COOKIES } from "@/lib/session-cookies";
 
 /** Pages reachable without a staff session. */
@@ -28,7 +29,7 @@ export function proxy(request: NextRequest) {
 
   let response: NextResponse;
   if (!isPublic && !hasSession) {
-    const url = new URL("/login", request.url);
+    const url = appUrl("/login");
     if (pathname !== "/") url.searchParams.set("next", `${pathname}${search}`);
     response = NextResponse.redirect(url);
   } else {

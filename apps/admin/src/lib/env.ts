@@ -29,3 +29,14 @@ export function serverEnv(): ServerEnv {
   cached = parsed.data;
   return cached;
 }
+
+const appUrlSchema = z.url().default("http://localhost:3001");
+
+/**
+ * Public origin of `admin` (`ADMIN_APP_URL`), the base of every redirect. Parsed on its
+ * own so `proxy.ts` never depends on the other variables.
+ */
+export function adminAppUrl(): string {
+  const parsed = appUrlSchema.safeParse(process.env.ADMIN_APP_URL || undefined);
+  return parsed.success ? parsed.data : "http://localhost:3001";
+}
