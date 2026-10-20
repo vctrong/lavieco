@@ -15,14 +15,14 @@ export class EmailOtpMailer implements OtpMailer {
     private readonly webUrl: string,
   ) {}
 
-  sendCode(to: string, code: string, purpose: OtpPurpose) {
-    return this.sender.send({
+  async sendCode(to: string, code: string, purpose: OtpPurpose) {
+    await this.sender.send({
       to,
       ...otpCodeEmail(code, purpose, OTP_RULES.ttlSeconds / 60, this.webUrl),
     });
   }
 
-  sendAccountExists(to: string) {
-    return this.sender.send({ to, ...accountExistsEmail(this.webUrl) });
+  async sendAccountExists(to: string) {
+    await this.sender.send({ to, ...accountExistsEmail(this.webUrl) });
   }
 }

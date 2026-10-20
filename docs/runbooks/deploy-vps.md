@@ -45,7 +45,7 @@ Docker ghi luật iptables riêng và **đi vòng qua UFW** với mọi cổng �
 |---|---|---|
 | Ingress | TCP 22 | Chỉ IP quản trị (hoặc khoá SSH + fail2ban nếu IP không cố định) |
 | Ingress | TCP 80, 443, UDP 443 | `0.0.0.0/0` (hoặc chỉ dải IP Cloudflare nếu dùng proxy Cloudflare, §2) |
-| Egress | Tất cả | Atlas, SMTP, Cloudinary, payOS, GHCR, Let's Encrypt |
+| Egress | Tất cả | Atlas, SMTP (Brevo `smtp-relay.brevo.com:587`, Gmail `smtp.gmail.com:587`), Cloudinary, payOS, GHCR, Let's Encrypt |
 
 Không mở 3000/3001/4001/4002/4004: các container đó không publish cổng nào.
 
@@ -172,6 +172,23 @@ Giá trị phải trùng nhau giữa nhiều tệp:
 - `REVALIDATE_SECRET`: `web` = `program-service`.
 - `GOOGLE_CLIENT_ID`, `GOOGLE_REDIRECT_URI`: `web` = `identity-service`.
 - `CLOUDINARY_CLOUD_NAME` (content-service) = biến repository `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` trên GitHub.
+- **Toàn bộ khối mail** (`MAIL_*`, `BREVO_*`, `SMTP_*`): `identity-service` = `program-service`.
+
+### 4.3 Email: Brevo chính, Gmail dự phòng (ADR-023)
+
+Điền vào **cả hai** `identity-service.env` và `program-service.env`, giống hệt nhau:
+
+| Biến | Lấy ở đâu |
+|---|---|
+| `BREVO_SMTP_USER`, `BREVO_SMTP_KEY` | Brevo > SMTP & API > SMTP: login dạng `...@smtp-brevo.com` và một SMTP key mới (không phải API key v3) |
+| `BREVO_SMTP_HOST`, `BREVO_SMTP_PORT`, `BREVO_COOLDOWN_MINUTES` | Giữ như mẫu (`smtp-relay.brevo.com`, `587`, `15`) |
+| `MAIL_FROM` | `"LAVIECO <no-reply@lavieco.io.vn>"` (tên miền đã xác minh trên Brevo) |
+| `MAIL_FROM_FALLBACK` | `"LAVIECO <địa chỉ Gmail của SMTP_USER>"`. **Bắt buộc** khi có `BREVO_SMTP_KEY`, không được là `@lavieco.io.vn` |
+| `MAIL_REPLY_TO` | Hộp thư đội đọc được |
+| `SMTP_HOST`/`SMTP_PORT`/`SMTP_SECURE` | `smtp.gmail.com` / `587` / `false` |
+| `SMTP_USER`, `SMTP_PASS` | Địa chỉ Gmail đó và App Password 16 ký tự |
+
+Thiếu `MAIL_FROM_FALLBACK`, `MAIL_FROM_FALLBACK` cùng tên miền với `MAIL_FROM`, hoặc chỉ điền một nửa cặp user/key: service **từ chối khởi động** và log chỉ nêu tên biến. Thử từng đường sau khi stack chạy: §5.4.
 
 ---
 
@@ -238,12 +255,16 @@ lv run --rm --no-deps content-service node dist/cli/media-setup.js
 # Webhook payOS (npm run payos:webhook). Cần web + caddy đang chạy: payOS gọi thử URL ngay.
 lv run --rm --no-deps program-service node dist/cli/payos-webhook.js https://lavieco.io.vn/api/payments/payos/webhook
 
-# Thử SMTP của cả hai service gửi email (npm run mail:test).
-lv run --rm --no-deps identity-service node dist/cli/mail-test.js <email nhận thử>
-lv run --rm --no-deps program-service  node dist/cli/mail-test.js <email nhận thử>
+# Thử gửi email của cả hai service (npm run mail:test), từng đường một (ADR-023):
+# --provider=brevo chỉ Brevo, --provider=gmail chỉ SMTP_*, bỏ trống (auto) = Brevo rồi Gmail.
+for svc in identity-service program-service; do
+  for p in brevo gmail; do
+    lv run --rm --no-deps "$svc" node dist/cli/mail-test.js <email nhận thử> --provider=$p
+  done
+done
 ```
 
-Các lệnh chạy bằng đúng image và tệp env đang dùng, không mang bí mật ra khỏi máy chủ. Thông báo lỗi của `mail-test` nhắc `.env.local` (viết cho dev); trên máy chủ, tệp cần sửa là `/opt/lavieco/env/<tên>.env`.
+Các lệnh chạy bằng đúng image và tệp env đang dùng, không mang bí mật ra khỏi máy chủ. Thông báo lỗi của `mail-test` nhắc `.env.local` (viết cho dev); trên máy chủ, tệp cần sửa là `/opt/lavieco/env/<tên>.env`. Cả `brevo` và `gmail` phải báo "đã gửi"; kiểm tra thư Brevo có `spf=pass`, `dkim=pass` trong header. Sau khi đổi khối mail: `lv up -d --force-recreate identity-service program-service`.
 
 Cuối cùng thử các luồng chính: đăng ký/đăng nhập member (OTP), đặt vé miễn phí, đặt vé có phí (đơn chỉ chuyển "đã thanh toán" nhờ webhook, BR-15), đăng nhập admin + 2FA, upload ảnh sự kiện 8 MB.
 
@@ -318,6 +339,7 @@ free -h                                # swap có bị dùng nhiều không
 ```
 
 - Log JSON (pino), đã che PII. Docker giữ tối đa 5 × 10 MB mỗi container.
+- Email (ADR-023): mỗi lần gửi có log `mail sent` với `provider` (`brevo`/`gmail`) và `durationMs`. `mail provider failed, falling back` (kèm `smtpCode`/`responseCode`) nghĩa là Brevo lỗi, email đã đi qua Gmail và Brevo bị bỏ qua `BREVO_COOLDOWN_MINUTES` phút; lặp lại nhiều lần trong ngày thường là hết hạn mức 300 email/ngày. `mail delivery failed` nghĩa là cả hai đường lỗi. Xem nhanh: `lv logs --since=24h identity-service program-service | grep -E 'mail (sent|provider failed|delivery failed)'`.
 - Caddy **không** ghi access log (sẽ chứa IP và token trong `/ve/[token]`).
 - Đổi tệp env phải tạo lại container: `lv up -d --force-recreate <tên>`.
 - Container bị OOM-kill (`docker inspect -f '{{.State.OOMKilled}}' lavieco-<tên>-1` = `true`): nâng `mem_limit` **và** `--max-old-space-size` cùng lúc trong `compose.prod.yml`, giữ heap thấp hơn giới hạn ít nhất ~30%.

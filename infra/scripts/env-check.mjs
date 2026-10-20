@@ -50,9 +50,15 @@ function databaseIsolationIssue(local) {
   return /\.mongodb\.net(?=[:/,?]|$)/i.test(uri) && !devDatabase ? "MONGODB_DB" : null;
 }
 
+/** `user@domain` out of `Name <user@domain>` or a bare address. */
+const addressOf = (from) => /<([^>]+)>/.exec(from)?.[1] ?? from;
+const domainOf = (from) => addressOf(from).split("@").at(-1).trim().toLowerCase();
+
 /**
- * Same rule as `mailConfigIssue` in @lavieco/service-kit: a half-filled login, or a TLS
- * mode the port cannot speak. Returns the variable NAME to fix, never its value.
+ * Same rule as `mailConfigIssue` in @lavieco/service-kit: a half-filled login, a TLS
+ * mode the port cannot speak, or (with Brevo, ADR-0023) a missing fallback sender or one
+ * on the verified domain, which Gmail cannot send for (DMARC). Returns the variable NAME
+ * to fix, never its value.
  */
 function mailConfigIssue(local) {
   if (!local.has("SMTP_HOST")) return null;
@@ -64,25 +70,39 @@ function mailConfigIssue(local) {
   const secure = unquote(local.get("SMTP_SECURE")) === "true";
   if (port === 465 && !secure) return "SMTP_SECURE";
   if (secure && (port === 587 || port === 25)) return "SMTP_SECURE";
+  const brevoUser = unquote(local.get("BREVO_SMTP_USER"));
+  const brevoKey = unquote(local.get("BREVO_SMTP_KEY"));
+  if (brevoKey && !brevoUser) return "BREVO_SMTP_USER";
+  if (brevoUser && !brevoKey) return "BREVO_SMTP_KEY";
+  if (brevoKey) {
+    const fallback = unquote(local.get("MAIL_FROM_FALLBACK"));
+    if (!fallback) return "MAIL_FROM_FALLBACK";
+    const primary = domainOf(unquote(local.get("MAIL_FROM")));
+    if (primary !== "gmail.com" && domainOf(fallback) === primary) return "MAIL_FROM_FALLBACK";
+  }
   return null;
 }
 
 /**
- * Where mail goes, without the address: Mailpit on this machine, or a real provider.
- * Gmail rewrites a From that is not the signed-in account, so that is flagged too.
+ * Where mail goes, without the address: Mailpit on this machine, or a real provider,
+ * with or without Brevo in front. Gmail rewrites a From that is not the signed-in
+ * account, so that is flagged too.
  */
 function mailTarget(local) {
   const host = unquote(local.get("SMTP_HOST"));
   if (!host) return null;
-  if (/^(localhost|127\.\d+\.\d+\.\d+|::1)$/i.test(host)) return "mail: Mailpit (local)";
-  const from =
-    /<([^>]+)>/.exec(unquote(local.get("MAIL_FROM")))?.[1] ?? unquote(local.get("MAIL_FROM"));
+  const brevo = unquote(local.get("BREVO_SMTP_KEY")) !== "";
+  if (/^(localhost|127\.\d+\.\d+\.\d+|::1)$/i.test(host)) {
+    return brevo ? "mail: Brevo, fallback Mailpit (local)" : "mail: Mailpit (local)";
+  }
+  const fallbackFrom = unquote(local.get("MAIL_FROM_FALLBACK")) || unquote(local.get("MAIL_FROM"));
   const user = unquote(local.get("SMTP_USER"));
   const gmailMismatch =
-    /(^|\.)gmail\.com$/i.test(host) && from.toLowerCase() !== user.toLowerCase();
+    /(^|\.)gmail\.com$/i.test(host) && addressOf(fallbackFrom).toLowerCase() !== user.toLowerCase();
+  const route = brevo ? "Brevo, fallback real SMTP" : "real SMTP";
   return gmailMismatch
-    ? "mail: real SMTP; MAIL_FROM should be the Gmail address of SMTP_USER"
-    : "mail: real SMTP (check with npm run mail:test -- <email>)";
+    ? `mail: ${route}; MAIL_FROM_FALLBACK (or MAIL_FROM) should be the Gmail address of SMTP_USER`
+    : `mail: ${route} (check with npm run mail:test -- <email> [--provider=brevo|gmail])`;
 }
 
 const envDocPath = join(root, "docs", "06-bien-moi-truong.md");
@@ -155,7 +175,7 @@ for (const dir of projectDirs) {
   const target = mailTarget(local);
   const notes = [];
   if (badJson.length) notes.push(`invalid JSON: ${badJson.join(", ")}`);
-  if (mail) notes.push(`${mail}: SMTP settings do not fit together (docs/06, "Gửi email thật")`);
+  if (mail) notes.push(`${mail}: mail settings do not fit together (docs/06, "Gửi email thật")`);
   if (isolation) {
     notes.push(`${isolation}: Atlas outside production needs a *_dev database (docs/04 §11.1)`);
   }

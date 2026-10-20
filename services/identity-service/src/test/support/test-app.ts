@@ -11,7 +11,7 @@ import request from "supertest";
 
 import { createLogger } from "@lavieco/observability";
 import { configureServiceApp, OutboxWorker } from "@lavieco/service-kit";
-import type { EmailMessage, EmailSender } from "@lavieco/service-kit/ports";
+import type { EmailDelivery, EmailMessage, EmailSender } from "@lavieco/service-kit/ports";
 import type { ServiceName } from "@lavieco/shared";
 
 import { AppModule } from "../../app.module";
@@ -21,8 +21,9 @@ import { identityEnvSchema, type IdentityEnv } from "../../config/env";
 /** Captures outgoing email instead of sending it. */
 export class FakeEmailSender implements EmailSender {
   readonly sent: EmailMessage[] = [];
-  async send(message: EmailMessage) {
+  async send(message: EmailMessage): Promise<EmailDelivery> {
     this.sent.push(message);
+    return { provider: "gmail", messageId: `<fake-${this.sent.length}@lavieco.test>` };
   }
   lastTo(to: string): EmailMessage | undefined {
     return [...this.sent].reverse().find((message) => message.to === to);

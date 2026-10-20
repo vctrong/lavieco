@@ -36,9 +36,14 @@ export type EmailMessage = {
   attachments?: { filename: string; content: Buffer; contentType: string; cid?: string }[];
 };
 
+/** Which route carried an email (ADR-0023): Brevo first, the SMTP_* route as fallback. */
+export type MailProvider = "brevo" | "gmail";
+
+export type EmailDelivery = { provider: MailProvider; messageId: string };
+
 /** Outgoing email through the configured provider (`NotifyModule`). */
 export interface EmailSender {
-  send(message: EmailMessage): Promise<void>;
+  send(message: EmailMessage): Promise<EmailDelivery>;
 }
 
 export interface Clock {
