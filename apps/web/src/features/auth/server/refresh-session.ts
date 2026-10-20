@@ -6,6 +6,7 @@ import { requestId } from "@/lib/request-meta";
 import { identityClient } from "@/lib/services";
 import { clearMemberSessionOn, setMemberSessionOn } from "@/lib/session";
 import { MEMBER_COOKIES, safeNextPath } from "@/lib/session-cookies";
+import { siteUrl } from "@/lib/site-url";
 
 import { NEXT_PARAM, ROUTES } from "../constants/config";
 
@@ -18,7 +19,7 @@ export async function handleSessionRefresh(request: NextRequest) {
   const next = safeNextPath(request.nextUrl.searchParams.get(NEXT_PARAM));
   const refreshToken = request.cookies.get(MEMBER_COOKIES.refresh)?.value;
   const toLogin = () => {
-    const url = new URL(ROUTES.login, request.url);
+    const url = siteUrl(ROUTES.login);
     url.searchParams.set(NEXT_PARAM, next);
     const response = NextResponse.redirect(url, 303);
     clearMemberSessionOn(response);
@@ -28,7 +29,7 @@ export async function handleSessionRefresh(request: NextRequest) {
 
   try {
     const tokens = await identityClient().refreshSession({ refreshToken }, await requestId());
-    const response = NextResponse.redirect(new URL(next, request.url), 303);
+    const response = NextResponse.redirect(siteUrl(next), 303);
     setMemberSessionOn(response, tokens);
     return response;
   } catch {
