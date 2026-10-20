@@ -40,12 +40,20 @@ export {
 export {
   EMAIL_SENDER,
   NotifyModule,
-  SmtpEmailSender,
+  createEmailSender,
   mailConfigIssue,
   mailEnvSchema,
   type MailEnv,
 } from "./notify/notify.module";
-export { mailTestEmail, runMailTest, type MailTestResult } from "./notify/mail-test";
+export { FailoverEmailSender } from "./notify/failover-email-sender";
+export {
+  MAIL_TEST_PROVIDERS,
+  mailTestEmail,
+  runMailTest,
+  type MailTestAttempt,
+  type MailTestProvider,
+  type MailTestResult,
+} from "./notify/mail-test";
 export * from "./notify/email";
 export { describeSmtpError } from "./notify/smtp-diagnostics";
 export { OUTBOX_MODEL, OUTBOX_RETENTION_DAYS, outboxSchema } from "./outbox/outbox.model";

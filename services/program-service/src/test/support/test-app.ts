@@ -29,7 +29,7 @@ import {
   type PaymentStatus,
   type VerifiedPayment,
 } from "../../modules/orders";
-import type { EmailMessage, EmailSender } from "@lavieco/service-kit/ports";
+import type { EmailDelivery, EmailMessage, EmailSender } from "@lavieco/service-kit/ports";
 
 /**
  * Stands in for content-service: knows the "uploaded" images, enforces one image per
@@ -70,8 +70,9 @@ export class FakeMediaAttachments implements MediaAttachments {
 /** Captures outgoing email instead of sending it. */
 export class FakeEmailSender implements EmailSender {
   readonly sent: EmailMessage[] = [];
-  async send(message: EmailMessage) {
+  async send(message: EmailMessage): Promise<EmailDelivery> {
     this.sent.push(message);
+    return { provider: "gmail", messageId: `<fake-${this.sent.length}@lavieco.test>` };
   }
   to(address: string): EmailMessage[] {
     return this.sent.filter((message) => message.to === address);
