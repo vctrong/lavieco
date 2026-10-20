@@ -786,7 +786,7 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | 008 | Nội dung dạng khối JSON; chọn thư viện trình soạn thảo | Cần thêm thông tin |
 | 009 | Message broker (RabbitMQ so với NATS), quyết định khi bắt đầu GĐ2 | Hoãn |
 | 010 | `admin` là ứng dụng Next.js riêng trên tên miền phụ | Đề xuất |
-| 011 | Nhà cung cấp email giao dịch và cấu hình SPF/DKIM/DMARC | Cần thêm thông tin |
+| 011 | Nhà cung cấp email giao dịch và cấu hình SPF/DKIM/DMARC | Có hướng xử lý ở ADR-023 (Đề xuất) |
 | 012 | Định dạng module của gói dùng chung: phát hành cả ESM và CJS (Next.js dùng ESM, NestJS mặc định CJS) | Đề xuất |
 | 013 | Motion và biểu tượng thương hiệu | Đề xuất |
 | 014 | `program-service` (sự kiện, vé, check-in) vào GĐ1 | Chấp nhận |
@@ -795,6 +795,7 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | 017 | Xuất Excel người đăng ký bằng `exceljs` | Chấp nhận |
 | 018 | Service token Ed25519 theo bên gọi, khai báo quyền truy cập endpoint | Chấp nhận |
 | 019 | Phiên bản & công cụ backend (NestJS 11, Mongoose 8, Vitest + swc, Testcontainers); xem lại khi NestJS 11 hết hỗ trợ bảo mật hoặc khi chuyển sang ESM | Đã chấp nhận |
+| 023 | Email: Brevo SMTP (tên miền `lavieco.io.vn`) làm đường chính, Gmail SMTP làm dự phòng có cooldown | Đề xuất |
 
 ## 17. Giả định & câu hỏi mở
 
@@ -819,7 +820,7 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | **AQ5** | ~~Tên miền chính thức~~ **Đã chốt `lavieco.io.vn`** (17/10/2026). Còn mở: ai đứng tên đăng ký. | 7.1, ADR-007 |
 | **AQ6** | Ai quản trị hạ tầng, ai là người dự phòng khi CTO vắng? | 15.3, 11 |
 | **AQ7** | Có cần **danh sách IP/Cloudflare Access** cho `admin` từ đầu, hay chỉ 2FA? | 5.2, 12.3 |
-| **AQ8** | Nhà cung cấp email giao dịch, và tên miền gửi mail? | ADR-011 |
+| **AQ8** | Nhà cung cấp email giao dịch, và tên miền gửi mail? **Đã có hướng xử lý theo ADR-023 (Đề xuất, 20/10/2026):** Brevo với tên miền `lavieco.io.vn` làm đường chính, Gmail SMTP làm dự phòng. Chỉ coi là chốt khi ADR-023 được duyệt. | ADR-011, ADR-023 |
 
 ## 18. Đồng bộ với tài liệu khác
 

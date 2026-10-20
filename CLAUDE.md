@@ -224,7 +224,7 @@ Dùng mặc định trong tài liệu nếu an toàn, ghi `TODO(<mã>)`, hoặc 
 | AQ3, DQ1, DQ2 | Thời hạn lưu giữ lead / audit                                                                                                                             |
 | AQ4           | Yêu cầu lưu trữ dữ liệu trong nước (cần tham vấn pháp lý). Ảnh ở Cloudinary ngoài nước đã chấp nhận cho GĐ1 (ADR-020)                                     |
 | AQ5           | Người đứng tên miền (tên miền đã chốt: `lavieco.io.vn`)                                                                                                   |
-| AQ6, AQ7, AQ8 | Người quản trị hạ tầng; IP allowlist/Cloudflare Access cho admin; nhà cung cấp email                                                                      |
+| AQ6, AQ7, AQ8 | Người quản trị hạ tầng; IP allowlist/Cloudflare Access cho admin; nhà cung cấp email (AQ8: hướng xử lý ADR-023, Đề xuất)                                  |
 | DQ3, DQ6, DQ7 | Xác nhận email 2 bước cho danh sách chờ; cửa sổ phát hiện trùng lead (mặc định 30 ngày, cấu hình được); nhập/xuất lead hàng loạt                          |
 | PQ1–PQ6       | Xác nhận quy ước kế thừa; ngoại lệ icon; chiến lược URL/ngôn ngữ; Testcontainers hay memory-server; thư viện trình soạn khối (ADR-008); công cụ generator |
 
