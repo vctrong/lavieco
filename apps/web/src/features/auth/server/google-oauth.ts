@@ -12,6 +12,7 @@ import { requestId } from "@/lib/request-meta";
 import { identityClient, webLogger } from "@/lib/services";
 import { setMemberSessionOn } from "@/lib/session";
 import { MEMBER_COOKIES, safeNextPath } from "@/lib/session-cookies";
+import { siteUrl } from "@/lib/site-url";
 
 import {
   ERROR_PARAM,
@@ -31,7 +32,7 @@ const oauthStateSchema = z.object({
 });
 
 function redirectTo(request: NextRequest, path: string) {
-  return NextResponse.redirect(new URL(path, request.url), 303);
+  return NextResponse.redirect(siteUrl(path), 303);
 }
 
 function withError(path: string, code: string) {

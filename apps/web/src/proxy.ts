@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { adminOrigin } from "@/lib/env";
 import { MEMBER_COOKIES } from "@/lib/session-cookies";
+import { siteUrl } from "@/lib/site-url";
 
 const ACCOUNT_PREFIX = "/tai-khoan";
 const SIGN_IN_PAGES = new Set(["/dang-nhap", "/dang-ky"]);
@@ -26,11 +27,11 @@ export function proxy(request: NextRequest) {
 
   let response: NextResponse;
   if (pathname.startsWith(ACCOUNT_PREFIX) && !hasSession) {
-    const url = new URL("/dang-nhap", request.url);
+    const url = siteUrl("/dang-nhap");
     url.searchParams.set("tiep", `${pathname}${search}`);
     response = NextResponse.redirect(url);
   } else if (SIGN_IN_PAGES.has(pathname) && hasSession) {
-    response = NextResponse.redirect(new URL(ACCOUNT_PREFIX, request.url));
+    response = NextResponse.redirect(siteUrl(ACCOUNT_PREFIX));
   } else {
     response = NextResponse.next();
   }
