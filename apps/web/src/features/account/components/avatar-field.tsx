@@ -8,6 +8,7 @@ import { MEDIA_ACCEPT, checkImageFile, type Media } from "@lavieco/shared/media"
 import { Button } from "@lavieco/ui";
 
 import { MEDIA_DELIVERY_READY, MediaImage } from "@/shared/components/media-image";
+import { VIEWER_CHANGED_EVENT } from "@/shared/constants/events";
 
 import { TEXT } from "../constants/text";
 import type { AvatarFailure, AvatarResult } from "../types";
@@ -37,6 +38,8 @@ export function AvatarField({ avatar }: { avatar: Media | null }) {
       if (result?.status === "ok") {
         setMessage({ tone: "ok", text: kind === "upload" ? t.saved : t.removed });
         router.refresh();
+        // The navigation's avatar lives in the layout, which a refresh does not re-fetch.
+        window.dispatchEvent(new Event(VIEWER_CHANGED_EVENT));
         return;
       }
       setMessage({

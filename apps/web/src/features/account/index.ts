@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { TEXT } from "./constants/text";
 
+export { logout } from "./actions/logout";
 export { AccountPage } from "./components/account-page";
 export { handleAvatarRemoval, handleAvatarUpload } from "./server/avatar";
 

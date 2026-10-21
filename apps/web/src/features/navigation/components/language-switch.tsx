@@ -11,7 +11,7 @@ type LanguageSwitchProps = {
 export function LanguageSwitch({ current }: LanguageSwitchProps) {
   const t = TEXT.vi;
   return (
-    <div role="group" aria-label={t.menu.languageLabel} className="flex items-center gap-3">
+    <div role="group" aria-label={t.languageLabel} className="flex items-center gap-3">
       <button
         type="button"
         aria-pressed={current === "vi"}

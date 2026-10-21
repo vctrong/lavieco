@@ -436,7 +436,7 @@ export const TEXT = {
 
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).
 - Các đường dẫn tiếng Việt không dấu ở trên là đề xuất; tên URL chuẩn và chiến lược tiền tố ngôn ngữ chốt ở PQ3.
-- **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn Tide Dock, chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`not-found`, `error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
+- **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn navbar (`Navbar`, truyền Server Action `logout` của `account` xuống), chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`not-found`, `error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
 - `src/proxy.ts` của `web`: cổng "sắp ra mắt" (TODO UC-28), chuyển hướng UX theo cookie phiên member (`/tai-khoan` → `/dang-nhap?tiep=...`, đã đăng nhập thì rời `/dang-nhap`, `/dang-ky`) và header bảo mật; không chứa logic nghiệp vụ, không phải hàng rào bảo mật.
 - **Phiên member** (`lib/session.ts`): cookie httpOnly `lv_member_at`, `lv_member_rt`, `SameSite=Lax`. Server Component không ghi cookie được, nên khi access token hết hạn thì chuyển sang `/api/auth/refresh?tiep=...`. Tham số `tiep` chỉ nhận đường dẫn tương đối (`safeNextPath`, chống open redirect).
 - **Form công khai:** Zod ở client và Server Action, honeypot `website`, Turnstile chuẩn bị sẵn (`TURNSTILE_ENABLED`, `shared/components/turnstile-widget.tsx`, `lib/turnstile.ts`).
@@ -445,7 +445,7 @@ export const TEXT = {
 
 | Thư mục | Nội dung |
 |---|---|
-| `navigation` | Thanh điều hướng viên nang (Tide Dock), chân trang |
+| `navigation` | Navbar dạng pill (cụm tài khoản là client island đọc `GET /api/account/viewer`), drawer mobile, chân trang |
 | `home` | Các phần của trang chủ (hero, từ vỏ đến tác phẩm, nấc thang giá trị, bằng chứng nhỏ, tác động) |
 | `team` | Phần "Sáu người kể chuyện": **dữ liệu tĩnh** (`constants/members.ts`) + ảnh ở `public/images/team/`; được `app/` ghép vào trang chủ và trang Câu chuyện |
 | `story`, `programs`, `impact` | Trang giới thiệu; `programs` dành cho mô tả `program_pages` (content-service) |
