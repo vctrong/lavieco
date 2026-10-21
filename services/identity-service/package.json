@@ -16,6 +16,8 @@
     "mail:preview": "node -r @swc-node/register src/test/mail-preview.ts",
     "gen:openapi": "node dist/openapi.js",
     "admin:create": "node --env-file-if-exists=.env.local dist/cli/create-super-admin.js",
+    "dev:seed": "node --env-file-if-exists=.env.local -r @swc-node/register src/cli/dev-seed.ts",
+    "dev:totp": "node -r @swc-node/register src/cli/dev-totp.ts",
     "keys:generate": "node dist/cli/generate-keys.js"
   },
   "dependencies": {
