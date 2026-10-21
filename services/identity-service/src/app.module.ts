@@ -49,6 +49,7 @@ export class AppModule {
           uri: env.MONGODB_URI,
           dbName: env.MONGODB_DB,
           autoIndex: env.NODE_ENV !== "production",
+          waitForDatabase: env.NODE_ENV === "development",
         }),
         AccessModule.forRoot({
           serviceName: "identity-service",

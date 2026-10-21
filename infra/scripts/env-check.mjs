@@ -62,6 +62,11 @@ const domainOf = (from) => addressOf(from).split("@").at(-1).trim().toLowerCase(
  */
 function mailConfigIssue(local) {
   if (!local.has("SMTP_HOST")) return null;
+  // Node resolves `localhost` to ::1 first; Mailpit (compose) listens on 127.0.0.1 only,
+  // so mail fails with ESOCKET. The example uses 127.0.0.1 for this reason.
+  if (unquote(local.get("SMTP_HOST")).toLowerCase() === "localhost") {
+    return "SMTP_HOST (use 127.0.0.1, not localhost)";
+  }
   const user = unquote(local.get("SMTP_USER"));
   const pass = unquote(local.get("SMTP_PASS"));
   if (user && !pass) return "SMTP_PASS";

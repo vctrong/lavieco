@@ -38,12 +38,27 @@ export type MongoModuleOptions = {
   dbName: string;
   /** Off in production: indexes are created by migrations (docs/03 §10.2). */
   autoIndex: boolean;
+  /**
+   * Development only: keep retrying until the database answers instead of giving up
+   * (and crashing) after the driver's default ~10 attempts. `node --watch` does not
+   * restart a crashed process, so a service started before `npm run dev:infra` would
+   * otherwise stay down. Production and tests keep the default and fail fast.
+   */
+  waitForDatabase?: boolean;
 };
+
+/** Pause between two connection attempts while waiting for the database. */
+const WAIT_RETRY_DELAY_MS = 3_000;
 
 @Global()
 @Module({})
 export class MongoModule {
-  static forRoot({ uri, dbName, autoIndex }: MongoModuleOptions): DynamicModule {
+  static forRoot({
+    uri,
+    dbName,
+    autoIndex,
+    waitForDatabase = false,
+  }: MongoModuleOptions): DynamicModule {
     return {
       module: MongoModule,
       imports: [
@@ -52,6 +67,9 @@ export class MongoModule {
           autoIndex,
           autoCreate: autoIndex,
           serverSelectionTimeoutMS: 5_000,
+          ...(waitForDatabase
+            ? { retryAttempts: Number.POSITIVE_INFINITY, retryDelay: WAIT_RETRY_DELAY_MS }
+            : {}),
         }),
       ],
       providers: [{ provide: UNIT_OF_WORK, useClass: MongoUnitOfWork }],

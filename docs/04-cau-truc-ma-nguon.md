@@ -153,6 +153,8 @@ packages:
 | `npm run test` · `npm run test:int` | Test đơn vị · test tích hợp |
 | `npm run e2e` | Kiểm thử end-to-end (mục 9) |
 | `npm run db:migrate` · `npm run db:seed` | Chạy migration · nạp dữ liệu khởi tạo (mục 13.4) |
+| `npm run dev:up` | Dev: bật compose, giải phóng cổng dev nếu bị process `node` cũ chiếm, rồi `npm run dev` (`docs/dev-local.md`) |
+| `npm run dev:seed` · `npm run dev:totp` | **Chỉ dev, chỉ Mongo local**: tài khoản dev `*@lavieco.test` (staff có TOTP cố định) · in mã 2FA hiện tại. Ngoại lệ duy nhất của "không tài khoản mặc định trong seed" (`docs/dev-local.md`) |
 | `npm run gen` | Generator tạo khung (tính năng, service, module) qua `turbo gen` |
 | `npm run gen:openapi` | Sinh OpenAPI từ mã của các service vào `docs/api/` |
 | `npm run deps:check` | Kiểm tra quy tắc phụ thuộc giữa các gói (mục 10) |
