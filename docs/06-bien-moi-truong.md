@@ -123,7 +123,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 
 | Tên biến | Bắt buộc | Bí mật | Ý nghĩa | Cách lấy | Dev / Prod | Ví dụ giả |
 |---|---|---|---|---|---|---|
-| `MONGO_PORT` | Tuỳ chọn (mặc định `27017`) | Không | Cổng MongoDB trên máy dev | Tự đặt; đổi khi 27017 đã bị chiếm, nhớ sửa `MONGODB_URI` của các service | Chỉ dev | `27018` |
+| `MONGO_PORT` | Tuỳ chọn (mặc định `27018`) | Không | Cổng MongoDB trên máy dev | Tự đặt; 27018 để không đụng MongoDB cài sẵn trên máy (27017). Đổi thì sửa luôn `MONGODB_URI` của các service | Chỉ dev | `27018` |
 | `MAILPIT_SMTP_PORT` | Tuỳ chọn (mặc định `1025`) | Không | Cổng SMTP của Mailpit | Tự đặt | Chỉ dev | `1025` |
 | `MAILPIT_UI_PORT` | Tuỳ chọn (mặc định `8025`) | Không | Giao diện xem email | Tự đặt | Chỉ dev | `8025` |
 
@@ -166,7 +166,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `NODE_ENV` | Tuỳ chọn (mặc định `development`) | Không | Môi trường | Tự đặt | Prod: `production` | `development` |
 | `PORT` | Bắt buộc | Không | Cổng HTTP | Tự đặt | | `4001` |
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | | `info` |
-| `MONGODB_URI` | Bắt buộc | **Có** (prod chứa mật khẩu) | Chuỗi kết nối MongoDB | Dev: mặc định compose. Prod: Atlas → Database → Connect → Drivers, user `svc_identity` | Dev **không bao giờ** trỏ vào database production (docs/04 §11.1) | `mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true` |
+| `MONGODB_URI` | Bắt buộc | **Có** (prod chứa mật khẩu) | Chuỗi kết nối MongoDB | Dev: mặc định compose. Prod: Atlas → Database → Connect → Drivers, user `svc_identity` | Dev **không bao giờ** trỏ vào database production (docs/04 §11.1). Dev mặc định Mongo local; chuyển sang Atlas dev: `docs/dev-local.md` | `mongodb://127.0.0.1:27018/?replicaSet=rs0&directConnection=true` |
 | `MONGODB_DB` | Bắt buộc | Không | Tên database | Tự đặt | Dev trên Atlas: hậu tố `_dev`; prod: không có `_dev` | `lavieco_identity` |
 | `SERVICE_TOKEN_TRUSTED_KEYS` | Tuỳ chọn (mặc định `{}`) | Không (chỉ khoá công khai) | Khoá công khai của `web`, `admin`, `program-service` | Mục "Service token" ở trên | | `'{"web": {...}, "admin": {...}, "program-service": {...}}'` |
 | `JWT_SIGNING_KEYS` | Bắt buộc | **Có** | Mảng JSON khoá riêng ký token người dùng; khoá đầu ký | `npm run keys:generate -- identity-service` → `PRIVATE_JWK`, đặt trong `[ ]` | Xoay khoá: thêm khoá mới lên đầu, giữ khoá cũ tới khi token cũ hết hạn | `'[{"kty":"OKP","crv":"Ed25519","x":"GIA","d":"GIA","kid":"k1"}]'` |
@@ -203,7 +203,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `NODE_ENV` | Tuỳ chọn (mặc định `development`) | Không | Môi trường; quyết định folder ảnh `lavieco/dev` hay `lavieco/prod` | Tự đặt | Prod: `production` | `development` |
 | `PORT` | Bắt buộc | Không | Cổng HTTP | Tự đặt | | `4002` |
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | | `info` |
-| `MONGODB_URI` | Bắt buộc | **Có** (prod) | Chuỗi kết nối MongoDB | Như identity, user `svc_content` | Dev không trỏ production | `mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true` |
+| `MONGODB_URI` | Bắt buộc | **Có** (prod) | Chuỗi kết nối MongoDB | Như identity, user `svc_content` | Dev không trỏ production | `mongodb://127.0.0.1:27018/?replicaSet=rs0&directConnection=true` |
 | `MONGODB_DB` | Bắt buộc | Không | Tên database | Tự đặt | Atlas dev: `lavieco_content_dev` | `lavieco_content` |
 | `SERVICE_TOKEN_TRUSTED_KEYS` | Tuỳ chọn (mặc định `{}`) | Không | Khoá công khai của `program-service` (sau này cả `identity-service`, UC-29) | Mục "Service token" | | `'{"program-service": {...}}'` |
 | `IDENTITY_JWKS_URL` | Bắt buộc | Không | JWKS của identity | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001/.well-known/jwks.json` |
@@ -218,7 +218,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `NODE_ENV` | Tuỳ chọn (mặc định `development`) | Không | Môi trường | Tự đặt | Prod: `production` | `development` |
 | `PORT` | Bắt buộc | Không | Cổng HTTP | Tự đặt | | `4004` |
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | | `info` |
-| `MONGODB_URI` | Bắt buộc | **Có** (prod) | Chuỗi kết nối MongoDB | Như identity, user `svc_program` | Dev không trỏ production | `mongodb://127.0.0.1:27017/?replicaSet=rs0&directConnection=true` |
+| `MONGODB_URI` | Bắt buộc | **Có** (prod) | Chuỗi kết nối MongoDB | Như identity, user `svc_program` | Dev không trỏ production | `mongodb://127.0.0.1:27018/?replicaSet=rs0&directConnection=true` |
 | `MONGODB_DB` | Bắt buộc | Không | Tên database | Tự đặt | Atlas dev: `lavieco_program_dev` | `lavieco_program` |
 | `SERVICE_TOKEN_TRUSTED_KEYS` | Tuỳ chọn (mặc định `{}`) | Không | Khoá công khai của `web`, `admin` | Mục "Service token" | | `'{"web": {...}, "admin": {...}}'` |
 | `IDENTITY_JWKS_URL` | Bắt buộc | Không | JWKS của identity | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001/.well-known/jwks.json` |
@@ -286,3 +286,4 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 18/10/2026 | Hạ tầng deploy chuyển sang VPS amd64: mẫu env dời về `infra/env/prod/`; thêm `ACME_EMAIL`, `NODE_OPTIONS`/`GOMEMLIMIT` trong compose; xoá `LAVIECO_ENV_DIR`, `LAVIECO_CERT_DIR`, `COMPOSE_PROFILES`, `MONGO_INITDB_ROOT_*` (bỏ profile `mongo`), secrets `DEPLOY_*` (chưa có bước SSH deploy) | Đổi hạ tầng (không đổi biến của ứng dụng) | `chore/deploy-oracle` |
 | 20/10/2026 | `admin`: `ADMIN_APP_URL` | Thêm (gốc URL chuyển hướng); `web` dùng `NEXT_PUBLIC_SITE_URL` cho chuyển hướng | `fix/redirect-base-url` |
 | 20/10/2026 | `identity-service`, `program-service`: `BREVO_SMTP_HOST`, `BREVO_SMTP_PORT`, `BREVO_SMTP_USER`, `BREVO_SMTP_KEY`, `BREVO_COOLDOWN_MINUTES`, `MAIL_FROM_FALLBACK`, `MAIL_REPLY_TO` | Thêm (Brevo làm đường chính, Gmail `SMTP_*` làm dự phòng, ADR-0023); `MAIL_FROM` thành người gửi của đường Brevo; `mail:test` thêm `--provider` | `feat/mail-brevo-fallback` |
+| 21/10/2026 | Root: `MONGO_PORT`; `identity-service`, `content-service`, `program-service`: `MONGODB_URI` | Đổi mặc định dev sang cổng `27018` (Mongo local trong compose); thêm mẫu Atlas dạng comment trong `.env.example`. `env:check` báo lỗi khi `SMTP_HOST=localhost` (Node phân giải ra `::1`, Mailpit chỉ nghe `127.0.0.1`). Không đổi tên biến | `docs/dev-local.md` |

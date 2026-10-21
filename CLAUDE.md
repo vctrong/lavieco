@@ -44,20 +44,22 @@ Nếu thư mục/gói/lệnh được nhắc dưới đây **chưa tồn tại**
 
 ## 4. Lệnh (khi đã dựng khung)
 
-| Lệnh                                                        | Việc                                                                                            |
-| ----------------------------------------------------------- | ----------------------------------------------------------------------------------------------- |
-| `npm run env:init`                                          | Tạo `.env.local` từ `.env.example` cho mọi project (không ghi đè)                               |
-| `npm run dev:infra`                                         | MongoDB (replica set), Mailpit bằng Docker (ảnh: Cloudinary dev, không container)               |
-| `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003), program (4004) |
-| `npm run admin:create -- --email … --name "…"`              | Tạo Super Admin đầu tiên (link kích hoạt một lần, bắt buộc cài 2FA)                             |
-| `npm run keys:generate -- <tên bên gọi>`                    | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)               |
-| `npm run mail:test -- <email>`                              | Gửi thử một email qua SMTP của identity + program (dev: Mailpit; gửi thật: `docs/06`)           |
-| `npm run mail:preview`                                      | Dựng mọi email từ dữ liệu giả vào `.mail-preview/`, xem ở `http://localhost:3999` (không gửi)   |
-| `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                                   |
-| `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                                   |
-| `npm run build`                                             | Build (Turborepo cache)                                                                         |
-| `npm run db:migrate` · `npm run db:seed`                    | Migration · dữ liệu khởi tạo                                                                    |
-| `npm run gen` · `npm run gen:openapi`                       | Generator khung · sinh OpenAPI vào `docs/api/`                                                  |
+| Lệnh                                                        | Việc                                                                                             |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| `npm run env:init`                                          | Tạo `.env.local` từ `.env.example` cho mọi project (không ghi đè)                                |
+| `npm run dev:infra`                                         | MongoDB (replica set), Mailpit bằng Docker (ảnh: Cloudinary dev, không container)                |
+| `npm run dev`                                               | Chạy `web` (3000), `admin` (3001), identity (4001), content (4002), lead (4003), program (4004)  |
+| `npm run dev:up`                                            | Dev hằng ngày: compose + giải phóng cổng (chỉ kill `node`) + `npm run dev` (`docs/dev-local.md`) |
+| `npm run dev:seed` · `npm run dev:totp`                     | Tài khoản dev `*@lavieco.test` (chỉ Mongo local) · mã 2FA hiện tại của staff seed                |
+| `npm run admin:create -- --email … --name "…"`              | Tạo Super Admin đầu tiên (link kích hoạt một lần, bắt buộc cài 2FA)                              |
+| `npm run keys:generate -- <tên bên gọi>`                    | In khóa Ed25519 + giá trị ngẫu nhiên cho `.env.local`/kho bí mật (không ghi file)                |
+| `npm run mail:test -- <email>`                              | Gửi thử một email qua SMTP của identity + program (dev: Mailpit; gửi thật: `docs/06`)            |
+| `npm run mail:preview`                                      | Dựng mọi email từ dữ liệu giả vào `.mail-preview/`, xem ở `http://localhost:3999` (không gửi)    |
+| `npm run lint` · `npm run typecheck` · `npm run deps:check` | Kiểm tra; `deps:check` thực thi ranh giới gói                                                    |
+| `npm run test` · `npm run test:int` · `npm run e2e`         | Đơn vị · tích hợp (MongoDB thật) · end-to-end                                                    |
+| `npm run build`                                             | Build (Turborepo cache)                                                                          |
+| `npm run db:migrate` · `npm run db:seed`                    | Migration · dữ liệu khởi tạo                                                                     |
+| `npm run gen` · `npm run gen:openapi`                       | Generator khung · sinh OpenAPI vào `docs/api/`                                                   |
 
 Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx turbo run test --filter=@lavieco/content-service`.
 
@@ -170,7 +172,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 - **Không ghi PII vào log/outbox/audit `meta`** (tên, SĐT, email, nội dung lời nhắn).
 - **Không thêm trường dữ liệu học sinh** (BR-08).
 - **Không nhận HTML thô** từ người dùng; **không nhận SVG do người dùng tải lên**; ảnh tải lên: kiểm tra loại theo nội dung thực, giới hạn dung lượng, **xóa EXIF**.
-- **Không tạo mật khẩu/tài khoản mặc định** trong seed. Super Admin đầu tiên tạo bằng lệnh một lần và bắt buộc thiết lập 2FA.
+- **Không tạo mật khẩu/tài khoản mặc định** trong seed (ngoại lệ duy nhất: `npm run dev:seed`, từ chối mọi DB không phải local, xem `docs/dev-local.md`). Super Admin đầu tiên tạo bằng lệnh một lần và bắt buộc thiết lập 2FA.
 - **Không mở cổng service ra ngoài** trong compose/staging/production.
 - **Không tắt lint, hạ luật, bỏ qua test, thêm `any`, hoặc thêm `// eslint-disable`** để cho CI qua. Sửa nguyên nhân.
 - **Không** `console.*` (dùng logger); **không** `process.env` ngoài `lib/env`/`config`.
