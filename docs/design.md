@@ -224,7 +224,7 @@ Fraunces được chọn vì ấm, mềm nét thư pháp và cân bằng với d
 | `shadow-sm-soft` | `0 4px 16px -8px rgba(32,52,95,.06)` / `0 8px 24px -10px rgba(32,52,95,.06)` | chip, chip nổi |
 | `shadow-md-soft` | `0 12px 28px -12px rgba(32,52,95,.07)` / `0 20px 40px -14px rgba(32,52,95,.12)` | card trung bình |
 | `shadow-gallery` | `0 24px 48px -12px rgba(32,52,95,.08)` | card mở (open) |
-| `shadow-float-dock` | `0 16px 36px -8px rgba(32,52,95,.12)` | Tide Dock |
+| `shadow-float-dock` | `0 16px 36px -8px rgba(32,52,95,.12)` | Panel dropdown của navbar |
 | `shadow-dock` | `0 8px 24px rgba(32,52,95,.06)` → khi cuộn `0 12px 32px rgba(32,52,95,.12)` | nav capsule |
 | `shadow-hero-arch` | `0 24px 50px rgba(32,52,95,.14)` / `0 20px 40px rgba(32,52,95,.18)` | vòm hero |
 | `shadow-emerald-cta` | `0 4px 16px rgba(16,177,131,.28)` (nút nav: `0 2px 8px rgba(16,177,131,.25)`; hover đậm: `0 8px 20px rgba(16,177,131,.3)`) | nút Emerald |
@@ -359,9 +359,9 @@ Tailwind utility: `animate-pulse` (chấm Canary nhấp nháy: badge pilot, ch�
 ### 7.5 Scroll-driven & JS interactions
 
 1. **Tide line (đỉnh trang)**: thanh `fixed top-0 h-[2px] z-50`, nền trong suốt; phần fill Emerald `width = scrollY/(scrollHeight−clientHeight)·100%`, `transition-all duration-75 ease-out`. Đầu thanh có điểm Canary (trên trang con: khối `w-24 bg-tertiary-fixed ml-auto` cố định bên phải).
-2. **Dock progress**: cùng công thức, thanh `2px` đáy Tide Dock (`duration-100`, nền track `emerald/30`, fill `emerald/85`).
-3. **Dock co lại**: khi `scrollY > 120` → thêm bóng `0 12px 32px rgba(32,52,95,.12)` và `py-2.5 → py-2` (capsule gọn hơn).
-4. **Overlay mục lục**: mở = bỏ `hidden`, sau 10ms đổi `opacity-0→100` (fade 300ms), `body.overflow=hidden`; đóng = fade rồi 300ms sau thêm lại `hidden`; click bất kỳ mục = đóng.
+2. ~~Dock progress~~: bỏ cùng navbar mới (2026-10), chỉ còn Tide line ở đỉnh trang.
+3. **Navbar co lại**: khi `scrollY > 120` → pill `h-16 → h-[52px]` (mobile `h-14 → h-12`), nền `soft-white/95 → /85`, `shadow-dock → shadow-dock-scrolled`, logo `h-6 → h-5` (300ms `ease-gallery`). Xem §8.2.
+4. **Drawer mobile**: `<dialog>` modal (`showModal`), khóa cuộn `html`, đóng bằng nút/Esc/chọn link/đổi trang/lên ≥1024px. Xem §8.2.
 5. **Custom cursor (chỉ ≥ md)**: pearl 12px Canary + halo Deep Blue theo `mousemove` (`translate(x,y)`, `transition: transform .12s ease-out, width/height/background/border-radius .25s ease`). Khi hover `.group, img, .rounded-arch` → mở rộng **64px**, hiện nhãn "Xem" (`text-[10px] uppercase tracking-wider` Deep Blue, opacity 0→1, 200ms); rời chuột → về 12px.
 6. **Reveal section khi cuộn** (Về chúng tôi): `IntersectionObserver threshold .1`, mỗi `section` có `transition-all duration-700`; vào vùng nhìn: `opacity-0 translate-y-4 → opacity-100 translate-y-0`.
 7. **Lọc sản phẩm** (Bộ sưu tập): ẩn = `opacity 0 + scale(.97)` rồi `display:none` sau 300ms; hiện = `display:flex` → sau 10ms `opacity 1 + scale(1)`.
@@ -396,13 +396,23 @@ Tailwind utility: `animate-pulse` (chấm Canary nhấp nháy: badge pilot, ch�
 | **Nút icon tròn** | `w-8 h-8` (nav) / `w-10` viền hairline; hamburger 2 vạch `w-3.5` và `w-2.5` cao 1.5px, `gap-1`; avatar tròn nền `#006c4e` icon trắng |
 | **Disabled** | `opacity-80`, không hover |
 
-### 8.2 Tide Dock (navbar)
+### 8.2 Navbar (thiết kế 2026-10, `docs/design/new navbar/`)
 
-Capsule nổi `fixed top-5 left-1/2 -translate-x-1/2 z-40 w-[92%] max-w-[880px]`; `bg-soft-white/80 backdrop-blur-md rounded-full border hairline px-5 py-2.5`; trái: wordmark **LAVIECO** (Fraunces `text-xl font-semibold tracking-tight` Deep Blue) + chấm Canary 6px glow `0 0 6px #e7dd6a`; giữa (`hidden md:flex gap-7 text-[13.5px] font-medium text-charcoal/85`): 4 link + tooltip italic (`text-[11px] font-display italic` nền Deep Blue chữ Soft White pill); phải: CTA "Hợp tác cùng chúng tôi" + hamburger (+ avatar ở trang con). Đáy: thanh tiến độ 2px. Trang con: có nhãn phụ cạnh logo ("Sài Gòn · Cần Thơ", "Viện nghệ thuật xanh", "Cẩm nang xanh số") ở `text-[10–11px] uppercase tracking`.
+Thay Tide Dock và Catalogue Overlay cũ. Mã: `apps/web/src/features/navigation/` (`Navbar`).
 
-### 8.3 Mục lục toàn màn hình (Catalogue Overlay)
+- **Pill nổi** `fixed top-4 lg:top-5`, rộng `calc(100%-2rem)`, tối đa `960px` (lg) / `1120px` (xl); `h-14` mobile, `h-16` từ 1024px; `rounded-full border-mint-mist bg-soft-white/95 backdrop-blur-md shadow-dock`. Lưới 3 cột `1fr auto 1fr`: các link luôn ở giữa, không bị cụm tài khoản đẩy lệch.
+- **Trái:** `BrandLogo` + PearlDot Canary (giữ nhận diện, không dùng wordmark chữ của bản Stitch).
+- **Giữa (≥1024px):** link `text-sm font-medium text-charcoal/80`, hover Emerald, khoảng cách 32px (xl) / 24px (lg). Link đang mở: `font-semibold text-deep-blue` + **một** chấm Canary dưới chữ, `aria-current="page"`.
+- **Phân tầng theo `priority`** (`constants/config.ts`, chỉ dùng CSS): 1 = luôn hiện (Câu chuyện, Chương trình); 2 = hiện từ 1280px, vào "Thêm ▾" ở 1024–1279px (Bộ sưu tập); 3 = trong "Khám phá ▾" từ 1280px, trong "Thêm ▾" ở 1024–1279px (Cẩm nang xanh số, Tác động cộng đồng).
+- **Dropdown** (disclosure, không phải `role=menu`): panel `rounded-2xl border-mint-mist bg-soft-white shadow-float-dock`. "Khám phá" rộng 384px có tiêu đề nhóm, ô icon Mint Mist, tiêu đề Fraunces và mô tả ngắn (không có số liệu, BR-09). "Thêm" là danh sách gọn. Bàn phím: Enter/Space bật tắt, ↓/↑ mở và đi giữa các mục, Home/End, Esc đóng và trả focus, Tab ra ngoài hoặc click ra ngoài thì đóng.
+- **Phải (≥1024px):** vạch hairline · cụm tài khoản (ô rộng cố định 112px nên không xô lệch) · CTA Primary "Hợp tác".
+- **Cụm tài khoản** là client island đọc `GET /api/account/viewer`, nên layout không đọc cookie và các trang static vẫn static. Trạng thái: skeleton (Mint Mist, cùng kích thước) → khách ("Đăng nhập") / thành viên (avatar 32px viền Emerald, menu: đầu thẻ tên + email, Vé của tôi, Chương trình đã đăng ký, Hồ sơ, Đăng xuất) / admin (avatar Deep Blue chữ Canary + sao, nhãn "Admin", mục "Trang quản trị"). Phiên chưa đọc được (không có Web Locks, service lỗi) thì hiện icon trung tính dẫn tới `/tai-khoan`, không bao giờ hiện avatar.
+- **Mobile (<1024px):** logo · ô 32px (avatar hoặc icon đăng nhập) · vạch · nút menu tròn Deep Blue. Drawer toàn màn hình `bg-soft-white`: khối tài khoản trên cùng, link chính Fraunces `text-3xl`, nhóm "Khám phá chuyên sâu", CTA "Hợp tác cùng chúng tôi" ghim đáy (chừa `safe-area-inset-bottom`).
+- **Lệch có chủ đích so với bản Stitch:** dùng token sẵn có thay cho `emerald-hover`, nền `#F2F5F0`, `bg-white`, đỏ của nút Đăng xuất, và các bóng `soft-pill`/`floating-menu`/`scrolled`; chữ trên nút Emerald là Deep Blue (§8.1); bỏ mọi con số minh họa; drawer dùng đủ menu tài khoản (có Đăng xuất) thay cho một nút "Vé của tôi".
 
-`fixed inset-0 z-50 deep-sea-pattern text-soft-white p-8 md:p-14 overflow-y-auto`, fade 300ms. Top: LAVIECO + chấm Canary `w-2 h-2` glow + nhãn "Mục Lục Triển Lãm Số" + nút "Đóng lại". Giữa: grid 12 cột — trái 7 cột danh sách **Nº 00–06** (mỗi hàng `border-b white/15`, số Canary `text-sm tracking-museum`, tiêu đề Fraunces `text-3xl md:text-5xl font-light`); phải 5 cột vòm preview `280×380` (`rounded-arch`, viền `soft-white/20`, `p-2`, gradient Deep Blue→Emerald 30%, vòng đồng tâm Canary 15%, kính mờ nhãn "Nº 001 · Cần Thơ" + quote italic). Đáy: toggle **VI / EN** (VI Canary semi-bold), quote *"Make it your life, through art."*, link Facebook ↗ / TikTok ↗ / "Can Tho · Vietnam". Mục: Lời Tựa & Triển Lãm · Câu Chuyện: Vỏ Sò & Sinh Kế · Bốn Nấc Thang Giáo Dục · Bộ Sưu Tập Vật Phẩm Minh Chứng · Tác Động Xã Hội & Tiêu Dùng Xanh · Sáu Người Kể Chuyện · Cánh Cửa Đồng Hành & Liên Hệ.
+### 8.3 ~~Mục lục toàn màn hình (Catalogue Overlay)~~
+
+Đã gỡ cùng navbar mới (2026-10): trên desktop không còn hamburger; trên mobile dùng drawer ở §8.2.
 
 ### 8.4 Museum wall label (placard)
 
@@ -536,7 +546,7 @@ Mint Mist nhạt/`surface-container-low`; 4 cột; wordmark + chấm Canary + tr
 
 - **Mobile-first**: nav giữa ẩn `< md` (còn wordmark + hamburger); cursor tuỳ biến ẩn `< md`; vòm `arch-sm`; hero 40–54px; sơ đồ đường nối chỉ hiện `lg+`; grid 1 cột → `md:2` → `lg:4`.
 - **Tương phản**: chữ thân Charcoal/Deep Blue trên nền sáng ≥ 4.5:1; Canary chỉ dùng trên nền tối/chấm; hạn chế chữ 8–10px cho nội dung quan trọng (chỉ nhãn phụ).
-- **Focus** luôn thấy rõ (ring Emerald); nút icon có `aria-label` (vd. "Mở Mục Lục Triển Lãm"); `<details>/<summary>` cho accordion (bàn phím sẵn có); nhãn form gắn `for`; trạng thái không chỉ bằng màu.
+- **Focus** luôn thấy rõ (ring Emerald); nút icon có `aria-label` (vd. "Mở menu điều hướng"); `<details>/<summary>` cho accordion (bàn phím sẵn có); nhãn form gắn `for`; trạng thái không chỉ bằng màu.
 - Dấu tiếng Việt: line-height ≥ 1.7 thân bài; tránh tracking âm ở cỡ nhỏ.
 - Tôn trọng `prefers-reduced-motion` (7.6).
 

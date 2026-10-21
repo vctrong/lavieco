@@ -1,0 +1,1053 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LAVIECO — Hệ Thống Navigation Bar Toàn Diện (Redesign Spec & Interactive Showcase)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400;1,9..144,600&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            emerald: '#10B183',
+            'emerald-hover': '#0E9B73',
+            'deep-blue': '#20345F',
+            canary: '#E7DD6A',
+            'mint-mist': '#EAF8F3',
+            'soft-white': '#F8FAF6',
+            charcoal: '#1E2A32',
+          },
+          fontFamily: {
+            serif: ['Fraunces', 'Georgia', 'serif'],
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          boxShadow: {
+            'soft-pill': '0 8px 30px -4px rgba(32, 52, 95, 0.07), 0 2px 10px -2px rgba(32, 52, 95, 0.04)',
+            'floating-menu': '0 20px 45px -10px rgba(32, 52, 95, 0.12), 0 6px 18px -4px rgba(32, 52, 95, 0.06)',
+            'scrolled': '0 12px 36px -6px rgba(32, 52, 95, 0.10)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    /* Custom styling for editorial fidelity */
+    .arch-clip {
+      border-radius: 9999px 9999px 16px 16px;
+    }
+    .concentric-rings {
+      background-image: radial-gradient(circle at 50% 50%, transparent 40px, rgba(16, 177, 131, 0.08) 41px, transparent 42px, transparent 80px, rgba(32, 52, 95, 0.05) 81px, transparent 82px, transparent 130px, rgba(231, 221, 106, 0.12) 131px, transparent 132px);
+    }
+  </style>
+</head>
+<body class="bg-[#F2F5F0] text-charcoal font-sans antialiased selection:bg-mint-mist selection:text-emerald">
+
+  <!-- TOP HEADER / BANNER -->
+  <header class="bg-deep-blue text-soft-white py-10 px-6 border-b border-deep-blue/20">
+    <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div>
+        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald/20 text-canary text-xs font-semibold uppercase tracking-wider mb-3">
+          <span class="w-2 h-2 rounded-full bg-canary animate-pulse"></span>
+          Đặc tả thiết kế hệ thống điều hướng · Design System 2026
+        </div>
+        <h1 class="text-3xl md:text-5xl font-serif font-light text-soft-white tracking-tight">
+          Redesign Hệ Thống <span class="italic text-canary font-normal">Navigation Bar</span> LAVIECO
+        </h1>
+        <p class="mt-3 text-soft-white/75 text-sm md:text-base max-w-2xl font-light leading-relaxed">
+          Giải quyết triệt để tình trạng thanh điều hướng bị chật chội, xô lệch liên kết và thiếu phân cấp. Thiết kế phân vùng 3 khu vực thoáng đãng, mang trọn tinh thần Gallery nghệ thuật xanh Cần Thơ với đầy đủ 8 trạng thái tiêu chuẩn trên Desktop, Tablet và Mobile.
+        </p>
+      </div>
+
+      <!-- Quick Jump Anchors -->
+      <div class="flex flex-wrap gap-2 text-xs">
+        <a href="#desktop-specs" class="px-3 py-1.5 rounded-full bg-soft-white/10 hover:bg-soft-white/20 text-soft-white transition">Desktop (1120px)</a>
+        <a href="#tablet-specs" class="px-3 py-1.5 rounded-full bg-soft-white/10 hover:bg-soft-white/20 text-soft-white transition">Tablet (1024px)</a>
+        <a href="#mobile-specs" class="px-3 py-1.5 rounded-full bg-soft-white/10 hover:bg-soft-white/20 text-soft-white transition">Mobile (390px)</a>
+        <a href="#interactive-preview" class="px-3 py-1.5 rounded-full bg-emerald text-soft-white font-medium hover:bg-emerald-hover transition shadow-sm">Thực địa Hero Context</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN SHOWCASE GRID -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-16">
+
+    <!-- DESIGN SUMMARY & HIGHLIGHTS -->
+    <section class="grid grid-cols-1 md:grid-cols-4 gap-6 bg-white p-6 md:p-8 rounded-3xl border border-mint-mist/80 shadow-sm">
+      <div class="space-y-1">
+        <span class="text-xs uppercase font-semibold text-emerald tracking-wider">Cấu trúc 3 phân vùng</span>
+        <h3 class="text-lg font-serif text-deep-blue font-semibold">Tỉ lệ thở chuẩn xác</h3>
+        <p class="text-xs text-charcoal/70 leading-relaxed">Logo bên trái, 4 liên kết trung tâm giãn cách 32px rộng rãi, cụm tài khoản và nút "Hợp tác" bên phải qua vạch ngăn mờ.</p>
+      </div>
+      <div class="space-y-1">
+        <span class="text-xs uppercase font-semibold text-canary tracking-wider text-amber-600">Điểm nhấn độc nhất</span>
+        <h3 class="text-lg font-serif text-deep-blue font-semibold">1 chấm vàng Canary</h3>
+        <p class="text-xs text-charcoal/70 leading-relaxed">Chỉ duy nhất 1 chấm tròn Canary dưới chân tab đang kích hoạt (active indicator), triệt tiêu sự lộn xộn màu sắc của phiên bản cũ.</p>
+      </div>
+      <div class="space-y-1">
+        <span class="text-xs uppercase font-semibold text-emerald tracking-wider">Bỏ Hamburger Desktop</span>
+        <h3 class="text-lg font-serif text-deep-blue font-semibold">Gọn gàng & Hiện đại</h3>
+        <p class="text-xs text-charcoal/70 leading-relaxed">Loại bỏ nút hamburger thừa thãi trên Desktop; nhóm các mục phụ vào menu thả xuống <em>Khám phá ▾</em> có mô tả ngắn.</p>
+      </div>
+      <div class="space-y-1">
+        <span class="text-xs uppercase font-semibold text-deep-blue tracking-wider">Trải nghiệm di động</span>
+        <h3 class="text-lg font-serif text-deep-blue font-semibold">Full-height Drawer</h3>
+        <p class="text-xs text-charcoal/70 leading-relaxed">Mobile pill chỉ còn 3 thành phần tinh gọn; Drawer trượt toàn màn hình trên nền Soft White giữ trải nghiệm như lật trang tạp chí.</p>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 1: DESKTOP NAV SPECIFICATIONS -->
+    <!-- ========================================== -->
+    <section id="desktop-specs" class="space-y-10">
+      <div class="flex items-center justify-between border-b border-charcoal/10 pb-4">
+        <div>
+          <span class="text-xs font-semibold text-emerald uppercase tracking-widest">Zone A · Desktop 1280px+ (Pill max-w: 1120px)</span>
+          <h2 class="text-2xl md:text-3xl font-serif text-deep-blue">Các Trạng Thái Navbar Trên Desktop</h2>
+        </div>
+        <span class="text-xs text-charcoal/60 bg-soft-white px-3 py-1 rounded-full border border-mint-mist">Chiều cao: 64px (Chuẩn) / 52px (Cuộn)</span>
+      </div>
+
+      <!-- FRAME 1: DESKTOP GUEST -->
+      <div class="bg-white p-6 md:p-8 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald/10 text-emerald font-semibold text-xs">01</span>
+            <div>
+              <h3 class="font-serif text-lg text-deep-blue font-semibold">Frame 1: Khách Vãng Lai (Desktop Guest)</h3>
+              <p class="text-xs text-charcoal/60">Trạng thái mặc định khi người dùng chưa đăng nhập, tab "Chương trình" đang active</p>
+            </div>
+          </div>
+          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-soft-white text-deep-blue border border-mint-mist">State: Guest Default</span>
+        </div>
+
+        <!-- Visual Canvas Render -->
+        <div class="bg-soft-white p-8 md:p-12 rounded-2xl border border-deep-blue/5 flex items-center justify-center relative overflow-hidden">
+          <div class="absolute inset-0 bg-[radial-gradient(#10B183_1px,transparent_1px)] [background-size:24px_24px] opacity-20 pointer-events-none"></div>
+
+          <!-- The Floating Pill Nav -->
+          <nav class="relative w-full max-w-[1120px] h-16 bg-soft-white/95 backdrop-blur-md rounded-full px-6 flex items-center justify-between border border-mint-mist shadow-soft-pill transition-all duration-300">
+            <!-- Left: Logo -->
+            <a href="#" class="flex items-center gap-2 group focus:outline-none focus:ring-2 focus:ring-emerald/40 rounded-full py-1 pr-2">
+              <span class="font-serif text-2xl font-bold tracking-tight text-deep-blue group-hover:text-emerald transition-colors">
+                Lavieco
+              </span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+            </a>
+
+            <!-- Center: 4 Links with 32px spacing -->
+            <div class="flex items-center gap-8">
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald transition-colors py-1 focus:outline-none focus:text-emerald">
+                Câu chuyện
+              </a>
+
+              <!-- Active Item with Canary Dot underneath -->
+              <a href="#" class="relative text-sm font-semibold text-deep-blue py-1 flex flex-col items-center group focus:outline-none">
+                <span>Chương trình</span>
+                <span class="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-canary shadow-[0_0_8px_rgba(231,221,106,0.8)]"></span>
+              </a>
+
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald transition-colors py-1 focus:outline-none focus:text-emerald">
+                Bộ sưu tập
+              </a>
+
+              <!-- Dropdown Trigger -->
+              <button type="button" class="inline-flex items-center gap-1.5 text-sm font-medium text-charcoal/80 hover:text-emerald transition-colors py-1 focus:outline-none">
+                <span>Khám phá</span>
+                <svg class="w-3.5 h-3.5 text-charcoal/50 group-hover:text-emerald transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Right: Divider + Account + CTA -->
+            <div class="flex items-center gap-4">
+              <!-- Thin Vertical Divider -->
+              <div class="w-px h-6 bg-mint-mist/90 border-r border-deep-blue/10"></div>
+
+              <!-- Guest Account: Đăng nhập -->
+              <a href="#" class="inline-flex items-center gap-2 text-sm font-medium text-deep-blue hover:text-emerald transition-colors px-2 py-1 rounded-full hover:bg-mint-mist/50 focus:outline-none focus:ring-2 focus:ring-emerald/40">
+                <svg class="w-4 h-4 text-deep-blue/80" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span class="whitespace-nowrap">Đăng nhập</span>
+              </a>
+
+              <!-- Emerald CTA Button "Hợp tác" -->
+              <a href="#" class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-emerald text-soft-white text-xs font-semibold tracking-wide hover:bg-emerald-hover transition-all duration-200 shadow-sm hover:shadow-md focus:outline-none focus:ring-2 focus:ring-emerald focus:ring-offset-2">
+                Hợp tác
+              </a>
+            </div>
+          </nav>
+        </div>
+
+        <div class="text-xs text-charcoal/70 flex flex-wrap gap-4 pt-1">
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald"></span> Kích thước: 1120px × 64px, pill bo tròn hoàn hảo</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-canary"></span> Active Tab: Chấm Canary tinh tế dưới chữ "Chương trình"</span>
+          <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-deep-blue"></span> Không gian thở giữa các link: 32px chuẩn UX</span>
+        </div>
+      </div>
+
+      <!-- FRAME 2: DESKTOP LOGGED IN WITH ACCOUNT DROPDOWN OPEN -->
+      <div class="bg-white p-6 md:p-8 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald/10 text-emerald font-semibold text-xs">02</span>
+            <div>
+              <h3 class="font-serif text-lg text-deep-blue font-semibold">Frame 2: Đã Đăng Nhập & Mở Menu Tài Khoản (Logged In Dropdown)</h3>
+              <p class="text-xs text-charcoal/60">Avatar 32px viền ngọc Emerald mở thẻ dropdown bo góc 16px viền Mint Mist</p>
+            </div>
+          </div>
+          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mint-mist text-emerald border border-emerald/20">State: Account Dropdown Open</span>
+        </div>
+
+        <!-- Visual Canvas Render -->
+        <div class="bg-soft-white p-8 md:p-12 rounded-2xl border border-deep-blue/5 flex items-start justify-center relative min-h-[420px] overflow-visible">
+          <!-- The Floating Pill Nav with Open Dropdown -->
+          <nav class="relative w-full max-w-[1120px] h-16 bg-soft-white/95 backdrop-blur-md rounded-full px-6 flex items-center justify-between border border-mint-mist shadow-soft-pill">
+            <!-- Left: Logo -->
+            <a href="#" class="flex items-center gap-2">
+              <span class="font-serif text-2xl font-bold tracking-tight text-deep-blue">Lavieco</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+            </a>
+
+            <!-- Center Links -->
+            <div class="flex items-center gap-8">
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald">Câu chuyện</a>
+              <a href="#" class="relative text-sm font-semibold text-deep-blue py-1 flex flex-col items-center">
+                <span>Chương trình</span>
+                <span class="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-canary"></span>
+              </a>
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald">Bộ sưu tập</a>
+              <button class="inline-flex items-center gap-1.5 text-sm font-medium text-charcoal/80 hover:text-emerald">
+                <span>Khám phá</span>
+                <svg class="w-3.5 h-3.5 text-charcoal/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
+
+            <!-- Right Area -->
+            <div class="flex items-center gap-4">
+              <div class="w-px h-6 bg-mint-mist/90 border-r border-deep-blue/10"></div>
+
+              <!-- Logged In Avatar (32px with Emerald Ring) & Dropdown Container -->
+              <div class="relative">
+                <button type="button" class="relative flex items-center justify-center w-8 h-8 rounded-full ring-2 ring-emerald ring-offset-2 ring-offset-soft-white focus:outline-none">
+                  <!-- User Avatar (Google photo representation) -->
+                  <div class="w-full h-full rounded-full bg-gradient-to-tr from-emerald/40 to-deep-blue/30 overflow-hidden flex items-center justify-center text-xs font-semibold text-deep-blue">
+                    VT
+                  </div>
+                  <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald border-2 border-white rounded-full"></span>
+                </button>
+
+                <!-- OPEN DROPDOWN CARD (Rounded 16px, Mint Mist border) -->
+                <div class="absolute right-0 top-12 w-72 bg-white rounded-2xl border border-mint-mist shadow-floating-menu p-3 z-50 text-charcoal animate-in fade-in slide-in-from-top-2 duration-200">
+                  <!-- Header: Name + Email -->
+                  <div class="p-3 bg-soft-white rounded-xl mb-2 flex items-center gap-3 border border-mint-mist/60">
+                    <div class="w-10 h-10 rounded-full ring-2 ring-emerald/30 overflow-hidden bg-deep-blue text-soft-white flex items-center justify-center font-serif text-sm font-semibold">
+                      VT
+                    </div>
+                    <div class="overflow-hidden">
+                      <p class="text-sm font-semibold text-deep-blue truncate">Võ Chí Trọng</p>
+                      <p class="text-xs text-charcoal/60 truncate">trong.vo@lavieco.io.vn</p>
+                    </div>
+                  </div>
+
+                  <!-- Menu Links -->
+                  <div class="space-y-0.5">
+                    <a href="#" class="flex items-center justify-between px-3 py-2 text-xs font-medium text-charcoal/85 hover:text-emerald hover:bg-mint-mist/40 rounded-lg transition-colors">
+                      <span class="flex items-center gap-2.5">
+                        <svg class="w-4 h-4 text-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                        Vé của tôi
+                      </span>
+                      <span class="px-1.5 py-0.5 text-[10px] bg-emerald/10 text-emerald font-semibold rounded-full">2 vé</span>
+                    </a>
+
+                    <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-charcoal/85 hover:text-emerald hover:bg-mint-mist/40 rounded-lg transition-colors">
+                      <svg class="w-4 h-4 text-deep-blue/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                      Chương trình đã đăng ký
+                    </a>
+
+                    <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-charcoal/85 hover:text-emerald hover:bg-mint-mist/40 rounded-lg transition-colors">
+                      <svg class="w-4 h-4 text-deep-blue/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                      Hồ sơ cá nhân
+                    </a>
+                  </div>
+
+                  <!-- Divider -->
+                  <div class="my-2 border-t border-mint-mist"></div>
+
+                  <!-- Sign out -->
+                  <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-600/80 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Đăng xuất
+                  </a>
+                </div>
+              </div>
+
+              <!-- CTA -->
+              <a href="#" class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-emerald text-soft-white text-xs font-semibold tracking-wide hover:bg-emerald-hover transition-all duration-200">
+                Hợp tác
+              </a>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <!-- FRAME 3: DESKTOP ADMIN STATE -->
+      <div class="bg-white p-6 md:p-8 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald/10 text-emerald font-semibold text-xs">03</span>
+            <div>
+              <h3 class="font-serif text-lg text-deep-blue font-semibold">Frame 3: Tài Khoản Quản Trị Viên (Desktop Admin State)</h3>
+              <p class="text-xs text-charcoal/60">Tài khoản có quyền quản trị vận hành xưởng với mục "Quản trị" cùng huy hiệu bảo an</p>
+            </div>
+          </div>
+          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-deep-blue text-canary border border-canary/30">Role: Admin Curator</span>
+        </div>
+
+        <!-- Visual Canvas Render -->
+        <div class="bg-soft-white p-8 md:p-12 rounded-2xl border border-deep-blue/5 flex items-start justify-center relative min-h-[460px]">
+          <nav class="relative w-full max-w-[1120px] h-16 bg-soft-white/95 backdrop-blur-md rounded-full px-6 flex items-center justify-between border border-mint-mist shadow-soft-pill">
+            <a href="#" class="flex items-center gap-2">
+              <span class="font-serif text-2xl font-bold tracking-tight text-deep-blue">Lavieco</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+            </a>
+
+            <div class="flex items-center gap-8">
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald">Câu chuyện</a>
+              <a href="#" class="relative text-sm font-semibold text-deep-blue py-1 flex flex-col items-center">
+                <span>Chương trình</span>
+                <span class="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-canary"></span>
+              </a>
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald">Bộ sưu tập</a>
+              <button class="inline-flex items-center gap-1.5 text-sm font-medium text-charcoal/80 hover:text-emerald">
+                <span>Khám phá</span>
+                <svg class="w-3.5 h-3.5 text-charcoal/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
+
+            <div class="flex items-center gap-4">
+              <div class="w-px h-6 bg-mint-mist/90 border-r border-deep-blue/10"></div>
+
+              <!-- Admin Avatar with Special Badge -->
+              <div class="relative">
+                <button type="button" class="relative flex items-center justify-center w-8 h-8 rounded-full ring-2 ring-emerald ring-offset-2 ring-offset-soft-white focus:outline-none">
+                  <div class="w-full h-full rounded-full bg-deep-blue text-canary flex items-center justify-center text-xs font-serif font-bold">
+                    AD
+                  </div>
+                  <!-- Admin Mini Crown Badge -->
+                  <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-canary text-deep-blue border border-white rounded-full flex items-center justify-center text-[8px] font-bold shadow-xs">★</span>
+                </button>
+
+                <!-- Admin Open Dropdown -->
+                <div class="absolute right-0 top-12 w-72 bg-white rounded-2xl border border-mint-mist shadow-floating-menu p-3 z-50 text-charcoal">
+                  <div class="p-3 bg-soft-white rounded-xl mb-2 flex items-center justify-between border border-mint-mist/60">
+                    <div class="flex items-center gap-2.5 overflow-hidden">
+                      <div class="w-9 h-9 rounded-full bg-deep-blue text-canary flex items-center justify-center font-serif text-xs font-bold shrink-0">
+                        AD
+                      </div>
+                      <div class="overflow-hidden">
+                        <p class="text-xs font-semibold text-deep-blue truncate">Ban Điều Hành Xưởng</p>
+                        <p class="text-[11px] text-charcoal/60 truncate">admin@lavieco.io.vn</p>
+                      </div>
+                    </div>
+                    <span class="px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider bg-deep-blue text-canary rounded-full">Admin</span>
+                  </div>
+
+                  <!-- ADMIN HIGHLIGHT ITEM -->
+                  <div class="mb-2">
+                    <a href="#" class="flex items-center justify-between px-3 py-2.5 text-xs font-semibold text-deep-blue bg-mint-mist/60 hover:bg-mint-mist rounded-xl border border-emerald/20 transition-colors">
+                      <span class="flex items-center gap-2 text-emerald">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        Trang Quản Trị Hệ Thống
+                      </span>
+                      <span class="px-1.5 py-0.5 text-[9px] bg-canary text-deep-blue font-bold rounded">PORTAL</span>
+                    </a>
+                  </div>
+
+                  <div class="space-y-0.5">
+                    <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-charcoal/85 hover:text-emerald hover:bg-mint-mist/40 rounded-lg">
+                      <svg class="w-4 h-4 text-emerald" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/></svg>
+                      Vé của tôi
+                    </a>
+                    <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-charcoal/85 hover:text-emerald hover:bg-mint-mist/40 rounded-lg">
+                      <svg class="w-4 h-4 text-deep-blue/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                      Chương trình đã đăng ký
+                    </a>
+                    <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-charcoal/85 hover:text-emerald hover:bg-mint-mist/40 rounded-lg">
+                      <svg class="w-4 h-4 text-deep-blue/60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                      Hồ sơ vận hành
+                    </a>
+                  </div>
+
+                  <div class="my-2 border-t border-mint-mist"></div>
+
+                  <a href="#" class="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-red-600/80 hover:text-red-700 hover:bg-red-50 rounded-lg">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                    Đăng xuất
+                  </a>
+                </div>
+              </div>
+
+              <a href="#" class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-emerald text-soft-white text-xs font-semibold tracking-wide">
+                Hợp tác
+              </a>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <!-- FRAME 4: "KHÁM PHÁ" DROPDOWN OPEN -->
+      <div class="bg-white p-6 md:p-8 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald/10 text-emerald font-semibold text-xs">04</span>
+            <div>
+              <h3 class="font-serif text-lg text-deep-blue font-semibold">Frame 4: Mở Menu Mở Rộng "Khám Phá" (Mega Dropdown)</h3>
+              <p class="text-xs text-charcoal/60">Tiêu đề bằng font Fraunces thanh lịch, mô tả ngắn bằng Be Vietnam Pro</p>
+            </div>
+          </div>
+          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-mint-mist text-deep-blue border border-mint-mist">Submenu Content</span>
+        </div>
+
+        <!-- Visual Canvas Render -->
+        <div class="bg-soft-white p-8 md:p-12 rounded-2xl border border-deep-blue/5 flex items-start justify-center relative min-h-[380px]">
+          <nav class="relative w-full max-w-[1120px] h-16 bg-soft-white/95 backdrop-blur-md rounded-full px-6 flex items-center justify-between border border-mint-mist shadow-soft-pill">
+            <a href="#" class="flex items-center gap-2">
+              <span class="font-serif text-2xl font-bold tracking-tight text-deep-blue">Lavieco</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+            </a>
+
+            <!-- Center Links with Khám Phá Active and Open -->
+            <div class="flex items-center gap-8">
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald">Câu chuyện</a>
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald">Chương trình</a>
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald">Bộ sưu tập</a>
+
+              <!-- OPEN "KHÁM PHÁ" TRIGGER -->
+              <div class="relative">
+                <button type="button" class="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald py-1 focus:outline-none">
+                  <span>Khám phá</span>
+                  <svg class="w-3.5 h-3.5 text-emerald rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <!-- OPEN DROPDOWN PANEL -->
+                <div class="absolute left-1/2 -translate-x-1/2 top-12 w-96 bg-white rounded-2xl border border-mint-mist shadow-floating-menu p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div class="text-[10px] font-bold uppercase tracking-wider text-charcoal/40 px-3 py-1.5 border-b border-mint-mist/80 mb-1">
+                    Ấn phẩm & Dấu ấn cộng đồng
+                  </div>
+
+                  <!-- Item 1: Cẩm nang -->
+                  <a href="#" class="group flex items-start gap-3 p-3 rounded-xl hover:bg-soft-white transition-colors">
+                    <div class="w-9 h-9 rounded-lg bg-mint-mist text-emerald flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-emerald group-hover:text-soft-white transition-all">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+                    </div>
+                    <div>
+                      <h4 class="font-serif text-sm font-semibold text-deep-blue group-hover:text-emerald transition-colors">Cẩm nang xanh số</h4>
+                      <p class="text-xs text-charcoal/65 mt-0.5 leading-snug">Cuốn sổ tay thực địa ghi chép 120+ mẫu men sinh học và quy trình nặn gốm vỏ sò Tây Đô.</p>
+                    </div>
+                  </a>
+
+                  <!-- Item 2: Tác động -->
+                  <a href="#" class="group flex items-start gap-3 p-3 rounded-xl hover:bg-soft-white transition-colors">
+                    <div class="w-9 h-9 rounded-lg bg-mint-mist text-emerald flex items-center justify-center shrink-0 group-hover:scale-105 group-hover:bg-emerald group-hover:text-soft-white transition-all">
+                      <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                      <h4 class="font-serif text-sm font-semibold text-deep-blue group-hover:text-emerald transition-colors">Tác động sinh thái</h4>
+                      <p class="text-xs text-charcoal/65 mt-0.5 leading-snug">Số liệu giảm 78% vết chân carbon và hành trình hồi sinh phế phẩm sông nước Đồng bằng.</p>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right -->
+            <div class="flex items-center gap-4">
+              <div class="w-px h-6 bg-mint-mist/90 border-r border-deep-blue/10"></div>
+              <a href="#" class="inline-flex items-center gap-2 text-sm font-medium text-deep-blue">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Đăng nhập</span>
+              </a>
+              <a href="#" class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-emerald text-soft-white text-xs font-semibold tracking-wide">
+                Hợp tác
+              </a>
+            </div>
+          </nav>
+        </div>
+      </div>
+
+      <!-- FRAME 5: DESKTOP SCROLLED STATE (Compact 52px, Translucent Blur) -->
+      <div class="bg-white p-6 md:p-8 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="inline-flex items-center justify-center w-7 h-7 rounded-full bg-emerald/10 text-emerald font-semibold text-xs">05</span>
+            <div>
+              <h3 class="font-serif text-lg text-deep-blue font-semibold">Frame 5: Trạng Thái Khi Cuộn Trang (Scrolled Navbar)</h3>
+              <p class="text-xs text-charcoal/60">Thu gọn chiều cao từ 64px xuống ~52px, nền kính mờ Soft White mờ 85% với backdrop-blur và đổ bóng nhẹ</p>
+            </div>
+          </div>
+          <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald/10 text-emerald">Height: 52px (Compact)</span>
+        </div>
+
+        <div class="bg-gradient-to-b from-soft-white to-[#e4eae0] p-8 md:p-12 rounded-2xl border border-deep-blue/5 flex items-center justify-center relative overflow-hidden">
+          <!-- Fake text content underneath to demonstrate backdrop blur -->
+          <div class="absolute inset-x-8 top-6 text-charcoal/20 text-xs font-serif select-none space-y-1">
+            <p>“Giá trị của một thứ không nằm ở bản chất của nó, mà nằm ở cách con người sáng tạo và trao ý nghĩa cho nó.”</p>
+            <p>Hành trình giáo dục nhận thức thông qua nghệ thuật vỏ sò Tây Đô — Piloting at Ninh Kiều, Cần Thơ 2026.</p>
+          </div>
+
+          <!-- The Compact Pill -->
+          <nav class="relative w-full max-w-[1120px] h-[52px] bg-soft-white/85 backdrop-blur-md rounded-full px-5 flex items-center justify-between border border-mint-mist/80 shadow-scrolled transition-all duration-300">
+            <!-- Left: Logo -->
+            <a href="#" class="flex items-center gap-1.5">
+              <span class="font-serif text-xl font-bold tracking-tight text-deep-blue">Lavieco</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+            </a>
+
+            <!-- Center Links: Compact Padding -->
+            <div class="flex items-center gap-7">
+              <a href="#" class="text-xs font-medium text-charcoal/80 hover:text-emerald">Câu chuyện</a>
+              <a href="#" class="relative text-xs font-semibold text-deep-blue py-0.5 flex flex-col items-center">
+                <span>Chương trình</span>
+                <span class="absolute -bottom-1 w-1.5 h-1.5 rounded-full bg-canary"></span>
+              </a>
+              <a href="#" class="text-xs font-medium text-charcoal/80 hover:text-emerald">Bộ sưu tập</a>
+              <button class="inline-flex items-center gap-1 text-xs font-medium text-charcoal/80 hover:text-emerald">
+                <span>Khám phá</span>
+                <svg class="w-3 h-3 text-charcoal/50" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+              </button>
+            </div>
+
+            <!-- Right -->
+            <div class="flex items-center gap-3">
+              <div class="w-px h-5 bg-deep-blue/10"></div>
+              <a href="#" class="inline-flex items-center gap-1.5 text-xs font-medium text-deep-blue hover:text-emerald">
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span>Đăng nhập</span>
+              </a>
+              <a href="#" class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-emerald text-soft-white text-xs font-medium tracking-wide hover:bg-emerald-hover">
+                Hợp tác
+              </a>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 2: TABLET SPECIFICATION (1024px) -->
+    <!-- ========================================== -->
+    <section id="tablet-specs" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-charcoal/10 pb-4">
+        <div>
+          <span class="text-xs font-semibold text-emerald uppercase tracking-widest">Zone B · Tablet 1024px Layout</span>
+          <h2 class="text-2xl md:text-3xl font-serif text-deep-blue">Frame 6: Thanh Điều Hướng Trên Tablet (1024px)</h2>
+        </div>
+        <span class="text-xs text-charcoal/60 bg-soft-white px-3 py-1 rounded-full border border-mint-mist">Thu gọn "Bộ sưu tập" & "Khám phá" vào "Thêm ▾"</span>
+      </div>
+
+      <div class="bg-white p-6 md:p-8 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+        <p class="text-xs text-charcoal/70">
+          Trên độ rộng máy tính bảng (1024px), thanh điều hướng duy trì chiều cao và nút CTA "Hợp tác", nhưng gộp 2 mục cuối thành menu thả xuống <strong>"Thêm ▾"</strong> để khoảng trống luôn thoáng mát, không bị chèn ép chữ.
+        </p>
+
+        <!-- Tablet Visual Canvas (Simulated 1024px Viewport) -->
+        <div class="bg-soft-white p-6 md:p-10 rounded-2xl border border-deep-blue/5 flex items-center justify-center overflow-x-auto">
+          <div class="w-full max-w-[960px] h-16 bg-soft-white/95 backdrop-blur-md rounded-full px-5 flex items-center justify-between border border-mint-mist shadow-soft-pill">
+            <!-- Left: Logo -->
+            <a href="#" class="flex items-center gap-1.5 shrink-0">
+              <span class="font-serif text-xl font-bold tracking-tight text-deep-blue">Lavieco</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+            </a>
+
+            <!-- Center: Collapsed for Tablet -->
+            <div class="flex items-center gap-6">
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald whitespace-nowrap">Câu chuyện</a>
+              
+              <a href="#" class="relative text-sm font-semibold text-deep-blue py-1 flex flex-col items-center whitespace-nowrap">
+                <span>Chương trình</span>
+                <span class="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-canary"></span>
+              </a>
+
+              <!-- "Thêm ▾" Collapsed Dropdown for Tablet -->
+              <div class="relative group">
+                <button type="button" class="inline-flex items-center gap-1 text-sm font-medium text-charcoal/80 hover:text-emerald py-1 whitespace-nowrap">
+                  <span>Thêm</span>
+                  <svg class="w-3.5 h-3.5 text-charcoal/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                <!-- Mini Dropdown Preview on hover/focus -->
+                <div class="hidden group-hover:block absolute left-0 top-10 w-48 bg-white rounded-xl border border-mint-mist shadow-lg p-2 z-30">
+                  <a href="#" class="block px-3 py-1.5 text-xs text-charcoal/80 hover:bg-mint-mist/40 rounded-lg">Bộ sưu tập</a>
+                  <a href="#" class="block px-3 py-1.5 text-xs text-charcoal/80 hover:bg-mint-mist/40 rounded-lg">Cẩm nang xanh số</a>
+                  <a href="#" class="block px-3 py-1.5 text-xs text-charcoal/80 hover:bg-mint-mist/40 rounded-lg">Tác động sinh thái</a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right -->
+            <div class="flex items-center gap-3 shrink-0">
+              <div class="w-px h-6 bg-deep-blue/10"></div>
+              <a href="#" class="inline-flex items-center gap-1.5 text-xs font-medium text-deep-blue hover:text-emerald px-2 py-1">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                <span class="hidden sm:inline">Đăng nhập</span>
+              </a>
+              <a href="#" class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-emerald text-soft-white text-xs font-semibold tracking-wide">
+                Hợp tác
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 3: MOBILE SPECIFICATIONS (390px) -->
+    <!-- ========================================== -->
+    <section id="mobile-specs" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-charcoal/10 pb-4">
+        <div>
+          <span class="text-xs font-semibold text-emerald uppercase tracking-widest">Zone C · Mobile 390px (iOS / Android)</span>
+          <h2 class="text-2xl md:text-3xl font-serif text-deep-blue">Trải Nghiệm Mobile: Closed Pill & Full-Height Drawer</h2>
+        </div>
+        <span class="text-xs text-charcoal/60 bg-soft-white px-3 py-1 rounded-full border border-mint-mist">Kích thước khung: 390px</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        <!-- FRAME 7: MOBILE PILL (CLOSED) -->
+        <div class="bg-white p-6 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald/10 text-emerald font-semibold text-xs">07</span>
+              <h3 class="font-serif text-base text-deep-blue font-semibold">Frame 7: Mobile Pill (Đang đóng)</h3>
+            </div>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-soft-white border border-mint-mist">Width: 390px</span>
+          </div>
+
+          <p class="text-xs text-charcoal/60">Pill di động cực kỳ thanh thoát chỉ chứa: Logo · Avatar/Icon Đăng nhập · Nút mở Menu.</p>
+
+          <!-- Simulated Phone Viewport -->
+          <div class="w-[360px] mx-auto h-[540px] bg-soft-white rounded-[40px] border-4 border-deep-blue/15 shadow-xl p-4 flex flex-col justify-between relative overflow-hidden">
+            <!-- Top Status Bar Simulation -->
+            <div class="flex justify-between items-center text-[11px] font-semibold text-charcoal/60 px-4 pt-1">
+              <span>9:41</span>
+              <div class="w-20 h-4 bg-deep-blue/10 rounded-full mx-auto"></div>
+              <span>5G 100%</span>
+            </div>
+
+            <!-- Floating Mobile Pill Nav (390px spec) -->
+            <div class="mt-4 w-full h-14 bg-soft-white/95 backdrop-blur-md rounded-full px-4 flex items-center justify-between border border-mint-mist shadow-soft-pill">
+              <!-- Logo -->
+              <a href="#" class="flex items-center gap-1">
+                <span class="font-serif text-lg font-bold tracking-tight text-deep-blue">Lavieco</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+              </a>
+
+              <!-- Right Group: Avatar + Hamburger Button -->
+              <div class="flex items-center gap-2.5">
+                <!-- User Avatar / Icon (30px) -->
+                <button class="w-7 h-7 rounded-full bg-mint-mist ring-1 ring-emerald/40 text-emerald flex items-center justify-center text-xs font-medium">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
+                </button>
+
+                <!-- Thin Separator -->
+                <div class="w-px h-5 bg-deep-blue/10"></div>
+
+                <!-- Menu Button -->
+                <button class="w-8 h-8 rounded-full bg-deep-blue text-soft-white flex items-center justify-center hover:bg-emerald transition-colors">
+                  <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Page Preview Content on Mobile -->
+            <div class="my-auto text-center px-4 space-y-3">
+              <span class="text-[10px] font-bold uppercase tracking-wider text-emerald bg-mint-mist px-2.5 py-1 rounded-full">
+                Green Art Education
+              </span>
+              <h4 class="font-serif text-2xl text-deep-blue font-light leading-tight">
+                Giáo dục sáng tạo xanh, thông qua <span class="italic text-emerald">nghệ thuật.</span>
+              </h4>
+              <p class="text-[11px] text-charcoal/70 leading-relaxed">
+                Tái sinh vỏ nghêu, sò, ốc Tây Đô thành ngôn ngữ nghệ thuật thị giác và men gốm sinh học.
+              </p>
+            </div>
+
+            <!-- Bottom Home Indicator -->
+            <div class="w-32 h-1 bg-charcoal/20 rounded-full mx-auto mb-1"></div>
+          </div>
+        </div>
+
+        <!-- FRAME 8: MOBILE DRAWER (OPEN) -->
+        <div class="bg-white p-6 rounded-3xl border border-mint-mist shadow-sm space-y-4">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-emerald/10 text-emerald font-semibold text-xs">08</span>
+              <h3 class="font-serif text-base text-deep-blue font-semibold">Frame 8: Mobile Drawer (Đang mở)</h3>
+            </div>
+            <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald/10 text-emerald font-medium">Full-height Drawer</span>
+          </div>
+
+          <p class="text-xs text-charcoal/60">Drawer toàn màn hình: Khối tài khoản trên đỉnh, link Fraunces cỡ lớn, nút "Hợp tác" dính ở đáy.</p>
+
+          <!-- Simulated Phone Viewport: Drawer Open State -->
+          <div class="w-[360px] mx-auto h-[540px] bg-soft-white rounded-[40px] border-4 border-deep-blue/15 shadow-xl p-5 flex flex-col justify-between relative overflow-hidden">
+            <!-- Drawer Header (Close Button + Logo) -->
+            <div class="flex items-center justify-between pt-1">
+              <a href="#" class="flex items-center gap-1.5">
+                <span class="font-serif text-lg font-bold text-deep-blue">Lavieco</span>
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+              </a>
+              <button class="w-8 h-8 rounded-full bg-mint-mist text-deep-blue flex items-center justify-center hover:bg-emerald hover:text-white transition">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <!-- Account Block at Top -->
+            <div class="mt-3 p-3 bg-white rounded-2xl border border-mint-mist flex items-center justify-between">
+              <div class="flex items-center gap-2.5 overflow-hidden">
+                <div class="w-9 h-9 rounded-full ring-2 ring-emerald bg-deep-blue text-soft-white flex items-center justify-center text-xs font-serif font-bold shrink-0">
+                  VT
+                </div>
+                <div class="overflow-hidden">
+                  <p class="text-xs font-semibold text-deep-blue truncate">Võ Chí Trọng</p>
+                  <p class="text-[10px] text-charcoal/60 truncate">trong.vo@lavieco.io.vn</p>
+                </div>
+              </div>
+              <a href="#" class="px-2.5 py-1 text-[11px] font-semibold text-emerald bg-mint-mist rounded-full hover:bg-emerald hover:text-white transition whitespace-nowrap">
+                Vé của tôi
+              </a>
+            </div>
+
+            <!-- Main Primary Links (Stacked Fraunces) -->
+            <div class="my-auto space-y-4 py-2">
+              <a href="#" class="block font-serif text-2xl text-deep-blue hover:text-emerald transition-colors">
+                Câu chuyện
+              </a>
+              
+              <!-- Active with Canary Dot -->
+              <a href="#" class="flex items-center gap-2.5 font-serif text-2xl font-semibold text-deep-blue">
+                <span class="text-deep-blue">Chương trình</span>
+                <span class="w-2 h-2 rounded-full bg-canary shadow-sm"></span>
+              </a>
+
+              <a href="#" class="block font-serif text-2xl text-deep-blue hover:text-emerald transition-colors">
+                Bộ sưu tập
+              </a>
+
+              <!-- Secondary Divider & Small Links -->
+              <div class="pt-2 border-t border-deep-blue/10 space-y-2.5">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-charcoal/40">Khám phá chuyên sâu</span>
+                <div class="flex flex-col gap-2">
+                  <a href="#" class="text-xs font-medium text-charcoal/80 hover:text-emerald flex items-center justify-between">
+                    <span>Cẩm nang xanh số</span>
+                    <span class="text-[10px] text-emerald bg-mint-mist px-2 py-0.5 rounded-full">120+ mẫu</span>
+                  </a>
+                  <a href="#" class="text-xs font-medium text-charcoal/80 hover:text-emerald flex items-center justify-between">
+                    <span>Tác động sinh thái</span>
+                    <span class="text-[10px] text-charcoal/50">Cần Thơ 2026</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pinned Bottom Full-Width Emerald CTA -->
+            <div class="pt-2">
+              <a href="#" class="w-full py-3 rounded-full bg-emerald text-soft-white text-xs font-bold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:bg-emerald-hover transition">
+                <span>Hợp tác cùng chúng tôi</span>
+                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+              <div class="w-32 h-1 bg-charcoal/20 rounded-full mx-auto mt-3"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- SECTION 4: REAL-WORLD INTERACTIVE HERO CONTEXT -->
+    <!-- ========================================== -->
+    <section id="interactive-preview" class="space-y-6">
+      <div class="flex items-center justify-between border-b border-charcoal/10 pb-4">
+        <div>
+          <span class="text-xs font-semibold text-emerald uppercase tracking-widest">Thực Địa Hoàn Chỉnh · Live Canvas Placement</span>
+          <h2 class="text-2xl md:text-3xl font-serif text-deep-blue">Navbar Đặt Trên Hero Landing Page Thực Tế</h2>
+        </div>
+        <span class="text-xs text-charcoal/60 bg-soft-white px-3 py-1 rounded-full border border-mint-mist">Giữ nguyên vẹn toàn bộ Hero Landing bên dưới</span>
+      </div>
+
+      <!-- Live Mockup Container mirroring https://lh3.googleusercontent.com/aida-public/AB6AXuAZogAaqRuIMwxHIRm6gqwPAPKR1VTYNFEV-xG7l_LaDz3QjEnIoZw99DqZUnw-ljkg-6XM2FQKFeHEFIpaKY3aGF1gsk0PB56wNbm3BvrQB3zKrRjsp43xCSgWcTwWWXSf3pCRR9tpkvJ-4ERKXMncIjmtjOFXnyDVPhwH7C3d4hBQU58cY7peZCxQpCI1MxJywKtCugQ1_kUw1ycrMi9ffu8cgHWJTc-q74GaIW0QUpi0HwamtQbXgtR5Zdl9hFfK2A -->
+      <div class="relative bg-soft-white rounded-3xl border border-mint-mist shadow-lg overflow-hidden min-h-[720px]">
+        
+        <!-- FLOATING PILL NAVBAR PLACED AT 24PX FROM TOP -->
+        <div class="sticky top-6 z-40 px-6 max-w-7xl mx-auto">
+          <nav class="w-full max-w-[1120px] mx-auto h-16 bg-soft-white/95 backdrop-blur-md rounded-full px-6 flex items-center justify-between border border-mint-mist shadow-soft-pill">
+            <!-- Left: Logo -->
+            <a href="#" class="flex items-center gap-2">
+              <span class="font-serif text-2xl font-bold tracking-tight text-deep-blue">Lavieco</span>
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald"></span>
+            </a>
+
+            <!-- Center: 4 Links with 32px spacing -->
+            <div class="hidden md:flex items-center gap-8">
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald transition-colors py-1">
+                Câu chuyện
+              </a>
+
+              <!-- Active Item with Canary Dot -->
+              <a href="#" class="relative text-sm font-semibold text-deep-blue py-1 flex flex-col items-center">
+                <span>Chương trình</span>
+                <span class="absolute -bottom-1.5 w-1.5 h-1.5 rounded-full bg-canary shadow-sm"></span>
+              </a>
+
+              <a href="#" class="text-sm font-medium text-charcoal/80 hover:text-emerald transition-colors py-1">
+                Bộ sưu tập
+              </a>
+
+              <!-- Dropdown Trigger with hover display -->
+              <div class="relative group">
+                <button type="button" class="inline-flex items-center gap-1.5 text-sm font-medium text-charcoal/80 hover:text-emerald transition-colors py-1">
+                  <span>Khám phá</span>
+                  <svg class="w-3.5 h-3.5 text-charcoal/50 group-hover:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+
+                <!-- Floating Dropdown on Hover/Focus -->
+                <div class="hidden group-hover:block absolute left-1/2 -translate-x-1/2 top-11 w-80 bg-white rounded-2xl border border-mint-mist shadow-floating-menu p-2 z-50">
+                  <a href="#" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-soft-white transition">
+                    <div class="w-8 h-8 rounded-lg bg-mint-mist text-emerald flex items-center justify-center font-bold text-xs">01</div>
+                    <div>
+                      <div class="font-serif text-xs font-semibold text-deep-blue">Cẩm nang xanh số</div>
+                      <div class="text-[11px] text-charcoal/60">Sổ tay thực địa 120 mẫu men vỏ sò</div>
+                    </div>
+                  </a>
+                  <a href="#" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-soft-white transition">
+                    <div class="w-8 h-8 rounded-lg bg-mint-mist text-emerald flex items-center justify-center font-bold text-xs">02</div>
+                    <div>
+                      <div class="font-serif text-xs font-semibold text-deep-blue">Tác động sinh thái</div>
+                      <div class="text-[11px] text-charcoal/60">Báo cáo bền vững & kinh tế tuần hoàn</div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right: Divider + Account + CTA -->
+            <div class="flex items-center gap-4">
+              <div class="hidden sm:block w-px h-6 bg-deep-blue/10"></div>
+
+              <!-- Guest Account Link -->
+              <a href="#" class="inline-flex items-center gap-2 text-sm font-medium text-deep-blue hover:text-emerald transition-colors px-2 py-1 rounded-full hover:bg-mint-mist/50">
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+                <span class="hidden sm:inline">Đăng nhập</span>
+              </a>
+
+              <!-- Emerald CTA Button -->
+              <a href="#" class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-emerald text-soft-white text-xs font-semibold tracking-wide hover:bg-emerald-hover transition-all duration-200 shadow-sm hover:shadow-md">
+                Hợp tác
+              </a>
+            </div>
+          </nav>
+        </div>
+
+        <!-- HERO CONTENT BELOW NAVBAR (Faithfully Preserving Image 2 Layout) -->
+        <div class="pt-8 pb-20 px-6 sm:px-12 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+          
+          <!-- Left Column (Text & CTAs) -->
+          <div class="lg:col-span-7 space-y-6 pt-6">
+            <!-- Pill Badges -->
+            <div class="flex flex-wrap items-center gap-3 text-xs">
+              <span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white border border-mint-mist text-charcoal font-medium shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-canary"></span>
+                Đang thí điểm tại Cần Thơ
+              </span>
+              <span class="px-3 py-1 rounded-full bg-mint-mist text-emerald font-semibold uppercase tracking-wider text-[11px]">
+                GREEN ART EDUCATION
+              </span>
+            </div>
+
+            <!-- Giant Editorial Heading -->
+            <div class="relative">
+              <span class="absolute -top-10 -left-6 text-8xl font-serif text-deep-blue/5 font-bold select-none pointer-events-none">01</span>
+              <h1 class="text-4xl sm:text-6xl font-serif font-light text-deep-blue tracking-tight leading-[1.15]">
+                Giáo dục<br>
+                sáng tạo xanh,<br>
+                thông qua <span class="italic text-emerald font-normal underline decoration-canary/60 decoration-wavy decoration-1 underline-offset-8">nghệ thuật.</span>
+              </h1>
+            </div>
+
+            <!-- Latin Subtitle -->
+            <p class="font-serif italic text-charcoal/60 text-lg">
+              Art to learn green. Art to create green
+            </p>
+
+            <!-- Manifesto Quote -->
+            <blockquote class="text-sm sm:text-base text-charcoal/80 leading-relaxed max-w-xl border-l-2 border-emerald/40 pl-4">
+              “Giá trị của một thứ không nằm ở bản chất của nó, mà nằm ở cách con người sáng tạo và trao ý nghĩa cho nó.” Chúng tôi không bán đồ thủ công tái chế. Chúng tôi kiến tạo hành trình nhận thức thông qua nghệ thuật từ bột vỏ sò.
+            </blockquote>
+
+            <!-- Hero Buttons -->
+            <div class="flex flex-wrap items-center gap-4 pt-2">
+              <a href="#" class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-emerald text-soft-white text-sm font-semibold hover:bg-emerald-hover transition-all shadow-md group">
+                <span>Bước vào triển lãm</span>
+                <span class="w-2 h-2 rounded-full bg-canary"></span>
+                <svg class="w-4 h-4 group-hover:translate-x-0.5 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+
+              <a href="#" class="inline-flex items-center gap-2 px-6 py-3.5 rounded-full text-deep-blue hover:text-emerald text-sm font-medium transition-colors">
+                <span>Dành cho trường học & doanh nghiệp</span>
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </a>
+            </div>
+
+            <!-- Meta Footer info -->
+            <div class="pt-6 flex items-center gap-6 text-xs text-charcoal/60 border-t border-deep-blue/10">
+              <span class="font-medium text-deep-blue">GALLERY Nº 2026</span>
+              <span>·</span>
+              <span>Can Tho Pilot</span>
+              <span>·</span>
+              <span class="flex items-center gap-1.5 text-emerald font-medium">
+                <span class="w-2 h-2 rounded-full bg-emerald"></span>
+                Vật liệu vỏ nghêu, sò, ốc Tây Đô
+              </span>
+            </div>
+          </div>
+
+          <!-- Right Column: Sculptural Arch Composition (matching Image 2) -->
+          <div class="lg:col-span-5 relative flex items-center justify-center min-h-[460px]">
+            <!-- Subtle Radial Gradient Background -->
+            <div class="absolute inset-0 bg-gradient-to-tr from-mint-mist/40 via-transparent to-canary/10 rounded-full blur-3xl -z-10"></div>
+
+            <!-- Arch 1: Mint Mist Background Arch -->
+            <div class="absolute right-4 w-72 h-96 bg-gradient-to-b from-mint-mist to-[#dbece4] rounded-t-full border border-white/60 shadow-inner flex flex-col items-center pt-8">
+              <span class="w-2 h-2 rounded-full bg-canary"></span>
+              <span class="text-[10px] tracking-widest uppercase font-semibold text-charcoal/50 mt-2">VẬT PHẨM ĐIỂN HÌNH</span>
+            </div>
+
+            <!-- Arch 2: Deep Blue Centerpiece Arch -->
+            <div class="relative z-10 w-64 h-88 bg-deep-blue rounded-t-full p-6 text-soft-white shadow-2xl flex flex-col justify-between overflow-hidden">
+              <div class="w-2.5 h-2.5 rounded-full bg-canary mx-auto mt-2"></div>
+              
+              <!-- Subtle concentric ring graphics inside arch -->
+              <div class="absolute inset-0 flex items-center justify-center opacity-20 pointer-events-none">
+                <div class="w-48 h-72 border border-soft-white rounded-t-full"></div>
+                <div class="w-36 h-60 border border-soft-white rounded-t-full absolute"></div>
+              </div>
+
+              <!-- Arch Footer Tag -->
+              <div class="mt-auto bg-soft-white/10 backdrop-blur-sm rounded-xl p-2.5 text-center text-xs">
+                <span class="text-[10px] text-canary tracking-wider uppercase font-semibold">Triết lý thiết kế</span>
+                <p class="font-serif text-xs italic text-soft-white mt-0.5">Giá trị của phế phẩm</p>
+              </div>
+            </div>
+
+            <!-- Arch 3: White Overlapping Mini Arch -->
+            <div class="absolute -bottom-4 left-6 z-20 w-48 h-64 bg-white/95 backdrop-blur-md rounded-t-full shadow-xl p-4 border border-mint-mist flex flex-col justify-between">
+              <div class="w-2 h-2 rounded-full bg-emerald mx-auto mt-1"></div>
+              
+              <div class="bg-deep-blue text-soft-white rounded-xl p-2.5 text-center text-[10px] shadow-sm">
+                <div class="text-[9px] text-canary uppercase font-mono">Nº 003 · NGUYÊN BẢN</div>
+                <div class="font-medium mt-0.5">Vỏ sò giữ nguyên vân tự nhiên</div>
+              </div>
+            </div>
+
+            <!-- Story Card 001 Floating Badge -->
+            <div class="absolute -bottom-8 right-2 z-30 bg-white rounded-2xl p-3.5 shadow-2xl border border-mint-mist max-w-[210px] animate-bounce-subtle">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] font-mono font-bold tracking-wider text-charcoal/60 uppercase">STORY CARD · Nº 001</span>
+                <span class="w-2 h-2 rounded-full bg-emerald"></span>
+              </div>
+              <p class="text-xs font-semibold text-deep-blue leading-snug">Gốm bột vỏ sò - Kể câu chuyện phế liệu</p>
+              <div class="mt-2 pt-2 border-t border-mint-mist flex items-center justify-between text-[10px] text-charcoal/60">
+                <div class="w-4 h-4 bg-deep-blue text-white rounded flex items-center justify-center font-mono text-[8px]">QR</div>
+                <span class="text-emerald font-medium">Thu gom tại Cần Thơ</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Ticker Strip at the Bottom (Preserving Image 2 Strip) -->
+        <div class="bg-deep-blue text-soft-white py-3 px-4 overflow-hidden border-t border-deep-blue/20">
+          <div class="flex items-center justify-around text-xs tracking-widest font-semibold uppercase gap-8">
+            <span class="flex items-center gap-2"><span class="text-canary">★</span> VALUE</span>
+            <span class="flex items-center gap-2"><span class="text-emerald">◆</span> INNOVATION</span>
+            <span class="flex items-center gap-2"><span class="text-canary">★</span> ECO</span>
+            <span class="flex items-center gap-2"><span class="text-emerald">◆</span> THÍ ĐIỂM TẠI CẦN THƠ</span>
+            <span class="flex items-center gap-2"><span class="text-canary">★</span> LIFE</span>
+            <span class="flex items-center gap-2"><span class="text-emerald">◆</span> ART</span>
+            <span class="flex items-center gap-2"><span class="text-canary">★</span> VALUE</span>
+            <span class="flex items-center gap-2"><span class="text-emerald">◆</span> GIÁO DỤC</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DESIGN RATIONALE & COMPLIANCE CHECKLIST -->
+    <section class="bg-white p-8 rounded-3xl border border-mint-mist space-y-6">
+      <h3 class="text-xl font-serif text-deep-blue font-semibold">Bảng Quy Chuẩn Kiểm Tra Thiết Kế (Design Audit & Rationale)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs text-charcoal/80 leading-relaxed">
+        <div class="space-y-3">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald font-bold">✓</span>
+            <div><strong>Khoảng thở liên kết (~32px):</strong> Các mục điều hướng không còn dính sát icon người dùng hay mép logo; độ rộng chữ ổn định trên 1 dòng duy nhất.</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald font-bold">✓</span>
+            <div><strong>Active State tinh xảo:</strong> Chỉ sử dụng duy nhất một chấm vàng kim <em>Canary (#E7DD6A)</em> ngay dưới chân chữ tab được chọn, không đổi màu chữ gây rối mắt.</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald font-bold">✓</span>
+            <div><strong>Triệt tiêu Hamburger Desktop:</strong> Thanh Desktop trở về dạng chuẩn Gallery tối giản; các mục phụ dồn vào cụm <em>Khám phá ▾</em> có card mô tả giàu thông tin.</div>
+          </div>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-start gap-2">
+            <span class="text-emerald font-bold">✓</span>
+            <div><strong>3 Trạng thái tài khoản phân cấp rõ:</strong> Khách (Guest với nút đăng nhập thanh lịch) → Học viên đã đăng nhập (Avatar 32px viền Emerald kèm menu vé) → Quản trị viên (Huy hiệu Admin & Portal quản lý xưởng).</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald font-bold">✓</span>
+            <div><strong>Thích ứng mượt mà khi cuộn (Scrolled 52px):</strong> Tự động hạ chiều cao, kích hoạt lớp phủ kính mờ 85% và viền Mint Mist mỏng giữ vững tầm nhìn khi lướt web.</div>
+          </div>
+          <div class="flex items-start gap-2">
+            <span class="text-emerald font-bold">✓</span>
+            <div><strong>Tablet 1024px & Mobile 390px chuẩn mực:</strong> Tablet dồn 2 mục vào "Thêm ▾"; Mobile sở hữu drawer trượt toàn màn hình mang tính thẩm mỹ cao như sách nghệ thuật.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="bg-deep-blue text-soft-white/70 py-10 px-6 text-center text-xs border-t border-deep-blue/40">
+    <p class="font-serif italic text-soft-white text-sm mb-2">“Art to learn green. Art to create green”</p>
+    <p>© 2026 LAVIECO · The Living Gallery · Bến Ninh Kiều, Cần Thơ. Toàn bộ thiết kế đáp ứng quy chuẩn nhận diện thương hiệu.</p>
+  </footer>
+
+</body>
+</html>

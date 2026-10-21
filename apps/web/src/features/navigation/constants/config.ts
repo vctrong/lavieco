@@ -1,18 +1,18 @@
-import type { CatalogueItem, NavItem } from "../types";
+import type { AccountLink, NavItem, PrimaryNavItem } from "../types";
 
 /** Set to true once EN content and the URL strategy (PQ3) exist. */
 export const LANGUAGE_SWITCH_ENABLED = false;
 
-/** Dock shrinks after this many pixels of scroll (design.md §7.5.3). */
+/** The bar shrinks after this many pixels of scroll (design.md §7.5.3). */
 export const DOCK_SHRINK_SCROLL_Y = 120;
 
-/** Center links of the dock. Copy lives in text.ts under the same `id`. */
-export const NAV_ITEMS: readonly NavItem[] = [
-  { id: "story", href: "/cau-chuyen" },
-  { id: "programs", href: "/chuong-trinh" },
-  { id: "collection", href: "/bo-suu-tap" },
-  { id: "handbook", href: "/cam-nang" },
-  { id: "impact", href: "/tac-dong" },
+/** Primary links. Copy lives in text.ts under the same `id`; `priority` is explained in types.ts. */
+export const NAV_ITEMS: readonly PrimaryNavItem[] = [
+  { id: "story", href: "/cau-chuyen", priority: 1 },
+  { id: "programs", href: "/chuong-trinh", priority: 1 },
+  { id: "collection", href: "/bo-suu-tap", priority: 2 },
+  { id: "handbook", href: "/cam-nang", priority: 3 },
+  { id: "impact", href: "/tac-dong", priority: 3 },
 ];
 
 export const CTA_HREF = "/hop-tac";
@@ -20,15 +20,36 @@ export const CTA_HREF = "/hop-tac";
 /** Member space; signed-out visitors are sent to the sign-in page by `proxy.ts`. */
 export const ACCOUNT_HREF = "/tai-khoan";
 
-export const CATALOGUE_ITEMS: readonly CatalogueItem[] = [
-  { id: "preface", number: "Nº 00", href: "/" },
-  { id: "story", number: "Nº 01", href: "/cau-chuyen" },
-  { id: "programs", number: "Nº 02", href: "/chuong-trinh" },
-  { id: "collection", number: "Nº 03", href: "/bo-suu-tap" },
-  { id: "handbook", number: "Nº 04", href: "/cam-nang" },
-  { id: "impact", number: "Nº 05", href: "/tac-dong" },
-  { id: "team", number: "Nº 06", href: "/#nguoi-ke-chuyen" },
-  { id: "contact", number: "Nº 07", href: "/hop-tac" },
+export const SIGN_IN_HREF = "/dang-nhap";
+
+/** Links of the account menu. Copy lives in text.ts under the same `id`. */
+export const ACCOUNT_LINKS: readonly AccountLink[] = [
+  // TODO(nav-account-routes): the member ticket list page does not exist yet.
+  { id: "tickets", href: "/tai-khoan/ve" },
+  // TODO(nav-account-routes): the registered-programs page does not exist yet.
+  { id: "registrations", href: "/tai-khoan/chuong-trinh" },
+  { id: "profile", href: ACCOUNT_HREF },
+];
+
+/** BFF endpoint answering who is viewing (no token, no internal id). */
+export const VIEWER_ENDPOINT = "/api/account/viewer";
+
+/** Rotates the member refresh token (Route Handler of the auth feature). */
+export const SESSION_REFRESH_ENDPOINT = "/api/auth/refresh?tiep=/";
+
+/** Web Lock name: one tab at a time rotates the refresh token. */
+export const SESSION_REFRESH_LOCK = "lavieco-auth-refresh";
+
+/**
+ * Pages whose flows sign in or out (login, sign-up, password reset, account). The
+ * account cluster lives in the layout and does not re-render on navigation, so it
+ * asks the viewer again when the visitor leaves one of these pages.
+ */
+export const SESSION_PAGES: readonly string[] = [
+  "/dang-nhap",
+  "/dang-ky",
+  "/quen-mat-khau",
+  ACCOUNT_HREF,
 ];
 
 // TODO(real-data): official social profile URLs; the prototype only linked the site roots.
