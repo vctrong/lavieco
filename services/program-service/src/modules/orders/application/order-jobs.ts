@@ -10,6 +10,8 @@ import type { TicketRepository } from "./ports/order-repositories.port";
 export const SEND_TICKETS_JOB = "order.send_tickets";
 /** Outbox job: cancel the payOS link of an order that ended unpaid. Payload `{ orderId }`. */
 export const CANCEL_PAYMENT_LINK_JOB = "payment.cancel_link";
+/** Outbox job: tell the buyer of a paid order that the event was cancelled. Payload `{ orderId }`. */
+export const SEND_EVENT_CANCELLED_JOB = "order.send_event_cancelled";
 
 /**
  * One ticket per seat, each with its own random QR token (BR-16). Codes are random:

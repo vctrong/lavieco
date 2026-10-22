@@ -7,7 +7,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default async function CheckoutRoute({ params }: PageProps<"/chuong-trinh/[slug]/dang-ky">) {
-  const { slug } = await params;
-  return <CheckoutPage slug={slug} />;
+const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);
+
+export default async function CheckoutRoute({
+  params,
+  searchParams,
+}: PageProps<"/chuong-trinh/[slug]/dang-ky">) {
+  const [{ slug }, query] = await Promise.all([params, searchParams]);
+  // `?ve=&sl=` from the ticket box only pre-fills the form (validated there and by the service).
+  return <CheckoutPage slug={slug} pick={{ ve: first(query.ve), sl: first(query.sl) }} />;
 }

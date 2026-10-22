@@ -46,6 +46,7 @@ export const TEXT = {
       continue: "Tôi đã lưu, đến trang đăng nhập",
     },
     validation: {
+      emailRequired: "Bạn vui lòng nhập email.",
       email: "Email chưa đúng định dạng.",
       password: "Bạn vui lòng nhập mật khẩu.",
       newPassword: "Mật khẩu cần từ 8 đến 128 ký tự.",
@@ -61,7 +62,6 @@ export const TEXT = {
       invitation_invalid: "Liên kết không còn hiệu lực. Bạn liên hệ Super Admin.",
       totp_invalid: "Mã trong ứng dụng chưa khớp. Bạn kiểm tra giờ trên điện thoại và thử mã mới.",
       password_weak: "Mật khẩu quá dễ đoán. Bạn chọn mật khẩu khác.",
-      unavailable: "Hệ thống đang bận. Bạn thử lại sau ít phút.",
     },
   },
 } as const;

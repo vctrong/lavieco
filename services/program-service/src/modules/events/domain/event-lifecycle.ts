@@ -44,3 +44,18 @@ export function nextStatus(action: EventAction, context: TransitionContext): Eve
       return "ended";
   }
 }
+
+/**
+ * "Huỷ chương trình": a published or closed standard event that has not finished yet.
+ * Final, like `ended`. Not one of the plain status actions: it needs a public reason,
+ * step-up and settles the orders (docs/05, decision of 22/10/2026).
+ */
+export function assertCancellable(
+  event: { kind: EventKind; status: EventStatus; endAt: Date },
+  now: Date,
+): void {
+  const open = event.status === "published" || event.status === "closed";
+  if (event.kind !== "standard" || !open || event.endAt.getTime() <= now.getTime()) {
+    throw new DomainError("event.invalid_transition", `cancel from ${event.status}`);
+  }
+}

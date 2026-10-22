@@ -3,6 +3,7 @@ import {
   EVENT_LIMITS,
   type EventPricing,
   type PublicAvailability,
+  type PublicPriceRange,
   type TicketTypeInput,
 } from "@lavieco/shared/events";
 
@@ -86,19 +87,39 @@ export function seatsLeftOf(ticketType: TicketTypeRecord): number | null {
 }
 
 /**
- * `isFree` = at least one visible ticket type costs 0 (docs/03 §9.2); `priceFrom` is
- * the lowest visible price. Stored on the event so the public list can filter on it.
+ * `isFree` = EVERY visible ticket type costs 0 (docs/03 §9.2, since 22/10/2026: an
+ * event with a free and a paid ticket is not "free"); `priceFrom` is the lowest
+ * visible price. Stored on the event so the public list can filter on it.
  */
 export function pricingOf(ticketTypes: readonly TicketTypeRecord[]): EventPricing {
+  const range = priceRangeOf(ticketTypes);
+  if (!range) return { isFree: false, priceFrom: null };
+  return { isFree: range.max === 0, priceFrom: range.min };
+}
+
+/** Lowest and highest visible price ("Từ X" only when they differ); null without tickets. */
+export function priceRangeOf(ticketTypes: readonly TicketTypeRecord[]): PublicPriceRange | null {
   const prices = visible(ticketTypes).map((ticketType) => ticketType.price);
-  if (prices.length === 0) return { isFree: false, priceFrom: null };
-  const priceFrom = Math.min(...prices);
-  return { isFree: priceFrom === 0, priceFrom };
+  if (prices.length === 0) return null;
+  return { min: Math.min(...prices), max: Math.max(...prices) };
 }
 
 /**
- * Public seat information: nothing for unlimited quantities, "X left" only at or
- * below the threshold, and sold out at 0 (raw counters stay private).
+ * "Sắp hết chỗ": at most `fewSeatsRatio` of the capacity left, or at most
+ * `fewSeatsMin` seats, whichever allows more (docs/05, 22/10/2026).
+ */
+export function isFewSeats(remaining: number, capacity: number): boolean {
+  if (remaining <= 0) return false;
+  const threshold = Math.max(
+    EVENT_LIMITS.fewSeatsMin,
+    Math.floor(capacity * EVENT_LIMITS.fewSeatsRatio),
+  );
+  return remaining <= threshold;
+}
+
+/**
+ * Public seat information: nothing for unlimited quantities, "X left" only when few
+ * seats remain (`isFewSeats`), and sold out at 0 (raw counters stay private).
  */
 export function availabilityOf(ticketTypes: readonly TicketTypeRecord[]): PublicAvailability {
   const shown = visible(ticketTypes);
@@ -109,9 +130,10 @@ export function availabilityOf(ticketTypes: readonly TicketTypeRecord[]): Public
     (sum, ticketType) => sum + Math.max(0, (ticketType.quantity ?? 0) - taken(ticketType)),
     0,
   );
+  const capacity = shown.reduce((sum, ticketType) => sum + (ticketType.quantity ?? 0), 0);
   return {
     soldOut: remaining === 0,
-    seatsLeft: remaining > 0 && remaining <= EVENT_LIMITS.fewSeatsThreshold ? remaining : null,
+    seatsLeft: isFewSeats(remaining, capacity) ? remaining : null,
   };
 }
 

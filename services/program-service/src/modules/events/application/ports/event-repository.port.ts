@@ -9,7 +9,14 @@ import type {
   PublicEventListQuery,
 } from "@lavieco/shared/events";
 
-import type { Actor, EventContent, EventRecord, StatusChange } from "../../domain/event";
+import type {
+  Actor,
+  EventAttendance,
+  EventCancellation,
+  EventContent,
+  EventRecord,
+  StatusChange,
+} from "../../domain/event";
 import type { EventImages } from "../../domain/event-images";
 
 export const EVENT_REPOSITORY = Symbol("EVENT_REPOSITORY");
@@ -18,6 +25,7 @@ export type NewEvent = EventContent & {
   /** From `newId()`: images are attached to the event before it is written. */
   id: string;
   images: EventImages;
+  attendance: EventAttendance;
   kind: EventKind;
   slug: string;
   form: EventForm;
@@ -26,15 +34,22 @@ export type NewEvent = EventContent & {
 };
 
 /**
- * What a public query may return (S3): no online link, no authors, no form, no
- * revision. The repository projects these fields away at query time.
+ * What a public query may return (S3): no online link (only whether one is set), no
+ * authors, no form, no revision. The repository maps these away at query time.
  */
 export type PublicEventRecord = Omit<
   EventRecord,
   "onlineUrl" | "createdBy" | "updatedBy" | "form" | "revision" | "firstPublishedAt"
->;
+> & { hasOnlineLink: boolean };
 
 export type Page<T> = { items: T[]; nextCursor: string | null };
+
+export type ContentChanges = {
+  content: EventContent;
+  slug: string;
+  images: EventImages;
+  attendance: EventAttendance;
+};
 
 export interface EventRepository {
   newId(): string;
@@ -47,7 +62,7 @@ export interface EventRepository {
   updateContent(
     id: string,
     revision: number,
-    changes: { content: EventContent; slug: string; images: EventImages },
+    changes: ContentChanges,
     actor: Actor,
     tx?: TxContext,
   ): Promise<EventRecord | null>;
@@ -66,7 +81,17 @@ export interface EventRepository {
       history: StatusChange;
       publishedAt: Date | null;
       firstPublish: boolean;
+      /** Only with `to: "cancelled"`. */
+      cancellation?: EventCancellation;
     },
+    actor: Actor,
+    tx?: TxContext,
+  ): Promise<EventRecord | null>;
+  /** BR-09: approves the attendance count stored at this revision. */
+  approveAttendance(
+    id: string,
+    revision: number,
+    approval: { at: Date; by: string },
     actor: Actor,
     tx?: TxContext,
   ): Promise<EventRecord | null>;
@@ -74,8 +99,12 @@ export interface EventRepository {
   setPricing(id: string, pricing: EventPricing, tx?: TxContext): Promise<void>;
   discard(id: string, revision: number, actor: Actor, tx?: TxContext): Promise<boolean>;
   listAdmin(query: EventListQuery): Promise<Page<EventRecord> & { counts: EventStatusCounts }>;
-  listPublic(query: PublicEventListQuery): Promise<Page<PublicEventRecord>>;
-  /** Published, closed or ended only (S3). */
+  /** `now` splits upcoming from past by end time; `total` counts every page. */
+  listPublic(
+    query: PublicEventListQuery,
+    now: Date,
+  ): Promise<Page<PublicEventRecord> & { total: number }>;
+  /** Published, closed, ended or cancelled only (S3). */
   findPublicBySlug(slug: string): Promise<PublicEventRecord | null>;
   /**
    * Same scope, full record (form, online link): used by the checkout and to tell the

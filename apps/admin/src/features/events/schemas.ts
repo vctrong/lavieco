@@ -1,5 +1,7 @@
 import type { z } from "zod";
 
+import "@/shared/zod-vi";
+
 import { TEXT } from "./constants/text";
 
 type Issue = z.core.$ZodIssue;

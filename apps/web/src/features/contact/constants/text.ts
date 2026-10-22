@@ -1,12 +1,12 @@
 export const TEXT = {
   vi: {
     fields: {
-      name: { label: "Họ & tên *", placeholder: "Nguyễn Văn A" },
-      organization: { label: "Đơn vị / Tổ chức *", placeholder: "Trường học / Công ty..." },
-      phone: { label: "Số điện thoại / Zalo *", placeholder: "0901 234 567" },
-      interest: { label: "Mục tiêu quan tâm *" },
+      name: { label: "Họ & tên", placeholder: "Nguyễn Văn A" },
+      organization: { label: "Đơn vị / Tổ chức", placeholder: "Trường học / Công ty..." },
+      phone: { label: "Số điện thoại / Zalo", placeholder: "0901 234 567" },
+      interest: { label: "Mục tiêu quan tâm" },
       message: {
-        label: "Lời nhắn bổ sung",
+        label: "Lời nhắn bổ sung (không bắt buộc)",
         placeholder: "Chia sẻ số lượng người tham gia dự kiến hoặc khu vực tổ chức...",
       },
     },

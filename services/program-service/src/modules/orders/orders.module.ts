@@ -14,8 +14,11 @@ import type { ProgramEnv } from "../../config/env";
 import { EVENT_REPOSITORY, type EventRepository } from "../events";
 import { TICKET_TYPE_REPOSITORY, TicketingModule, type TicketTypeRepository } from "../ticketing";
 import { AUDIT_TRAIL, type AuditTrail } from "../audit";
+import { EventCancellationController } from "./api/event-cancellation.controller";
 import { OrdersAdminController } from "./api/orders-admin.controller";
 import { OrdersPublicController } from "./api/orders-public.controller";
+import { EventAttendanceService } from "./application/event-attendance-service";
+import { EventCancellationService } from "./application/event-cancellation-service";
 import { OrderAdminService } from "./application/order-admin-service";
 import { CheckoutService } from "./application/checkout-service";
 import { OrderExpiryService } from "./application/order-expiry-service";
@@ -57,6 +60,8 @@ import {
 } from "./infrastructure/ticket.repository";
 import {
   CHECKOUT_SERVICE,
+  EVENT_ATTENDANCE_SERVICE,
+  EVENT_CANCELLATION_SERVICE,
   ORDER_EXPIRY_OPTIONS,
   ORDER_EXPIRY_SERVICE,
   ORDER_ADMIN_SERVICE,
@@ -84,7 +89,7 @@ export class OrdersModule {
     return {
       module: OrdersModule,
       imports: [orderPersistence, options.events, TicketingModule],
-      controllers: [OrdersPublicController, OrdersAdminController],
+      controllers: [OrdersPublicController, OrdersAdminController, EventCancellationController],
       providers: [
         gateway,
         { provide: ORDER_REPOSITORY, useClass: MongoOrderRepository },
@@ -244,6 +249,42 @@ export class OrdersModule {
             UNIT_OF_WORK,
             OUTBOX_PORT,
           ],
+        },
+        {
+          provide: EVENT_CANCELLATION_SERVICE,
+          useFactory: (
+            events: EventRepository,
+            orders: OrderRepository,
+            tickets: TicketRepository,
+            ticketTypes: TicketTypeRepository,
+            audit: AuditTrail,
+            unitOfWork: UnitOfWork,
+            outbox: OutboxPort,
+          ) =>
+            new EventCancellationService(
+              events,
+              orders,
+              tickets,
+              ticketTypes,
+              audit,
+              unitOfWork,
+              outbox,
+            ),
+          inject: [
+            EVENT_REPOSITORY,
+            ORDER_REPOSITORY,
+            TICKET_REPOSITORY,
+            TICKET_TYPE_REPOSITORY,
+            AUDIT_TRAIL,
+            UNIT_OF_WORK,
+            OUTBOX_PORT,
+          ],
+        },
+        {
+          provide: EVENT_ATTENDANCE_SERVICE,
+          useFactory: (events: EventRepository, tickets: TicketRepository) =>
+            new EventAttendanceService(events, tickets),
+          inject: [EVENT_REPOSITORY, TICKET_REPOSITORY],
         },
         OrderExpiryScheduler,
         OrderJobHandlers,

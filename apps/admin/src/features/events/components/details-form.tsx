@@ -13,11 +13,20 @@ import {
   type EventType,
   type EventView,
 } from "@lavieco/shared/events";
-import { Button, CheckboxField, SelectField, TextField, TextareaField, cn } from "@lavieco/ui";
+import {
+  Button,
+  CheckboxField,
+  cn,
+  FormAlert,
+  SelectField,
+  TextareaField,
+  TextField,
+} from "@lavieco/ui";
 
 import { createEvent, updateEvent } from "../actions/events";
 import { TEXT } from "../constants/text";
 import { fieldErrorsOf } from "../schemas";
+import { formatDateTime } from "../utils/format";
 import {
   detailsOf,
   emptyDetails,
@@ -26,9 +35,11 @@ import {
   type DetailsValues,
 } from "../utils/details-values";
 import { EditorSection } from "./editor-section";
-import { FormAlert } from "./form-alert";
 import { CoverField, GalleryField } from "./image-fields";
+import { BenefitsField, SpeakersField } from "./page-fields";
 import { RepeatableRows } from "./repeatable-rows";
+import { callAction } from "@/shared/call-action";
+import { failureText } from "../utils/failure-text";
 
 type DetailsFormProps = {
   event: EventView | null;
@@ -83,8 +94,9 @@ function KindPicker({
 }
 
 /**
- * Sections 1–6 of the editor: details, time and place, people, agenda, safety notes,
- * cancellation policy and FAQ. Creating saves a draft and opens the full editor.
+ * Sections 1–9 of the editor (10 for an archive-only event): details, images, time and
+ * place, people, "Bạn sẽ nhận", agenda, safety notes, cancellation policy, FAQ, and the
+ * typed attendance. Creating saves a draft and opens the full editor.
  */
 export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFormProps) {
   const t = TEXT.vi;
@@ -120,32 +132,32 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
     setErrors({});
     setBusy(true);
     if (event) {
-      const result = await updateEvent(event.id, input).catch(() => null);
+      const result = await callAction(() => updateEvent(event.id, input));
       setBusy(false);
-      if (result?.status === "ok") {
+      if (result.status === "ok") {
         onDirtyChange?.(false);
         setAlert({ tone: "success", message: t.editor.saved });
         router.refresh();
         return;
       }
-      if (result?.status === "invalid") setErrors(result.fieldErrors);
+      if (result.status === "invalid") setErrors(result.fieldErrors);
       setAlert({
         tone: "error",
-        message: result?.status === "error" ? t.errors[result.reason] : t.errors.unavailable,
+        message: result.status === "error" ? failureText(result) : t.errors.invalid,
       });
       return;
     }
-    const result = await createEvent(input).catch(() => null);
-    if (result?.status === "ok") {
+    const result = await callAction(() => createEvent(input));
+    if (result.status === "ok") {
       onDirtyChange?.(false);
       router.push(`/events/${result.data.id}`);
       return;
     }
     setBusy(false);
-    if (result?.status === "invalid") setErrors(result.fieldErrors);
+    if (result.status === "invalid") setErrors(result.fieldErrors);
     setAlert({
       tone: "error",
-      message: result?.status === "error" ? t.errors[result.reason] : t.errors.unavailable,
+      message: result.status === "error" ? failureText(result) : t.errors.invalid,
     });
   };
 
@@ -228,30 +240,57 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
             disabled={disabled}
             wrapperClassName="md:col-span-2"
           />
-          <div className="md:col-span-2">
-            <CoverField
-              value={values.cover}
-              saved={values.cover !== null && savedIds.has(values.cover.mediaId)}
-              disabled={disabled}
-              error={errors["cover.alt"]}
-              onChange={(cover) => set("cover", cover)}
-            />
-          </div>
-          <div className="md:col-span-2">
-            <GalleryField
-              items={values.gallery}
-              savedIds={savedIds}
-              disabled={disabled}
-              errors={errors}
-              onChange={(gallery) => set("gallery", gallery)}
-            />
-          </div>
+          <TextField
+            tone="light"
+            inputMode="numeric"
+            label={t.editor.fields.minAge}
+            hint={t.editor.fields.minAgeHint}
+            value={values.minAge}
+            maxLength={2}
+            onChange={(e) => set("minAge", e.target.value.replace(/D/g, ""))}
+            error={errors.minAge}
+            disabled={disabled}
+          />
+        </div>
+      </EditorSection>
+
+      <EditorSection
+        id="hinh-anh"
+        index={2}
+        title={t.editor.sections.images}
+        hint={t.editor.sections.imagesHint}
+      >
+        <div className="grid gap-5">
+          <CoverField
+            label={t.editor.fields.banner}
+            emptyText={t.images.bannerEmpty}
+            frame="banner"
+            value={values.banner}
+            saved={values.banner !== null && savedIds.has(values.banner.mediaId)}
+            disabled={disabled}
+            error={errors["banner.alt"]}
+            onChange={(banner) => set("banner", banner)}
+          />
+          <CoverField
+            value={values.cover}
+            saved={values.cover !== null && savedIds.has(values.cover.mediaId)}
+            disabled={disabled}
+            error={errors["cover.alt"]}
+            onChange={(cover) => set("cover", cover)}
+          />
+          <GalleryField
+            items={values.gallery}
+            savedIds={savedIds}
+            disabled={disabled}
+            errors={errors}
+            onChange={(gallery) => set("gallery", gallery)}
+          />
         </div>
       </EditorSection>
 
       <EditorSection
         id="thoi-gian"
-        index={2}
+        index={3}
         title={t.editor.sections.time}
         hint={t.editor.sections.timeHint}
       >
@@ -330,35 +369,43 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
 
       <EditorSection
         id="nguoi-huong-dan"
-        index={3}
+        index={4}
         title={t.editor.sections.people}
         hint={t.editor.sections.peopleHint}
       >
-        <RepeatableRows
-          name="speakers"
+        <SpeakersField
           rows={values.speakers}
-          columns={[
-            { key: "name", label: t.editor.fields.speakerName },
-            { key: "role", label: t.editor.fields.speakerRole },
-          ]}
-          empty={{ name: "", role: "" }}
-          max={EVENT_LIMITS.speakersMax}
-          addLabel={t.editor.add.speaker}
           errors={errors}
+          savedIds={savedIds}
           disabled={disabled}
           onChange={(rows) => set("speakers", rows)}
         />
       </EditorSection>
 
-      <EditorSection id="lich-trinh" index={4} title={t.editor.sections.agenda}>
+      <EditorSection
+        id="ban-se-nhan"
+        index={5}
+        title={t.editor.sections.benefits}
+        hint={t.editor.sections.benefitsHint}
+      >
+        <BenefitsField
+          rows={values.benefits}
+          errors={errors}
+          disabled={disabled}
+          onChange={(rows) => set("benefits", rows)}
+        />
+      </EditorSection>
+
+      <EditorSection id="lich-trinh" index={6} title={t.editor.sections.agenda}>
         <RepeatableRows
           name="agenda"
           rows={values.agenda}
           columns={[
             { key: "time", label: t.editor.fields.agendaTime },
             { key: "title", label: t.editor.fields.agendaTitle },
+            { key: "description", label: t.editor.fields.agendaDescription },
           ]}
-          empty={{ time: "", title: "" }}
+          empty={{ time: "", title: "", description: "" }}
           max={EVENT_LIMITS.agendaMax}
           addLabel={t.editor.add.agenda}
           errors={errors}
@@ -369,7 +416,7 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
 
       <EditorSection
         id="luu-y"
-        index={5}
+        index={7}
         title={t.editor.sections.safety}
         hint={t.editor.sections.safetyHint}
       >
@@ -385,16 +432,6 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
             error={errors.safetyNotes}
             disabled={disabled}
           />
-          <TextareaField
-            tone="light"
-            rows={4}
-            label={t.editor.fields.cancellationPolicy}
-            value={values.cancellationPolicy}
-            maxLength={EVENT_LIMITS.cancellationPolicyMax}
-            onChange={(e) => set("cancellationPolicy", e.target.value)}
-            error={errors.cancellationPolicy}
-            disabled={disabled}
-          />
           <CheckboxField
             tone="light"
             label={t.editor.fields.forChildren}
@@ -406,7 +443,41 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
         </div>
       </EditorSection>
 
-      <EditorSection id="hoi-dap" index={6} title={t.editor.sections.faq}>
+      <EditorSection
+        id="chinh-sach"
+        index={8}
+        title={t.editor.sections.policy}
+        hint={t.editor.sections.policyHint}
+      >
+        <div className="grid gap-5">
+          <RepeatableRows
+            name="cancellationRules"
+            rows={values.cancellationRules}
+            columns={[
+              { key: "condition", label: t.editor.fields.ruleCondition },
+              { key: "result", label: t.editor.fields.ruleResult },
+            ]}
+            empty={{ condition: "", result: "" }}
+            max={EVENT_LIMITS.cancellationRulesMax}
+            addLabel={t.editor.add.rule}
+            errors={errors}
+            disabled={disabled}
+            onChange={(rows) => set("cancellationRules", rows)}
+          />
+          <TextareaField
+            tone="light"
+            rows={3}
+            label={t.editor.fields.cancellationPolicy}
+            value={values.cancellationPolicy}
+            maxLength={EVENT_LIMITS.cancellationPolicyMax}
+            onChange={(e) => set("cancellationPolicy", e.target.value)}
+            error={errors.cancellationPolicy}
+            disabled={disabled}
+          />
+        </div>
+      </EditorSection>
+
+      <EditorSection id="hoi-dap" index={9} title={t.editor.sections.faq}>
         <RepeatableRows
           name="faq"
           rows={values.faq}
@@ -422,6 +493,33 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
           onChange={(rows) => set("faq", rows)}
         />
       </EditorSection>
+
+      {values.kind === "past" ? (
+        <EditorSection
+          id="so-nguoi-tham-gia"
+          index={10}
+          title={t.editor.sections.attendance}
+          hint={t.editor.sections.attendanceHint}
+        >
+          <TextField
+            tone="light"
+            inputMode="numeric"
+            label={t.editor.fields.attendanceCount}
+            value={values.attendanceCount}
+            maxLength={6}
+            onChange={(e) => set("attendanceCount", e.target.value.replace(/D/g, ""))}
+            error={errors.attendanceCount}
+            disabled={disabled}
+          />
+          {event && event.attendance.count !== null ? (
+            <p className="mt-2 text-[12px] text-deep-blue/70">
+              {event.attendance.approvedAt
+                ? t.editor.fields.attendanceApproved(formatDateTime(event.attendance.approvedAt))
+                : t.editor.fields.attendancePending}
+            </p>
+          ) : null}
+        </EditorSection>
+      ) : null}
 
       {canWrite ? (
         <div className="sticky bottom-4 z-20 flex flex-wrap items-center justify-between gap-3 rounded-full border border-hairline bg-white/95 px-4 py-3 shadow-float-dock backdrop-blur">

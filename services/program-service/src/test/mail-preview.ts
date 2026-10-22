@@ -5,9 +5,10 @@ import { toBuffer } from "qrcode";
 
 import { emailPreviewHtml, mailTestEmail } from "@lavieco/service-kit";
 
+import { eventCancelledEmail } from "../modules/orders/infrastructure/event-cancelled-email.template";
 import { QR_IMAGE_OPTIONS } from "../modules/orders/infrastructure/smtp-ticket-mailer";
 import { qrAttachment, ticketEmail } from "../modules/orders/infrastructure/ticket-email.template";
-import { ticketEmailCases } from "./support/mail-cases";
+import { eventCancelledEmailCases, ticketEmailCases } from "./support/mail-cases";
 
 /**
  * `npm run mail:preview` (repo root): writes every ticket email case, rendered from
@@ -30,6 +31,9 @@ async function main() {
       name: `ticket-${name}`,
       mail: { ...mail, attachments: [...mail.attachments, ...qr] },
     });
+  }
+  for (const { name, input } of eventCancelledEmailCases()) {
+    emails.push({ name: `event-cancelled-${name}`, mail: eventCancelledEmail(input) });
   }
   for (const { name, mail } of emails) {
     writeFileSync(join(out, `${name}.html`), emailPreviewHtml(mail));

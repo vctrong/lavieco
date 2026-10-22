@@ -192,7 +192,12 @@ export type SettlementPlan =
    * The hold ended (expired, or cancelled by the buyer) and the money still came:
    * take seats again if any are left, otherwise paid + refundRequired.
    */
-  | { kind: "retake_seats" };
+  | { kind: "retake_seats" }
+  /**
+   * The hold ended and the event was cancelled meanwhile: no seat is ever taken again,
+   * the order is paid without seats and flagged for a manual refund (BR-15).
+   */
+  | { kind: "refund_only" };
 
 /**
  * One rule for the webhook AND "Kiểm tra lại thanh toán" (they share the same
@@ -201,11 +206,12 @@ export type SettlementPlan =
 export function planSettlement(
   order: Pick<OrderRecord, "status" | "seatState" | "amount">,
   paidAmount: number,
+  context: { eventCancelled: boolean } = { eventCancelled: false },
 ): SettlementPlan {
   if (order.status === "paid" || order.status === "refunded") return { kind: "duplicate" };
   if (paidAmount !== order.amount) return { kind: "amount_mismatch" };
   if (order.status === "pending" && order.seatState === "held") return { kind: "convert_hold" };
-  return { kind: "retake_seats" };
+  return context.eventCancelled ? { kind: "refund_only" } : { kind: "retake_seats" };
 }
 
 /** "Đánh dấu đã hoàn tiền" applies to paid orders only (BR-15: refunds are manual). */

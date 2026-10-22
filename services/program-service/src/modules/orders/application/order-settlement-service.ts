@@ -108,7 +108,10 @@ export class OrderSettlementService {
       await this.record(payment, "unknown_order", tx);
       return "unknown_order";
     }
-    const plan = planSettlement(order, payment.amount);
+    const [event] = await this.events.findByIds([order.eventId]);
+    const plan = planSettlement(order, payment.amount, {
+      eventCancelled: event?.status === "cancelled",
+    });
     switch (plan.kind) {
       case "duplicate":
         await this.record(payment, "duplicate", tx);
@@ -144,6 +147,17 @@ export class OrderSettlementService {
       }
       case "retake_seats":
         return this.retakeSeats(order, payment, now, tx);
+      case "refund_only": {
+        const paid = await this.orders.transition(
+          order.id,
+          { statuses: ["expired", "cancelled"], seatState: "released" },
+          { status: "paid", seatState: "released", paidAt: now, flags: { refundRequired: true } },
+          tx,
+        );
+        if (!paid) throw new SettlementRace();
+        await this.record(payment, "refund_required", tx);
+        return "refund_required";
+      }
     }
   }
 

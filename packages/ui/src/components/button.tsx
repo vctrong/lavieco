@@ -2,9 +2,13 @@ import type { ComponentPropsWithoutRef, ElementType } from "react";
 
 import { cn } from "../lib/cn";
 
+/**
+ * The primary label is Charcoal on Emerald (5.3:1): Deep Blue on Emerald is only 4.45:1,
+ * under WCAG AA for the 14 px labels of these buttons.
+ */
 const VARIANTS = {
   primary:
-    "bg-emerald-brand text-deep-blue font-bold shadow-emerald-cta hover:bg-emerald-brand/90 hover:scale-[1.02] active:scale-[0.98]",
+    "bg-emerald-brand text-charcoal font-bold shadow-emerald-cta hover:bg-emerald-brand/90 hover:scale-[1.02] active:scale-[0.98]",
   deep: "bg-deep-blue text-soft-white font-semibold shadow-md hover:bg-deep-blue/90 hover:scale-[1.02] active:scale-[0.98]",
   secondary:
     "border border-deep-blue/25 text-deep-blue font-semibold hover:bg-mint-mist hover:border-emerald-brand",

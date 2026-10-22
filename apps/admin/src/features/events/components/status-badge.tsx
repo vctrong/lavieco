@@ -8,6 +8,7 @@ const TONE: Record<EventStatus, { pill: string; dot: string }> = {
   published: { pill: "bg-emerald-brand/15 text-deep-blue", dot: "bg-emerald-brand" },
   closed: { pill: "bg-canary/35 text-deep-blue", dot: "bg-canary" },
   ended: { pill: "bg-deep-blue/10 text-deep-blue/75", dot: "bg-deep-blue/50" },
+  cancelled: { pill: "bg-charcoal/10 text-charcoal/80", dot: "bg-charcoal/60" },
 };
 
 export function StatusBadge({ status, className }: { status: EventStatus; className?: string }) {

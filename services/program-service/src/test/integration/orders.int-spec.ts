@@ -425,3 +425,64 @@ describe("events for children and online links", () => {
     expect(moved.status).toBe(200);
   });
 });
+
+// A signed-in member with a verified email skips the checkout OTP: `web` asks identity
+// for a proof carrying their account id (`uid`) and books at once (docs/05 §2).
+describe("signed-in member booking (no OTP)", () => {
+  const MEMBER_ID = "6650a1b2c3d4e5f6a7b8c9d0";
+
+  it("books a paid family ticket with the member's own email and links the account", async () => {
+    const questionId = randomUUID();
+    const { event, ticketTypeIds } = await publishedEvent(t, {
+      tickets: [{ name: "Vé gia đình", price: 350_000, quantity: 10, maxPerOrder: 2 }],
+      details: { forChildren: true, safetyNotes: "Vỏ ốc có cạnh sắc: có găng tay." },
+      questions: [
+        {
+          id: questionId,
+          type: "single_choice",
+          label: "Bạn biết đến chương trình qua đâu?",
+          required: true,
+          options: [
+            { id: randomUUID(), label: "Facebook" },
+            { id: randomUUID(), label: "Bạn bè" },
+          ],
+        },
+      ],
+    });
+    const optionId = (
+      await t
+        .http()
+        .get(`/internal/v1/published-events/${event.slug}`)
+        .set("authorization", await web())
+        .expect(200)
+    ).body.registration.questions[0].options[0].id as string;
+    const res = await book(t, {
+      slug: event.slug,
+      items: [{ ticketTypeId: ticketTypeIds[0]!, quantity: 1 }],
+      answers: { [questionId]: optionId },
+      proof: await t.emailProof(BUYER.email, { uid: MEMBER_ID }),
+      extra: { safetyAcknowledged: true, isGuardian: true },
+    });
+    expect(res.status).toBe(201);
+    const created = orderCreateResponseSchema.parse(res.body);
+    expect(created.order).toMatchObject({ status: "pending", amount: 350_000 });
+    expect(await seats(ticketTypeIds[0]!)).toEqual({ sold: 0, held: 1 });
+    const order = await t.db.collection("orders").findOne({ orderCode: created.order.orderCode });
+    expect(String(order?.userId)).toBe(MEMBER_ID);
+  });
+
+  // `web` only asks for a member proof when the ticket email is the account's own; a
+  // proof for the account email can never book for another address.
+  it("refuses a member proof when the ticket email differs from the account email", async () => {
+    const { event, ticketTypeIds } = await publishedEvent(t, { tickets: [{ price: 350_000 }] });
+    const res = await book(t, {
+      slug: event.slug,
+      items: [{ ticketTypeId: ticketTypeIds[0]!, quantity: 1 }],
+      buyer: { ...BUYER, email: "nguoi.nhan.khac@example.test" },
+      proof: await t.emailProof(BUYER.email, { uid: MEMBER_ID }),
+    });
+    expect(res.status).toBe(400);
+    expect(res.body.code).toBe("order.email_mismatch");
+    expect(await seats(ticketTypeIds[0]!)).toEqual({ sold: 0, held: 0 });
+  });
+});

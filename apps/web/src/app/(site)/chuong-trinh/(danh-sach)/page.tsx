@@ -5,6 +5,11 @@ import { EVENTS_TEXT, EventsPage, type EventFilters } from "@/features/events";
 export const metadata: Metadata = {
   title: EVENTS_TEXT.vi.meta.listTitle,
   description: EVENTS_TEXT.vi.meta.listDescription,
+  alternates: { canonical: "/chuong-trinh" },
+  openGraph: {
+    title: EVENTS_TEXT.vi.meta.listTitle,
+    description: EVENTS_TEXT.vi.meta.listDescription,
+  },
 };
 
 const first = (value: string | string[] | undefined) => (Array.isArray(value) ? value[0] : value);

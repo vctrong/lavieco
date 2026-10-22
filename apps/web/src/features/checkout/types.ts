@@ -2,6 +2,9 @@
 export type CheckoutFailure =
   | "unavailable"
   | "bot"
+  | "rate_limited"
+  | "code_not_sent"
+  | "invalid_input"
   | "code_invalid"
   | "code_expired"
   | "attempts_exceeded"
@@ -14,13 +17,18 @@ export type CheckoutFailure =
   | "registration_closed"
   | "payment_unavailable"
   | "email_mismatch"
-  | "invalid_state";
+  | "invalid_state"
+  // Seen only in the browser: the action never reached the server.
+  | "stale_version"
+  | "offline";
 
 export type CheckoutError = {
   status: "error";
   reason: CheckoutFailure;
   retryAfterSeconds?: number;
   remainingAttempts?: number;
+  /** Short reference of the request (start of its `x-request-id`), to find it in logs. */
+  ref?: string;
 };
 
 export type FieldErrors = { status: "invalid"; fieldErrors: Record<string, string> };

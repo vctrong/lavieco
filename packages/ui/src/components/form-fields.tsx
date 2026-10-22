@@ -5,6 +5,7 @@ import type {
   SelectHTMLAttributes,
   TextareaHTMLAttributes,
 } from "react";
+import { FiAlertCircle } from "react-icons/fi";
 
 import { cn } from "../lib/cn";
 
@@ -14,30 +15,70 @@ export type FieldTone = "dark" | "light";
 const TONES = {
   dark: {
     control:
-      "border-hairline-light bg-soft-white/10 text-xs text-soft-white placeholder:text-soft-white/30",
+      "border-hairline-light bg-soft-white/10 text-xs text-soft-white placeholder:text-soft-white/30 aria-[invalid=true]:border-error-on-dark",
     select: "bg-deep-blue",
     label: "text-mint-mist/70",
-    error: "text-[11px] text-canary",
-    checkbox: "border-hairline-light bg-soft-white/10",
+    // Error red is too dark on Deep Sea: its light counterpart, never Canary (warnings).
+    error: "text-[11px] text-error-on-dark",
+    required: "text-error-on-dark",
+    checkbox:
+      "border-hairline-light bg-soft-white/10 aria-[invalid=true]:outline-2 aria-[invalid=true]:outline-error-on-dark",
     checkboxLabel: "text-[11.5px] text-mint-mist/80",
   },
   light: {
-    control: "border-hairline bg-white text-sm text-charcoal placeholder:text-charcoal/40",
+    control:
+      "border-hairline bg-white text-sm text-charcoal placeholder:text-charcoal/40 aria-[invalid=true]:border-error",
     select: "bg-white",
     label: "text-deep-blue/70",
-    error: "text-xs text-deep-blue",
-    checkbox: "border-hairline bg-white",
+    error: "text-xs text-error",
+    required: "text-error",
+    checkbox:
+      "border-hairline bg-white aria-[invalid=true]:outline-2 aria-[invalid=true]:outline-error",
     checkboxLabel: "text-[12.5px] text-charcoal/75",
   },
 } as const;
 
 const CONTROL_CLASS =
-  "w-full border px-4 transition-colors focus:border-emerald-brand focus:outline-none aria-[invalid=true]:border-canary";
+  "w-full border px-4 transition-colors focus:border-emerald-brand focus:outline-none";
+
+/** `*` after the label of a required field; the control itself carries `required`. */
+function RequiredMark({ tone }: { tone: FieldTone }) {
+  return (
+    <span aria-hidden="true" className={cn("ml-0.5", TONES[tone].required)}>
+      *
+    </span>
+  );
+}
+
+/** Field message with an icon, linked to the control by `aria-describedby`. */
+export function FieldError({
+  id,
+  message,
+  tone = "light",
+  className,
+}: {
+  id: string;
+  message: string;
+  tone?: FieldTone;
+  className?: string;
+}) {
+  return (
+    <p
+      id={id}
+      role="alert"
+      className={cn("mt-1.5 flex items-start gap-1.5", TONES[tone].error, className)}
+    >
+      <FiAlertCircle aria-hidden="true" size={13} className="mt-px shrink-0" />
+      <span>{message}</span>
+    </p>
+  );
+}
 
 type FieldShellProps = {
   label: string;
   error?: string;
   hint?: string;
+  required?: boolean;
   controlId: string;
   errorId: string;
   hintId: string;
@@ -50,6 +91,7 @@ function FieldShell({
   label,
   error,
   hint,
+  required,
   controlId,
   errorId,
   hintId,
@@ -67,6 +109,7 @@ function FieldShell({
         )}
       >
         {label}
+        {required ? <RequiredMark tone={tone} /> : null}
       </label>
       {children}
       {hint && !error ? (
@@ -74,11 +117,7 @@ function FieldShell({
           {hint}
         </p>
       ) : null}
-      {error ? (
-        <p id={errorId} role="alert" className={cn("mt-1.5", TONES[tone].error)}>
-          {error}
-        </p>
-      ) : null}
+      {error ? <FieldError id={errorId} message={error} tone={tone} /> : null}
     </div>
   );
 }
@@ -101,6 +140,13 @@ function describedBy(
   return hint ? ids.hint : undefined;
 }
 
+/** Control id: the caller's (to link an error summary to it) or a generated one. */
+function useControlIds(id: string | undefined) {
+  const generated = useId();
+  const controlId = id ?? generated;
+  return { controlId, error: `${controlId}-error`, hint: `${controlId}-hint` };
+}
+
 /** Text input. Dark surfaces by default; `tone="light"` on white cards. */
 export function TextField({
   label,
@@ -109,23 +155,26 @@ export function TextField({
   tone = "dark",
   wrapperClassName,
   className,
+  id,
+  required,
   ...rest
 }: WithFieldProps<InputHTMLAttributes<HTMLInputElement>>) {
-  const id = useId();
-  const ids = { error: `${id}-error`, hint: `${id}-hint` };
+  const ids = useControlIds(id);
   return (
     <FieldShell
       label={label}
       error={error}
       hint={hint}
+      required={required}
       tone={tone}
-      controlId={id}
+      controlId={ids.controlId}
       errorId={ids.error}
       hintId={ids.hint}
       className={wrapperClassName}
     >
       <input
-        id={id}
+        id={ids.controlId}
+        required={required}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(error, hint, ids)}
         className={cn(CONTROL_CLASS, TONES[tone].control, "rounded-full py-2.5", className)}
@@ -146,25 +195,28 @@ export function SelectField({
   wrapperClassName,
   className,
   options,
+  id,
+  required,
   ...rest
 }: WithFieldProps<SelectHTMLAttributes<HTMLSelectElement>> & {
   options: readonly SelectOption[];
 }) {
-  const id = useId();
-  const ids = { error: `${id}-error`, hint: `${id}-hint` };
+  const ids = useControlIds(id);
   return (
     <FieldShell
       label={label}
       error={error}
       hint={hint}
+      required={required}
       tone={tone}
-      controlId={id}
+      controlId={ids.controlId}
       errorId={ids.error}
       hintId={ids.hint}
       className={wrapperClassName}
     >
       <select
-        id={id}
+        id={ids.controlId}
+        required={required}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(error, hint, ids)}
         className={cn(
@@ -194,23 +246,26 @@ export function TextareaField({
   tone = "dark",
   wrapperClassName,
   className,
+  id,
+  required,
   ...rest
 }: WithFieldProps<TextareaHTMLAttributes<HTMLTextAreaElement>>) {
-  const id = useId();
-  const ids = { error: `${id}-error`, hint: `${id}-hint` };
+  const ids = useControlIds(id);
   return (
     <FieldShell
       label={label}
       error={error}
       hint={hint}
+      required={required}
       tone={tone}
-      controlId={id}
+      controlId={ids.controlId}
       errorId={ids.error}
       hintId={ids.hint}
       className={wrapperClassName}
     >
       <textarea
-        id={id}
+        id={ids.controlId}
+        required={required}
         aria-invalid={error ? true : undefined}
         aria-describedby={describedBy(error, hint, ids)}
         className={cn(
@@ -232,18 +287,20 @@ export function CheckboxField({
   tone = "dark",
   wrapperClassName,
   className,
+  id,
+  required,
   ...rest
 }: WithFieldProps<Omit<InputHTMLAttributes<HTMLInputElement>, "type">>) {
-  const id = useId();
-  const errorId = `${id}-error`;
+  const ids = useControlIds(id);
   return (
     <div className={wrapperClassName}>
       <div className="flex items-start gap-3">
         <input
-          id={id}
+          id={ids.controlId}
           type="checkbox"
+          required={required}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? errorId : undefined}
+          aria-describedby={error ? ids.error : undefined}
           className={cn(
             "mt-0.5 size-4 shrink-0 cursor-pointer rounded border accent-emerald-brand",
             TONES[tone].checkbox,
@@ -251,15 +308,12 @@ export function CheckboxField({
           )}
           {...rest}
         />
-        <label htmlFor={id} className={cn("leading-relaxed", TONES[tone].checkboxLabel)}>
+        <label htmlFor={ids.controlId} className={cn("leading-relaxed", TONES[tone].checkboxLabel)}>
           {label}
+          {required ? <RequiredMark tone={tone} /> : null}
         </label>
       </div>
-      {error ? (
-        <p id={errorId} role="alert" className={cn("mt-1.5", TONES[tone].error)}>
-          {error}
-        </p>
-      ) : null}
+      {error ? <FieldError id={ids.error} message={error} tone={tone} /> : null}
     </div>
   );
 }

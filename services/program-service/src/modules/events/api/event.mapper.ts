@@ -6,7 +6,7 @@ import type {
   TicketType,
 } from "@lavieco/shared/events";
 
-import { availabilityOf, seatsOf, type TicketTypeRecord } from "../../ticketing";
+import { availabilityOf, priceRangeOf, seatsOf, type TicketTypeRecord } from "../../ticketing";
 import type { EventSnapshot } from "../application/event-snapshot";
 import type {
   PublicEventBundle,
@@ -54,12 +54,24 @@ export function toEventDto(snapshot: EventSnapshot): EventView {
     description: event.description,
     safetyNotes: event.safetyNotes,
     cancellationPolicy: event.cancellationPolicy,
+    cancellationRules: event.cancellationRules,
+    minAge: event.minAge,
+    benefits: event.benefits,
     forChildren: event.forChildren,
     speakers: event.speakers,
     agenda: event.agenda,
     faq: event.faq,
     cover: event.cover,
+    banner: event.banner,
     gallery: event.gallery,
+    attendance: {
+      count: event.attendance.count,
+      approvedAt: iso(event.attendance.approvedAt),
+      approvedBy: event.attendance.approvedBy,
+    },
+    cancellation: event.cancellation
+      ? { reason: event.cancellation.reason, at: event.cancellation.at.toISOString() }
+      : null,
     form: event.form,
     ticketTypes: snapshot.ticketTypes.map(toTicketTypeDto),
     pricing: event.pricing,
@@ -100,11 +112,17 @@ export function toEventListItemDto(
  * Public card. Built field by field on purpose: nothing private (online link,
  * authors, form, counters) can slip through by spreading a record (S3).
  */
-export function toPublicCardDto({ event, type, ticketTypes }: PublicEventBundle): PublicEventCard {
+export function toPublicCardDto({
+  event,
+  type,
+  ticketTypes,
+  state,
+}: PublicEventBundle): PublicEventCard {
   return {
     slug: event.slug,
     kind: event.kind,
     status: event.status,
+    state,
     title: event.title,
     type: type ? { id: type.id, key: type.key, name: type.name } : null,
     format: event.format,
@@ -113,7 +131,9 @@ export function toPublicCardDto({ event, type, ticketTypes }: PublicEventBundle)
     venue: event.venue ? { name: event.venue.name, address: event.venue.address } : null,
     summary: event.summary,
     cover: event.cover,
+    banner: event.banner,
     pricing: event.pricing,
+    price: priceRangeOf(ticketTypes),
     availability: availabilityOf(ticketTypes),
   };
 }
@@ -128,10 +148,29 @@ export function toPublicDetailDto(bundle: PublicEventDetailBundle): PublicEventD
     description: event.description,
     safetyNotes: event.safetyNotes,
     cancellationPolicy: event.cancellationPolicy,
-    speakers: event.speakers,
+    cancellationRules: event.cancellationRules.map((rule) => ({
+      condition: rule.condition,
+      result: rule.result,
+    })),
+    minAge: event.minAge,
+    benefits: event.benefits.map((benefit) => ({
+      icon: benefit.icon,
+      title: benefit.title,
+      description: benefit.description,
+    })),
+    speakers: event.speakers.map((speaker) => ({
+      name: speaker.name,
+      role: speaker.role,
+      bio: speaker.bio,
+      avatar: speaker.avatar,
+    })),
     agenda: event.agenda,
     faq: event.faq,
     gallery: event.gallery,
+    // Reason and date only: who cancelled stays internal.
+    cancellation: event.cancellation
+      ? { reason: event.cancellation.reason, at: event.cancellation.at.toISOString() }
+      : null,
     ticketTypes: ticketTypes.map((ticketType) => ({
       id: ticketType.id,
       name: ticketType.name,

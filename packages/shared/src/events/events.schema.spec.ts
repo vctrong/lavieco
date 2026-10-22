@@ -3,7 +3,9 @@ import { randomUUID } from "node:crypto";
 import { describe, expect, it } from "vitest";
 
 import { formQuestionSchema, eventFormSchema } from "./event-form.schema";
-import { eventCreateRequestSchema } from "./event.schema";
+import { BENEFIT_ICONS } from "./enums";
+import { eventCancelRequestSchema, eventCreateRequestSchema } from "./event.schema";
+import { EVENT_LIMITS } from "./limits";
 import { publicEventDetailSchema } from "./public-event.schema";
 import { ticketTypeInputSchema } from "./ticket-type.schema";
 
@@ -118,8 +120,78 @@ describe("ticketTypeInputSchema", () => {
 describe("publicEventDetailSchema", () => {
   it("has no field that could leak private data", () => {
     const keys = Object.keys(publicEventDetailSchema.shape);
-    for (const forbidden of ["onlineUrl", "createdBy", "updatedBy", "form", "revision", "id"]) {
+    const privateKeys = [
+      "onlineUrl",
+      "createdBy",
+      "updatedBy",
+      "form",
+      "revision",
+      "id",
+      "attendance",
+    ];
+    for (const forbidden of privateKeys) {
       expect(keys).not.toContain(forbidden);
     }
+  });
+});
+
+describe("event page fields (22/10/2026)", () => {
+  it("defaults every new field so older clients and documents stay valid", () => {
+    const parsed = eventCreateRequestSchema.parse(base);
+    expect(parsed.banner).toBeNull();
+    expect(parsed.minAge).toBeNull();
+    expect(parsed.benefits).toEqual([]);
+    expect(parsed.cancellationRules).toEqual([]);
+    expect(parsed.attendanceCount).toBeNull();
+  });
+
+  it("fills speaker bio/avatar and agenda description", () => {
+    const parsed = eventCreateRequestSchema.parse({
+      ...base,
+      speakers: [{ name: "Người hướng dẫn" }],
+      agenda: [{ time: "09:00", title: "Mở đầu" }],
+    });
+    expect(parsed.speakers[0]).toEqual({
+      name: "Người hướng dẫn",
+      role: "",
+      bio: "",
+      avatar: null,
+    });
+    expect(parsed.agenda[0]?.description).toBe("");
+  });
+
+  it("only accepts benefit icons from the shared list", () => {
+    const ok = { icon: BENEFIT_ICONS[0], title: "Tác phẩm mang về" };
+    expect(eventCreateRequestSchema.safeParse({ ...base, benefits: [ok] }).success).toBe(true);
+    const bad = { icon: "material-symbols", title: "x" };
+    expect(eventCreateRequestSchema.safeParse({ ...base, benefits: [bad] }).success).toBe(false);
+  });
+
+  it("caps benefits and cancellation rules", () => {
+    const benefits = Array.from({ length: EVENT_LIMITS.benefitsMax + 1 }, () => ({
+      icon: "leaf",
+      title: "x",
+    }));
+    expect(eventCreateRequestSchema.safeParse({ ...base, benefits }).success).toBe(false);
+    const cancellationRules = Array.from({ length: EVENT_LIMITS.cancellationRulesMax + 1 }, () => ({
+      condition: "a",
+      result: "b",
+    }));
+    expect(eventCreateRequestSchema.safeParse({ ...base, cancellationRules }).success).toBe(false);
+  });
+
+  it("refuses an out-of-range minimum age", () => {
+    expect(eventCreateRequestSchema.safeParse({ ...base, minAge: -1 }).success).toBe(false);
+    expect(eventCreateRequestSchema.safeParse({ ...base, minAge: 100 }).success).toBe(false);
+  });
+});
+
+describe("eventCancelRequestSchema", () => {
+  it("requires a meaningful public reason", () => {
+    expect(eventCancelRequestSchema.safeParse({ reason: "Mưa", revision: 1 }).success).toBe(false);
+    expect(
+      eventCancelRequestSchema.safeParse({ reason: "Người hướng dẫn bị ốm đột xuất", revision: 1 })
+        .success,
+    ).toBe(true);
   });
 });

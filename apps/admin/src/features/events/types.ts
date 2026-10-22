@@ -7,7 +7,7 @@ export type EventFailure = keyof EventsText["errors"];
 export type ActionResult<T = undefined> =
   | { status: "ok"; data: T }
   | { status: "invalid"; fieldErrors: Record<string, string> }
-  | { status: "error"; reason: EventFailure };
+  | { status: "error"; reason: EventFailure; ref?: string };
 
 export type UploadFailure = keyof EventsText["images"]["errors"];
 

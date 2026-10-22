@@ -148,6 +148,18 @@ describe("planSettlement (webhook and reconcile share it)", () => {
       "amount_mismatch",
     );
   });
+
+  it("never takes seats again once the event is cancelled (refund only)", () => {
+    const cancelled = { eventCancelled: true };
+    for (const status of ["expired", "cancelled"] as const) {
+      expect(
+        planSettlement({ status, seatState: "released", amount: 100 }, 100, cancelled).kind,
+      ).toBe("refund_only");
+    }
+    expect(
+      planSettlement({ status: "paid", seatState: "sold", amount: 100 }, 100, cancelled).kind,
+    ).toBe("duplicate");
+  });
 });
 
 describe("codes", () => {

@@ -41,8 +41,8 @@
   - Đã có người đăng ký thì chỉ được thêm hoặc ẩn câu hỏi, không xoá hay đổi kiểu. Câu trả lời cũ vẫn xuất ra Excel.
 - **Loại chương trình** do admin quản lý trong Cài đặt (seed: Workshop, Talkshow, Triển lãm). Hình thức **online/offline** là trường riêng.
 - Có nút **Nhân bản chương trình** (tạo nháp mới, copy thông tin, loại vé và form).
-- `isFree` tính ra từ giá vé: **miễn phí = có loại vé đang hiện giá 0**. Triển lãm không giới hạn chỗ: `quantity = null`. Không làm danh sách chờ.
-- Trang công khai: không hiện số chỗ khi `quantity = null`; "Còn X chỗ" chỉ khi còn ≤ 10; "Hết chỗ" khi 0.
+- `isFree` tính ra từ giá vé: **miễn phí = mọi loại vé đang hiện giá 0** (đổi 22/10/2026, xem dưới). Triển lãm không giới hạn chỗ: `quantity = null`. Không làm danh sách chờ.
+- Trang công khai: không hiện số chỗ khi `quantity = null`; "Còn X chỗ" chỉ khi còn ≤ 20% sức chứa hoặc ≤ 5 chỗ (đổi 22/10/2026); "Hết chỗ" khi 0.
 - **Sự kiện đã diễn ra** (`kind: past`, chốt 18/10/2026): ghi lại chương trình diễn ra trước khi có hệ thống. Không loại vé, không form, bỏ điều kiện bắt đầu ở tương lai (nhưng phải đã kết thúc), xuất bản thẳng vào `ended`, chỉ hiện ở mục "Chương trình đã diễn ra".
 - Thiếu link trực tuyến chỉ là **cảnh báo** khi xuất bản; Phase 3 không phát hành vé/email cho sự kiện trực tuyến khi link còn trống.
 - Chương trình online: link nằm trong email vé và trên trang vé, gửi nhắc lại 24 giờ trước.
@@ -71,6 +71,19 @@
 - Google login chỉ cho member; admin giữ 2FA.
 - Check-in: permission `checkin:perform`, gán cho Coordinator (và Super Admin).
 - Xuất Excel người đăng ký: step-up + audit.
+
+## Quyết định bổ sung (22/10/2026): làm lại trang Chương trình
+
+Thắng các mục cũ khi nói khác. Thiết kế tham khảo: `docs/design/chuong-trinh/` (chỉ lấy bố cục và thang thiết kế; bảng màu Material, Material Symbols, ảnh mẫu và nội dung bịa đều bỏ).
+
+- **Trạng thái hiển thị** do `program-service` tính (`publicStateOf`), web không tự đoán: Sắp mở bán · Đang mở bán · Sắp hết chỗ · Hết chỗ · Đóng đăng ký · Sắp mở đăng ký (online chưa có link) · Đã diễn ra · Đã huỷ. "Sắp hết chỗ" khi còn ≤ 20% hoặc ≤ 5 chỗ (`EVENT_LIMITS.fewSeatsRatio/fewSeatsMin`); chỗ còn = sức chứa − đã bán − đang giữ.
+- **Đã diễn ra theo giờ:** chương trình quá `endAt` tự sang mục "Đã diễn ra", không cần admin bấm Kết thúc.
+- **Miễn phí** = mọi loại vé đang hiện 0đ (cả nhãn lẫn bộ lọc "Chỉ miễn phí"); "Từ X" chỉ khi các loại vé khác giá.
+- **Sức chứa** không phải trường riêng: vẫn là tổng `quantity` các loại vé (quyết định 17/10 giữ nguyên).
+- **Huỷ chương trình** (`cancelled`, cuối): `program:write` + step-up + audit, bắt buộc lý do (công khai). Vé bị vô hiệu, đơn chờ thanh toán bị huỷ (huỷ link payOS), đơn đã trả tiền gắn cờ cần hoàn, **hoàn tiền vẫn thủ công** (BR-15); người đặt nhận email "Chương trình đã huỷ". Tiền tới sau khi huỷ: ghi nhận và gắn cần hoàn, không cấp chỗ.
+- **Trường mới (đều tuỳ chọn):** banner 21:9 (`banner`), poster 4:5 (= `cover`), `minAge`, "Bạn sẽ nhận" (`benefits`, icon theo khoá), bảng chính sách huỷ (`cancellationRules`, đoạn văn cũ thành ghi chú), giới thiệu và ảnh chân dung người hướng dẫn (chỉ khi người đó đồng ý), mô tả cho mục lịch trình. Thời lượng tính từ giờ bắt đầu/kết thúc. Bản đồ là thẻ địa chỉ + link, không nhúng iframe bên thứ ba.
+- **Số người tham gia** (sau khi diễn ra): đếm vé đã check-in; sự kiện lưu trữ nhập tay và chỉ công khai sau khi Super Admin duyệt (`impact:approve`, BR-09).
+- **Trang chi tiết:** một thẻ vé duy nhất chỉ chuẩn bị lựa chọn rồi dẫn vào luồng đặt vé cũ (`/dang-ky?ve=&sl=`, checkout và service kiểm tra lại); "Thêm vào lịch" (`/chuong-trinh/[slug]/lich`, .ics không có link online); JSON-LD `Event` (ngoại lệ `dangerouslySetInnerHTML` duy nhất, `shared/components/json-ld.tsx`).
 
 ## 0. Trước khi code
 

@@ -10,14 +10,15 @@ import {
   type EventView,
   type TicketType,
 } from "@lavieco/shared/events";
-import { Button, CheckboxField, TextField } from "@lavieco/ui";
+import { Button, CheckboxField, FormAlert, TextField } from "@lavieco/ui";
 
 import { createTicketType, updateTicketType } from "../actions/ticket-types";
 import { TEXT } from "../constants/text";
 import { fieldErrorsOf } from "../schemas";
 import { formatVnd, isoToVietnamLocal, vietnamLocalToIso } from "../utils/format";
 import { EditorSection } from "./editor-section";
-import { FormAlert } from "./form-alert";
+import { callAction } from "@/shared/call-action";
+import { failureText } from "../utils/failure-text";
 
 type TicketValues = {
   name: string;
@@ -90,19 +91,19 @@ function TicketForm({
     if (!parsed.success) return setErrors(fieldErrorsOf(parsed.error));
     setErrors({});
     setBusy(true);
-    const result = await (
+    const result = await callAction(() =>
       ticket
         ? updateTicketType(eventId, ticket.id, { ...body, revision: ticket.revision })
-        : createTicketType(eventId, body)
-    ).catch(() => null);
+        : createTicketType(eventId, body),
+    );
     setBusy(false);
-    if (result?.status === "ok") {
+    if (result.status === "ok") {
       router.refresh();
       onDone();
       return;
     }
-    if (result?.status === "invalid") setErrors(result.fieldErrors);
-    setAlert(result?.status === "error" ? t.errors[result.reason] : t.errors.invalid);
+    if (result.status === "invalid") setErrors(result.fieldErrors);
+    setAlert(result.status === "error" ? failureText(result) : t.errors.invalid);
   };
 
   return (
@@ -248,7 +249,7 @@ export function TicketTypesSection({ event, canWrite }: { event: EventView; canW
   return (
     <EditorSection
       id="loai-ve"
-      index={7}
+      index={10}
       title={t.editor.sections.tickets}
       hint={t.editor.sections.ticketsHint}
       aside={

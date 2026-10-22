@@ -890,7 +890,8 @@
                           "order:read",
                           "order:refund",
                           "registration:export",
-                          "checkin:perform"
+                          "checkin:perform",
+                          "impact:approve"
                         ]
                       }
                     }

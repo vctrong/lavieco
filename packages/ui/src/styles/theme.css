@@ -15,6 +15,19 @@
   --color-canary: #e7dd6a;
   --color-soft-white: #f8faf6;
   --color-charcoal: #1e2a32;
+  /*
+   * Emerald for TEXT and links only. Brand Emerald reads at 2.6:1 on Soft White (fails
+   * WCAG AA); this darker shade keeps the hue at ~5.1:1 on Soft White and ~5:1 on Mint
+   * Mist. Fills, icons and focus rings keep --color-emerald-brand.
+   */
+  --color-emerald-ink: #007a57;
+  /*
+   * Form errors only (required marks, invalid borders, field messages). A muted red:
+   * ~6.5:1 on white and ~6.2:1 on Soft White (WCAG AA). Canary stays for warnings.
+   */
+  --color-error: #ba1a1a;
+  /* The same role on Deep Blue / Deep Sea forms: ~7.2:1 on Deep Blue (WCAG AA). */
+  --color-error-on-dark: #ffb4ab;
   /* Paper tones for story cards and stamps */
   --color-paper: #f1ece1;
   --color-paper-edge: #d7ceba;
@@ -32,7 +45,51 @@
   --radius-arch-lg: 220px 220px 32px 32px;
   --radius-arch-mat: 150px 150px 18px 18px;
 
+  /* Exhibition cards ("pedestal", design.md): soft corners bounded by a hairline */
+  --radius-pedestal: 1.25rem;
+
   --tracking-museum: 0.14em;
+
+  /*
+   * Type scale of "The Living Gallery" (docs/design/chuong-trinh). Fraunces for the
+   * display/headline/title steps, Be Vietnam Pro for body and labels: pair each size
+   * with font-display or font-sans. Vietnamese diacritics need the generous leading.
+   */
+  --text-display-hero: 4rem;
+  --text-display-hero--line-height: 4.75rem;
+  --text-display-hero--letter-spacing: -0.02em;
+  --text-display-hero-mobile: 2.5rem;
+  --text-display-hero-mobile--line-height: 3rem;
+  --text-display-hero-mobile--letter-spacing: -0.01em;
+  --text-headline-lg: 2.75rem;
+  --text-headline-lg--line-height: 3.375rem;
+  --text-headline-lg--letter-spacing: -0.015em;
+  --text-headline-lg-mobile: 1.875rem;
+  --text-headline-lg-mobile--line-height: 2.375rem;
+  --text-headline-lg-mobile--letter-spacing: -0.01em;
+  --text-headline-md: 2rem;
+  --text-headline-md--line-height: 2.625rem;
+  --text-headline-md--letter-spacing: -0.01em;
+  --text-headline-sm: 1.5rem;
+  --text-headline-sm--line-height: 2rem;
+  --text-headline-sm--font-weight: 500;
+  --text-title-editorial: 1.25rem;
+  --text-title-editorial--line-height: 1.875rem;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.9375rem;
+  --text-body-lg--font-weight: 300;
+  --text-body-md: 0.9375rem;
+  --text-body-md--line-height: 1.625rem;
+  --text-body-sm: 0.8125rem;
+  --text-body-sm--line-height: 1.375rem;
+  --text-label-caps: 0.75rem;
+  --text-label-caps--line-height: 1rem;
+  --text-label-caps--letter-spacing: 0.12em;
+  --text-label-caps--font-weight: 600;
+  --text-meta: 0.6875rem;
+  --text-meta--line-height: 1rem;
+  --text-meta--letter-spacing: 0.06em;
+  --text-meta--font-weight: 500;
 
   /*
    * Space to keep clear at the top of a full-screen section so its content does

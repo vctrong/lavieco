@@ -25,6 +25,8 @@ export const PERMISSIONS = [
   "order:refund",
   "registration:export",
   "checkin:perform",
+  /** Publish an impact figure such as a typed attendance count (BR-09). */
+  "impact:approve",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];

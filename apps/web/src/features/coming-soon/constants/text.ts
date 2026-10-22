@@ -25,6 +25,55 @@ export const TEXT = {
       unavailable: "Chưa thể ghi nhận địa chỉ lúc này. Bạn vui lòng thử lại sau ít phút.",
       invalid: "Thông tin chưa hợp lệ. Bạn vui lòng kiểm tra lại email.",
     },
+    /** Pages not built yet, inside the site chrome (`ComingSoonSection`). */
+    section: {
+      eyebrow: "Sắp ra mắt",
+      home: "Về trang chủ",
+      waitlistTitle: "Nhận thông báo khi trang ra mắt",
+      metaTitle: (page: string) => `${page} (sắp ra mắt) | LAVIECO`,
+    },
+    suggestions: {
+      programs: "Xem các chương trình",
+      contact: "Gửi yêu cầu hợp tác",
+      lookup: "Tra cứu vé",
+    },
+    pages: {
+      story: {
+        title: "Câu chuyện",
+        description:
+          "Hành trình của LAVIECO, từ những vỏ hải sản bị bỏ lại sau bữa ăn ở Cần Thơ đến lớp học mỹ thuật xanh, đang được viết lại cho trang này.",
+      },
+      collection: {
+        title: "Bộ sưu tập",
+        description:
+          "Những tác phẩm làm từ vỏ hải sản tái sinh, mỗi tác phẩm là một minh chứng kèm câu chuyện và lối dẫn về Cẩm nang xanh số.",
+      },
+      handbook: {
+        title: "Cẩm nang xanh số",
+        description:
+          "Cẩm nang đọc qua mã QR trên sản phẩm: cách vỏ hải sản trở thành chất liệu nghệ thuật, miễn phí trong giai đoạn ra mắt.",
+      },
+      impact: {
+        title: "Tác động",
+        description:
+          "Những con số về vật liệu được tái sinh và các lớp học đã diễn ra, chỉ công bố khi đã có nguồn và được kiểm chứng.",
+      },
+      partnership: {
+        title: "Hợp tác",
+        description:
+          "Trang dành cho trường học, doanh nghiệp và đối tác đang được chuẩn bị. Bạn vẫn có thể gửi yêu cầu hợp tác ngay ở trang chủ.",
+      },
+      tickets: {
+        title: "Vé của tôi",
+        description:
+          "Danh sách vé trong tài khoản đang được hoàn thiện. Trong lúc chờ, bạn tra cứu vé bằng email đã dùng khi đặt.",
+      },
+      registrations: {
+        title: "Chương trình đã đăng ký",
+        description:
+          "Lịch sử đăng ký chương trình trong tài khoản đang được hoàn thiện. Vé vẫn được gửi qua email như thường lệ.",
+      },
+    },
     facts: [
       { label: "KHÔNG GIAN", value: "Bảo tàng xanh" },
       { label: "TRIỂN LÃM", value: "LAVIECO" },

@@ -4,12 +4,13 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { FiCheckCircle, FiMail, FiRefreshCw, FiRotateCcw } from "react-icons/fi";
 
-import { Button, TextField, TextareaField } from "@lavieco/ui";
+import { Button, FormAlert, TextareaField, TextField } from "@lavieco/ui";
 
 import { markRefunded, reconcileOrder, resendTickets } from "../actions/orders";
 import { TEXT } from "../constants/text";
 import type { ActionResult } from "../types";
-import { FormAlert } from "./form-alert";
+import { callAction } from "@/shared/call-action";
+import { failureText } from "../utils/failure-text";
 
 type OrderActionsProps = {
   orderId: string;
@@ -39,11 +40,10 @@ export function OrderActions({
     setBusy(true);
     setAlert(null);
     setNotice(null);
-    const result = await action().catch(() => null);
+    const result = await callAction(action);
     setBusy(false);
-    if (!result) return (setAlert(t.errors.unavailable), false);
     if (result.status === "invalid") return (setErrors(result.fieldErrors), false);
-    if (result.status === "error") return (setAlert(t.errors[result.reason]), false);
+    if (result.status === "error") return (setAlert(failureText(result)), false);
     setNotice(success);
     router.refresh();
     return true;

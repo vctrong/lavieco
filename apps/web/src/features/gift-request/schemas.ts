@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import "@/shared/zod-vi";
+
 import { INTEREST_VALUES, PHONE_PATTERN } from "./constants/config";
 import { TEXT } from "./constants/text";
 

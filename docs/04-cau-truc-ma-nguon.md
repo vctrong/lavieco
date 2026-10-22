@@ -45,7 +45,7 @@
 | C2 | **Ranh giới được máy kiểm tra** | Quy tắc "ai được import ai" nằm trong cấu hình lint và kiểm tra ở CI, không dựa vào trí nhớ. |
 | C3 | **Gói dùng chung chỉ chứa hợp đồng và công cụ** (P6 ở `02`) | Không có logic nghiệp vụ trong `packages/`. Nghiệp vụ nằm trong service. |
 | C4 | **Chữ giao diện không viết cứng trong JSX** **[kế thừa]** | Chữ cố định của giao diện nằm trong file constants của tính năng, có cấu trúc theo ngôn ngữ. |
-| C5 | **Màu, font, bo góc chỉ đến từ design token** **[kế thừa]** | Không hex/px màu rời trong component. Giá trị gốc nằm ở một tệp token duy nhất. |
+| C5 | **Màu, font, bo góc chỉ đến từ design token** **[kế thừa]** | Không hex/px màu rời trong component. Giá trị gốc nằm ở một tệp token duy nhất. Chữ/link màu xanh dùng `emerald-ink` (Emerald `#10B183` chỉ đạt 2,6:1 trên nền sáng); nút chính chữ Charcoal trên Emerald. Thang chữ `text-display-hero` … `text-meta` và `rounded-pedestal` lấy từ "The Living Gallery". Lỗi form dùng token `error` `#BA1A1A` (~6,5:1 trên trắng) và trên nền tối (Deep Blue/Deep Sea) `error-on-dark` `#FFB4AB` (~7,2:1 trên `#20345F`): dấu * của trường bắt buộc, viền và câu lỗi, luôn kèm icon + câu chữ (không chỉ báo bằng màu); Canary chỉ cho cảnh báo, không cho lỗi (22/10/2026). |
 | C6 | **Đường dẫn công khai (`app/`) mỏng** | Route chỉ ghép các tính năng lại; logic và giao diện phức tạp nằm trong `features/`. |
 | C7 | **Mỗi service đọc như một ứng dụng nhỏ độc lập** | Cùng một bố cục, cùng một cách đặt tên. Đọc được một service là đọc được cả ba. |
 | C8 | **Thêm thứ mới bằng công thức có sẵn** | Mục 13 có checklist cho các thao tác lặp lại, và có generator cho phần khung. |
@@ -368,7 +368,7 @@ export const TEXT = {
 | **Hình minh họa/trang trí** | Sóng, hạt ngọc, sơ đồ vỏ sò... **không phải icon**; là tài sản đồ họa (tệp trong `public/images/illustrations/` hoặc component đồ họa chuyên biệt), có văn bản thay thế đúng nơi. |
 | **Chuyển động** | Mọi hiệu ứng (con trỏ tùy biến, thẻ lật, chạy chữ, thanh tiến trình) phải tắt/giảm khi `prefers-reduced-motion`. Chuyển cảnh phức tạp (phần tử dùng chung, stagger, drag) dùng `motion` (ADR-013), chỉ trong client component. |
 | **Truy cập được** | Dùng `eslint-plugin-jsx-a11y`; `alt` bắt buộc cho ảnh; điều hướng bằng bàn phím; tương phản đạt chuẩn. |
-| **Không HTML thô** | Cấm `dangerouslySetInnerHTML` (P9 ở `02`); nội dung dạng khối được kết xuất bằng component. |
+| **Không HTML thô** | Cấm `dangerouslySetInnerHTML` (P9 ở `02`); nội dung dạng khối được kết xuất bằng component. **Ngoại lệ duy nhất** (22/10/2026): `apps/web/src/shared/components/json-ld.tsx` cho JSON-LD, nhận object (không nhận chuỗi) và escape `<` `>` `&` U+2028/2029; luật `react/no-danger` chỉ tắt cho đúng tệp này trong `packages/config/eslint-next.mjs`. |
 
 `packages/ui/src/styles/theme.css` (bản khởi đầu từ bộ nhận diện đã chốt và prototype):
 
@@ -406,6 +406,8 @@ export const TEXT = {
 | **Cache tag** | Đặt tên `content:<thực-thể>` và `content:<thực-thể>:<slug-hoặc-id>` (ví dụ `content:work:sage-elements`, `content:chapter:vo-so-den-tu-dau`). Webhook làm mới ở `web` gọi `revalidateTag` với đúng các tag này (`02` §7.3). |
 | **Form** | Schema Zod dùng chung ở `@lavieco/shared` khi cùng hợp đồng với service; schema chỉ riêng giao diện để ở `schemas.ts` của tính năng. Kiểm tra ở client (trải nghiệm) **và** ở Route Handler (an toàn). |
 | **Chống gửi trùng** | Form sinh `Idempotency-Key` (UUID) khi mở, gửi kèm mọi lần nộp (`02` §6.1). |
+| **Báo lỗi form** (22/10/2026) | Mọi form dùng chung một cách: `useFormErrors` + `FormErrorNote`, `RequiredNote`, `FormAlert`, `BusyLabel` của `@lavieco/ui`. Trường bắt buộc có `required` (dấu * `aria-hidden`), đầu form có dòng "Các mục có dấu * là bắt buộc."; không khoá nút khi thiếu. Bấm gửi khi còn lỗi: cuộn mượt (tức thì khi `prefers-reduced-motion`) tới trường lỗi đầu tiên, chừa `--spacing-dock-clearance` cho navbar dính, rồi focus; dòng "Còn N mục cần điền hoặc sửa" màu error ngay trên nút (không viền/nền) và vùng `aria-live` ẩn đọc "Còn N mục cần điền"; lỗi cụ thể dưới từng trường. Không dùng hộp tóm tắt lỗi ở đầu form (bỏ 22/10/2026). Sau lần gửi đầu kiểm tra lại khi gõ/rời trường (`useFormErrors({ paused: busy })`: không kiểm tra lại lúc đang gửi, vì ô bị khoá thì không có trong FormData). Lúc gửi, giá trị đọc từ `FormData(event.currentTarget)` (đúng cả khi trình duyệt tự điền mà không bắn `onChange`); kiểm tra ở client không qua thì không gọi action; mỗi lần gửi xoá lỗi server cũ. Câu lỗi: schema đặt câu tiếng Việt riêng; câu còn lại qua `src/shared/zod-vi.ts` (`z.config({ customError })`, mỗi `schemas.ts` của form import đầu tiên), **không bao giờ** hiện câu gốc của Zod. Lỗi server theo trường hiện dưới đúng trường. Test component dùng `// @vitest-environment happy-dom` + `src/shared/testing/dom.ts` (web). |
+| **Gọi Server Action** (22/10/2026) | Client gọi qua `callAction` (`src/shared/form-failures.ts`), không `.catch(() => null)`: trang cũ sau deploy → "Trang đã có bản cập nhật" + nút Tải lại, mất mạng → báo kiểm tra mạng. Action bọc `guarded` (`src/lib/action-errors.ts`), không bao giờ ném lỗi ra trình duyệt; mỗi bước một `x-request-id`; chỉ lỗi 5xx/không gọi được mới là "Hệ thống đang bận" kèm mã tham chiếu (8 ký tự đầu của request id, log có đủ id). `common.rate_limited` → "thử lại sau X giây", `common.validation_failed` → dưới đúng trường, `common.unavailable` khi gửi mã OTP → "Chưa gửi được mã xác thực". Turnstile (`TurnstileWidget`, render explicit) reset sau **mỗi** lần gửi qua `resetSignal`. |
 | **State phía client** | Ưu tiên state cục bộ và server state. Không thêm thư viện quản lý state toàn cục khi chưa có nhu cầu đo được. |
 | **Lưu cục bộ (Cẩm nang)** | Ghi chú/đánh dấu/tiến độ ở IndexedDB, bọc sau một module `features/handbook/storage` với ID UUID, `updatedAt`, cờ xóa mềm (`03` §9.1). Không rải truy cập IndexedDB khắp nơi. |
 
@@ -438,7 +440,7 @@ export const TEXT = {
 
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).
 - Các đường dẫn tiếng Việt không dấu ở trên là đề xuất; tên URL chuẩn và chiến lược tiền tố ngôn ngữ chốt ở PQ3.
-- **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn navbar (`Navbar`, truyền Server Action `logout` của `account` xuống), chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`not-found`, `error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
+- **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn navbar (`Navbar`, truyền Server Action `logout` của `account` xuống), chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. **404 (22/10/2026):** `(site)/[...missing]/page.tsx` gọi `notFound()` nên `(site)/not-found.tsx` hiện trong navbar + footer (mã 404, `noindex`); `app/not-found.tsx` dùng cùng component cho `notFound()` ngoài `(site)`. **Trang chưa làm** được link từ navbar/footer/CTA: route mỏng gọi `ComingSoonSection` (feature `coming-soon`, cấu hình `constants/pages.ts`, chữ `text.ts`), metadata `noindex`; xoá mục đó khi trang thật ra mắt. Test `app/internal-links.spec.ts`: mọi link nội bộ của navbar/footer/CTA phải trỏ tới route có thật. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
 - `src/proxy.ts` của `web`: cổng "sắp ra mắt" (TODO UC-28), chuyển hướng UX theo cookie phiên member (`/tai-khoan` → `/dang-nhap?tiep=...`, đã đăng nhập thì rời `/dang-nhap`, `/dang-ky`) và header bảo mật; không chứa logic nghiệp vụ, không phải hàng rào bảo mật.
 - **Phiên member** (`lib/session.ts`): cookie httpOnly `lv_member_at`, `lv_member_rt`, `SameSite=Lax`. Server Component không ghi cookie được, nên khi access token hết hạn thì chuyển sang `/api/auth/refresh?tiep=...`. Tham số `tiep` chỉ nhận đường dẫn tương đối (`safeNextPath`, chống open redirect).
 - **Form công khai:** Zod ở client và Server Action, honeypot `website`, Turnstile chuẩn bị sẵn (`TURNSTILE_ENABLED`, `shared/components/turnstile-widget.tsx`, `lib/turnstile.ts`).
@@ -457,8 +459,8 @@ export const TEXT = {
 | `contact` | Form hợp tác |
 | `gift-request` | Form chọn quà / đặt số lượng lớn |
 | `waitlist` | Form nhận tin |
-| `coming-soon` | Trang chờ ra mắt |
-| `not-found` | Trang 404 (bản dự phòng chữ trong constants) |
+| `coming-soon` | Trang chờ ra mắt `/sap-ra-mat` và `ComingSoonSection` cho các trang chưa làm (`/cau-chuyen`, `/bo-suu-tap`, `/cam-nang`, `/tac-dong`, `/hop-tac`, `/tai-khoan/ve`, `/tai-khoan/chuong-trinh`) |
+| `not-found` | Trang 404 "Calm Gallery" (số 404 Fraunces nhạt, về trang chủ + link gợi ý), trong khung site |
 | `server-error` | Trang 500 dùng chung cho `error.tsx` và `global-error.tsx` (chỉ hiện `digest`, không hiện `message`/stack) |
 | `qr-resolver` | Logic phân giải mã và ghi nhận lượt quét (`route.ts` chỉ gọi vào đây) |
 
@@ -940,7 +942,7 @@ Dựng **`program-service`** theo công thức §13.3: database `lavieco_program
 - `safetyNotes` không bắt buộc; trường cố định còn 4 (họ tên, email, SĐT, đồng ý dữ liệu), ô "đã đọc lưu ý an toàn" chỉ hiện khi có lưu ý.
 - Thiếu `onlineUrl` là cảnh báo, không chặn xuất bản.
 - Miễn phí = có loại vé giá 0 (`docs/03` §9.2).
-- Công khai: không hiện số chỗ khi `quantity = null`; "Còn X chỗ" chỉ khi còn ≤ 10; "Hết chỗ" khi 0.
+- Công khai: không hiện số chỗ khi `quantity = null`; "Còn X chỗ" chỉ khi còn ≤ 20% sức chứa hoặc ≤ 5 chỗ (đổi 22/10/2026); "Hết chỗ" khi 0.
 - Sự kiện đã diễn ra (`kind: past`): không vé, không form, bỏ điều kiện bắt đầu ở tương lai (nhưng phải đã kết thúc), xuất bản thẳng vào `ended`, chỉ hiện ở mục "Chương trình đã diễn ra".
 
 ### 15.3 Session sau cần đọc trước khi bắt đầu Phase 2
@@ -1006,4 +1008,6 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.6.1 | 18/10/2026 | Phase 2 đóng; Phase 2b dùng Cloudinary cho ảnh (cần ADR-020 và cập nhật `docs/02` §8.2 khi bắt đầu) | V.C. Trọng |
 | v0.7 | 18/10/2026 | Phase 2b (xong, chờ duyệt): `content-service` + module `media`, ảnh chương trình ở admin, ảnh và avatar ở web, route `/api/media/event-images`, `/api/account/avatar`; ADR-020 (Cloudinary), bỏ MinIO khỏi §11.1 và lệnh `dev:infra`; dev tách khỏi database production (guard ở `loadConfig`, `env:check`); biến Cloudinary; trạng thái lộ trình | V.C. Trọng |
 | v0.8 | 18/10/2026 | Thiết kế lại vé và email: bố cục email dùng chung ở `service-kit` `notify/email/` (ngoại lệ hex có quản lý trong `email-tokens.ts`), lệnh `mail:preview` | V.C. Trọng |
+| v0.9 | 22/10/2026 | Trang Chương trình làm lại: `features/events` tách thành thẻ, bộ lọc (client, URL), các section và thẻ vé (client); danh sách ở route group `(danh-sach)` để `loading.tsx` không bao trang con; `[slug]/lich/route.ts` (.ics); checkout nhận `?ve=&sl=`; huỷ chương trình và số người tham gia nằm ở module `orders` của `program-service` (theo hướng phụ thuộc `orders → events`); ngoại lệ JSON-LD; token `emerald-ink`, thang chữ, `rounded-pedestal` | V.C. Trọng |
+| v0.10 | 22/10/2026 | Báo lỗi form chung cho web và admin (§5.5): `useFormErrors` + `FormErrorNote`… ở `@lavieco/ui` (không còn hộp tóm tắt ở đầu form), `callAction`/`guarded` thay `.catch(() => null)`, mã tham chiếu cho lỗi 5xx, Turnstile reset sau mỗi lần gửi; token `error`/`error-on-dark` (C5). |
 | v0.6 | 18/10/2026 | Phase 2 xong: bản đồ route `web` (`events`, xem trước, `/api/revalidate`) và `admin` (`/events/*`, loại chương trình ở `/events/types`), module `program-service` đã dựng, trạng thái lộ trình và Phase 2b (`media` bắt buộc trước khi mở cho người dùng thật), các điều chỉnh khi duyệt kế hoạch | V.C. Trọng |

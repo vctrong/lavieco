@@ -2,9 +2,18 @@ import { z } from "zod";
 
 import { isoDateTimeSchema, objectIdSchema } from "../common/object-id";
 import { cursorPageSchema } from "../common/pagination";
-import { eventFormatSchema, eventKindSchema, eventStatusSchema, questionTypeSchema } from "./enums";
+import {
+  eventFormatSchema,
+  eventKindSchema,
+  eventStatusSchema,
+  publicEventStateSchema,
+  questionTypeSchema,
+} from "./enums";
 import {
   eventAgendaItemSchema,
+  eventBenefitSchema,
+  eventCancellationRuleSchema,
+  eventCancellationSchema,
   eventImageSchema,
   eventFaqItemSchema,
   eventPricingSchema,
@@ -14,8 +23,9 @@ import { publicEventTypeSchema } from "./event-type.schema";
 import { registrationBlockerSchema } from "./order.schema";
 
 /**
- * Seat information shown publicly: `seatsLeft` is only given when a few seats remain
- * (≤ EVENT_LIMITS.fewSeatsThreshold), never for unlimited events. Raw counters stay private.
+ * Seat information shown publicly: `seatsLeft` is only given when few seats remain
+ * (≤ EVENT_LIMITS.fewSeatsRatio of the capacity or ≤ fewSeatsMin), never for unlimited
+ * events. Raw counters and the capacity itself stay private.
  */
 export const publicAvailabilitySchema = z.object({
   soldOut: z.boolean(),
@@ -23,11 +33,20 @@ export const publicAvailabilitySchema = z.object({
 });
 export type PublicAvailability = z.infer<typeof publicAvailabilitySchema>;
 
-/** Card on `/chuong-trinh`. Only published, closed or ended events (S3). */
+/** Lowest and highest visible ticket price, whole VND; null without a visible ticket type. */
+export const publicPriceRangeSchema = z.object({
+  min: z.number().int(),
+  max: z.number().int(),
+});
+export type PublicPriceRange = z.infer<typeof publicPriceRangeSchema>;
+
+/** Card on `/chuong-trinh`. Only published, closed, ended or cancelled events (S3). */
 export const publicEventCardSchema = z.object({
   slug: z.string(),
   kind: eventKindSchema,
   status: eventStatusSchema,
+  /** Badge and booking state, computed by program-service at read time. */
+  state: publicEventStateSchema,
   title: z.string(),
   type: publicEventTypeSchema.nullable(),
   format: eventFormatSchema,
@@ -35,8 +54,12 @@ export const publicEventCardSchema = z.object({
   endAt: isoDateTimeSchema,
   venue: z.object({ name: z.string(), address: z.string() }).nullable(),
   summary: z.string(),
+  /** Poster, 4:5. */
   cover: eventImageSchema.nullable(),
+  /** Wide banner, 21:9. */
+  banner: eventImageSchema.nullable(),
   pricing: eventPricingSchema,
+  price: publicPriceRangeSchema.nullable(),
   availability: publicAvailabilitySchema,
 });
 export type PublicEventCard = z.infer<typeof publicEventCardSchema>;
@@ -89,19 +112,36 @@ export const publicEventDetailSchema = publicEventCardSchema.extend({
   description: z.string(),
   safetyNotes: z.string(),
   cancellationPolicy: z.string(),
+  cancellationRules: z.array(eventCancellationRuleSchema),
+  minAge: z.number().int().nullable(),
+  benefits: z.array(eventBenefitSchema),
   speakers: z.array(eventSpeakerSchema),
   agenda: z.array(eventAgendaItemSchema),
   faq: z.array(eventFaqItemSchema),
   gallery: z.array(eventImageSchema),
+  cancellation: eventCancellationSchema.nullable(),
   ticketTypes: z.array(publicTicketTypeSchema),
   registration: publicRegistrationSchema,
 });
 export type PublicEventDetail = z.infer<typeof publicEventDetailSchema>;
 
+/**
+ * `GET /internal/v1/events/by-slug/{slug}/attendance`, for an event that has ended:
+ * its checked-in tickets, or the approved count of an archive-only event (BR-09).
+ * Null while unknown, not approved, or the event is not over.
+ */
+export const publicEventAttendanceSchema = z.object({
+  attendeeCount: z.number().int().nullable(),
+});
+export type PublicEventAttendance = z.infer<typeof publicEventAttendanceSchema>;
+
 export const PUBLIC_EVENT_SCOPES = ["upcoming", "past"] as const;
 
 export const publicEventListQuerySchema = z.object({
-  /** `upcoming` = published or closed; `past` = ended (incl. archive-only events). */
+  /**
+   * `upcoming` = published, closed or cancelled and not over yet; `past` = ended, or
+   * published/closed whose end time has passed (incl. archive-only events).
+   */
   scope: z.enum(PUBLIC_EVENT_SCOPES).default("upcoming"),
   typeId: objectIdSchema.optional(),
   format: eventFormatSchema.optional(),
@@ -116,5 +156,8 @@ export const publicEventListQuerySchema = z.object({
 });
 export type PublicEventListQuery = z.infer<typeof publicEventListQuerySchema>;
 
-export const publicEventListSchema = cursorPageSchema(publicEventCardSchema);
+export const publicEventListSchema = cursorPageSchema(publicEventCardSchema).extend({
+  /** Events matching the filters across all pages ("N chương trình"). */
+  total: z.number().int(),
+});
 export type PublicEventList = z.infer<typeof publicEventListSchema>;

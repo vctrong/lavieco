@@ -204,6 +204,8 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Hoàn tiền, huỷ vé | — | — | — | — | ✓ | — | ✓ | — |
 | Xuất danh sách người đăng ký | — | — | — | — | ✓ | — | ✓ | — |
 | Check-in tại cửa | — | — | — | — | ✓ | — | ✓ | — |
+| Huỷ chương trình (nhập lại 2FA, ghi nhật ký) | — | — | — | — | ✓ | — | ✓ | — |
+| Duyệt số người tham gia của sự kiện lưu trữ (BR-09) | — | — | — | — | ✓ | — | — | — |
 | Yêu cầu/đơn quà tặng | — | — | — | — | ✓ | — | ✓ | đọc |
 | Nhập số liệu tác động | — | — | — | — | ✓ | — | ✓ | đọc |
 | Duyệt & công bố báo cáo tác động | — | — | — | — | ✓ | — | — | đọc |
@@ -772,3 +774,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.5 | 17/10/2026 | Phân hệ Chương trình vào GĐ1 (ADR-014): Member (UC-09 lên GĐ1), UC-30 → 34, BR-12 → 17, quyền mới trong ma trận, A1 cập nhật, A9 | V.C. Trọng |
 | v0.6 | 18/10/2026 | UC-32: sự kiện đã diễn ra (lưu trữ); UC-30: ô lưu ý an toàn chỉ khi chương trình có lưu ý | V.C. Trọng |
 | v0.7 | 18/10/2026 | Phase 2b: UC-09 thêm ảnh đại diện tuỳ chọn của Member; UC-32 có ảnh bìa và thư viện ảnh (≤ 12, bắt buộc mô tả ảnh). Ảnh lưu ở Cloudinary, đã xoá EXIF (ADR-020) | V.C. Trọng |
+| v0.8 | 22/10/2026 | Trang Chương trình làm lại: UC-32 thêm trạng thái **Đã huỷ** (cuối; vô hiệu vé, đơn đã trả tiền chờ hoàn thủ công, email người đặt), banner/poster, "Bạn sẽ nhận", bảng chính sách huỷ, giới thiệu người hướng dẫn. "Miễn phí" = **mọi** loại vé 0đ; "Sắp hết chỗ" khi còn ≤ 20% hoặc ≤ 5 chỗ; chương trình quá giờ kết thúc tự vào mục "Đã diễn ra". Số người tham gia: vé đã check-in, hoặc số nhập tay của sự kiện lưu trữ sau khi Super Admin duyệt (BR-09, permission `impact:approve`) | V.C. Trọng |

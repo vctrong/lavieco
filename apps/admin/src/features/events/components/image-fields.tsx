@@ -63,7 +63,7 @@ function Thumbnail({ image, className }: { image: EventImageValue | null; classN
   return (
     <span
       className={cn(
-        "relative flex shrink-0 items-center justify-center overflow-hidden rounded-arch-sm bg-mint-mist text-deep-blue/40",
+        "relative flex shrink-0 items-center justify-center overflow-hidden bg-mint-mist text-deep-blue/40",
         className,
       )}
     >
@@ -97,16 +97,40 @@ function UploadStatus({ busy, error }: { busy: boolean; error: string | null }) 
   ) : null;
 }
 
+/** Preview frame of a single image, at the ratio the website shows it. */
+const FRAMES = {
+  poster: "aspect-[4/5] w-24 rounded-arch-sm",
+  banner: "aspect-[21/9] w-48 rounded-xl",
+  avatar: "size-16 rounded-full",
+} as const;
+
 type CoverFieldProps = {
   value: EventImageValue | null;
   saved: boolean;
   disabled: boolean;
   error?: string;
   onChange: (value: EventImageValue | null) => void;
+  /** Defaults to the poster (`cover`). */
+  label?: string;
+  emptyText?: string;
+  frame?: keyof typeof FRAMES;
 };
 
-/** Cover image: upload (or replace), alt text, remove. Saved with the details form. */
-export function CoverField({ value, saved, disabled, error, onChange }: CoverFieldProps) {
+/**
+ * One image (poster, banner or a speaker portrait): upload (or replace), alt text,
+ * remove. Saved with the details form. All of them are single event images, uploaded
+ * with the `event_cover` purpose (8 MB, EXIF removed by the service).
+ */
+export function CoverField({
+  value,
+  saved,
+  disabled,
+  error,
+  onChange,
+  label = TEXT.vi.editor.fields.cover,
+  emptyText = t.coverEmpty,
+  frame = "poster",
+}: CoverFieldProps) {
   const { upload, busy, error: uploadError } = useImageUpload("event_cover");
   const labelId = useId();
   const pick = async (file: File) => {
@@ -119,13 +143,13 @@ export function CoverField({ value, saved, disabled, error, onChange }: CoverFie
         id={labelId}
         className="mb-1.5 text-[11px] font-medium uppercase tracking-museum text-deep-blue/70"
       >
-        {TEXT.vi.editor.fields.cover}
+        {label}
       </p>
       <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-deep-blue/20 bg-soft-white p-4 sm:flex-row">
-        <Thumbnail image={value} className="h-28 w-24" />
+        <Thumbnail image={value} className={FRAMES[frame]} />
         <div className="min-w-0 flex-1 space-y-3">
           <p className="text-[12.5px] leading-relaxed text-charcoal/65">
-            {value ? t.coverHint : t.coverEmpty}
+            {value ? t.coverHint : emptyText}
           </p>
           {value ? (
             <TextField
@@ -212,7 +236,7 @@ export function GalleryField({ items, savedIds, disabled, errors, onChange }: Ga
               key={item.mediaId}
               className="flex flex-col gap-3 rounded-2xl border border-hairline bg-white p-3 sm:flex-row sm:items-start"
             >
-              <Thumbnail image={item} className="h-20 w-20" />
+              <Thumbnail image={item} className="h-20 w-20 rounded-arch-sm" />
               <div className="min-w-0 flex-1">
                 <TextField
                   tone="light"

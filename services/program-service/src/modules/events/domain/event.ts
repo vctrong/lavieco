@@ -1,10 +1,15 @@
 import type {
+  EventAgendaItem,
+  EventBenefit,
+  EventCancellationRule,
   EventDetails,
-  EventImage,
+  EventFaqItem,
   EventForm,
   EventFormat,
+  EventImage,
   EventKind,
   EventPricing,
+  EventSpeaker,
   EventStatus,
   EventVenue,
 } from "@lavieco/shared/events";
@@ -13,7 +18,7 @@ export type Actor = { userId: string };
 
 export type StatusChange = { from: EventStatus; to: EventStatus; at: Date; by: string };
 
-/** Editable content of an event, as stored (dates parsed). */
+/** Editable content of an event, as stored (dates parsed, speaker portraits as snapshots). */
 export type EventContent = {
   title: string;
   typeId: string;
@@ -26,11 +31,29 @@ export type EventContent = {
   description: string;
   safetyNotes: string;
   cancellationPolicy: string;
+  cancellationRules: EventCancellationRule[];
+  minAge: number | null;
+  benefits: EventBenefit[];
   forChildren: boolean;
-  speakers: EventDetails["speakers"];
-  agenda: EventDetails["agenda"];
-  faq: EventDetails["faq"];
+  speakers: EventSpeaker[];
+  agenda: EventAgendaItem[];
+  faq: EventFaqItem[];
 };
+
+/**
+ * Attendance typed for an archive-only event (BR-09). `approvedAt` is cleared whenever
+ * the count changes, so only an approved figure is ever published.
+ */
+export type EventAttendance = {
+  count: number | null;
+  approvedAt: Date | null;
+  approvedBy: string | null;
+};
+
+export const NO_ATTENDANCE: EventAttendance = { count: null, approvedAt: null, approvedBy: null };
+
+/** Set once, when a standard event is cancelled; `reason` is public. */
+export type EventCancellation = { reason: string; at: Date; by: string };
 
 /**
  * `events` (docs/03 §9.2). Not the publishable pattern: an event has one current
@@ -43,7 +66,10 @@ export type EventRecord = EventContent & {
   status: EventStatus;
   /** Snapshots of content-service media (ADR-0020); one image belongs to one event. */
   cover: EventImage | null;
+  banner: EventImage | null;
   gallery: EventImage[];
+  attendance: EventAttendance;
+  cancellation: EventCancellation | null;
   form: EventForm;
   /** Derived from ticket types, stored for the public "free" filter. */
   pricing: EventPricing;
@@ -57,7 +83,14 @@ export type EventRecord = EventContent & {
   updatedAt: Date;
 };
 
-export function toEventContent(details: EventDetails): EventContent {
+/**
+ * Stored content of a create/update request. Speaker portraits come in as media ids:
+ * `avatars` holds their snapshots, index for index (built by `buildImages`).
+ */
+export function toEventContent(
+  details: EventDetails,
+  avatars: readonly (EventImage | null)[],
+): EventContent {
   return {
     title: details.title,
     typeId: details.typeId,
@@ -70,11 +103,33 @@ export function toEventContent(details: EventDetails): EventContent {
     description: details.description,
     safetyNotes: details.safetyNotes,
     cancellationPolicy: details.cancellationPolicy,
+    cancellationRules: details.cancellationRules,
+    minAge: details.minAge,
+    benefits: details.benefits,
     forChildren: details.forChildren,
-    speakers: details.speakers,
+    speakers: details.speakers.map((speaker, index) => ({
+      name: speaker.name,
+      role: speaker.role,
+      bio: speaker.bio,
+      avatar: avatars[index] ?? null,
+    })),
     agenda: details.agenda,
     faq: details.faq,
   };
+}
+
+/**
+ * The attendance to store after an edit. Standard events never store one (their
+ * attendance is the checked-in tickets); a changed count loses its approval (BR-09).
+ */
+export function nextAttendance(
+  kind: EventKind,
+  current: EventAttendance,
+  count: number | null,
+): EventAttendance {
+  if (kind !== "past" || count === null) return NO_ATTENDANCE;
+  if (count === current.count) return current;
+  return { count, approvedAt: null, approvedBy: null };
 }
 
 /** Whether the public site shows this status at all (S3: never drafts). */

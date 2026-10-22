@@ -1,377 +1,225 @@
 import Link from "next/link";
 import {
-  FiAlertTriangle,
   FiArrowLeft,
   FiArrowRight,
   FiBookOpen,
   FiCalendar,
-  FiChevronDown,
-  FiExternalLink,
+  FiClock,
   FiMapPin,
+  FiUsers,
   FiVideo,
 } from "react-icons/fi";
 
-import type { PublicEventDetail } from "@lavieco/shared/events";
-import { Container, Eyebrow, PearlDot } from "@lavieco/ui";
+import type { PublicEventCard, PublicEventDetail } from "@lavieco/shared/events";
+import { Container } from "@lavieco/ui";
 
-import { MEDIA_DELIVERY_READY, MediaImage } from "@/shared/components/media-image";
-
-import { EVENTS_PATH, HANDBOOK_PATH, TICKET_LOOKUP_PATH, checkoutPath } from "../constants/config";
+import { EVENTS_PATH, HANDBOOK_PATH, calendarPath } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { formatSchedule, formatShortDate, formatVnd, paragraphsOf } from "../utils/format";
-import { AvailabilityTag, priceLabel } from "./event-card";
-import { CoverArt } from "./cover-art";
+import { durationOf, formatSchedule, type Duration } from "../utils/format";
+import { EventImage } from "./event-image";
+import { CancelledCard, SummaryCard } from "./event-outcome";
+import { EventSections, Gallery, sectionsOf } from "./event-sections";
+import { RelatedEvents } from "./related-events";
+import { SectionTabs } from "./section-tabs";
+import { StateBadge } from "./state-badge";
+import { TicketCard } from "./ticket-card";
 
-function SectionTitle({ id, children }: { id: string; children: string }) {
+const t = TEXT.vi.detail;
+
+function durationText(duration: Duration) {
+  if (duration.unit === "days") return t.days(duration.value);
+  if (duration.unit === "hours") return t.hours(duration.value);
+  return t.minutes(duration.value);
+}
+
+function Hero({ event }: { event: PublicEventDetail }) {
   return (
-    <h2 id={id} className="mb-5 font-display text-2xl text-deep-blue md:text-3xl">
-      {children}
-    </h2>
+    <header className="relative overflow-hidden rounded-[2rem] bg-charcoal">
+      <EventImage
+        title={event.title}
+        image={event.banner ?? event.cover}
+        sizes="(min-width: 1280px) 1200px, 100vw"
+        preload
+        className="aspect-[4/5] w-full sm:aspect-[16/9] lg:aspect-[21/9]"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 bg-gradient-to-t from-charcoal/90 via-charcoal/40 to-transparent"
+      />
+      <div className="absolute inset-x-0 bottom-0 p-6 md:max-w-3xl md:p-10">
+        <div className="flex flex-wrap items-center gap-2">
+          {event.type ? (
+            <span className="rounded-full bg-soft-white px-2.5 py-1 text-meta font-semibold uppercase text-deep-blue">
+              {event.type.name.vi}
+            </span>
+          ) : null}
+          <StateBadge state={event.state} availability={event.availability} />
+        </div>
+        <h1 className="mt-4 font-display text-display-hero-mobile text-soft-white md:text-display-hero">
+          {event.title}
+        </h1>
+        {event.summary ? (
+          <p className="mt-3 max-w-2xl text-body-md text-soft-white/90 md:text-body-lg">
+            {event.summary}
+          </p>
+        ) : null}
+      </div>
+    </header>
   );
 }
 
-function RegisterBox({ event, preview }: { event: PublicEventDetail; preview: boolean }) {
-  const t = TEXT.vi.detail;
-  const { open, blocker } = event.registration;
-  const label =
-    event.status === "closed"
-      ? t.closed
-      : event.status === "ended"
-        ? t.ended
-        : blocker
-          ? t.blockers[blocker]
-          : t.registerNow;
+function QuickFacts({ event }: { event: PublicEventDetail }) {
+  const place = event.format === "online" ? t.online : event.venue ? event.venue.name : null;
+  const seats =
+    event.state === "few_left" && event.availability.seatsLeft
+      ? TEXT.vi.card.seatsLeft(event.availability.seatsLeft)
+      : event.state === "open"
+        ? t.seatsOpen
+        : TEXT.vi.state[event.state];
+  const facts: { key: string; icon: typeof FiCalendar; label: string; value: string }[] = [
+    {
+      key: "when",
+      icon: FiCalendar,
+      label: t.facts.when,
+      value: formatSchedule(event.startAt, event.endAt),
+    },
+    ...(place
+      ? [
+          {
+            key: "where",
+            icon: event.format === "online" ? FiVideo : FiMapPin,
+            label: t.facts.where,
+            value: place,
+          },
+        ]
+      : []),
+    {
+      key: "duration",
+      icon: FiClock,
+      label: t.facts.duration,
+      value: durationText(durationOf(event.startAt, event.endAt)),
+    },
+    ...(event.kind === "standard"
+      ? [{ key: "seats", icon: FiUsers, label: t.facts.seats, value: seats }]
+      : []),
+    ...(event.minAge !== null
+      ? [{ key: "age", icon: FiUsers, label: t.facts.age, value: t.minAge(event.minAge) }]
+      : []),
+  ];
   return (
-    <div className="rounded-3xl bg-deep-blue p-6 text-soft-white">
-      <p className="font-display text-3xl">{priceLabel(event) ?? ""}</p>
-      {open && !preview ? (
-        <Link
-          href={checkoutPath(event.slug)}
-          className="mt-5 inline-flex w-full items-center justify-center gap-2 rounded-full bg-emerald-brand px-6 py-3 text-sm font-bold text-deep-blue shadow-emerald-cta transition-transform hover:scale-[1.02] motion-reduce:transition-none"
-        >
-          {t.registerNow}
-          <FiArrowRight aria-hidden="true" size={16} />
-        </Link>
-      ) : (
-        <button
-          type="button"
-          disabled
-          className="mt-5 w-full cursor-not-allowed rounded-full bg-soft-white/15 px-6 py-3 text-sm font-semibold text-soft-white/80"
-        >
-          {open ? t.registerNow : label}
-        </button>
-      )}
-      <p className="mt-3 text-[12.5px] leading-relaxed text-mint-mist/80">
-        {open ? t.registerNote : blocker === "online_link_pending" ? t.registerSoonNote : label}
-      </p>
+    <dl
+      aria-label={t.facts.label}
+      className="-mt-6 relative z-10 mx-4 grid grid-cols-2 gap-x-6 gap-y-4 rounded-pedestal border border-hairline bg-white p-5 shadow-ambient md:mx-8 md:grid-cols-3 lg:grid-cols-5"
+    >
+      {facts.map(({ key, icon: Icon, label, value }) => (
+        <div key={key} className="min-w-0">
+          <dt className="flex items-center gap-1.5 text-meta uppercase text-charcoal/65">
+            <Icon aria-hidden="true" size={12} className="text-emerald-ink" />
+            {label}
+          </dt>
+          <dd className="mt-1 text-body-sm font-semibold text-deep-blue">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  );
+}
+
+function EducationNote() {
+  return (
+    <section className="rounded-pedestal bg-mint-mist p-5">
+      <p className="text-body-sm text-deep-blue">{t.educationNote}</p>
       <Link
-        href={TICKET_LOOKUP_PATH}
-        className="mt-4 inline-block text-[12.5px] font-semibold text-mint-mist underline-offset-4 hover:underline"
+        href={HANDBOOK_PATH}
+        className="mt-3 inline-flex items-center gap-2 text-body-sm font-semibold text-emerald-ink hover:text-deep-blue"
       >
-        {t.lookupTickets}
+        <FiBookOpen aria-hidden="true" size={14} />
+        {t.handbookCta}
+        <FiArrowRight aria-hidden="true" size={13} />
       </Link>
-    </div>
+    </section>
   );
 }
+
+export type EventDetailProps = {
+  event: PublicEventDetail;
+  /** The preview never links to the checkout. */
+  preview?: boolean;
+  attendeeCount?: number | null;
+  related?: PublicEventCard[];
+  signedIn?: boolean;
+  pageUrl: string;
+};
 
 /**
- * Public event page, also used by the preview (same rendering, D2). Plain-text content
- * only, rendered as paragraphs: no HTML from the service is ever injected.
+ * Public event page, also used by the preview (same rendering, D2): banner hero, quick
+ * facts, sticky section tabs and content on the left, ONE sticky ticket box on the
+ * right (a bottom bar on phones). Once over: a summary and the gallery instead of any
+ * booking; when cancelled: the reason. Plain-text content only, never injected HTML.
  */
 export function EventDetail({
   event,
   preview = false,
-}: {
-  event: PublicEventDetail;
-  /** The preview never links to the checkout. */
-  preview?: boolean;
-}) {
-  const t = TEXT.vi.detail;
-  const Place = event.format === "online" ? FiVideo : FiMapPin;
-  const description = paragraphsOf(event.description);
-  const safety = paragraphsOf(event.safetyNotes);
-  const policy = paragraphsOf(event.cancellationPolicy);
+  attendeeCount = null,
+  related = [],
+  signedIn = false,
+  pageUrl,
+}: EventDetailProps) {
+  const sections = sectionsOf(event);
+  const ended = event.state === "ended";
+  const cancelled = event.state === "cancelled";
+  const booking = !ended && !cancelled && event.kind === "standard";
 
   return (
-    <article className="bg-soft-white pb-24 pt-dock-clearance">
-      <Container className="pt-8 md:pt-12">
+    <article className="bg-soft-white pb-32 pt-dock-clearance lg:pb-24">
+      <Container className="pt-6 md:pt-10">
         <Link
           href={EVENTS_PATH}
-          className="mb-8 inline-flex items-center gap-1.5 text-[13px] font-medium text-deep-blue/70 hover:text-deep-blue"
+          className="mb-6 inline-flex items-center gap-1.5 text-body-sm font-medium text-deep-blue/80 hover:text-deep-blue"
         >
           <FiArrowLeft aria-hidden="true" size={14} />
           {t.back}
         </Link>
+        <Hero event={event} />
+        <QuickFacts event={event} />
 
-        <header className="grid gap-10 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:items-center">
-          <CoverArt
-            title={event.title}
-            cover={event.cover}
-            label={event.type?.name.vi}
-            sizes="(min-width: 768px) 28rem, 100vw"
-            preload
-            radius="arch-lg"
-            className="aspect-[4/5] w-full max-w-md shadow-hero-arch-soft"
-          />
-          <div>
-            <Eyebrow className="mb-4 flex items-center gap-2">
-              <PearlDot size="sm" tone="emerald" />
-              {event.type?.name.vi}
-            </Eyebrow>
-            <h1 className="font-display text-4xl font-light leading-tight tracking-tight text-deep-blue md:text-6xl">
-              {event.title}
-            </h1>
-            {event.summary ? (
-              <p className="mt-5 text-base leading-relaxed text-charcoal/75 md:text-lg">
-                {event.summary}
-              </p>
-            ) : null}
-            <dl className="mt-8 space-y-4 text-[15px]">
-              <div className="flex items-start gap-3">
-                <dt className="sr-only">{t.when}</dt>
-                <FiCalendar
-                  aria-hidden="true"
-                  size={18}
-                  className="mt-0.5 shrink-0 text-emerald-brand"
-                />
-                <dd className="text-charcoal">{formatSchedule(event.startAt, event.endAt)}</dd>
+        <div className="mt-14 grid gap-12 lg:grid-cols-[minmax(0,1fr)_23rem]">
+          <div className="min-w-0">
+            <SectionTabs sections={sections} />
+            <EventSections event={event} sections={sections} />
+            {ended ? (
+              <div className="mt-16">
+                <Gallery event={event} />
               </div>
-              <div className="flex items-start gap-3">
-                <dt className="sr-only">{t.where}</dt>
-                <Place
-                  aria-hidden="true"
-                  size={18}
-                  className="mt-0.5 shrink-0 text-emerald-brand"
-                />
-                <dd className="text-charcoal">
-                  {event.format === "online" ? (
-                    <>
-                      {t.online}
-                      <span className="block text-[13px] text-charcoal/60">{t.onlineNote}</span>
-                    </>
-                  ) : event.venue ? (
-                    <>
-                      <span className="font-semibold text-deep-blue">{event.venue.name}</span>
-                      <span className="block text-charcoal/70">{event.venue.address}</span>
-                      {event.venue.mapUrl ? (
-                        <a
-                          href={event.venue.mapUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="mt-1 inline-flex items-center gap-1 text-[13px] font-semibold text-deep-blue underline-offset-4 hover:underline"
-                        >
-                          {t.map}
-                          <FiExternalLink aria-hidden="true" size={12} />
-                        </a>
-                      ) : null}
-                    </>
-                  ) : null}
-                </dd>
-              </div>
-            </dl>
-            <AvailabilityTag availability={event.availability} className="mt-6 inline-block" />
-          </div>
-        </header>
-
-        <div className="mt-16 grid gap-12 lg:grid-cols-[minmax(0,1fr)_22rem]">
-          <div className="min-w-0 space-y-14">
-            {description.length > 0 ? (
-              <section aria-labelledby="ve-chuong-trinh">
-                <SectionTitle id="ve-chuong-trinh">{t.about}</SectionTitle>
-                <div className="space-y-4 text-[16px] leading-relaxed text-charcoal/85">
-                  {description.map((paragraph, index) => (
-                    <p key={index} className="whitespace-pre-line">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            {safety.length > 0 ? (
-              <section
-                aria-labelledby="luu-y-an-toan"
-                className="rounded-3xl border border-canary bg-canary/15 p-6"
-              >
-                <h2
-                  id="luu-y-an-toan"
-                  className="mb-3 flex items-center gap-2 font-display text-xl text-deep-blue"
-                >
-                  <FiAlertTriangle aria-hidden="true" size={18} />
-                  {t.safety}
-                </h2>
-                <div className="space-y-3 text-[15px] leading-relaxed text-charcoal/85">
-                  {safety.map((paragraph, index) => (
-                    <p key={index} className="whitespace-pre-line">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            {event.speakers.length > 0 ? (
-              <section aria-labelledby="nguoi-huong-dan">
-                <SectionTitle id="nguoi-huong-dan">{t.speakers}</SectionTitle>
-                <ul className="grid gap-4 sm:grid-cols-2">
-                  {event.speakers.map((speaker, index) => (
-                    <li
-                      key={index}
-                      className="flex items-center gap-4 rounded-2xl border border-hairline bg-white p-4"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="flex size-11 shrink-0 items-center justify-center rounded-full bg-mint-mist font-display text-lg text-deep-blue"
-                      >
-                        {speaker.name.trim().split(/\s+/).at(-1)?.charAt(0)}
-                      </span>
-                      <div>
-                        <p className="font-semibold text-deep-blue">{speaker.name}</p>
-                        {speaker.role ? (
-                          <p className="text-[13px] text-charcoal/65">{speaker.role}</p>
-                        ) : null}
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-
-            {event.gallery.length > 0 && MEDIA_DELIVERY_READY ? (
-              <section aria-labelledby="hinh-anh">
-                <SectionTitle id="hinh-anh">{t.gallery}</SectionTitle>
-                <ul className="grid grid-cols-2 gap-3 md:grid-cols-3">
-                  {event.gallery.map((image) => (
-                    <li
-                      key={image.mediaId}
-                      className="relative aspect-square overflow-hidden rounded-2xl bg-mint-mist"
-                    >
-                      <MediaImage
-                        publicId={image.publicId}
-                        alt={image.alt}
-                        fill
-                        sizes="(min-width: 768px) 20vw, 50vw"
-                        className="object-cover"
-                      />
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ) : null}
-
-            {event.agenda.length > 0 ? (
-              <section aria-labelledby="lich-trinh">
-                <SectionTitle id="lich-trinh">{t.agenda}</SectionTitle>
-                <ol className="relative space-y-5 border-l border-emerald-brand/30 pl-6">
-                  {event.agenda.map((item, index) => (
-                    <li key={index} className="relative">
-                      <span
-                        aria-hidden="true"
-                        className="absolute -left-[1.85rem] top-1.5 size-3 rounded-full border-2 border-soft-white bg-emerald-brand"
-                      />
-                      {item.time ? (
-                        <p className="text-[12px] font-semibold uppercase tracking-museum text-emerald-brand">
-                          {item.time}
-                        </p>
-                      ) : null}
-                      <p className="text-[15px] text-charcoal">{item.title}</p>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            ) : null}
-
-            {event.faq.length > 0 ? (
-              <section aria-labelledby="hoi-dap">
-                <SectionTitle id="hoi-dap">{t.faq}</SectionTitle>
-                <div className="divide-y divide-hairline rounded-3xl border border-hairline bg-white">
-                  {event.faq.map((item, index) => (
-                    <details key={index} className="group px-5 py-4">
-                      <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold text-deep-blue">
-                        {item.question}
-                        <FiChevronDown
-                          aria-hidden="true"
-                          size={16}
-                          className="shrink-0 transition-transform group-open:rotate-180 motion-reduce:transition-none"
-                        />
-                      </summary>
-                      <p className="mt-3 whitespace-pre-line text-[15px] leading-relaxed text-charcoal/80">
-                        {item.answer}
-                      </p>
-                    </details>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            {policy.length > 0 ? (
-              <section aria-labelledby="chinh-sach-huy">
-                <SectionTitle id="chinh-sach-huy">{t.policy}</SectionTitle>
-                <div className="space-y-3 text-[14.5px] leading-relaxed text-charcoal/75">
-                  {policy.map((paragraph, index) => (
-                    <p key={index} className="whitespace-pre-line">
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
-              </section>
             ) : null}
           </div>
-
-          <aside className="space-y-6 lg:sticky lg:top-28 lg:self-start">
-            {event.kind === "standard" ? <RegisterBox event={event} preview={preview} /> : null}
-            {event.ticketTypes.length > 0 ? (
-              <section
-                aria-labelledby="loai-ve"
-                className="rounded-3xl border border-hairline bg-white p-6"
-              >
-                <h2 id="loai-ve" className="mb-4 font-display text-xl text-deep-blue">
-                  {t.tickets}
-                </h2>
-                <ul className="space-y-4">
-                  {event.ticketTypes.map((ticket) => {
-                    const saleWindow = t.saleWindow(
-                      ticket.saleStartAt ? formatShortDate(ticket.saleStartAt) : null,
-                      ticket.saleEndAt ? formatShortDate(ticket.saleEndAt) : null,
-                    );
-                    return (
-                      <li
-                        key={ticket.id}
-                        className="border-b border-hairline pb-4 last:border-b-0 last:pb-0"
-                      >
-                        <div className="flex items-start justify-between gap-3">
-                          <p className="font-semibold text-deep-blue">{ticket.name}</p>
-                          <p className="shrink-0 font-display text-lg text-deep-blue">
-                            {ticket.price === 0 ? TEXT.vi.card.free : formatVnd(ticket.price)}
-                          </p>
-                        </div>
-                        {ticket.description ? (
-                          <p className="mt-1 text-[13px] text-charcoal/65">{ticket.description}</p>
-                        ) : null}
-                        <div className="mt-2 flex flex-wrap items-center gap-2 text-[12px] text-charcoal/60">
-                          <AvailabilityTag availability={ticket.availability} />
-                          {saleWindow ? <span>{saleWindow}</span> : null}
-                          <span>{t.maxPerOrder(ticket.maxPerOrder)}</span>
-                        </div>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </section>
+          <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            {cancelled ? <CancelledCard cancellation={event.cancellation} /> : null}
+            {ended ? (
+              <SummaryCard
+                startAt={event.startAt}
+                endAt={event.endAt}
+                attendeeCount={attendeeCount}
+              />
             ) : null}
-            <section className="rounded-3xl bg-mint-mist p-6">
-              <p className="text-[14px] leading-relaxed text-deep-blue">{t.educationNote}</p>
-              <Link
-                href={HANDBOOK_PATH}
-                className="mt-4 inline-flex items-center gap-2 text-[13px] font-semibold text-deep-blue hover:text-emerald-brand"
-              >
-                <FiBookOpen aria-hidden="true" size={14} />
-                {t.handbookCta}
-                <FiArrowRight aria-hidden="true" size={13} />
-              </Link>
-            </section>
+            {booking ? (
+              <TicketCard
+                slug={event.slug}
+                title={event.title}
+                state={event.state}
+                ticketTypes={event.ticketTypes}
+                price={event.price}
+                bookable={event.registration.open && !preview}
+                blocker={event.registration.blocker}
+                signedIn={signedIn}
+                pageUrl={pageUrl}
+                calendarHref={calendarPath(event.slug)}
+              />
+            ) : null}
+            <EducationNote />
           </aside>
         </div>
+
+        <RelatedEvents events={related} />
       </Container>
     </article>
   );

@@ -148,7 +148,8 @@ describe("create → tickets → form → publish → public", () => {
 
     const ready = await getEvent(draft.id);
     expect(ready.readiness.blockers).toEqual([]);
-    expect(ready.pricing).toEqual({ isFree: true, priceFrom: 0 });
+    // A free ticket next to a paid one is not "free" (every visible ticket at 0, 22/10/2026).
+    expect(ready.pricing).toEqual({ isFree: false, priceFrom: 0 });
 
     // Not public while it is a draft.
     await t
@@ -186,12 +187,13 @@ describe("create → tickets → form → publish → public", () => {
       expect(raw).not.toContain(leak);
     }
 
+    // A free ticket next to a paid one: not listed under "Chỉ miễn phí" (22/10/2026).
     const list = await t
       .http()
       .get("/internal/v1/published-events?free=true")
       .set("authorization", await web())
       .expect(200);
-    expect(publicEventListSchema.parse(list.body).items.map((card) => card.slug)).toContain(
+    expect(publicEventListSchema.parse(list.body).items.map((card) => card.slug)).not.toContain(
       ready.slug,
     );
   });
@@ -452,7 +454,15 @@ describe("public availability", () => {
         ).body,
       );
     expect((await read(unlimited.slug)).availability).toEqual({ soldOut: false, seatsLeft: null });
-    expect((await read(few.slug)).availability).toEqual({ soldOut: false, seatsLeft: 8 });
+    // 8 seats, none taken: not "few" yet (≤ 20% or ≤ 5 seats).
+    expect((await read(few.slug)).availability).toEqual({ soldOut: false, seatsLeft: null });
+    await t.db
+      .collection("ticket_types")
+      .updateOne({ _id: new Types.ObjectId(fewTicket.body.id) }, { $set: { sold: 3 } });
+    expect(await read(few.slug)).toMatchObject({
+      state: "few_left",
+      availability: { soldOut: false, seatsLeft: 5 },
+    });
 
     await t.db
       .collection("ticket_types")

@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_standard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;1,400&amp;family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;1,9..144,400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { 'colors': { 'surface-container-low': '#f2f4f0', 'on-secondary-fixed': '#011944', 'on-background': '#191c1a', 'error-container': '#ffdad6', 'on-primary-fixed': '#002115', 'surface-variant': '#e1e3df', 'on-primary-container': '#003c2a', 'outline': '#6c7a72', 'on-tertiary-fixed': '#1f1c00', 'surface': '#f8faf6', 'surface-bright': '#f8faf6', 'surface-container-highest': '#e1e3df', 'primary': '#006c4e', 'on-surface-variant': '#3d4a43', 'tertiary-container': '#b7ae41', 'tertiary': '#676000', 'inverse-surface': '#2e312f', 'error': '#ba1a1a', 'on-secondary': '#ffffff', 'inverse-on-surface': '#eff1ed', 'surface-container': '#eceeeb', 'inverse-primary': '#55ddac', 'on-primary-fixed-variant': '#00513a', 'primary-container': '#10b183', 'secondary': '#4b5d8b', 'background': '#f8faf6', 'tertiary-fixed-dim': '#d3ca59', 'secondary-container': '#b8cbff', 'surface-dim': '#d8dbd7', 'on-surface': '#191c1a', 'on-error': '#ffffff', 'on-error-container': '#93000a', 'surface-container-high': '#e7e9e5', 'secondary-fixed-dim': '#b3c6fa', 'tertiary-fixed': '#f0e672', 'on-tertiary-container': '#454100', 'outline-variant': '#bbcac1', 'on-secondary-fixed-variant': '#324672', 'on-tertiary': '#ffffff', 'on-secondary-container': '#425582', 'primary-fixed-dim': '#55ddac', 'secondary-fixed': '#d9e2ff', 'on-tertiary-fixed-variant': '#4d4800', 'on-primary': '#ffffff', 'surface-tint': '#006c4e', 'primary-fixed': '#75fac7', 'surface-container-lowest': '#ffffff' }, 'borderRadius': { 'DEFAULT': '1rem', 'lg': '2rem', 'xl': '3rem', 'full': '9999px' }, 'spacing': { 'space-xs': '0.25rem', 'space-sm': '0.5rem', 'space-md': '1rem', 'space-lg': '1.75rem', 'space-xl': '3rem', 'margin': '1.25rem', 'margin-tablet': '2.5rem', 'margin-desktop': '4.5rem', 'gutter': '1.5rem', 'gutter-tablet': '2rem', 'gutter-desktop': '3rem' }, 'fontFamily': { 'headline-sm': ['Fraunces'], 'headline-lg': ['Fraunces'], 'label-caps': ['Be Vietnam Pro'], 'body-sm': ['Be Vietnam Pro'], 'headline-lg-mobile': ['Fraunces'], 'title-editorial': ['Fraunces'], 'display-hero': ['Fraunces'], 'body-lg': ['Be Vietnam Pro'], 'body-md': ['Be Vietnam Pro'], 'display-hero-mobile': ['Fraunces'], 'headline-md': ['Fraunces'], 'metadata-curatorial': ['Be Vietnam Pro'] }, 'fontSize': { 'headline-sm': ['24px', { 'lineHeight': '32px', 'fontWeight': '500' }], 'headline-lg': ['44px', { 'lineHeight': '54px', 'letterSpacing': '-0.015em', 'fontWeight': '400' }], 'label-caps': ['12px', { 'lineHeight': '16px', 'letterSpacing': '0.12em', 'fontWeight': '600' }], 'body-sm': ['13px', { 'lineHeight': '22px', 'fontWeight': '400' }], 'headline-lg-mobile': ['30px', { 'lineHeight': '38px', 'letterSpacing': '-0.01em', 'fontWeight': '400' }], 'title-editorial': ['20px', { 'lineHeight': '30px', 'fontWeight': '400' }], 'display-hero': ['64px', { 'lineHeight': '76px', 'letterSpacing': '-0.02em', 'fontWeight': '400' }], 'body-lg': ['18px', { 'lineHeight': '31px', 'fontWeight': '300' }], 'body-md': ['15px', { 'lineHeight': '26px', 'fontWeight': '400' }], 'display-hero-mobile': ['40px', { 'lineHeight': '48px', 'letterSpacing': '-0.01em', 'fontWeight': '400' }], 'headline-md': ['32px', { 'lineHeight': '42px', 'letterSpacing': '-0.01em', 'fontWeight': '400' }], 'metadata-curatorial': ['11px', { 'lineHeight': '16px', 'letterSpacing': '0.06em', 'fontWeight': '500' }] } } } };</script></head><body class="bg-background font-body-md text-body-md text-on-surface antialiased selection:bg-primary selection:text-on-primary min-h-screen flex flex-col justify-between"><div class="fixed top-0 left-0 w-full h-[2px] z-50 bg-transparent"><div class="h-full bg-primary-container w-1/4"></div></div><header class="fixed top-6 left-0 right-0 z-40 px-margin sm:px-margin-tablet lg:px-margin-desktop pointer-events-none"><div class="max-w-[1120px] mx-auto h-16 bg-surface/90 backdrop-blur-xl rounded-full shadow-[0_16px_36px_-12px_rgba(32,52,95,0.08)] px-6 flex items-center justify-between pointer-events-auto"><a class="flex items-center gap-1.5 focus:outline-none" data-path="cau-chuyen" href="#"><span class="font-headline-sm text-headline-sm text-secondary tracking-tight font-medium">Lavieco</span><span class="w-1.5 h-1.5 rounded-full bg-primary-container inline-block"></span></a><nav class="hidden md:flex items-center gap-8" data-active-classes="text-on-surface font-medium"><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="cau-chuyen" href="#">Câu chuyện</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors flex flex-col items-center" data-path="chuong-trinh" href="#"><span>Chương trình</span></a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="bo-suu-tap" href="#">Bộ sưu tập</a><a class="font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors flex items-center gap-1" data-path="kham-pha" href="#"><span>Khám phá</span><span class="text-[10px] text-outline">▾</span></a></nav><div class="flex items-center gap-4"><a class="hidden sm:flex items-center gap-1.5 font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors" data-path="dang-nhap" href="#"><span class="material-symbols-outlined text-[18px] text-outline">account_circle</span><span>Đăng nhập</span></a><span class="hidden sm:inline-block w-[1px] h-4 bg-outline-variant/40"></span><a class="px-5 py-2 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps hover:bg-primary hover:text-on-primary transition-all duration-300 shadow-[0_4px_16px_-4px_rgba(16,177,131,0.25)]" data-path="hop-tac" href="#">Hợp tác</a><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-28 bg-surface"><div class="flex flex-col w-full">
+<!-- SECTION 1: HERO TOÀN CẢNH (CALM EDITORIAL BANNER 21:9) -->
+<section class="relative w-full max-w-[1240px] mx-auto px-margin sm:px-margin-tablet lg:px-0">
+<div class="relative w-full aspect-[16/9] sm:aspect-[21/9] rounded-lg overflow-hidden shadow-[0_20px_50px_-20px_rgba(32,52,95,0.12)]">
+<img class="w-full h-full object-cover" data-alt="Close-up of artisan hands carefully arranging natural clam and oyster shells onto a raw linen canvas on a rustic wooden worktable in a sunlit art studio in Can Tho, surrounded by ceramic bowls of mineral pigments, soft natural daylight, quiet meditative atmosphere, high-end museum documentation style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBc-e2hTCVh5ZVfzDWfi0k4yN2gK0jt5_ZvylChS0VcZJvOnrM143yg4znxT7IruzspdpPtEhuR1ejIaABqcQex4vEagZ1UzSPkjSV4GLJ_cy6delX7dDPOFgERtv9StwcVKUWVrmmJh20aN3gpkJzO8zYIjDoPF06xXQeCgKYhE9saTTt58TOQ-GgNdq5xesN44SgApBi_wn31FvDQae4s0us1lD_j0tE05a8qGowyNtm4x_u_4GUw"/>
+<!-- Gradient Scrim for Readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-on-background/85 via-on-background/35 to-transparent flex flex-col justify-between p-6 sm:p-10 lg:p-12">
+<div class="flex items-center justify-between">
+<a class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface/90 text-on-surface backdrop-blur-md font-body-sm text-body-sm hover:bg-surface transition-all" data-path="chuong-trinh" href="#">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span>
+<span>Tất cả chương trình</span>
+</a>
+<span class="font-metadata-curatorial text-metadata-curatorial text-surface/90 uppercase tracking-widest bg-secondary/40 backdrop-blur-md px-3.5 py-1.5 rounded-full">KHOÁNG SINH THÁI · 2026</span>
+</div>
+<div class="max-w-3xl space-y-3">
+<div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps">
+<span class="w-1.5 h-1.5 rounded-full bg-tertiary-fixed inline-block"></span>
+            WORKSHOP THỰC HÀNH
+          </div>
+<h1 class="font-headline-lg text-headline-lg sm:text-display-hero text-surface tracking-tight font-normal">
+            Workshop mở màn: Tranh vỏ nghêu cho người mới
+          </h1>
+<p class="font-body-md text-body-md text-surface/85 max-w-2xl hidden sm:block">
+            Tiếp cận mỹ thuật bền vững từ phụ phẩm sông ngòi Tây Nam Bộ qua kỹ thuật định hình toan mộc và sắc tố khoáng tự nhiên.
+          </p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 2: DẢI THÔNG SỐ NHANH NỀN TRẮNG -->
+<section class="w-full max-w-[1240px] mx-auto px-margin sm:px-margin-tablet lg:px-0 -mt-6 sm:-mt-8 relative z-20">
+<div class="bg-surface-container-lowest rounded-lg p-5 sm:p-7 shadow-[0_12px_36px_-10px_rgba(32,52,95,0.08)] grid grid-cols-2 md:grid-cols-5 gap-5 items-center">
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">calendar_today</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Thời gian</span>
+<p class="font-body-sm text-body-sm text-on-surface font-medium">10/10/2026 · 08:30</p>
+</div>
+</div>
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">location_on</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Địa điểm</span>
+<p class="font-body-sm text-body-sm text-on-surface font-medium truncate">Xưởng LAVIECO Cần Thơ</p>
+</div>
+</div>
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">schedule</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Thời lượng</span>
+<p class="font-body-sm text-body-sm text-on-surface font-medium">2,5 giờ thực hành</p>
+</div>
+</div>
+<div class="flex items-center gap-3.5">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">group</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Tình trạng chỗ</span>
+<p class="font-body-sm text-body-sm text-primary font-medium">Còn 6 / 20 chỗ</p>
+</div>
+</div>
+<div class="flex items-center gap-3.5 col-span-2 md:col-span-1">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]">accessibility_new</span>
+</div>
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Độ tuổi phù hợp</span>
+<p class="font-body-sm text-body-sm text-on-surface font-medium">Từ 12 tuổi trở lên</p>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 3: BỐ CỤC 2 CỘT CHÍNH (NỘI DUNG & THẺ VÉ DÍNH) -->
+<section class="w-full max-w-[1240px] mx-auto px-margin sm:px-margin-tablet lg:px-0 mt-space-xl">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter lg:gap-gutter-desktop items-start">
+<!-- CỘT TRÁI: NỘI DUNG CHI TIẾT (7 CỘT TRÊN DESKTOP) -->
+<div class="lg:col-span-7 space-y-space-xl">
+<!-- Sticky Anchor Tabs -->
+<nav class="sticky top-24 z-30 bg-surface/90 backdrop-blur-md py-3 overflow-x-auto no-scrollbar flex items-center gap-2">
+<a class="px-4 py-1.5 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps whitespace-nowrap" href="#tong-quan">Tổng quan</a>
+<a class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps whitespace-nowrap transition-colors" href="#lich-trinh">Lịch trình</a>
+<a class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps whitespace-nowrap transition-colors" href="#nhan-duoc">Bạn sẽ nhận</a>
+<a class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps whitespace-nowrap transition-colors" href="#huong-dan">Hướng dẫn</a>
+<a class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps whitespace-nowrap transition-colors" href="#chinh-sach">Chính sách</a>
+<a class="px-4 py-1.5 rounded-full bg-surface-container text-on-surface-variant hover:text-on-surface font-label-caps text-label-caps whitespace-nowrap transition-colors" href="#faq">Hỏi đáp</a>
+</nav>
+<!-- TỔNG QUAN -->
+<div class="space-y-6 scroll-mt-36" id="tong-quan">
+<div class="flex items-center gap-3">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">CHƯƠNG 01 · BỐI CẢNH NGHỆ THUẬT</span>
+<span class="h-[1px] flex-1 bg-outline-variant/30"></span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">
+            Tái sinh phế phẩm ven sông thành tác phẩm phù điêu tự nhiên
+          </h2>
+<div class="grid grid-cols-1 sm:grid-cols-12 gap-6 items-center">
+<div class="sm:col-span-7 space-y-4 font-body-md text-body-md text-on-surface-variant">
+<p>
+                Trầm tích vỏ nghêu, sò từ các bãi bồi Cần Giờ và sông Hậu thường bị bỏ lại sau chế biến ẩm thực. Tại LAVIECO, chúng tôi xem từng mảnh vỏ xà cừ là bản ghi thời gian của hệ sinh thái nước lợ.
+              </p>
+<p>
+                Buổi thực hành mở rộng dành cho bất kỳ ai chưa từng chạm vào cọ vẽ hay đất nặn. Bạn sẽ học cách phân tách độ dày vỏ, mài cạnh an toàn, và kết hợp cùng keo sinh học gốc trấu hữu cơ để dựng nên một bức tranh nổi 20×25 cm mang trọn hơi thở duyên hải.
+              </p>
+</div>
+<div class="sm:col-span-5">
+<div class="aspect-[4/5] rounded-DEFAULT overflow-hidden bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A framed relief artwork composed entirely of layered natural seashell fragments and mother-of-pearl textures mounted in a minimalist blonde oak shadowbox frame hanging on a pristine museum white wall, soft angled natural lighting, Vietnamese eco-art aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCjzO_IWHDqJfHxFZmKAeX9eDVrVF-zITKkRu4GVBFLwGh5QWfAUhwgglwaUbLjjaIVwHk9y-7ra4CAn_JCAhKnLQe0VUxWYrIMnca-HZpc9FQtehiUSmZB90suZ1fpWu32EZs_nncMWLJHcCa6I-lL7-4q8ejBZ7sK3A8XYYYzMQaUMgWx-aryyZVELhT3wgPVL_AzGbBlGSpCPzp6rNTZ7-EyXhtxWOb10DSii3q9s6W3eT-ZGUbl"/>
+</div>
+<div class="mt-2 text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline">MÃ PHẨM: #LVC-2026-RELIEF</span>
+</div>
+</div>
+</div>
+</div>
+<!-- LỊCH TRÌNH CHI TIẾT -->
+<div class="space-y-6 scroll-mt-36 pt-space-md" id="lich-trinh">
+<div class="flex items-center gap-3">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">CHƯƠNG 02 · LỘ TRÌNH 150 PHÚT</span>
+<span class="h-[1px] flex-1 bg-outline-variant/30"></span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">Lịch trình làm việc tại xưởng</h2>
+<div class="space-y-4 relative before:absolute before:left-[19px] before:top-4 before:bottom-4 before:w-[2px] before:bg-surface-container-high">
+<div class="flex items-start gap-5 relative">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center font-metadata-curatorial text-metadata-curatorial font-semibold text-primary shrink-0 z-10 shadow-sm">
+                08:30
+              </div>
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT flex-1 shadow-sm">
+<h3 class="font-title-editorial text-title-editorial text-on-surface">Đón khách &amp; Giới thiệu vật liệu vỏ sinh thái</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Thưởng thức trà thảo mộc Cần Thơ, nghe giám tuyển chia sẻ về nguồn gốc vỏ nghêu thu gom và triết lý nghệ thuật tuần hoàn.</p>
+</div>
+</div>
+<div class="flex items-start gap-5 relative">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center font-metadata-curatorial text-metadata-curatorial font-semibold text-primary shrink-0 z-10 shadow-sm">
+                09:00
+              </div>
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT flex-1 shadow-sm">
+<h3 class="font-title-editorial text-title-editorial text-on-surface">Quy trình làm sạch, mài cạnh và pha phối khoáng</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Kỹ thuật mài tròn mép sắc nhọn, nhận diện các lớp xà cừ óng ánh và thực hành pha dung dịch kết dính tự nhiên.</p>
+</div>
+</div>
+<div class="flex items-start gap-5 relative">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center font-metadata-curatorial text-metadata-curatorial font-semibold text-primary shrink-0 z-10 shadow-sm">
+                09:45
+              </div>
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT flex-1 shadow-sm">
+<h3 class="font-title-editorial text-title-editorial text-on-surface">Tự tay sáng tác tranh vỏ nghêu trên toan mộc</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Người tham gia trực tiếp xếp lớp phù điêu tự do theo bố cục hình học hoặc sóng nước dưới sự hướng dẫn 1-kèm-1.</p>
+</div>
+</div>
+<div class="flex items-start gap-5 relative">
+<div class="w-10 h-10 rounded-full bg-surface-container-low flex items-center justify-center font-metadata-curatorial text-metadata-curatorial font-semibold text-primary shrink-0 z-10 shadow-sm">
+                10:45
+              </div>
+<div class="bg-surface-container-lowest p-5 rounded-DEFAULT flex-1 shadow-sm">
+<h3 class="font-title-editorial text-title-editorial text-on-surface">Chụp ảnh lưu niệm &amp; Đóng gói tác phẩm mang về</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Định hình khung hộp kính gỗ sồi bảo quản, ký tên giám tuyển chứng nhận và đóng hộp giấy kraft tái chế.</p>
+</div>
+</div>
+</div>
+</div>
+<!-- BẠN SẼ NHẬN ĐƯỢC -->
+<div class="space-y-6 scroll-mt-36 pt-space-md" id="nhan-duoc">
+<div class="flex items-center gap-3">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">CHƯƠNG 03 · ĐẶC QUYỀN HỌC VIÊN</span>
+<span class="h-[1px] flex-1 bg-outline-variant/30"></span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">Bộ ấn phẩm &amp; Tác phẩm mang về</h2>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="bg-surface-container-low p-6 rounded-DEFAULT space-y-2">
+<span class="material-symbols-outlined text-[28px] text-primary">inventory_2</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Bộ vật liệu vỏ sạch tuyển chọn</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Hơn 40 mảnh vỏ nghêu biển nước ngọt đã qua xử lý khử mùi, sấy tiệt trùng và mài viền an toàn.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-DEFAULT space-y-2">
+<span class="material-symbols-outlined text-[28px] text-primary">palette</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Tác phẩm tranh hoàn thiện</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Khung hộp gỗ sồi tự nhiên kích thước 20×25 cm lồng kính mờ chống lóa, sẵn sàng treo tại phòng khách.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-DEFAULT space-y-2">
+<span class="material-symbols-outlined text-[28px] text-primary">verified</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Chứng nhận số LAVIECO</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Chứng chỉ giám định tác phẩm sinh thái có định danh riêng, hỗ trợ lưu trữ trong kho dữ liệu nghệ thuật.</p>
+</div>
+<div class="bg-surface-container-low p-6 rounded-DEFAULT space-y-2">
+<span class="material-symbols-outlined text-[28px] text-primary">photo_camera</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Bộ ảnh kỷ niệm xưởng nghệ thuật</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Nhiếp ảnh gia ghi lại các khoảnh khắc tập trung làm việc chân thực và gửi qua thư điện tử trong 24 giờ.</p>
+</div>
+</div>
+</div>
+<!-- NGƯỜI HƯỚNG DẪN -->
+<div class="space-y-6 scroll-mt-36 pt-space-md" id="huong-dan">
+<div class="flex items-center gap-3">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">CHƯƠNG 04 · NGƯỜI ĐỒNG HÀNH</span>
+<span class="h-[1px] flex-1 bg-outline-variant/30"></span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">Nghệ nhân giám tuyển trực tiếp</h2>
+<div class="bg-surface-container-lowest p-6 rounded-DEFAULT shadow-sm flex flex-col sm:flex-row items-center sm:items-start gap-6">
+<div class="w-24 h-24 rounded-full overflow-hidden shrink-0 bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Portrait of Vo Chi Trong, a mindful Vietnamese craftsman in his early 40s wearing a natural linen tunic, warm genuine smile, clean museum workshop background, calm artistic demeanor." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBTaUj_xOGWUtxMfkAAH4Hr81QmGLj7AuFjKRoYklfyyZNDw48b4-hUiduWPkns6FtS2uTYR1HZi0wNFSK8cPOZUsD8vAZHJwmMmdp0oNFuULgWD3gSScoJ3fkMZtuKd_0BEf4hziiuCyV1gm0KfGf7up7CnnMCn5YrzVBHdJ5O0x_0rskRwW_SSOkaFf4IAWkOqLSh-DtX4TUpsALzY5QRmzCVRUrDD2Z3vK424pJ18ntlJsSVJN5I"/>
+</div>
+<div class="space-y-2 text-center sm:text-left">
+<div class="flex flex-col sm:flex-row sm:items-center gap-2">
+<h3 class="font-headline-sm text-headline-sm text-on-surface">Võ Chí Trọng</h3>
+<span class="px-2.5 py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">Curator &amp; Kỹ thuật vật liệu sinh thái</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                12 năm nghiên cứu khả năng ứng dụng phụ phẩm tự nhiên Tây Nam Bộ vào điêu khắc đương đại và mỹ thuật ứng dụng. Từng chủ trì các triển lãm chất liệu tại Cần Thơ, Hội An và Paris.
+              </p>
+<div class="pt-2 flex items-center justify-center sm:justify-start gap-4 font-metadata-curatorial text-metadata-curatorial text-outline">
+<span>38 WORKSHOP ĐÃ DẪN</span>
+<span>·</span>
+<span>ĐÁNH GIÁ 4.9/5 TỪ 420+ HỌC VIÊN</span>
+</div>
+</div>
+</div>
+<!-- LƯU Ý AN TOÀN -->
+<div class="p-5 rounded-DEFAULT bg-surface-container-low flex items-start gap-4">
+<span class="material-symbols-outlined text-primary text-[24px] shrink-0">health_and_safety</span>
+<div class="space-y-1">
+<h4 class="font-body-md text-body-md font-medium text-on-surface">Lưu ý trang phục và an toàn thực hành</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                Xưởng chuẩn bị sẵn tạp dề vải thô, kính bảo hộ và găng tay sợi tự nhiên. Quý học viên nên mặc trang phục thoải mái, mang giày đế thấp để di chuyển thuận tiện trong khu vực thao tác keo và mài cạnh.
+              </p>
+</div>
+</div>
+</div>
+<!-- CHÍNH SÁCH HUỶ -->
+<div class="space-y-6 scroll-mt-36 pt-space-md" id="chinh-sach">
+<div class="flex items-center gap-3">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">CHƯƠNG 05 · MINH BẠCH &amp; BẢO LƯU</span>
+<span class="h-[1px] flex-1 bg-outline-variant/30"></span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">Chính sách chuyển đổi &amp; Hoàn vé</h2>
+<div class="bg-surface-container-lowest rounded-DEFAULT overflow-hidden shadow-sm divide-y-0">
+<div class="p-4 sm:p-5 flex items-center justify-between gap-4 bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container shrink-0"></span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Báo huỷ trước 72 giờ</span>
+</div>
+<span class="font-body-sm text-body-sm text-primary font-semibold">Hoàn 100% học phí</span>
+</div>
+<div class="p-4 sm:p-5 flex items-center justify-between gap-4 bg-surface-container-low">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 rounded-full bg-tertiary shrink-0"></span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">Trong vòng 72 giờ trước giờ bắt đầu</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Chuyển nhượng vé cho người khác</span>
+</div>
+<div class="p-4 sm:p-5 flex items-center justify-between gap-4 bg-surface-container-lowest">
+<div class="flex items-center gap-3">
+<span class="w-2.5 h-2.5 rounded-full bg-error shrink-0"></span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">LAVIECO điều chỉnh do thời tiết / kỹ thuật</span>
+</div>
+<span class="font-body-sm text-body-sm text-primary font-semibold">Hoàn 100% hoặc đổi buổi tiếp theo</span>
+</div>
+</div>
+</div>
+<!-- HỎI ĐÁP (FAQ ACCORDION) -->
+<div class="space-y-6 scroll-mt-36 pt-space-md" id="faq">
+<div class="flex items-center gap-3">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">CHƯƠNG 06 · GIẢI ĐÁP NHANH</span>
+<span class="h-[1px] flex-1 bg-outline-variant/30"></span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">Những câu hỏi thường gặp</h2>
+<div class="space-y-3" id="faq-container">
+<!-- FAQ item 1 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-5 shadow-sm cursor-pointer" onclick="this.querySelector('.faq-answer').classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+<div class="flex items-center justify-between">
+<span class="font-title-editorial text-title-editorial text-on-surface">Tôi chưa từng học vẽ mỹ thuật có làm được không?</span>
+<span class="material-symbols-outlined text-outline faq-icon transition-transform">expand_more</span>
+</div>
+<div class="faq-answer mt-3 font-body-sm text-body-sm text-on-surface-variant">
+                Hoàn toàn có thể. Kỹ thuật ghép vỏ nghêu tập trung vào trực giác bố cục, nhịp điệu vân vỏ tự nhiên và xúc giác tay. Giám tuyển Võ Chí Trọng sẽ chỉ dẫn từng bước mài, dán và cân đối tỷ lệ hài hòa nhất.
+              </div>
+</div>
+<!-- FAQ item 2 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-5 shadow-sm cursor-pointer" onclick="this.querySelector('.faq-answer').classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+<div class="flex items-center justify-between">
+<span class="font-title-editorial text-title-editorial text-on-surface">Trẻ em dưới 12 tuổi có thể tham gia cùng bố mẹ không?</span>
+<span class="material-symbols-outlined text-outline faq-icon transition-transform">expand_more</span>
+</div>
+<div class="faq-answer hidden mt-3 font-body-sm text-body-sm text-on-surface-variant">
+                Do quá trình có công đoạn sử dụng dụng cụ mài cạnh và keo khoáng đóng rắn nhanh, chương trình ưu tiên học viên từ 12 tuổi. Các bạn nhỏ hơn có thể tham gia lớp tranh màu cỏ tự nhiên tổ chức vào Chủ Nhật.
+              </div>
+</div>
+<!-- FAQ item 3 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-5 shadow-sm cursor-pointer" onclick="this.querySelector('.faq-answer').classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+<div class="flex items-center justify-between">
+<span class="font-title-editorial text-title-editorial text-on-surface">Địa điểm xưởng có chỗ đỗ ô tô và xe máy không?</span>
+<span class="material-symbols-outlined text-outline faq-icon transition-transform">expand_more</span>
+</div>
+<div class="faq-answer hidden mt-3 font-body-sm text-body-sm text-on-surface-variant">
+                Xưởng có khuôn viên sân trước đỗ được 30 xe máy và hỗ trợ bãi đỗ ô tô miễn phí tại toà nhà đối diện (12 Đường 30/4). Nhân viên bảo vệ sẽ hướng dẫn khi bạn đến.
+              </div>
+</div>
+<!-- FAQ item 4 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT p-5 shadow-sm cursor-pointer" onclick="this.querySelector('.faq-answer').classList.toggle('hidden'); this.querySelector('.faq-icon').classList.toggle('rotate-180');">
+<div class="flex items-center justify-between">
+<span class="font-title-editorial text-title-editorial text-on-surface">Tôi có thể mang thêm vỏ ốc tự sưu tầm đến để làm không?</span>
+<span class="material-symbols-outlined text-outline faq-icon transition-transform">expand_more</span>
+</div>
+<div class="faq-answer hidden mt-3 font-body-sm text-body-sm text-on-surface-variant">
+                Rất hoan nghênh! Hãy mang theo những vỏ ốc, vỏ sò có giá trị kỷ niệm từ các chuyến đi của bạn. Thầy Trọng sẽ hỗ trợ bạn kiểm tra độ chắc khoáng và lồng ghép hài hòa vào tác phẩm.
+              </div>
+</div>
+</div>
+</div>
+<!-- THẺ BẢN ĐỒ VỊ TRÍ XƯỞNG -->
+<div class="space-y-4 pt-space-md">
+<div class="flex items-center justify-between">
+<div>
+<span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">VỊ TRÍ PHÒNG TRƯNG BÀY &amp; XƯỞNG</span>
+<p class="font-body-md text-body-md font-medium text-on-surface">12 Đường 30/4, Phường Xuân Khánh, Quận Ninh Kiều, Cần Thơ</p>
+</div>
+<a class="px-4 py-2 rounded-full bg-surface-container-low text-on-surface font-body-sm text-body-sm hover:bg-surface-container flex items-center gap-1.5 transition-colors" href="https://maps.google.com" target="_blank">
+<span class="material-symbols-outlined text-[16px]">directions</span>
+<span>Chỉ đường</span>
+</a>
+</div>
+<div class="w-full h-56 rounded-DEFAULT bg-cover bg-center overflow-hidden relative shadow-sm" data-location="12 Duong 30 Thang 4, Ninh Kieu, Can Tho, Vietnam" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAAnHqTMhUBngogCWU2kR3jGYAblB5wQ7uH5iWxkCNSKbC9Wpfq-nluvPWazFo-Q3NW_mGB5Ewa6xGsH0TKqb_eYgHQp6yZrnsw_IH30Hj6ZPFT-pv1RgMC5SIV4dIKl1kB4QccEdVAVENXvl8-A1UcqrOkFTN0z5zmUXoiXFtIksYuwTCwZUMsTA-yrwDNtkTpZh8ec3CTcvArKQMBQv8lo3Lffgt1qMw1LJ9CMni4sH7IsYqoIVnH')">
+<div class="absolute bottom-4 left-4 bg-surface/90 backdrop-blur-md px-3.5 py-2 rounded-lg flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium">LAVIECO Studio · Tầng 2 Không gian sáng tạo</span>
+</div>
+</div>
+</div>
+</div>
+<!-- CỘT PHẢI: STICKY TICKET CARD (5 CỘT TRÊN DESKTOP) -->
+<div class="lg:col-span-5 sticky top-28 space-y-6">
+<!-- THẺ VÉ THIẾT KẾ ĐỤC LỖ CUỐNG XÉ -->
+<div class="bg-surface-container-lowest rounded-lg shadow-[0_24px_48px_-12px_rgba(32,52,95,0.12)] overflow-hidden relative">
+<!-- Đầu cuống vé -->
+<div class="p-6 bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="font-headline-sm text-headline-sm font-medium text-secondary">LAVIECO</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+<div class="text-right">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline block">MÃ ĐỊNH DANH</span>
+<span class="font-metadata-curatorial text-metadata-curatorial text-on-surface font-bold tracking-widest">#LVC-26-WS01</span>
+</div>
+</div>
+<!-- Đường đục lỗ cuống xé (Perforation line with cutouts) -->
+<div class="relative w-full h-6 flex items-center justify-between px-2 overflow-hidden bg-surface-container-lowest">
+<div class="w-5 h-5 rounded-full bg-surface -ml-5 shadow-inner"></div>
+<div class="flex-1 border-b-2 border-dashed border-outline-variant/50 mx-2"></div>
+<div class="w-5 h-5 rounded-full bg-surface -mr-5 shadow-inner"></div>
+</div>
+<!-- Thân vé & Chọn vé -->
+<div class="p-6 sm:p-8 space-y-6">
+<div class="space-y-1">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary uppercase font-bold tracking-wider">HẠNG VÉ TIÊU CHUẨN</span>
+<div class="flex items-baseline justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface font-normal">200.000 <span class="font-body-sm text-body-sm text-outline">VNĐ / người</span></h3>
+<span class="font-body-sm text-body-sm text-on-surface-variant">(Tối đa 4 vé)</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Bao gồm toan mộc, vật liệu vỏ tinh tuyển, dụng cụ, trà thảo mộc &amp; khung đóng hộp cao cấp.</p>
+</div>
+<!-- Bộ đếm số lượng -->
+<div class="space-y-2 pt-2">
+<label class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Số lượng vé</label>
+<div class="flex items-center justify-between bg-surface-container-low p-2 rounded-full">
+<button class="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors disabled:opacity-40" id="btn-minus" onclick="updateQty(-1)" type="button">
+<span class="material-symbols-outlined text-[18px]">remove</span>
+</button>
+<div class="flex items-center gap-1.5 font-title-editorial text-title-editorial text-on-surface font-medium">
+<span id="ticket-count">1</span>
+<span class="text-on-surface-variant font-body-sm text-body-sm font-normal">vé</span>
+</div>
+<button class="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-on-surface hover:bg-surface-container transition-colors" id="btn-plus" onclick="updateQty(1)" type="button">
+<span class="material-symbols-outlined text-[18px]">add</span>
+</button>
+</div>
+</div>
+<!-- Tổng tiền -->
+<div class="pt-4 flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Tổng chi phí thanh toán</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold" id="total-price">200.000 đ</span>
+</div>
+<!-- CTA Chính -->
+<button class="w-full py-4 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps font-bold hover:bg-primary hover:text-on-primary transition-all duration-300 shadow-[0_8px_24px_-4px_rgba(16,177,131,0.35)] flex items-center justify-center gap-2">
+<span>ĐẶT VÉ NGAY</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Ghi chú thanh toán & bảo mật -->
+<div class="space-y-3 pt-2 text-center">
+<p class="font-metadata-curatorial text-metadata-curatorial text-outline flex items-center justify-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">verified_user</span>
+<span>Nhận vé QR qua email · Thanh toán an toàn qua payOS</span>
+</p>
+<div class="flex items-center justify-center gap-6 pt-1 font-body-sm text-body-sm text-on-surface-variant">
+<button class="hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">event</span>
+<span>Thêm vào lịch</span>
+</button>
+<span>·</span>
+<button class="hover:text-primary transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">share</span>
+<span>Chia sẻ</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Đáy cuống vé -->
+<div class="bg-surface-container px-6 py-3.5 text-center">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Đã đặt vé từ trước? </span>
+<a class="font-body-sm text-body-sm text-primary font-medium hover:underline" href="#">Tra cứu mã vé</a>
+</div>
+</div>
+<!-- MÃ GIẢM GIÁ HOẶC ĐĂNG KÝ NHÓM -->
+<div class="bg-surface-container-low p-5 rounded-DEFAULT flex items-center gap-4">
+<div class="w-10 h-10 rounded-full bg-surface flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[20px]">diversity_3</span>
+</div>
+<div class="space-y-0.5">
+<h4 class="font-body-sm text-body-sm font-semibold text-on-surface">Đăng ký đoàn thể / Doanh nghiệp?</h4>
+<p class="font-metadata-curatorial text-metadata-curatorial text-outline">Ưu đãi xưởng riêng cho nhóm từ 8 người trở lên.</p>
+</div>
+<a class="ml-auto font-metadata-curatorial text-metadata-curatorial text-primary uppercase font-bold hover:underline whitespace-nowrap" data-path="hop-tac" href="#">Liên hệ</a>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 4: KHỐI MINH HỌA TRẠNG THÁI "CHƯƠNG TRÌNH ĐÃ DIỄN RA" & BỘ SƯU TẬP KHOẢNH KHẮC -->
+<section class="w-full max-w-[1240px] mx-auto px-margin sm:px-margin-tablet lg:px-0 mt-space-xl">
+<div class="bg-surface-container-low rounded-lg p-6 sm:p-10 space-y-8">
+<!-- Header trạng thái đã qua -->
+<div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6">
+<div class="space-y-2">
+<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-surface-container-highest text-on-surface-variant font-metadata-curatorial text-metadata-curatorial">
+<span class="w-2 h-2 rounded-full bg-outline"></span>
+            TÀI LIỆU LƯU TRỮ · PHIÊN SỐ 01
+          </div>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">
+            Chương trình đã diễn ra thành công
+          </h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+            10/10/2026 · 20 học viên tham gia · 20 tác phẩm đã được đóng khung hoàn tất.
+          </p>
+</div>
+<a class="px-6 py-3 rounded-full bg-primary-container text-on-primary-container font-label-caps text-label-caps font-medium hover:bg-primary hover:text-on-primary transition-all shadow-sm" data-path="chuong-trinh" href="#">
+          Xem chương trình sắp tới →
+        </a>
+</div>
+<!-- Bộ sưu tập ảnh Khoảnh khắc (4 ảnh tư liệu học viên) -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">KHOẢNH KHẮC TẠI XƯỞNG (ARCHIVE GALLERY)</span>
+<span class="font-body-sm text-body-sm text-outline">4 / 4 hình ảnh tư liệu</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<div class="space-y-2">
+<div class="aspect-square rounded-DEFAULT overflow-hidden bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" data-alt="Close up shot of students sorting iridescent clam shells by tone and thickness on an organic linen workstation at Lavieco gallery." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBRpMOlKxXu4H7l_6HTninw7lUGvUupd4UxwS0tSaoPwzsXsNVBLZFPuw5Ralfm6z7N1KlB1eIhL-_k5r_-L5RUJFmmxwAOsm8yersmFZZlRCNMAgsjKxDBP774lPAhB2TlHhAUgm0J5JOcbtY68gaEH4Xr-HHyAHoB9GwC3ozPIthmqaN2MEE_3VtaVPTzZj1dKkVFk4DUZOyH-iOEpY4ypncnZoEcEbrBIdCCgJhfcCzBZOq0Wm57"/>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline block">#01 · Chọn lọc xà cừ</span>
+</div>
+<div class="space-y-2">
+<div class="aspect-square rounded-DEFAULT overflow-hidden bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" data-alt="Hands of an attendee carefully applying natural eco-resin to attach oyster shells onto a raw canvas." src="https://lh3.googleusercontent.com/aida-public/AB6AXuALTi63EHqh0pgcxKFQwM_I0o89RB9ibVECT4NFE6js44STtEmHXukwGR90Lmm_eN3sSWIVHB155H_eX1-QyBSOqkLtbLNcRGqtymRDrPkB0EqLVtLjp4oQBC7StLcV-nU6J0TM5Zvm0e_GV01tqKqiOnbMdu3Uy7mxun7SmnTGSApzwRfue4Gxp6BJ4PqoKTEUdmDtNZlUQk48-ebtvzazgqSe2XbPeddZeIldcH30Bd4-QWUgy4Oy"/>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline block">#02 · Ghép phù điêu</span>
+</div>
+<div class="space-y-2">
+<div class="aspect-square rounded-DEFAULT overflow-hidden bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" data-alt="Curator Vo Chi Trong demonstrating shell grinding technique to a young participant in an airy studio." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFF9T3ufbwhl9gxNRZnws80bNp4LPbjGLWAdQ_H8tEqRqvTpZF_cAErf658NDTn2-szzInw0Xefrv3Txgcde_xqjyTBIRLrCyaa5P_lGG9OIZ2ZG2DrUuPbq4Z_VSH8ITzvDLHvxvb705SjgOsribA_05LiZQYy0NLx1od2XLVYcNoEKIoqf-Q_8TLbYK8kAiFDWlBc9Myb9_wvWZFHnyOOxm5pNNvPwo7HT0eEYQ3luVE6iIjwAhi"/>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline block">#03 · Chỉ dẫn kỹ thuật</span>
+</div>
+<div class="space-y-2">
+<div class="aspect-square rounded-DEFAULT overflow-hidden bg-surface-container shadow-sm">
+<img class="w-full h-full object-cover hover:scale-105 transition-transform duration-500" data-alt="Attendees smiling proudly while holding their framed shell relief art in modern blonde wooden shadowboxes." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAzUMl2EbBqcrnNsbeT8g_BHPdoswohCa6oE9A4uZcAxo7vZ86L0gWQrPdFFgaN2ZHjWBgx_HE6OSO-EJXiHpNFT_KPgl2tYI-0ZyTJEFv4N78KbFX7zfoTd37Y3ysAkFX7iWGLkHASbC6TqAqSD3H3C3SgWTo8KjGWaqZ4ZEHIHvdxAnbkK_cP6rKc6kx5opvA_ggGeu09CdUHzJmlzKTw6oiVTldzz8fat_EpCZLgZgjEb8RvJlWS"/>
+</div>
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline block">#04 · Tác phẩm hoàn thành</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- SECTION 5: PHÂN ĐOẠN CHƯƠNG TRÌNH KHÁC (DISCOVERY GRID) -->
+<section class="w-full max-w-[1240px] mx-auto px-margin sm:px-margin-tablet lg:px-0 my-space-xl">
+<div class="space-y-8">
+<div class="flex items-end justify-between">
+<div class="space-y-1">
+<span class="font-metadata-curatorial text-metadata-curatorial text-outline uppercase tracking-wider">TIẾP NỐI KHÁM PHÁ</span>
+<h2 class="font-headline-md text-headline-md text-on-surface font-normal">Các workshop sinh thái khác</h2>
+</div>
+<a class="hidden sm:inline-flex items-center gap-1.5 font-label-caps text-label-caps text-primary hover:underline" data-path="chuong-trinh" href="#">
+<span>Xem tất cả lịch diễn</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="aspect-[4/3] bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Art workshop with natural pigments made from river silt and botanical dyes on handmade Vietnamese paper, calm daylight." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoVC04Dq8Y6TTb85aWRxd2bro782r4uiEQq1R-Cc4otvFNttC6wlGYa1Q0f2xXOL07j7lTmYnAzM65SeIfdYq5okV8bwIoRiZR6jc64D-wNjhB0SJUcrNmSHs6vwg7nwpdYzYMiwTaXMew-MsNYycXn-q6tNPyUJMkvrF8nglPU3AvQougOTLgRxaghE2z9knZDnR5mFRT92nCJAONRJZuZ3BdEEgvIN-6SVOuHxLZpwmOFrLoTHk_"/>
+<span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-surface/90 backdrop-blur-md font-metadata-curatorial text-metadata-curatorial text-on-surface">CHỦ NHẬT · 18/10</span>
+</div>
+<div class="p-5 space-y-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold uppercase">MÀU NƯỚC THẢO MỘC</span>
+<h3 class="font-title-editorial text-title-editorial text-on-surface">Chiết xuất sắc tố từ phù sa sông Hậu</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Tìm hiểu phương pháp làm mực vẽ và màu nước an toàn từ đất sét phù sa và lá bàng chín.</p>
+</div>
+</div>
+<div class="p-5 pt-0 flex items-center justify-between">
+<span class="font-body-md text-body-md font-semibold text-on-surface">180.000 đ</span>
+<a class="font-label-caps text-label-caps text-primary hover:underline" data-path="chuong-trinh" href="#">Chi tiết →</a>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="aspect-[4/3] bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Artisanal papermaking workshop using discarded banana fibers and water hyacinth in Can Tho atelier." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB6w9422zGdJF-c2sFFDU_aHlAFuztQfHZDal-khmej7Zq2SmSymFOp6pPlxxi-gkAucChjVtX83MDgf2TJnnr3wTCzmkbS6UsJ_YYWOCigaR1jQY-wtuKg9G0XHvCDkEScPU64lP_iC0DtMvE2lMbDxzDmVeSccyjasOEudhFTI9Rxj3XJmlR_d_KXRZ-yxNJf8VHjzqC9oDJrcS9qCNhiqDN6yyiY0tOl9Kl4ToClqGZERDIqE5Va"/>
+<span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-surface/90 backdrop-blur-md font-metadata-curatorial text-metadata-curatorial text-on-surface">THỨ BẢY · 24/10</span>
+</div>
+<div class="p-5 space-y-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold uppercase">GIẤY THỦ CÔNG</span>
+<h3 class="font-title-editorial text-title-editorial text-on-surface">Đúc giấy từ sợi thân cây lục bình</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Tận dụng nguồn bèo lục bình trôi dạt để xe sợi, giã bột và đúc khuôn giấy vẽ mỹ thuật dẻo dai.</p>
+</div>
+</div>
+<div class="p-5 pt-0 flex items-center justify-between">
+<span class="font-body-md text-body-md font-semibold text-on-surface">220.000 đ</span>
+<a class="font-label-caps text-label-caps text-primary hover:underline" data-path="chuong-trinh" href="#">Chi tiết →</a>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-surface-container-lowest rounded-DEFAULT overflow-hidden shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between">
+<div>
+<div class="aspect-[4/3] bg-surface-container overflow-hidden relative">
+<img class="w-full h-full object-cover" data-alt="Traditional terracotta clay sculpture workshop focusing on Mekong Delta organic architectural motifs." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCVp3yyhpNzlp-j5AO8OxTZbvK9ZVstjWX7RsK-ux1bqxsBWYhngx37I1_wGHMPeiDKSBoYj4AJWLPKZrfGXBtHpInt_SzbdnFgJBGsSGyWLB4spGBGG89bQfebCrJcZwt-h8BfBCDyHYYN8OZdlCRDEsF9fg_pP2obARB3-RiMD6k2S3AKlXwrEY6TgRsYMxKSWeSlfNfEv8-rR-GyXoQVA7qqbFfygA0Zcqlsh8uXw7o-sjGaIff-"/>
+<span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-surface/90 backdrop-blur-md font-metadata-curatorial text-metadata-curatorial text-on-surface">CHỦ NHẬT · 01/11</span>
+</div>
+<div class="p-5 space-y-2">
+<span class="font-metadata-curatorial text-metadata-curatorial text-primary font-bold uppercase">GỐM ĐẤT ĐỎ</span>
+<h3 class="font-title-editorial text-title-editorial text-on-surface">Nặn chậu cây phù điêu men tro trấu</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Khám phá kỹ thuật men tro trấu truyền thống và tự tay vuốt dáng bình gốm mộc không tráng men chì.</p>
+</div>
+</div>
+<div class="p-5 pt-0 flex items-center justify-between">
+<span class="font-body-md text-body-md font-semibold text-on-surface">250.000 đ</span>
+<a class="font-label-caps text-label-caps text-primary hover:underline" data-path="chuong-trinh" href="#">Chi tiết →</a>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- MICRO-INTERACTIONS JAVASCRIPT -->
+<script>
+    let ticketQty = 1;
+    const ticketPrice = 200000;
+    const maxTickets = 4;
+    const minTickets = 1;
+
+    function updateQty(delta) {
+      const newQty = ticketQty + delta;
+      if (newQty >= minTickets && newQty <= maxTickets) {
+        ticketQty = newQty;
+        document.getElementById('ticket-count').innerText = ticketQty;
+        const total = ticketQty * ticketPrice;
+        document.getElementById('total-price').innerText = total.toLocaleString('vi-VN') + ' đ';
+        
+        document.getElementById('btn-minus').disabled = ticketQty === minTickets;
+        document.getElementById('btn-plus').disabled = ticketQty === maxTickets;
+      }
+    }
+  </script>
+</div></main><footer class="w-full bg-surface-container-low mt-space-xl"><div class="max-w-[1120px] mx-auto px-margin sm:px-margin-tablet lg:px-0 py-space-xl"><div class="grid grid-cols-1 md:grid-cols-12 gap-gutter lg:gap-gutter-desktop"><div class="md:col-span-5 flex flex-col justify-between space-y-6"><div class="space-y-4"><div class="flex items-center gap-1.5"><span class="font-headline-sm text-headline-sm tracking-widest text-secondary font-medium uppercase">LAVIECO</span><span class="w-2 h-2 rounded-full bg-primary-container inline-block"></span></div><p class="font-title-editorial text-title-editorial text-on-surface-variant italic max-w-sm">“Art to learn green. Art to create green.”</p></div><div class="space-y-2 pt-space-md"><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Phòng trưng bày &amp; Nghiên cứu</span><p class="font-body-sm text-body-sm text-on-surface-variant max-w-xs">12 Đường 30/4, Phường Xuân Khánh, Quận Ninh Kiều, Thành phố Cần Thơ, Việt Nam</p></div></div><div class="md:col-span-3 space-y-4"><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Điều hướng triển lãm</span><ul class="space-y-3 font-body-sm text-body-sm"><li><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="cau-chuyen" href="#">Câu chuyện sinh thái</a></li><li><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="chuong-trinh" href="#">Lịch trình chương trình</a></li><li><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="bo-suu-tap" href="#">Kho lưu trữ phẩm nghệ thuật</a></li><li><a class="text-on-surface-variant hover:text-on-surface transition-colors" data-path="kham-pha" href="#">Tài liệu giám tuyển &amp; Nghiên cứu</a></li></ul></div><div class="md:col-span-4 space-y-4"><span class="font-metadata-curatorial text-metadata-curatorial uppercase text-outline block">Bản tin nghệ thuật sinh thái</span><p class="font-body-sm text-body-sm text-on-surface-variant">Nhận tuyển tập tiểu luận giám tuyển và thư mời tham gia hội thảo phục nguyên chất liệu định kỳ.</p><div class="flex items-center gap-2"><div class="flex-1 bg-surface px-4 py-2.5 rounded-full shadow-[0_1px_4px_rgba(32,52,95,0.04)]"><span class="font-body-sm text-body-sm text-outline">thudientu@lavieco.vn</span></div><a class="px-4 py-2.5 rounded-full bg-surface-container text-on-surface font-body-sm text-body-sm hover:bg-surface-container-high transition-colors" data-path="hop-tac" href="#">Gửi</a></div></div></div><div class="mt-space-xl pt-space-lg flex flex-col sm:flex-row items-center justify-between gap-4 font-metadata-curatorial text-metadata-curatorial text-outline"><p>© 2026 LAVIECO Museum of Contemporary Ecological Art. Bảo lưu mọi quyền.</p><div class="flex items-center gap-6"><a class="hover:text-on-surface transition-colors" data-path="kham-pha" href="#">Quy ước học thuật</a><a class="hover:text-on-surface transition-colors" data-path="kham-pha" href="#">Chính sách bảo tồn số</a><a class="hover:text-on-surface transition-colors" data-path="hop-tac" href="#">Liên hệ giám tuyển</a></div></div></div></footer></body></html>

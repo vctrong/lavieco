@@ -1,3 +1,5 @@
+import { commonFailureMessage, type FormFailure } from "@/shared/form-failures";
+
 import { TEXT } from "../constants/text";
 import type { CheckoutError } from "../types";
 
@@ -13,10 +15,15 @@ export function messageFor(error: CheckoutError): string {
       return error.retryAfterSeconds !== undefined
         ? t.send_limited_in(error.retryAfterSeconds)
         : t.send_limited;
-    case "payment_unavailable":
-      return t.payment_unavailable;
     case "unavailable":
+    case "stale_version":
+    case "offline":
     case "bot":
+    case "rate_limited":
+    case "code_not_sent":
+    case "invalid_input":
+      return commonFailureMessage(error.reason, error);
+    case "payment_unavailable":
     case "code_expired":
     case "attempts_exceeded":
     case "verification_invalid":
@@ -28,5 +35,21 @@ export function messageFor(error: CheckoutError): string {
     case "email_mismatch":
     case "invalid_state":
       return t[error.reason];
+  }
+}
+
+export const failureOf = (error: CheckoutError): FormFailure => ({
+  message: messageFor(error),
+  reload: error.reason === "stale_version",
+});
+
+/** The form field a failure belongs to, so it also shows under that field. */
+export function fieldOfFailure(error: CheckoutError): string | null {
+  switch (error.reason) {
+    case "sold_out":
+    case "items_invalid":
+      return "tickets";
+    default:
+      return null;
   }
 }

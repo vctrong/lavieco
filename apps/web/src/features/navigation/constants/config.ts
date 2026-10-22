@@ -24,9 +24,9 @@ export const SIGN_IN_HREF = "/dang-nhap";
 
 /** Links of the account menu. Copy lives in text.ts under the same `id`. */
 export const ACCOUNT_LINKS: readonly AccountLink[] = [
-  // TODO(nav-account-routes): the member ticket list page does not exist yet.
+  // TODO(nav-account-routes): a coming-soon page until the member ticket list exists.
   { id: "tickets", href: "/tai-khoan/ve" },
-  // TODO(nav-account-routes): the registered-programs page does not exist yet.
+  // TODO(nav-account-routes): a coming-soon page until the registered-programs page exists.
   { id: "registrations", href: "/tai-khoan/chuong-trinh" },
   { id: "profile", href: ACCOUNT_HREF },
 ];
@@ -66,4 +66,15 @@ export const FOOTER_LINKS: readonly NavItem[] = [
   { id: "handbook", href: "/cam-nang" },
   { id: "impact", href: "/tac-dong" },
   { id: "team", href: "/#nguoi-ke-chuyen" },
+];
+
+/** Every internal link of the bar, the account menu and the footer (route check). */
+export const NAVIGATION_HREFS: readonly string[] = [
+  ...NAV_ITEMS.map((item) => item.href),
+  CTA_HREF,
+  ACCOUNT_HREF,
+  SIGN_IN_HREF,
+  ...ACCOUNT_LINKS.map((link) => link.href),
+  ...SESSION_PAGES,
+  ...FOOTER_LINKS.map((link) => link.href),
 ];

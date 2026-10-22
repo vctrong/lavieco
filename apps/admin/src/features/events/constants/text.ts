@@ -1,3 +1,5 @@
+import { FORM_TEXT } from "@/shared/constants/form-text";
+
 /** Copy of the events back office (UI says "Chương trình"; code says `events`). */
 export const TEXT = {
   vi: {
@@ -15,6 +17,7 @@ export const TEXT = {
         published: "Đang mở",
         closed: "Đã đóng",
         ended: "Đã kết thúc",
+        cancelled: "Đã huỷ",
       },
       filters: {
         label: "Bộ lọc",
@@ -57,6 +60,7 @@ export const TEXT = {
       published: "Đang mở",
       closed: "Đã đóng đăng ký",
       ended: "Đã kết thúc",
+      cancelled: "Đã huỷ",
     },
     format: { offline: "Tại xưởng", online: "Trực tuyến" },
     kind: { standard: "Chương trình mới", past: "Sự kiện đã diễn ra" },
@@ -78,13 +82,23 @@ export const TEXT = {
         basicsHint: "Tên, loại, đường dẫn và mô tả.",
         time: "Thời gian & hình thức",
         timeHint: "Giờ Việt Nam. Hình thức trực tuyến/tại xưởng là trường riêng.",
+        images: "Hình ảnh",
+        imagesHint:
+          "Banner 21:9 cho đầu trang và chia sẻ mạng xã hội; poster 4:5 cho thẻ trong danh sách.",
         people: "Người hướng dẫn",
-        peopleHint: "Chỉ tên và vai trò; không cần ảnh.",
+        peopleHint:
+          "Ảnh chân dung là dữ liệu cá nhân: chỉ tải lên khi người đó đã đồng ý. Không có ảnh, website hiện chữ cái đầu.",
+        benefits: "Bạn sẽ nhận",
+        benefitsHint: "Những gì người tham gia mang về. Mục này ẩn trên website khi để trống.",
         agenda: "Lịch trình",
         safety: "Lưu ý an toàn",
         safetyHint:
           "Không bắt buộc. Khi có nội dung, người đặt vé phải tick “Tôi đã đọc lưu ý an toàn”.",
         policy: "Chính sách huỷ",
+        policyHint: "Mỗi dòng một điều kiện và kết quả. Ghi chú bên dưới là đoạn văn tự do.",
+        attendance: "Số người tham gia",
+        attendanceHint:
+          "Chỉ cho sự kiện đã diễn ra trước khi có hệ thống. Số liệu chỉ hiện trên website sau khi Super Admin duyệt (BR-09).",
         faq: "Câu hỏi thường gặp",
         tickets: "Loại vé",
         ticketsHint: "Giá bằng đồng, số nguyên. Để trống số lượng nếu không giới hạn.",
@@ -101,7 +115,22 @@ export const TEXT = {
         summary: "Tóm tắt (hiện trên thẻ)",
         description: "Mô tả",
         descriptionHint: "Cách đoạn bằng một dòng trống.",
-        cover: "Ảnh bìa",
+        cover: "Ảnh poster (4:5)",
+        banner: "Ảnh banner (21:9)",
+        minAge: "Độ tuổi phù hợp (từ)",
+        minAgeHint: "Để trống nếu không giới hạn.",
+        speakerBio: "Giới thiệu ngắn",
+        speakerAvatar: "Ảnh chân dung",
+        agendaDescription: "Mô tả (không bắt buộc)",
+        benefitIcon: "Biểu tượng",
+        benefitTitle: "Tiêu đề",
+        benefitDescription: "Mô tả ngắn",
+        ruleCondition: "Điều kiện",
+        ruleResult: "Kết quả",
+        policyNote: "Ghi chú thêm (không bắt buộc)",
+        attendanceCount: "Số người đã tham gia",
+        attendancePending: "Chờ Super Admin duyệt: chưa hiện trên website.",
+        attendanceApproved: (date: string) => `Đã duyệt ngày ${date}, đang hiện trên website.`,
         format: "Hình thức",
         startAt: "Bắt đầu",
         endAt: "Kết thúc",
@@ -116,7 +145,7 @@ export const TEXT = {
           'Khi bật, người đặt phải tick "Tôi là phụ huynh/người giám hộ". Không thu thông tin nào của trẻ.',
         safetyPlaceholder:
           "Ví dụ: Có bột vỏ sò và nhựa epoxy. LAVIECO phát găng tay và khẩu trang.",
-        cancellationPolicy: "Chính sách huỷ",
+        cancellationPolicy: "Ghi chú chính sách",
         speakerName: "Họ tên",
         speakerRole: "Vai trò",
         agendaTime: "Thời điểm",
@@ -128,6 +157,20 @@ export const TEXT = {
         speaker: "Thêm người hướng dẫn",
         agenda: "Thêm mục lịch trình",
         faq: "Thêm câu hỏi",
+        benefit: "Thêm mục",
+        rule: "Thêm điều kiện",
+      },
+      benefitIcons: {
+        leaf: "Lá (vật liệu xanh)",
+        gift: "Quà tặng",
+        award: "Tác phẩm / chứng nhận",
+        camera: "Ảnh kỷ niệm",
+        book: "Tài liệu / Cẩm nang",
+        package: "Bộ vật liệu",
+        users: "Cộng đồng",
+        coffee: "Trà bánh",
+        heart: "Trải nghiệm",
+        tool: "Dụng cụ",
       },
       remove: "Xoá dòng",
       save: "Lưu thay đổi",
@@ -225,6 +268,18 @@ export const TEXT = {
       yes: "Xác nhận",
       no: "Không",
       registrationsLock: "Đã có người đăng ký: không gỡ xuất bản được.",
+      cancel: "Huỷ chương trình",
+      cancelTitle: "Huỷ chương trình",
+      cancelIntro:
+        "Không hoàn tác được. Vé bị vô hiệu, đơn chờ thanh toán bị huỷ, đơn đã trả tiền được đánh dấu cần hoàn (hoàn thủ công ở mục Đơn hàng), người đặt nhận email thông báo.",
+      cancelImpact: (paid: number, pending: number, tickets: number) =>
+        `Ảnh hưởng: ${paid} đơn đã thanh toán, ${pending} đơn chờ thanh toán, ${tickets} vé.`,
+      cancelReason: "Lý do (hiện công khai trên website và trong email)",
+      cancelCode: "Mã xác thực 2 lớp (6 số)",
+      cancelConfirm: "Huỷ chương trình",
+      cancelled: (date: string) => `Đã huỷ ngày ${date}`,
+      approveAttendance: "Duyệt số người tham gia",
+      attendanceApproved: "Đã duyệt số người tham gia.",
     },
     readiness: {
       title: "Điều kiện xuất bản",
@@ -268,7 +323,11 @@ export const TEXT = {
       back: "Danh sách chương trình",
     },
     errors: {
-      unavailable: "Không kết nối được máy chủ. Thử lại sau ít phút.",
+      // Shared wording of the failures every form can meet (src/shared/constants/form-text).
+      unavailable: FORM_TEXT.vi.failures.unavailable,
+      stale_version: FORM_TEXT.vi.failures.stale_version,
+      offline: FORM_TEXT.vi.failures.offline,
+      rate_limited: FORM_TEXT.vi.failures.rate_limited,
       session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang để đăng nhập lại.",
       forbidden: "Bạn không có quyền thực hiện thao tác này.",
       not_found: "Không tìm thấy chương trình.",
@@ -289,11 +348,16 @@ export const TEXT = {
       online_url_locked:
         "Chương trình trực tuyến đã bán vé: chỉ được đổi sang link khác, không được xoá link hay chuyển sang trực tiếp.",
       media_unavailable: "Một ảnh đã hết hạn hoặc không còn dùng được. Gỡ ảnh đó, tải lại rồi lưu.",
+      step_up_required: "Cần nhập mã xác thực 2 lớp để huỷ chương trình.",
+      code_invalid: "Mã xác thực không đúng hoặc đã hết hạn.",
+      locked: "Tài khoản tạm khoá do nhập sai nhiều lần. Thử lại sau.",
     },
     images: {
       coverHint:
         "JPG, PNG hoặc WebP, tối đa 8 MB. Thông tin vị trí (EXIF/GPS) được xoá trước khi lưu.",
-      coverEmpty: "Chưa có ảnh bìa. Website sẽ dùng ảnh minh hoạ mặc định.",
+      coverEmpty: "Chưa có ảnh poster. Website sẽ dùng ảnh minh hoạ mặc định.",
+      bannerEmpty: "Chưa có ảnh banner. Đầu trang sẽ dùng ảnh poster hoặc minh hoạ mặc định.",
+      avatarEmpty: "Chưa có ảnh. Chỉ tải lên khi người này đã đồng ý.",
       gallery: "Thư viện ảnh",
       galleryHint: "Tối đa 12 ảnh. Ảnh hiện trên trang chương trình theo thứ tự dưới đây.",
       galleryFull: "Đã đủ 12 ảnh.",
@@ -327,6 +391,8 @@ export const TEXT = {
       invalidNumber: "Nhập số nguyên hợp lệ.",
       slug: "Chỉ chữ thường không dấu, số và dấu gạch ngang.",
       options: "Cần ít nhất một lựa chọn.",
+      reasonTooShort: "Lý do cần ít nhất 10 ký tự.",
+      code: "Mã gồm 6 chữ số.",
     },
   },
 } as const;

@@ -17,10 +17,12 @@ export function EventEditor({
   event,
   types,
   canWrite,
+  canApprove,
 }: {
   event: EventView;
   types: EventType[];
   canWrite: boolean;
+  canApprove: boolean;
 }) {
   const [dirty, setDirty] = useState(false);
   return (
@@ -32,7 +34,7 @@ export function EventEditor({
         <FormBuilder event={event} canWrite={canWrite} />
       </div>
       <div className="xl:sticky xl:top-8 xl:self-start">
-        <StatusPanel event={event} canWrite={canWrite} dirty={dirty} />
+        <StatusPanel event={event} canWrite={canWrite} canApprove={canApprove} dirty={dirty} />
       </div>
     </div>
   );

@@ -483,7 +483,8 @@
                 "draft",
                 "published",
                 "closed",
-                "ended"
+                "ended",
+                "cancelled"
               ]
             }
           },
@@ -563,7 +564,8 @@
                               "draft",
                               "published",
                               "closed",
-                              "ended"
+                              "ended",
+                              "cancelled"
                             ]
                           },
                           "title": {
@@ -726,6 +728,11 @@
                           "type": "integer",
                           "minimum": -9007199254740991,
                           "maximum": 9007199254740991
+                        },
+                        "cancelled": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
                         }
                       },
                       "required": [
@@ -733,7 +740,8 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
                       ],
                       "additionalProperties": false
                     }
@@ -856,6 +864,76 @@
                     "type": "string",
                     "maxLength": 3000
                   },
+                  "cancellationRules": {
+                    "default": [],
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "result": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "result"
+                      ]
+                    }
+                  },
+                  "minAge": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "benefits": {
+                    "default": [],
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "icon": {
+                          "type": "string",
+                          "enum": [
+                            "leaf",
+                            "gift",
+                            "award",
+                            "camera",
+                            "book",
+                            "package",
+                            "users",
+                            "coffee",
+                            "heart",
+                            "tool"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "description": {
+                          "default": "",
+                          "type": "string",
+                          "maxLength": 300
+                        }
+                      },
+                      "required": [
+                        "icon",
+                        "title"
+                      ]
+                    }
+                  },
                   "forChildren": {
                     "default": false,
                     "type": "boolean"
@@ -876,6 +954,31 @@
                           "default": "",
                           "type": "string",
                           "maxLength": 160
+                        },
+                        "bio": {
+                          "default": "",
+                          "type": "string",
+                          "maxLength": 600
+                        },
+                        "avatar": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "alt": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 200
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "alt"
+                          ]
                         }
                       },
                       "required": [
@@ -899,6 +1002,11 @@
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 200
+                        },
+                        "description": {
+                          "default": "",
+                          "type": "string",
+                          "maxLength": 500
                         }
                       },
                       "required": [
@@ -950,6 +1058,26 @@
                       "alt"
                     ]
                   },
+                  "banner": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "object",
+                    "properties": {
+                      "mediaId": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{24}$"
+                      },
+                      "alt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "mediaId",
+                      "alt"
+                    ]
+                  },
                   "gallery": {
                     "default": [],
                     "maxItems": 12,
@@ -972,6 +1100,13 @@
                         "alt"
                       ]
                     }
+                  },
+                  "attendanceCount": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
                   },
                   "kind": {
                     "default": "standard",
@@ -1024,7 +1159,8 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -1096,6 +1232,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "forChildren": {
                       "type": "boolean"
                     },
@@ -1113,11 +1317,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -1136,11 +1384,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -1169,6 +1423,42 @@
                       }
                     },
                     "cover": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "banner": {
                       "nullable": true,
                       "type": "object",
                       "properties": {
@@ -1241,6 +1531,52 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "attendance": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "approvedAt": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "approvedBy": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "approvedAt",
+                        "approvedBy"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "form": {
                       "type": "object",
@@ -1537,12 +1873,18 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
                     "cover",
+                    "banner",
                     "gallery",
+                    "attendance",
+                    "cancellation",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -1616,7 +1958,8 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -1688,6 +2031,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "forChildren": {
                       "type": "boolean"
                     },
@@ -1705,11 +2116,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -1728,11 +2183,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -1761,6 +2222,42 @@
                       }
                     },
                     "cover": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "banner": {
                       "nullable": true,
                       "type": "object",
                       "properties": {
@@ -1833,6 +2330,52 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "attendance": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "approvedAt": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "approvedBy": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "approvedAt",
+                        "approvedBy"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "form": {
                       "type": "object",
@@ -2129,12 +2672,18 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
                     "cover",
+                    "banner",
                     "gallery",
+                    "attendance",
+                    "cancellation",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -2269,6 +2818,76 @@
                     "type": "string",
                     "maxLength": 3000
                   },
+                  "cancellationRules": {
+                    "default": [],
+                    "maxItems": 10,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "condition": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        },
+                        "result": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 200
+                        }
+                      },
+                      "required": [
+                        "condition",
+                        "result"
+                      ]
+                    }
+                  },
+                  "minAge": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 99
+                  },
+                  "benefits": {
+                    "default": [],
+                    "maxItems": 8,
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "icon": {
+                          "type": "string",
+                          "enum": [
+                            "leaf",
+                            "gift",
+                            "award",
+                            "camera",
+                            "book",
+                            "package",
+                            "users",
+                            "coffee",
+                            "heart",
+                            "tool"
+                          ]
+                        },
+                        "title": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 120
+                        },
+                        "description": {
+                          "default": "",
+                          "type": "string",
+                          "maxLength": 300
+                        }
+                      },
+                      "required": [
+                        "icon",
+                        "title"
+                      ]
+                    }
+                  },
                   "forChildren": {
                     "default": false,
                     "type": "boolean"
@@ -2289,6 +2908,31 @@
                           "default": "",
                           "type": "string",
                           "maxLength": 160
+                        },
+                        "bio": {
+                          "default": "",
+                          "type": "string",
+                          "maxLength": 600
+                        },
+                        "avatar": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "alt": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 200
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "alt"
+                          ]
                         }
                       },
                       "required": [
@@ -2312,6 +2956,11 @@
                           "type": "string",
                           "minLength": 1,
                           "maxLength": 200
+                        },
+                        "description": {
+                          "default": "",
+                          "type": "string",
+                          "maxLength": 500
                         }
                       },
                       "required": [
@@ -2363,6 +3012,26 @@
                       "alt"
                     ]
                   },
+                  "banner": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "object",
+                    "properties": {
+                      "mediaId": {
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{24}$"
+                      },
+                      "alt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 200
+                      }
+                    },
+                    "required": [
+                      "mediaId",
+                      "alt"
+                    ]
+                  },
                   "gallery": {
                     "default": [],
                     "maxItems": 12,
@@ -2385,6 +3054,13 @@
                         "alt"
                       ]
                     }
+                  },
+                  "attendanceCount": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000
                   },
                   "revision": {
                     "type": "integer",
@@ -2435,7 +3111,8 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -2507,6 +3184,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "forChildren": {
                       "type": "boolean"
                     },
@@ -2524,11 +3269,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -2547,11 +3336,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -2580,6 +3375,42 @@
                       }
                     },
                     "cover": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "banner": {
                       "nullable": true,
                       "type": "object",
                       "properties": {
@@ -2652,6 +3483,52 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "attendance": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "approvedAt": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "approvedBy": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "approvedAt",
+                        "approvedBy"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "form": {
                       "type": "object",
@@ -2948,12 +3825,18 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
                     "cover",
+                    "banner",
                     "gallery",
+                    "attendance",
+                    "cancellation",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -3119,7 +4002,8 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -3191,6 +4075,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "forChildren": {
                       "type": "boolean"
                     },
@@ -3208,11 +4160,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -3231,11 +4227,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -3264,6 +4266,42 @@
                       }
                     },
                     "cover": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "banner": {
                       "nullable": true,
                       "type": "object",
                       "properties": {
@@ -3336,6 +4374,52 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "attendance": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "approvedAt": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "approvedBy": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "approvedAt",
+                        "approvedBy"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "form": {
                       "type": "object",
@@ -3632,12 +4716,18 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
                     "cover",
+                    "banner",
                     "gallery",
+                    "attendance",
+                    "cancellation",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -3742,7 +4832,8 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -3814,6 +4905,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "forChildren": {
                       "type": "boolean"
                     },
@@ -3831,11 +4990,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -3854,11 +5057,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -3887,6 +5096,42 @@
                       }
                     },
                     "cover": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "banner": {
                       "nullable": true,
                       "type": "object",
                       "properties": {
@@ -3959,6 +5204,52 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "attendance": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "approvedAt": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "approvedBy": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "approvedAt",
+                        "approvedBy"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "form": {
                       "type": "object",
@@ -4255,12 +5546,18 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
                     "cover",
+                    "banner",
                     "gallery",
+                    "attendance",
+                    "cancellation",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -4285,6 +5582,825 @@
           }
         ],
         "summary": "Publish, unpublish, close, reopen or end (no second reviewer)",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/internal/v1/events/{id}/attendance/approve": {
+      "post": {
+        "operationId": "EventsAdminController_approveAttendance",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "revision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "kind": {
+                      "type": "string",
+                      "enum": [
+                        "standard",
+                        "past"
+                      ]
+                    },
+                    "slug": {
+                      "type": "string"
+                    },
+                    "slugLocked": {
+                      "type": "boolean"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "published",
+                        "closed",
+                        "ended",
+                        "cancelled"
+                      ]
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "typeId": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "format": {
+                      "type": "string",
+                      "enum": [
+                        "offline",
+                        "online"
+                      ]
+                    },
+                    "startAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "endAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "venue": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 160
+                        },
+                        "address": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 300
+                        },
+                        "mapUrl": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "name",
+                        "address",
+                        "mapUrl"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "onlineUrl": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "description": {
+                      "type": "string"
+                    },
+                    "safetyNotes": {
+                      "type": "string"
+                    },
+                    "cancellationPolicy": {
+                      "type": "string"
+                    },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "forChildren": {
+                      "type": "boolean"
+                    },
+                    "speakers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "role": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
+                          }
+                        },
+                        "required": [
+                          "name",
+                          "role",
+                          "bio",
+                          "avatar"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "agenda": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "time": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 40
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
+                          }
+                        },
+                        "required": [
+                          "time",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "faq": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "question": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 300
+                          },
+                          "answer": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 2000
+                          }
+                        },
+                        "required": [
+                          "question",
+                          "answer"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "cover": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "banner": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "gallery": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "mediaId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "publicId": {
+                            "type": "string"
+                          },
+                          "width": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "height": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "exclusiveMinimum": true,
+                            "maximum": 9007199254740991
+                          },
+                          "alt": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "mediaId",
+                          "publicId",
+                          "width",
+                          "height",
+                          "alt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "attendance": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "approvedAt": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "approvedBy": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "approvedAt",
+                        "approvedBy"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "form": {
+                      "type": "object",
+                      "properties": {
+                        "questions": {
+                          "maxItems": 30,
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "format": "uuid",
+                                "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                              },
+                              "type": {
+                                "type": "string",
+                                "enum": [
+                                  "short_text",
+                                  "paragraph",
+                                  "single_choice",
+                                  "multiple_choice",
+                                  "dropdown"
+                                ]
+                              },
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 300
+                              },
+                              "description": {
+                                "default": "",
+                                "type": "string",
+                                "maxLength": 500
+                              },
+                              "required": {
+                                "type": "boolean"
+                              },
+                              "options": {
+                                "default": [],
+                                "maxItems": 20,
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "string",
+                                      "format": "uuid",
+                                      "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                                    },
+                                    "label": {
+                                      "type": "string",
+                                      "minLength": 1,
+                                      "maxLength": 200
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "label"
+                                  ],
+                                  "additionalProperties": false
+                                }
+                              },
+                              "hidden": {
+                                "default": false,
+                                "type": "boolean"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "type",
+                              "label",
+                              "description",
+                              "required",
+                              "options",
+                              "hidden"
+                            ],
+                            "additionalProperties": false
+                          }
+                        }
+                      },
+                      "required": [
+                        "questions"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "ticketTypes": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "eventId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "description": {
+                            "type": "string"
+                          },
+                          "price": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "quantity": {
+                            "nullable": true,
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "saleStartAt": {
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "saleEndAt": {
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "maxPerOrder": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "sortOrder": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "hidden": {
+                            "type": "boolean"
+                          },
+                          "sold": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "held": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "eventId",
+                          "name",
+                          "description",
+                          "price",
+                          "quantity",
+                          "saleStartAt",
+                          "saleEndAt",
+                          "maxPerOrder",
+                          "sortOrder",
+                          "hidden",
+                          "sold",
+                          "held",
+                          "revision"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "pricing": {
+                      "type": "object",
+                      "properties": {
+                        "isFree": {
+                          "type": "boolean"
+                        },
+                        "priceFrom": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "isFree",
+                        "priceFrom"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "hasRegistrations": {
+                      "type": "boolean"
+                    },
+                    "readiness": {
+                      "type": "object",
+                      "properties": {
+                        "blockers": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "start_in_past",
+                              "past_event_not_finished",
+                              "venue_missing",
+                              "ticket_type_missing",
+                              "event_type_archived"
+                            ]
+                          }
+                        },
+                        "warnings": {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "online_url_missing",
+                              "summary_missing"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "blockers",
+                        "warnings"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "publishedAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdBy": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        }
+                      },
+                      "required": [
+                        "userId"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "updatedBy": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        }
+                      },
+                      "required": [
+                        "userId"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "kind",
+                    "slug",
+                    "slugLocked",
+                    "status",
+                    "title",
+                    "typeId",
+                    "format",
+                    "startAt",
+                    "endAt",
+                    "venue",
+                    "onlineUrl",
+                    "summary",
+                    "description",
+                    "safetyNotes",
+                    "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
+                    "forChildren",
+                    "speakers",
+                    "agenda",
+                    "faq",
+                    "cover",
+                    "banner",
+                    "gallery",
+                    "attendance",
+                    "cancellation",
+                    "form",
+                    "ticketTypes",
+                    "pricing",
+                    "hasRegistrations",
+                    "readiness",
+                    "publishedAt",
+                    "revision",
+                    "createdBy",
+                    "updatedBy",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "BR-09: publish the typed attendance of an archive-only event (audited)",
         "tags": [
           "events"
         ]
@@ -4334,7 +6450,8 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -4406,6 +6523,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "forChildren": {
                       "type": "boolean"
                     },
@@ -4423,11 +6608,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -4446,11 +6675,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -4479,6 +6714,42 @@
                       }
                     },
                     "cover": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "banner": {
                       "nullable": true,
                       "type": "object",
                       "properties": {
@@ -4551,6 +6822,52 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "attendance": {
+                      "type": "object",
+                      "properties": {
+                        "count": {
+                          "nullable": true,
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "approvedAt": {
+                          "nullable": true,
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "approvedBy": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "count",
+                        "approvedAt",
+                        "approvedBy"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "form": {
                       "type": "object",
@@ -4847,12 +7164,18 @@
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "forChildren",
                     "speakers",
                     "agenda",
                     "faq",
                     "cover",
+                    "banner",
                     "gallery",
+                    "attendance",
+                    "cancellation",
                     "form",
                     "ticketTypes",
                     "pricing",
@@ -5608,7 +7931,21 @@
                               "draft",
                               "published",
                               "closed",
-                              "ended"
+                              "ended",
+                              "cancelled"
+                            ]
+                          },
+                          "state": {
+                            "type": "string",
+                            "enum": [
+                              "upcoming_sale",
+                              "open",
+                              "few_left",
+                              "sold_out",
+                              "closed",
+                              "online_link_pending",
+                              "ended",
+                              "cancelled"
                             ]
                           },
                           "title": {
@@ -5724,6 +8061,42 @@
                             ],
                             "additionalProperties": false
                           },
+                          "banner": {
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
+                          },
                           "pricing": {
                             "type": "object",
                             "properties": {
@@ -5740,6 +8113,27 @@
                             "required": [
                               "isFree",
                               "priceFrom"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "price": {
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "min": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "max": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "min",
+                              "max"
                             ],
                             "additionalProperties": false
                           },
@@ -5767,6 +8161,7 @@
                           "slug",
                           "kind",
                           "status",
+                          "state",
                           "title",
                           "type",
                           "format",
@@ -5775,7 +8170,9 @@
                           "venue",
                           "summary",
                           "cover",
+                          "banner",
                           "pricing",
+                          "price",
                           "availability"
                         ],
                         "additionalProperties": false
@@ -5784,11 +8181,17 @@
                     "nextCursor": {
                       "nullable": true,
                       "type": "string"
+                    },
+                    "total": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     }
                   },
                   "required": [
                     "items",
-                    "nextCursor"
+                    "nextCursor",
+                    "total"
                   ],
                   "additionalProperties": false
                 }
@@ -5801,7 +8204,7 @@
             "bearer": []
           }
         ],
-        "summary": "Upcoming (published, closed) or past (ended) events",
+        "summary": "Upcoming (published, closed, cancelled, not over) or past (ended or over) events",
         "tags": [
           "published-events"
         ]
@@ -5844,7 +8247,21 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
+                      ]
+                    },
+                    "state": {
+                      "type": "string",
+                      "enum": [
+                        "upcoming_sale",
+                        "open",
+                        "few_left",
+                        "sold_out",
+                        "closed",
+                        "online_link_pending",
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -5965,6 +8382,42 @@
                       ],
                       "additionalProperties": false
                     },
+                    "banner": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
                     "pricing": {
                       "type": "object",
                       "properties": {
@@ -5981,6 +8434,27 @@
                       "required": [
                         "isFree",
                         "priceFrom"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "price": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "min": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "max": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "min",
+                        "max"
                       ],
                       "additionalProperties": false
                     },
@@ -6012,6 +8486,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -6026,11 +8568,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -6049,11 +8635,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -6118,6 +8710,25 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "ticketTypes": {
                       "type": "array",
@@ -6290,6 +8901,7 @@
                     "slug",
                     "kind",
                     "status",
+                    "state",
                     "title",
                     "type",
                     "format",
@@ -6298,15 +8910,21 @@
                     "venue",
                     "summary",
                     "cover",
+                    "banner",
                     "pricing",
+                    "price",
                     "availability",
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "speakers",
                     "agenda",
                     "faq",
                     "gallery",
+                    "cancellation",
                     "ticketTypes",
                     "registration"
                   ],
@@ -6364,7 +8982,21 @@
                         "draft",
                         "published",
                         "closed",
-                        "ended"
+                        "ended",
+                        "cancelled"
+                      ]
+                    },
+                    "state": {
+                      "type": "string",
+                      "enum": [
+                        "upcoming_sale",
+                        "open",
+                        "few_left",
+                        "sold_out",
+                        "closed",
+                        "online_link_pending",
+                        "ended",
+                        "cancelled"
                       ]
                     },
                     "title": {
@@ -6485,6 +9117,42 @@
                       ],
                       "additionalProperties": false
                     },
+                    "banner": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "mediaId": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "publicId": {
+                          "type": "string"
+                        },
+                        "width": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "height": {
+                          "type": "integer",
+                          "minimum": 0,
+                          "exclusiveMinimum": true,
+                          "maximum": 9007199254740991
+                        },
+                        "alt": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "mediaId",
+                        "publicId",
+                        "width",
+                        "height",
+                        "alt"
+                      ],
+                      "additionalProperties": false
+                    },
                     "pricing": {
                       "type": "object",
                       "properties": {
@@ -6501,6 +9169,27 @@
                       "required": [
                         "isFree",
                         "priceFrom"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "price": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "min": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "max": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "min",
+                        "max"
                       ],
                       "additionalProperties": false
                     },
@@ -6532,6 +9221,74 @@
                     "cancellationPolicy": {
                       "type": "string"
                     },
+                    "cancellationRules": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "condition": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          },
+                          "result": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 200
+                          }
+                        },
+                        "required": [
+                          "condition",
+                          "result"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "minAge": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "benefits": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "icon": {
+                            "type": "string",
+                            "enum": [
+                              "leaf",
+                              "gift",
+                              "award",
+                              "camera",
+                              "book",
+                              "package",
+                              "users",
+                              "coffee",
+                              "heart",
+                              "tool"
+                            ]
+                          },
+                          "title": {
+                            "type": "string",
+                            "minLength": 1,
+                            "maxLength": 120
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 300
+                          }
+                        },
+                        "required": [
+                          "icon",
+                          "title",
+                          "description"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
                     "speakers": {
                       "type": "array",
                       "items": {
@@ -6546,11 +9303,55 @@
                             "default": "",
                             "type": "string",
                             "maxLength": 160
+                          },
+                          "bio": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 600
+                          },
+                          "avatar": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "mediaId": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              },
+                              "publicId": {
+                                "type": "string"
+                              },
+                              "width": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "height": {
+                                "type": "integer",
+                                "minimum": 0,
+                                "exclusiveMinimum": true,
+                                "maximum": 9007199254740991
+                              },
+                              "alt": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "mediaId",
+                              "publicId",
+                              "width",
+                              "height",
+                              "alt"
+                            ],
+                            "additionalProperties": false
                           }
                         },
                         "required": [
                           "name",
-                          "role"
+                          "role",
+                          "bio",
+                          "avatar"
                         ],
                         "additionalProperties": false
                       }
@@ -6569,11 +9370,17 @@
                             "type": "string",
                             "minLength": 1,
                             "maxLength": 200
+                          },
+                          "description": {
+                            "default": "",
+                            "type": "string",
+                            "maxLength": 500
                           }
                         },
                         "required": [
                           "time",
-                          "title"
+                          "title",
+                          "description"
                         ],
                         "additionalProperties": false
                       }
@@ -6638,6 +9445,25 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "cancellation": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "reason": {
+                          "type": "string"
+                        },
+                        "at": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        }
+                      },
+                      "required": [
+                        "reason",
+                        "at"
+                      ],
+                      "additionalProperties": false
                     },
                     "ticketTypes": {
                       "type": "array",
@@ -6810,6 +9636,7 @@
                     "slug",
                     "kind",
                     "status",
+                    "state",
                     "title",
                     "type",
                     "format",
@@ -6818,15 +9645,21 @@
                     "venue",
                     "summary",
                     "cover",
+                    "banner",
                     "pricing",
+                    "price",
                     "availability",
                     "description",
                     "safetyNotes",
                     "cancellationPolicy",
+                    "cancellationRules",
+                    "minAge",
+                    "benefits",
                     "speakers",
                     "agenda",
                     "faq",
                     "gallery",
+                    "cancellation",
                     "ticketTypes",
                     "registration"
                   ],
@@ -6844,6 +9677,54 @@
         "summary": "Preview of any event (draft included) behind a short-lived token",
         "tags": [
           "published-events"
+        ]
+      }
+    },
+    "/internal/v1/published-events/{slug}/attendance": {
+      "get": {
+        "operationId": "OrdersPublicController_attendanceOf",
+        "parameters": [
+          {
+            "name": "slug",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "attendeeCount": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "attendeeCount"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "People who took part in an ended event (checked-in tickets, or approved count)",
+        "tags": [
+          "orders"
         ]
       }
     },
@@ -9604,6 +12485,129 @@
         "summary": "Đánh dấu đã hoàn tiền (manual transfer done): tickets void, seats back. Step-up",
         "tags": [
           "orders-admin"
+        ]
+      }
+    },
+    "/internal/v1/events/{id}/cancel-impact": {
+      "get": {
+        "operationId": "EventCancellationController_impact",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "paidOrders": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "pendingOrders": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "validTickets": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "paidOrders",
+                    "pendingOrders",
+                    "validTickets"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Orders and tickets a cancellation would touch (counts only)",
+        "tags": [
+          "events"
+        ]
+      }
+    },
+    "/internal/v1/events/{id}/cancel": {
+      "post": {
+        "operationId": "EventCancellationController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-step-up-token",
+            "in": "header",
+            "description": "Step-up token (ADR-0021)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "reason": {
+                    "type": "string",
+                    "minLength": 10,
+                    "maxLength": 500
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "reason",
+                  "revision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Huỷ chương trình: pending orders cancelled, tickets void, paid orders flagged for a manual refund, buyers emailed. Step-up",
+        "tags": [
+          "events"
         ]
       }
     },

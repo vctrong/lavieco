@@ -18,7 +18,7 @@
     "dev:infra:down": "docker compose -f infra/compose/compose.dev.yml --env-file .env.local down",
     "dev": "turbo run dev",
     "dev:up": "node infra/scripts/dev-up.mjs",
-    "dev:seed": "npm run dev:seed -w @lavieco/identity-service",
+    "dev:seed": "npm run dev:seed -w @lavieco/identity-service && npm run dev:seed -w @lavieco/program-service",
     "dev:totp": "npm run dev:totp -w @lavieco/identity-service --",
     "build": "turbo run build",
     "start": "npm run start -w @lavieco/web",

@@ -1,9 +1,9 @@
 export const TEXT = {
   vi: {
     fields: {
-      name: { label: "Họ & tên *", placeholder: "Nguyễn Văn A" },
-      phone: { label: "Số điện thoại / Zalo *", placeholder: "0901 234 567" },
-      interest: { label: "Bạn quan tâm điều gì? *" },
+      name: { label: "Họ & tên", placeholder: "Nguyễn Văn A" },
+      phone: { label: "Số điện thoại / Zalo", placeholder: "0901 234 567" },
+      interest: { label: "Bạn quan tâm điều gì?" },
     },
     interests: {
       gift: "Chọn vật phẩm minh chứng làm quà",

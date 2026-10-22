@@ -3,7 +3,9 @@ import { ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { AllowServices, ApiZodResponse, ZodBody, ZodValidationPipe } from "@lavieco/service-kit";
 import {
+  eventSlugSchema,
   orderAccessTokenSchema,
+  publicEventAttendanceSchema,
   orderCreateRequestSchema,
   orderCreateResponseSchema,
   orderViewSchema,
@@ -14,8 +16,13 @@ import {
 } from "@lavieco/shared/events";
 
 import { CheckoutService } from "../application/checkout-service";
+import { EventAttendanceService } from "../application/event-attendance-service";
 import { OrderSettlementService } from "../application/order-settlement-service";
-import { CHECKOUT_SERVICE, ORDER_SETTLEMENT_SERVICE } from "../orders.tokens";
+import {
+  CHECKOUT_SERVICE,
+  EVENT_ATTENDANCE_SERVICE,
+  ORDER_SETTLEMENT_SERVICE,
+} from "../orders.tokens";
 import { toLookupDto, toOrderView } from "./order.mapper";
 
 const tokenPipe = new ZodValidationPipe(orderAccessTokenSchema);
@@ -30,7 +37,18 @@ export class OrdersPublicController {
   constructor(
     @Inject(CHECKOUT_SERVICE) private readonly checkout: CheckoutService,
     @Inject(ORDER_SETTLEMENT_SERVICE) private readonly settlement: OrderSettlementService,
+    @Inject(EVENT_ATTENDANCE_SERVICE) private readonly attendance: EventAttendanceService,
   ) {}
+
+  @Get("published-events/:slug/attendance")
+  @AllowServices("web")
+  @ApiOperation({
+    summary: "People who took part in an ended event (checked-in tickets, or approved count)",
+  })
+  @ApiZodResponse(200, publicEventAttendanceSchema)
+  attendanceOf(@Param("slug", new ZodValidationPipe(eventSlugSchema)) slug: string) {
+    return this.attendance.bySlug(slug);
+  }
 
   @Post("orders")
   @HttpCode(201)

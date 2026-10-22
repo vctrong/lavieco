@@ -6,14 +6,15 @@ import { useState, type FormEvent } from "react";
 import { FiArchive, FiArrowLeft, FiRotateCcw } from "react-icons/fi";
 
 import { eventTypeCreateRequestSchema, type EventType } from "@lavieco/shared/events";
-import { Button, TextField, cn } from "@lavieco/ui";
+import { Button, cn, FormAlert, TextField } from "@lavieco/ui";
 
 import { createEventType, updateEventType } from "../actions/event-types";
 import { TEXT } from "../constants/text";
 import { fieldErrorsOf } from "../schemas";
 import type { ActionResult } from "../types";
-import { FormAlert } from "./form-alert";
 import { PageHeader } from "./page-header";
+import { callAction } from "@/shared/call-action";
+import { failureText } from "../utils/failure-text";
 
 function useAction() {
   const router = useRouter();
@@ -22,13 +23,13 @@ function useAction() {
   const run = async (action: () => Promise<ActionResult>) => {
     setBusy(true);
     setAlert(null);
-    const result = await action().catch(() => null);
+    const result = await callAction(action);
     setBusy(false);
-    if (result?.status === "ok") {
+    if (result.status === "ok") {
       router.refresh();
       return true;
     }
-    setAlert(result?.status === "error" ? TEXT.vi.errors[result.reason] : TEXT.vi.errors.invalid);
+    setAlert(result.status === "error" ? failureText(result) : TEXT.vi.errors.invalid);
     return false;
   };
   return { busy, alert, run };

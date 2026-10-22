@@ -3,7 +3,22 @@ import type { FormQuestion, RegistrationBlocker } from "@lavieco/shared/events";
 import { isOnSale, seatsLeftOf, visible, type TicketTypeRecord } from "../../ticketing";
 import type { EventRecord } from "./event";
 
-type BookableEvent = Pick<EventRecord, "kind" | "status" | "format" | "onlineUrl" | "startAt">;
+/**
+ * Only whether the online link is set matters here, never the link itself: public
+ * queries do not even read it (S3), they carry `hasOnlineLink` instead.
+ */
+export type BookableEvent = Pick<EventRecord, "kind" | "status" | "format" | "startAt"> & {
+  hasOnlineLink: boolean;
+};
+
+/** A full record as the booking rules see it. */
+export const bookableOf = (event: EventRecord): BookableEvent => ({
+  kind: event.kind,
+  status: event.status,
+  format: event.format,
+  startAt: event.startAt,
+  hasOnlineLink: event.onlineUrl !== null && event.onlineUrl !== "",
+});
 
 /**
  * Why the event cannot take registrations right now, or null when it can. Checked on
@@ -18,7 +33,7 @@ export function registrationBlocker(
 ): RegistrationBlocker | null {
   if (event.kind !== "standard" || event.status !== "published") return "not_open";
   if (event.startAt.getTime() <= now.getTime()) return "event_started";
-  if (event.format === "online" && !event.onlineUrl) return "online_link_pending";
+  if (event.format === "online" && !event.hasOnlineLink) return "online_link_pending";
   const shown = visible(ticketTypes);
   if (shown.length === 0) return "not_open";
   const onSale = shown.filter((ticketType) => isOnSale(ticketType, now));

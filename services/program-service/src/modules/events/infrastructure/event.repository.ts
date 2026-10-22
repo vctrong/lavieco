@@ -18,12 +18,18 @@ import {
 } from "@lavieco/shared/events";
 
 import type {
+  ContentChanges,
   EventRepository,
   NewEvent,
   PublicEventRecord,
 } from "../application/ports/event-repository.port";
-import type { Actor, EventContent, EventRecord, StatusChange } from "../domain/event";
-import type { EventImages } from "../domain/event-images";
+import type {
+  Actor,
+  EventCancellation,
+  EventContent,
+  EventRecord,
+  StatusChange,
+} from "../domain/event";
 import { decodeCursor, encodeCursor, monthRange } from "../domain/public-filters";
 import { EVENT_MODEL } from "./event.model";
 
@@ -34,9 +40,14 @@ type EventDoc = Omit<EventRecord, "id" | "typeId"> & {
   discarded: boolean;
 };
 
-/** S3: what a public query reads; private fields are never fetched. */
+/**
+ * S3: what a public query reads; private fields are never fetched. `onlineUrl` is
+ * read only to tell whether it is set (`hasOnlineLink`): the link itself is never
+ * mapped into a public record.
+ */
 const PUBLIC_PROJECTION = {
-  onlineUrl: 0,
+  "attendance.approvedBy": 0,
+  "cancellation.by": 0,
   createdBy: 0,
   updatedBy: 0,
   form: 0,
@@ -48,7 +59,7 @@ const PUBLIC_PROJECTION = {
   discardedAt: 0,
 } as const;
 
-const PUBLIC_STATUSES: EventStatus[] = ["published", "closed", "ended"];
+const PUBLIC_STATUSES: EventStatus[] = ["published", "closed", "ended", "cancelled"];
 
 const toImage = (image: EventImage): EventImage => ({
   mediaId: image.mediaId,
@@ -58,7 +69,14 @@ const toImage = (image: EventImage): EventImage => ({
   alt: image.alt,
 });
 
+const toImageOrNull = (image: EventImage | null | undefined) => (image ? toImage(image) : null);
+
 function toPublicRecord(doc: Partial<EventDoc> & { _id: Types.ObjectId }): PublicEventRecord {
+  return { ...toSharedFields(doc), hasOnlineLink: Boolean(doc.onlineUrl) };
+}
+
+/** Fields both a public and a full record carry. */
+function toSharedFields(doc: Partial<EventDoc> & { _id: Types.ObjectId }) {
   return {
     id: doc._id.toHexString(),
     kind: doc.kind!,
@@ -76,12 +94,40 @@ function toPublicRecord(doc: Partial<EventDoc> & { _id: Types.ObjectId }): Publi
     description: doc.description ?? "",
     safetyNotes: doc.safetyNotes ?? "",
     cancellationPolicy: doc.cancellationPolicy ?? "",
+    cancellationRules: (doc.cancellationRules ?? []).map((rule) => ({
+      condition: rule.condition,
+      result: rule.result,
+    })),
+    minAge: doc.minAge ?? null,
+    benefits: (doc.benefits ?? []).map((benefit) => ({
+      icon: benefit.icon,
+      title: benefit.title,
+      description: benefit.description ?? "",
+    })),
     forChildren: doc.forChildren ?? false,
-    speakers: doc.speakers ?? [],
-    agenda: doc.agenda ?? [],
+    speakers: (doc.speakers ?? []).map((speaker) => ({
+      name: speaker.name,
+      role: speaker.role ?? "",
+      bio: speaker.bio ?? "",
+      avatar: toImageOrNull(speaker.avatar),
+    })),
+    agenda: (doc.agenda ?? []).map((item) => ({
+      time: item.time ?? "",
+      title: item.title,
+      description: item.description ?? "",
+    })),
     faq: doc.faq ?? [],
-    cover: doc.cover ? toImage(doc.cover) : null,
+    cover: toImageOrNull(doc.cover),
+    banner: toImageOrNull(doc.banner),
     gallery: (doc.gallery ?? []).map(toImage),
+    attendance: {
+      count: doc.attendance?.count ?? null,
+      approvedAt: doc.attendance?.approvedAt ?? null,
+      approvedBy: doc.attendance?.approvedBy ?? null,
+    },
+    cancellation: doc.cancellation
+      ? { reason: doc.cancellation.reason, at: doc.cancellation.at, by: doc.cancellation.by ?? "" }
+      : null,
     pricing: {
       isFree: doc.pricing?.isFree ?? false,
       priceFrom: doc.pricing?.priceFrom ?? null,
@@ -94,7 +140,7 @@ function toPublicRecord(doc: Partial<EventDoc> & { _id: Types.ObjectId }): Publi
 
 function toRecord(doc: EventDoc): EventRecord {
   return {
-    ...toPublicRecord(doc),
+    ...toSharedFields(doc),
     onlineUrl: doc.onlineUrl ?? null,
     form: {
       questions: (doc.form?.questions ?? []).map((question) => ({
@@ -143,7 +189,10 @@ export class MongoEventRepository implements EventRepository {
             slug: input.slug,
             status: "draft",
             cover: images.cover,
+            banner: images.banner,
             gallery: images.gallery,
+            attendance: input.attendance,
+            cancellation: null,
             form: input.form,
             pricing: input.pricing,
             publishedAt: null,
@@ -186,7 +235,7 @@ export class MongoEventRepository implements EventRepository {
   async updateContent(
     id: string,
     revision: number,
-    changes: { content: EventContent; slug: string; images: EventImages },
+    changes: ContentChanges,
     actor: Actor,
     tx?: TxContext,
   ) {
@@ -198,7 +247,9 @@ export class MongoEventRepository implements EventRepository {
           ...contentFields(changes.content),
           slug: changes.slug,
           cover: changes.images.cover,
+          banner: changes.images.banner,
           gallery: changes.images.gallery,
+          attendance: changes.attendance,
           updatedBy: actor,
         },
         tx,
@@ -220,6 +271,7 @@ export class MongoEventRepository implements EventRepository {
       history: StatusChange;
       publishedAt: Date | null;
       firstPublish: boolean;
+      cancellation?: EventCancellation;
     },
     actor: Actor,
     tx?: TxContext,
@@ -233,6 +285,7 @@ export class MongoEventRepository implements EventRepository {
             publishedAt: change.publishedAt,
             updatedBy: actor,
             ...(change.firstPublish ? { firstPublishedAt: change.history.at } : {}),
+            ...(change.cancellation ? { cancellation: change.cancellation } : {}),
           },
           $push: {
             statusHistory: { $each: [change.history], $slice: -EVENT_LIMITS.statusHistoryMax },
@@ -244,6 +297,25 @@ export class MongoEventRepository implements EventRepository {
       .lean<EventDoc>()
       .exec();
     return doc ? toRecord(doc) : null;
+  }
+
+  approveAttendance(
+    id: string,
+    revision: number,
+    approval: { at: Date; by: string },
+    actor: Actor,
+    tx?: TxContext,
+  ) {
+    return this.updateLive(
+      id,
+      revision,
+      {
+        "attendance.approvedAt": approval.at,
+        "attendance.approvedBy": approval.by,
+        updatedBy: actor,
+      },
+      tx,
+    );
   }
 
   async setPricing(id: string, pricing: EventPricing, tx?: TxContext) {
@@ -288,11 +360,23 @@ export class MongoEventRepository implements EventRepository {
     return { items: page.items.map(toRecord), nextCursor: page.nextCursor, counts };
   }
 
-  async listPublic(query: PublicEventListQuery) {
-    const filter: FilterQuery<EventDoc> = {
-      discarded: false,
-      status: query.scope === "past" ? "ended" : { $in: ["published", "closed"] },
-    };
+  async listPublic(query: PublicEventListQuery, now: Date) {
+    // An event whose end has passed moves to the archive even before an admin ends
+    // it; a cancelled one stays listed (with its badge) until then, never archived.
+    const filter: FilterQuery<EventDoc> =
+      query.scope === "past"
+        ? {
+            discarded: false,
+            $or: [
+              { status: "ended" },
+              { status: { $in: ["published", "closed"] }, endAt: { $lte: now } },
+            ],
+          }
+        : {
+            discarded: false,
+            status: { $in: ["published", "closed", "cancelled"] },
+            endAt: { $gt: now },
+          };
     if (query.typeId) filter.typeId = new Types.ObjectId(query.typeId);
     if (query.format) filter.format = query.format;
     if (query.free !== undefined) filter["pricing.isFree"] = query.free;
@@ -302,8 +386,11 @@ export class MongoEventRepository implements EventRepository {
     }
     // Upcoming: soonest first. Past: most recent first.
     const direction = query.scope === "past" ? -1 : 1;
-    const page = await this.page(filter, direction, query.cursor, query.limit, PUBLIC_PROJECTION);
-    return { items: page.items.map(toPublicRecord), nextCursor: page.nextCursor };
+    const [page, total] = await Promise.all([
+      this.page(filter, direction, query.cursor, query.limit, PUBLIC_PROJECTION),
+      this.model.countDocuments(filter).exec(),
+    ]);
+    return { items: page.items.map(toPublicRecord), nextCursor: page.nextCursor, total };
   }
 
   async findPublicBySlug(slug: string) {

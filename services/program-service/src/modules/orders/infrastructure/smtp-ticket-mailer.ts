@@ -8,6 +8,7 @@ import type {
   TicketRepository,
 } from "../application/ports/order-repositories.port";
 import type { OrderLinks, TicketMailer } from "../application/ports/order-services.port";
+import { eventCancelledEmail } from "./event-cancelled-email.template";
 import { qrAttachment, ticketEmail } from "./ticket-email.template";
 
 /** 400 px for a 200 px slot (sharp on 2× screens), with a quiet zone of its own. */
@@ -61,5 +62,20 @@ export class SmtpTicketMailer implements TicketMailer {
       ...mail,
       attachments: [...mail.attachments, ...qrImages],
     });
+  }
+
+  async sendEventCancelled(orderId: string): Promise<void> {
+    const order = await this.orders.findById(orderId);
+    // Refunded already by the time the job runs: the buyer heard from the team.
+    if (!order || order.status !== "paid") return;
+    const [event] = await this.events.findByIds([order.eventId]);
+    if (!event || event.status !== "cancelled") return;
+    const mail = eventCancelledEmail({
+      order,
+      event,
+      programsUrl: new URL("/chuong-trinh", this.webAppUrl).toString(),
+      webAppUrl: this.webAppUrl,
+    });
+    await this.sender.send({ to: order.buyer.email, ...mail });
   }
 }

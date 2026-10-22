@@ -15,14 +15,21 @@ import {
 } from "react-icons/fi";
 
 import type { EventAction, EventView } from "@lavieco/shared/events";
-import { Button, cn } from "@lavieco/ui";
+import { Button, cn, FormAlert } from "@lavieco/ui";
 
-import { changeEventStatus, discardEvent, duplicateEvent } from "../actions/events";
+import {
+  approveAttendance,
+  changeEventStatus,
+  discardEvent,
+  duplicateEvent,
+} from "../actions/events";
 import { TEXT } from "../constants/text";
 import type { ActionResult } from "../types";
 import { formatDateTime } from "../utils/format";
-import { FormAlert } from "./form-alert";
+import { CancelEventPanel, canCancel } from "./cancel-event-panel";
 import { StatusBadge } from "./status-badge";
+import { callAction } from "@/shared/call-action";
+import { failureText } from "../utils/failure-text";
 
 type PanelAction = EventAction | "duplicate" | "discard";
 
@@ -38,6 +45,8 @@ function actionsFor(event: EventView): PanelAction[] {
       return ["reopen", "end", "unpublish", "duplicate"];
     case "ended":
       return past ? ["unpublish", "duplicate"] : ["duplicate"];
+    case "cancelled":
+      return ["duplicate"];
   }
 }
 
@@ -88,10 +97,13 @@ function Readiness({ event }: { event: EventView }) {
 export function StatusPanel({
   event,
   canWrite,
+  canApprove,
   dirty,
 }: {
   event: EventView;
   canWrite: boolean;
+  /** `impact:approve`: may publish a typed attendance (BR-09). */
+  canApprove: boolean;
   dirty: boolean;
 }) {
   const t = TEXT.vi;
@@ -106,18 +118,16 @@ export function StatusPanel({
   const run = async (action: PanelAction) => {
     setBusy(true);
     setAlert(null);
-    let result: ActionResult<unknown> | null;
-    if (action === "duplicate") result = await duplicateEvent(event.id).catch(() => null);
-    else if (action === "discard") {
-      result = await discardEvent(event.id, { revision: event.revision }).catch(() => null);
-    } else {
-      result = await changeEventStatus(event.id, { action, revision: event.revision }).catch(
-        () => null,
-      );
-    }
+    const result = await callAction<ActionResult<unknown>>(() =>
+      action === "duplicate"
+        ? duplicateEvent(event.id)
+        : action === "discard"
+          ? discardEvent(event.id, { revision: event.revision })
+          : changeEventStatus(event.id, { action, revision: event.revision }),
+    );
     setBusy(false);
     setPending(null);
-    if (result?.status === "ok") {
+    if (result.status === "ok") {
       if (action === "duplicate") {
         router.push(`/events/${(result.data as { id: string }).id}`);
       } else if (action === "discard") {
@@ -127,8 +137,24 @@ export function StatusPanel({
       }
       return;
     }
-    setAlert(result?.status === "error" ? t.errors[result.reason] : t.errors.unavailable);
+    setAlert(result.status === "error" ? failureText(result) : t.errors.invalid);
   };
+
+  const approve = async () => {
+    setBusy(true);
+    setAlert(null);
+    const result = await callAction(() =>
+      approveAttendance(event.id, { revision: event.revision }),
+    );
+    setBusy(false);
+    if (result.status === "ok") {
+      router.refresh();
+      return;
+    }
+    setAlert(result.status === "error" ? failureText(result) : t.errors.invalid);
+  };
+  const awaitingApproval =
+    event.kind === "past" && event.attendance.count !== null && !event.attendance.approvedAt;
 
   const actions = actionsFor(event);
   const blocked = (action: PanelAction) =>
@@ -151,7 +177,16 @@ export function StatusPanel({
           {t.actions.preview}
         </Link>
       </div>
-      <Readiness event={event} />
+      {event.cancellation ? (
+        <p className="rounded-2xl bg-soft-white p-4 text-[12.5px] leading-relaxed text-charcoal/80">
+          <span className="block font-semibold text-deep-blue">
+            {t.actions.cancelled(formatDateTime(event.cancellation.at))}
+          </span>
+          {event.cancellation.reason}
+        </p>
+      ) : (
+        <Readiness event={event} />
+      )}
       {event.kind === "standard" && event.status !== "draft" ? (
         <div className="flex flex-wrap gap-2">
           <Link
@@ -220,7 +255,23 @@ export function StatusPanel({
               </Button>
             ),
           )}
+          {canCancel(event) ? <CancelEventPanel event={event} disabled={busy || dirty} /> : null}
           <FormAlert message={alert} />
+        </div>
+      ) : null}
+      {canApprove && awaitingApproval ? (
+        <div className="space-y-2">
+          <p className="text-[12px] text-deep-blue/75">{t.editor.fields.attendancePending}</p>
+          <Button
+            type="button"
+            size="sm"
+            disabled={busy || dirty}
+            onClick={approve}
+            className="w-full disabled:opacity-50"
+          >
+            {t.actions.approveAttendance}
+          </Button>
+          {canWrite ? null : <FormAlert message={alert} />}
         </div>
       ) : null}
       <dl className="grid grid-cols-2 gap-2 border-t border-hairline pt-4 text-[12px] text-charcoal/65">

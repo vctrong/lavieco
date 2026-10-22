@@ -1,12 +1,15 @@
 import "server-only";
 
-import { ZodError, type z } from "zod";
+import type { z } from "zod";
 
-import { isServiceProblem, ServiceUnavailableError } from "@lavieco/api-clients";
+import { isServiceProblem } from "@lavieco/api-clients";
 import type { ErrorCode } from "@lavieco/shared";
 
+import { failureKind, guarded as guard, refOf } from "@/lib/action-errors";
 import { webLogger } from "@/lib/services";
 
+import { TEXT } from "../constants/text";
+import { fieldErrorsOf, fieldKeyOf } from "../schemas";
 import type { CheckoutError, CheckoutFailure, FieldErrors } from "../types";
 
 const FAILURE_BY_CODE: Partial<Record<ErrorCode, CheckoutFailure>> = {
@@ -23,13 +26,53 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, CheckoutFailure>> = {
   "order.email_mismatch": "email_mismatch",
   "order.invalid_state": "invalid_state",
   "payment.unavailable": "payment_unavailable",
+  "common.rate_limited": "rate_limited",
 };
 
+/** Steps whose call asks identity to email a code: a 503 there means "code not sent". */
+const SENDS_CODE = new Set(["checkout.request_code", "lookup.request_code"]);
+
+/** Field message for a path the service refused (its own text is English, never shown). */
+function serviceFieldMessage(field: string): string {
+  const v = TEXT.vi.validation;
+  switch (field) {
+    case "fullName":
+      return v.fullName;
+    case "email":
+      return v.email;
+    case "phone":
+      return v.phone;
+    case "tickets":
+      return TEXT.vi.errors.items_invalid;
+    case "dataConsent":
+    case "safety":
+    case "guardian":
+      return v.consent;
+    default:
+      return v.invalid;
+  }
+}
+
+/** `common.validation_failed` as inline errors under the fields it names, when it does. */
+function validationErrors(errors: { path: string }[] | undefined): FieldErrors | null {
+  const fieldErrors: Record<string, string> = {};
+  for (const { path } of errors ?? []) {
+    const field = fieldKeyOf(path);
+    if (field && !fieldErrors[field]) fieldErrors[field] = serviceFieldMessage(field);
+  }
+  return Object.keys(fieldErrors).length > 0 ? { status: "invalid", fieldErrors } : null;
+}
+
 /**
- * A service error as a failure the UI can explain. Anything unexpected is logged
- * without personal data and shown as "try again later", never as raw detail.
+ * A service error as a failure the UI can explain. Anything unexpected is logged with
+ * the request id, without personal data, and shown as "try again later" with a short
+ * reference, never as raw detail.
  */
-export function toCheckoutError(error: unknown, context: string): CheckoutError {
+export function toCheckoutError(
+  error: unknown,
+  context: string,
+  requestId?: string,
+): CheckoutError | FieldErrors {
   if (isServiceProblem(error)) {
     const reason = FAILURE_BY_CODE[error.code];
     if (reason) {
@@ -41,37 +84,38 @@ export function toCheckoutError(error: unknown, context: string): CheckoutError 
         ...(remainingAttempts !== undefined ? { remainingAttempts } : {}),
       };
     }
+    if (error.code === "common.validation_failed") {
+      return validationErrors(error.problem.errors) ?? { status: "error", reason: "invalid_input" };
+    }
   }
+  const codeNotSent =
+    isServiceProblem(error) && error.code === "common.unavailable" && SENDS_CODE.has(context);
   webLogger().warn("checkout step failed", {
     context,
     errorCode: isServiceProblem(error) ? error.code : "unavailable",
+    ...(requestId ? { requestId } : {}),
     ...(isServiceProblem(error) ? {} : failureKind(error)),
   });
-  return { status: "error", reason: "unavailable" };
+  return {
+    status: "error",
+    reason: codeNotSent ? "code_not_sent" : "unavailable",
+    ...(requestId ? { ref: refOf(requestId) } : {}),
+  };
+}
+
+/** Inline errors per form field (`buyer.email` → `email`), from a failed parse. */
+export function toFieldErrors(error: z.ZodError): FieldErrors {
+  return { status: "invalid", fieldErrors: fieldErrorsOf(error) };
 }
 
 /**
- * Why a call failed, without the request path (it carries the signed order link) or
- * any response value: the kind of failure and, for a contract drift, the field paths.
+ * Runs a server action body so that it never throws to the browser: an unexpected
+ * error (a bug, a dropped connection) becomes a logged, referenced "unavailable".
  */
-function failureKind(error: unknown): Record<string, unknown> {
-  if (!(error instanceof ServiceUnavailableError)) return { failure: "unexpected" };
-  if (error.cause instanceof ZodError) {
-    return {
-      failure: "contract",
-      paths: error.cause.issues.slice(0, 5).map((issue) => issue.path.join(".")),
-    };
-  }
-  const status = /^unexpected status (\d+)$/.exec(error.message)?.[1];
-  return status ? { failure: "status", status: Number(status) } : { failure: "unreachable" };
-}
-
-/** First Zod message per top-level field (`buyer.email` → `email`), for inline errors. */
-export function toFieldErrors(error: z.ZodError): FieldErrors {
-  const fieldErrors: Record<string, string> = {};
-  for (const issue of error.issues) {
-    const field = String(issue.path.at(-1) ?? issue.path[0] ?? "");
-    if (field && !fieldErrors[field]) fieldErrors[field] = issue.message;
-  }
-  return { status: "invalid", fieldErrors };
+export function guarded<T>(
+  context: string,
+  requestId: string,
+  body: () => Promise<T>,
+): Promise<T | CheckoutError | FieldErrors> {
+  return guard(body, (error) => toCheckoutError(error, context, requestId));
 }

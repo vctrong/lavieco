@@ -3,6 +3,7 @@ import { type DynamicModule, Module } from "@nestjs/common";
 import { OUTBOX_PORT, SERVICE_CONFIG, UNIT_OF_WORK } from "@lavieco/service-kit";
 import type { OutboxPort, UnitOfWork } from "@lavieco/service-kit/ports";
 
+import { AUDIT_TRAIL, type AuditTrail } from "../audit";
 import { EVENT_TYPE_REPOSITORY, EventTypesModule, type EventTypeRepository } from "../event-types";
 import { TICKET_TYPE_REPOSITORY, TicketingModule, type TicketTypeRepository } from "../ticketing";
 import type { ProgramEnv } from "../../config/env";
@@ -43,8 +44,18 @@ const providers = [
       unitOfWork: UnitOfWork,
       outbox: OutboxPort,
       media: MediaAttachments,
+      audit: AuditTrail,
     ) =>
-      new EventAdminService(events, ticketTypes, types, previewTokens, unitOfWork, outbox, media),
+      new EventAdminService(
+        events,
+        ticketTypes,
+        types,
+        previewTokens,
+        unitOfWork,
+        outbox,
+        media,
+        audit,
+      ),
     inject: [
       EVENT_REPOSITORY,
       TICKET_TYPE_REPOSITORY,
@@ -53,6 +64,7 @@ const providers = [
       UNIT_OF_WORK,
       OUTBOX_PORT,
       MEDIA_ATTACHMENTS,
+      AUDIT_TRAIL,
     ],
   },
   {

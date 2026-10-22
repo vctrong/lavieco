@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import "@/shared/zod-vi";
+
 import { TEXT } from "./constants/text";
 
 const v = TEXT.vi.validation;
@@ -8,6 +10,7 @@ export const staffLoginSchema = z.object({
   email: z
     .string()
     .trim()
+    .min(1, { error: v.emailRequired })
     .pipe(z.email({ error: v.email })),
   password: z.string().min(1, { error: v.password }).max(256),
 });

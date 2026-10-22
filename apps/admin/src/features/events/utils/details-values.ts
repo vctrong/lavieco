@@ -1,9 +1,24 @@
-import type { EventFormat, EventImage, EventKind, EventView } from "@lavieco/shared/events";
+import type {
+  BenefitIcon,
+  EventFormat,
+  EventImage,
+  EventKind,
+  EventView,
+} from "@lavieco/shared/events";
 
 import { isoToVietnamLocal, vietnamLocalToIso } from "./format";
 
 /** An uploaded image in the form: what is shown, plus the alt text being edited. */
 export type EventImageValue = EventImage;
+
+export type SpeakerValue = {
+  name: string;
+  role: string;
+  bio: string;
+  avatar: EventImageValue | null;
+};
+
+export type BenefitValue = { icon: BenefitIcon; title: string; description: string };
 
 /** What the details form edits; strings only, converted to the contract on submit. */
 export type DetailsValues = {
@@ -22,12 +37,19 @@ export type DetailsValues = {
   description: string;
   safetyNotes: string;
   cancellationPolicy: string;
+  cancellationRules: { condition: string; result: string }[];
+  /** Digits only, "" = not stated. */
+  minAge: string;
+  benefits: BenefitValue[];
   forChildren: boolean;
-  speakers: { name: string; role: string }[];
-  agenda: { time: string; title: string }[];
+  speakers: SpeakerValue[];
+  agenda: { time: string; title: string; description: string }[];
   faq: { question: string; answer: string }[];
   cover: EventImageValue | null;
+  banner: EventImageValue | null;
   gallery: EventImageValue[];
+  /** Archive-only events; digits only, "" = not typed. */
+  attendanceCount: string;
 };
 
 export function emptyDetails(typeId: string): DetailsValues {
@@ -47,12 +69,17 @@ export function emptyDetails(typeId: string): DetailsValues {
     description: "",
     safetyNotes: "",
     cancellationPolicy: "",
+    cancellationRules: [],
+    minAge: "",
+    benefits: [],
     forChildren: false,
     speakers: [],
     agenda: [],
     faq: [],
     cover: null,
+    banner: null,
     gallery: [],
+    attendanceCount: "",
   };
 }
 
@@ -73,27 +100,49 @@ export function detailsOf(event: EventView): DetailsValues {
     description: event.description,
     safetyNotes: event.safetyNotes,
     cancellationPolicy: event.cancellationPolicy,
+    cancellationRules: event.cancellationRules.map((rule) => ({ ...rule })),
+    minAge: event.minAge === null ? "" : String(event.minAge),
+    benefits: event.benefits.map((benefit) => ({ ...benefit })),
     forChildren: event.forChildren,
-    speakers: event.speakers.map((speaker) => ({ ...speaker })),
+    speakers: event.speakers.map((speaker) => ({
+      ...speaker,
+      avatar: speaker.avatar ? { ...speaker.avatar } : null,
+    })),
     agenda: event.agenda.map((item) => ({ ...item })),
     faq: event.faq.map((item) => ({ ...item })),
     cover: event.cover ? { ...event.cover } : null,
+    banner: event.banner ? { ...event.banner } : null,
     gallery: event.gallery.map((image) => ({ ...image })),
+    attendanceCount: event.attendance.count === null ? "" : String(event.attendance.count),
   };
 }
 
 /** Media ids the saved event already holds (the rest are uploaded but not saved yet). */
 export function savedImageIds(event: EventView | null): Set<string> {
   if (!event) return new Set();
-  return new Set([
-    ...(event.cover ? [event.cover.mediaId] : []),
-    ...event.gallery.map((image) => image.mediaId),
-  ]);
+  const images = [
+    event.cover,
+    event.banner,
+    ...event.gallery,
+    ...event.speakers.map((speaker) => speaker.avatar),
+  ];
+  return new Set(images.flatMap((image) => (image ? [image.mediaId] : [])));
 }
+
+/** "" → null, digits → number; anything else stays as typed so the contract reports it. */
+function optionalInt(value: string): number | null | string {
+  const trimmed = value.trim();
+  if (trimmed === "") return null;
+  return /^\d+$/.test(trimmed) ? Number(trimmed) : trimmed;
+}
+
+const imageRef = (image: EventImageValue | null) =>
+  image ? { mediaId: image.mediaId, alt: image.alt } : null;
 
 /**
  * Request body for create/update (validated by the shared Zod contract afterwards).
- * The venue is only sent for offline events and the online link only for online ones.
+ * The venue is only sent for offline events and the online link only for online ones;
+ * a typed attendance only for archive-only events.
  */
 export function toDetailsRequest(values: DetailsValues) {
   const offline = values.format === "offline";
@@ -117,12 +166,17 @@ export function toDetailsRequest(values: DetailsValues) {
     description: values.description,
     safetyNotes: values.safetyNotes,
     cancellationPolicy: values.cancellationPolicy,
+    cancellationRules: values.cancellationRules,
+    minAge: optionalInt(values.minAge),
+    benefits: values.benefits,
     forChildren: values.forChildren,
-    speakers: values.speakers,
+    // Only the media id and alt: program-service takes the file details from content-service.
+    speakers: values.speakers.map((speaker) => ({ ...speaker, avatar: imageRef(speaker.avatar) })),
     agenda: values.agenda,
     faq: values.faq,
-    // Only the media id and alt: program-service takes the file details from content-service.
-    cover: values.cover ? { mediaId: values.cover.mediaId, alt: values.cover.alt } : null,
+    cover: imageRef(values.cover),
+    banner: imageRef(values.banner),
     gallery: values.gallery.map((image) => ({ mediaId: image.mediaId, alt: image.alt })),
+    attendanceCount: values.kind === "past" ? optionalInt(values.attendanceCount) : null,
   };
 }

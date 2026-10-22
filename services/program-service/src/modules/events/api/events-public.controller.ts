@@ -25,11 +25,17 @@ export class EventsPublicController {
 
   @Get("published-events")
   @AllowServices("web")
-  @ApiOperation({ summary: "Upcoming (published, closed) or past (ended) events" })
+  @ApiOperation({
+    summary: "Upcoming (published, closed, cancelled, not over) or past (ended or over) events",
+  })
   @ApiZodResponse(200, publicEventListSchema)
   async list(@ZodQuery(publicEventListQuerySchema) query: PublicEventListQuery) {
     const page = await this.events.list(query);
-    return { items: page.items.map(toPublicCardDto), nextCursor: page.nextCursor };
+    return {
+      items: page.items.map(toPublicCardDto),
+      nextCursor: page.nextCursor,
+      total: page.total,
+    };
   }
 
   @Get("published-events/:slug")

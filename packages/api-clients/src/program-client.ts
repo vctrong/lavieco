@@ -13,16 +13,20 @@ import {
   type OrderListQuery,
   type OrderRefundRequest,
   type RegistrationListQuery,
+  eventCancelImpactSchema,
   eventListSchema,
   eventPreviewTokenSchema,
   eventSchema,
   eventTypeListSchema,
   eventTypeSchema,
+  publicEventAttendanceSchema,
   publicEventDetailSchema,
   publicEventListSchema,
   publicEventTypeListSchema,
   ticketTypeListSchema,
   ticketTypeSchema,
+  type EventAttendanceApproveRequest,
+  type EventCancelRequest,
   type EventCreateRequest,
   type EventFormUpdateRequest,
   type EventListQuery,
@@ -250,6 +254,15 @@ export function createProgramClient(options: ProgramClientOptions) {
         schema: publicEventDetailSchema,
         requestId,
       }),
+    /** "N người đã tham gia" of an ended event; null when unknown or not approved (BR-09). */
+    getPublishedEventAttendance: (slug: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-events/${segment(slug)}/attendance`,
+        auth: service,
+        schema: publicEventAttendanceSchema,
+        requestId,
+      }),
     getEventPreview: (token: string, requestId?: string) =>
       http.call({
         method: "GET",
@@ -349,6 +362,45 @@ export function createProgramClient(options: ProgramClientOptions) {
         method: "POST",
         path: `${V1}/orders/${segment(id)}/resend-tickets`,
         auth: user(accessToken),
+        requestId,
+      }),
+    getEventCancelImpact: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/events/${segment(id)}/cancel-impact`,
+        auth: user(accessToken),
+        schema: eventCancelImpactSchema,
+        requestId,
+      }),
+    /** "Huỷ chương trình": step-up required (ADR-0021). */
+    cancelEvent: (
+      accessToken: string,
+      id: string,
+      body: EventCancelRequest,
+      stepUpToken: string,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/events/${segment(id)}/cancel`,
+        auth: user(accessToken),
+        body,
+        headers: { [STEP_UP_HEADER]: stepUpToken },
+        requestId,
+      }),
+    /** BR-09: needs `impact:approve`. */
+    approveEventAttendance: (
+      accessToken: string,
+      id: string,
+      body: EventAttendanceApproveRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/events/${segment(id)}/attendance/approve`,
+        auth: user(accessToken),
+        body,
+        schema: eventSchema,
         requestId,
       }),
     refundOrder: (

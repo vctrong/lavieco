@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import "@/shared/zod-vi";
+
 import { TEXT } from "./constants/text";
 
 const v = TEXT.vi.validation;
@@ -7,7 +9,8 @@ const v = TEXT.vi.validation;
 const email = z
   .string()
   .trim()
-  .max(254)
+  .min(1, { error: v.emailRequired })
+  .max(254, { error: v.email })
   .pipe(z.email({ error: v.email }));
 const newPassword = z.string().min(8, { error: v.password }).max(128, { error: v.password });
 const code = z.string().regex(/^\d{6}$/, { error: v.code });

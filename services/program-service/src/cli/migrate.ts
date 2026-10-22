@@ -15,7 +15,12 @@ export const MIGRATIONS_DIR = resolve(__dirname, "../../migrations");
  * (docs/03 §10.1). Migrations are idempotent and never edited once applied; indexes
  * are created here because autoIndex is off in production (docs/03 §10.2).
  */
-export async function runMigrations(db: mongo.Db, dir = MIGRATIONS_DIR): Promise<string[]> {
+export async function runMigrations(
+  db: mongo.Db,
+  dir = MIGRATIONS_DIR,
+  // Under @swc-node/register (dev scripts) `import()` becomes a `require` of a file URL.
+  load: (path: string) => Promise<unknown> = (path) => import(pathToFileURL(path).href),
+): Promise<string[]> {
   const files = readdirSync(dir)
     .filter((file) => file.endsWith(".cjs"))
     .sort();
@@ -24,7 +29,7 @@ export async function runMigrations(db: mongo.Db, dir = MIGRATIONS_DIR): Promise
   const ran: string[] = [];
   for (const file of files) {
     if (done.has(file)) continue;
-    const loaded = (await import(pathToFileURL(resolve(dir, file)).href)) as Partial<Migration> & {
+    const loaded = (await load(resolve(dir, file))) as Partial<Migration> & {
       default?: Migration;
     };
     const up = loaded.up ?? loaded.default?.up;

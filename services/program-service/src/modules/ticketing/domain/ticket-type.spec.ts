@@ -5,6 +5,7 @@ import {
   assertTicketTypeChangeAllowed,
   availabilityOf,
   hasRegistrations,
+  priceRangeOf,
   pricingOf,
   seatsOf,
   type TicketTypeChanges,
@@ -44,11 +45,23 @@ const changesOf = (record: TicketTypeRecord): TicketTypeChanges => ({
 });
 
 describe("pricingOf", () => {
-  it("is free as soon as one visible ticket costs 0", () => {
-    expect(pricingOf([ticket({ price: 0 }), ticket({ price: 120_000 })])).toEqual({
+  it("is free only when every visible ticket costs 0 (since 22/10/2026)", () => {
+    expect(pricingOf([ticket({ price: 0 }), ticket({ price: 0 })])).toEqual({
       isFree: true,
       priceFrom: 0,
     });
+    expect(pricingOf([ticket({ price: 0 }), ticket({ price: 120_000 })])).toEqual({
+      isFree: false,
+      priceFrom: 0,
+    });
+  });
+
+  it("gives the visible price range", () => {
+    expect(priceRangeOf([ticket({ price: 90_000 }), ticket({ price: 150_000 })])).toEqual({
+      min: 90_000,
+      max: 150_000,
+    });
+    expect(priceRangeOf([ticket({ price: 0, hidden: true })])).toBeNull();
   });
 
   it("ignores hidden tickets and has no price without tickets", () => {
@@ -68,9 +81,10 @@ describe("availabilityOf", () => {
     });
   });
 
-  it("shows seats left only at or below 10", () => {
-    expect(availabilityOf([ticket({ quantity: 20, sold: 5 })]).seatsLeft).toBeNull();
-    expect(availabilityOf([ticket({ quantity: 20, sold: 8, held: 2 })]).seatsLeft).toBe(10);
+  it("shows seats left only when few remain (≤ 20% or ≤ 5), held seats included", () => {
+    expect(availabilityOf([ticket({ quantity: 20, sold: 10 })]).seatsLeft).toBeNull();
+    expect(availabilityOf([ticket({ quantity: 20, sold: 13, held: 2 })]).seatsLeft).toBe(5);
+    expect(availabilityOf([ticket({ quantity: 100, sold: 80 })]).seatsLeft).toBe(20);
   });
 
   it("is sold out at zero", () => {

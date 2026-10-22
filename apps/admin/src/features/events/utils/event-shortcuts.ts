@@ -24,6 +24,8 @@ export function eventShortcuts(
   if (event.kind !== "standard" || event.status === "draft") return [];
   return SHORTCUTS.filter(
     (shortcut) =>
-      can(staff, shortcut.permission) && (shortcut.key !== "checkin" || event.status !== "ended"),
+      can(staff, shortcut.permission) &&
+      // No door once ended or cancelled (cancelled tickets are void anyway).
+      (shortcut.key !== "checkin" || (event.status !== "ended" && event.status !== "cancelled")),
   ).map((shortcut) => ({ key: shortcut.key, href: shortcut.href(event.id) }));
 }

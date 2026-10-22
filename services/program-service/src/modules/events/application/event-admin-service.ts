@@ -2,8 +2,10 @@ import { createHash, randomBytes } from "node:crypto";
 
 import type { OutboxPort, UnitOfWork } from "@lavieco/service-kit/ports";
 import { DomainError } from "@lavieco/shared";
+import type { Role } from "@lavieco/shared/permissions";
 import {
   EVENT_LIMITS,
+  type EventAttendanceApproveRequest,
   type EventCreateRequest,
   type EventForm,
   type EventFormUpdateRequest,
@@ -12,14 +14,27 @@ import {
   type EventUpdateRequest,
 } from "@lavieco/shared/events";
 
+import type { AuditTrail } from "../../audit";
 import { isSelectable, type EventTypeRepository } from "../../event-types";
 import type { TicketTypeRepository } from "../../ticketing";
 import { assertOnlineLinkKept } from "../domain/online-link";
 import { duplicateOf } from "../domain/duplicate";
-import { toEventContent, type Actor, type EventRecord } from "../domain/event";
+import {
+  NO_ATTENDANCE,
+  nextAttendance,
+  toEventContent,
+  type Actor,
+  type EventRecord,
+} from "../domain/event";
 import { nextStatus } from "../domain/event-lifecycle";
 import { baseSlug, duplicateBaseSlug, firstFreeSlug } from "../domain/event-slug";
-import { NO_IMAGES, imageIds, releasedImageIds } from "../domain/event-images";
+import {
+  NO_IMAGES,
+  imageIds,
+  imagesInputOf,
+  imagesOf,
+  releasedImageIds,
+} from "../domain/event-images";
 import { assertFormChangeAllowed } from "../domain/form-rules";
 import { queueImageRelease, resolveEventImages } from "./event-media";
 import { snapshotOf, type EventSnapshot } from "./event-snapshot";
@@ -45,6 +60,7 @@ export class EventAdminService {
     private readonly unitOfWork: UnitOfWork,
     private readonly outbox: OutboxPort,
     private readonly media: MediaAttachments,
+    private readonly audit: AuditTrail,
   ) {}
 
   async list(query: EventListQuery) {
@@ -65,11 +81,12 @@ export class EventAdminService {
     await this.requireSelectableType(input.typeId);
     const slug = input.slug ?? (await this.freeSlug(baseSlug(input.title)));
     const id = this.events.newId();
-    const images = await resolveEventImages(this.media, id, NO_IMAGES, input);
+    const images = await resolveEventImages(this.media, id, NO_IMAGES, imagesInputOf(input));
     const event = await this.events.insert({
-      ...toEventContent(input),
+      ...toEventContent(input, images.avatars),
       id,
       images,
+      attendance: nextAttendance(input.kind, NO_ATTENDANCE, input.attendanceCount),
       kind: input.kind,
       slug,
       form: { questions: [] },
@@ -88,21 +105,25 @@ export class EventAdminService {
       throw new DomainError("event.slug_locked");
     }
     if (current.revision !== input.revision) throw new DomainError("common.conflict");
-    const content = toEventContent(input);
+    // A cancelled or ended event is a record of what happened: its page stays as is.
+    if (current.status === "cancelled") throw new DomainError("event.invalid_transition");
     const sold = (await this.ticketTypes.listByEvent(id)).reduce((sum, type) => sum + type.sold, 0);
-    assertOnlineLinkKept(current, content, sold);
-    const images = await resolveEventImages(this.media, id, current, input);
+    assertOnlineLinkKept(current, toEventContent(input, []), sold);
+    const before = imagesOf(current);
+    const images = await resolveEventImages(this.media, id, before, imagesInputOf(input));
+    const content = toEventContent(input, images.avatars);
+    const attendance = nextAttendance(current.kind, current.attendance, input.attendanceCount);
     const updated = await this.unitOfWork.run(async (tx) => {
       const saved = await this.events.updateContent(
         id,
         input.revision,
-        { content, slug, images },
+        { content, slug, images, attendance },
         actor,
         tx,
       );
       if (!saved) throw new DomainError("common.conflict");
-      // A replaced cover or a photo taken out of the gallery is deleted (ADR-0020).
-      await queueImageRelease(this.outbox, tx, id, releasedImageIds(current, images));
+      // A replaced image or a photo taken out of the gallery is deleted (ADR-0020).
+      await queueImageRelease(this.outbox, tx, id, releasedImageIds(before, images));
       await queueRevalidation(this.outbox, tx, saved);
       return saved;
     });
@@ -172,6 +193,7 @@ export class EventAdminService {
           id: this.events.newId(),
           // One image belongs to one event: the copy starts without images (ADR-0020).
           images: NO_IMAGES,
+          attendance: NO_ATTENDANCE,
           kind: source.kind,
           slug,
           form: copy.form,
@@ -198,8 +220,50 @@ export class EventAdminService {
         throw new DomainError("common.conflict");
       }
       // A thrown-away draft keeps no images (ADR-0020).
-      await queueImageRelease(this.outbox, tx, id, imageIds(current));
+      await queueImageRelease(this.outbox, tx, id, imageIds(imagesOf(current)));
     });
+  }
+
+  /**
+   * BR-09: publishes the typed attendance of an archive-only event, as stored at this
+   * revision. The controller requires `impact:approve`; an edit of the count later
+   * drops the approval again (`nextAttendance`).
+   */
+  async approveAttendance(
+    id: string,
+    input: EventAttendanceApproveRequest,
+    actor: Actor & { roles: readonly Role[]; requestId: string | null },
+    now = new Date(),
+  ): Promise<EventSnapshot> {
+    const current = await this.requireEvent(id);
+    if (current.kind !== "past" || current.attendance.count === null) {
+      throw new DomainError("event.invalid_transition", "no attendance to approve");
+    }
+    if (current.revision !== input.revision) throw new DomainError("common.conflict");
+    const updated = await this.unitOfWork.run(async (tx) => {
+      const saved = await this.events.approveAttendance(
+        id,
+        input.revision,
+        { at: now, by: actor.userId },
+        actor,
+        tx,
+      );
+      if (!saved) throw new DomainError("common.conflict");
+      await this.audit.record(
+        tx,
+        {
+          action: "event.attendance_approve",
+          actor: { userId: actor.userId, roles: actor.roles },
+          target: { type: "event", id },
+          requestId: actor.requestId,
+          meta: { count: current.attendance.count ?? 0 },
+        },
+        now,
+      );
+      await queueRevalidation(this.outbox, tx, saved);
+      return saved;
+    });
+    return this.snapshot(updated, now);
   }
 
   /** Short-lived link for the preview iframe of `web` (D2); staff with `program:read`. */

@@ -4,15 +4,47 @@ import { FiCheck, FiEye } from "react-icons/fi";
 
 import { Container, Eyebrow, PearlDot } from "@lavieco/ui";
 
+import { publicEnv } from "@/lib/env.public";
+import { JsonLd } from "@/shared/components/json-ld";
+
+import { eventPath } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { getEvent, getPreview } from "../server/events";
+import { getAttendeeCount, getEvent, getPreview, listRelated } from "../server/events";
+import { hasMemberSession } from "../server/member";
+import { eventJsonLd, shareImageOf } from "../utils/seo";
 import { EventDetail } from "./event-detail";
 
-/** `/chuong-trinh/[slug]`: published, closed or ended events only (404 otherwise). */
+const pageUrlOf = (slug: string) => new URL(eventPath(slug), publicEnv.siteUrl).toString();
+
+/** `/chuong-trinh/[slug]`: published, closed, ended or cancelled events (404 otherwise). */
 export async function EventDetailPage({ slug }: { slug: string }) {
   const event = await getEvent(slug);
   if (!event) notFound();
-  return <EventDetail event={event} />;
+  const [attendeeCount, related, signedIn] = await Promise.all([
+    event.state === "ended" ? getAttendeeCount(slug) : Promise.resolve(null),
+    listRelated(slug),
+    hasMemberSession(),
+  ]);
+  const pageUrl = pageUrlOf(slug);
+  return (
+    <>
+      <JsonLd
+        data={eventJsonLd(event, {
+          pageUrl,
+          organizer: TEXT.vi.meta.organizer,
+          siteUrl: publicEnv.siteUrl,
+          imageUrl: shareImageOf(event, publicEnv.cloudinaryCloudName)?.url ?? null,
+        })}
+      />
+      <EventDetail
+        event={event}
+        attendeeCount={attendeeCount}
+        related={related}
+        signedIn={signedIn}
+        pageUrl={pageUrl}
+      />
+    </>
+  );
 }
 
 /** `/xem-truoc/chuong-trinh/[token]`: same rendering, any status, framed by admin only. */
@@ -24,12 +56,12 @@ export async function EventPreviewPage({ token }: { token: string }) {
     <>
       <div
         role="note"
-        className="fixed inset-x-0 bottom-0 z-50 flex items-center justify-center gap-2 bg-deep-blue px-4 py-2 text-[12.5px] font-semibold text-soft-white"
+        className="fixed inset-x-0 top-0 z-50 flex items-center justify-center gap-2 bg-deep-blue px-4 py-2 text-body-sm font-semibold text-soft-white"
       >
         <FiEye aria-hidden="true" size={14} />
         {t.banner} · {t.status[event.status]}
       </div>
-      <EventDetail event={event} preview />
+      <EventDetail event={event} preview pageUrl={pageUrlOf(event.slug)} />
     </>
   );
 }

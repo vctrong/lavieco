@@ -1,6 +1,7 @@
 import type { EventRecord } from "../../modules/events";
 import type { OrderRecord } from "../../modules/orders/domain/order";
 import type { TicketRecord } from "../../modules/orders/domain/ticket";
+import type { EventCancelledEmailInput } from "../../modules/orders/infrastructure/event-cancelled-email.template";
 import type { TicketEmailInput } from "../../modules/orders/infrastructure/ticket-email.template";
 
 /**
@@ -28,12 +29,18 @@ export function fakeEvent(overrides: Partial<EventRecord> = {}): EventRecord {
     description: "",
     safetyNotes: "",
     cancellationPolicy: "",
+    cancellationRules: [],
+    minAge: null,
+    benefits: [],
     forChildren: false,
     speakers: [],
     agenda: [],
     faq: [],
     cover: null,
+    banner: null,
     gallery: [],
+    attendance: { count: null, approvedAt: null, approvedBy: null },
+    cancellation: null,
     form: { questions: [] },
     pricing: { isFree: false, priceFrom: 150_000 },
     publishedAt: NOW,
@@ -200,5 +207,23 @@ export function ticketEmailCases(): { name: string; input: TicketEmailInput }[] 
         fakeTickets(Array.from({ length: 20 }, () => "Vé tiêu chuẩn")),
       ),
     },
+  ];
+}
+
+/** "Chương trình đã huỷ": a paid order (refund announced) and a free one (nothing to refund). */
+export function eventCancelledEmailCases(): { name: string; input: EventCancelledEmailInput }[] {
+  const event = fakeEvent({
+    status: "cancelled",
+    cancellation: {
+      reason:
+        "Người hướng dẫn bị ốm đột xuất. LAVIECO sẽ thông báo lịch mới trên trang Chương trình.",
+      at: NOW,
+      by: "64b7f0c2a1b2c3d4e5f60721",
+    },
+  });
+  const base = { event, programsUrl: `${WEB}/chuong-trinh`, webAppUrl: WEB };
+  return [
+    { name: "paid", input: { ...base, order: fakeOrder() } },
+    { name: "free", input: { ...base, order: fakeOrder({ amount: 0 }) } },
   ];
 }
