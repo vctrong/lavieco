@@ -23,7 +23,7 @@ npm run env:check         # phải toàn ✓, mail báo "Mailpit (local)"
 
 ```bash
 npm run dev:up            # Docker (Mongo + Mailpit) → dọn cổng → npm run dev
-npm run dev:seed          # (cửa sổ terminal khác) tạo tài khoản dev, mục 5
+npm run dev:seed          # (cửa sổ terminal khác) tạo tài khoản dev (mục 5) + chương trình mẫu (mục 5.1)
 ```
 
 ## 3. Hằng ngày
@@ -34,7 +34,7 @@ npm run dev:seed          # (cửa sổ terminal khác) tạo tài khoản dev, 
 | `npm run dev:up -- --no-dev` | Chỉ bật Docker và dọn cổng |
 | `npm run dev` | Chỉ chạy app + service (Docker phải đang chạy) |
 | `npm run dev:infra:down` | Tắt Mongo + Mailpit (dữ liệu vẫn còn trong volume `mongo-data`) |
-| `npm run dev:seed` | Tạo/đặt lại tài khoản dev, chạy lại bao nhiêu lần cũng không nhân bản |
+| `npm run dev:seed` | Tạo/đặt lại tài khoản dev và chương trình mẫu, chạy lại bao nhiêu lần cũng không nhân bản |
 | `npm run dev:totp` | In mã 2FA hiện tại của staff dev (`-- --email <email>`, `-- --uri` để thêm vào app authenticator) |
 | `npm run env:check` | Kiểm tra `.env.local` (chỉ in tên biến, không in giá trị) |
 | `npm run mail:test -- <email>` | Gửi thử 1 email qua identity + program (dev: vào Mailpit) |
@@ -81,6 +81,28 @@ Chạy lại `dev:seed` sẽ đặt lại mật khẩu và gỡ khoá đăng nh�
    Mã đổi mỗi 30 giây, mỗi mã chỉ dùng được một lần. Muốn dùng app authenticator: `npm run dev:totp -- --uri` rồi tạo QR từ chuỗi `otpauth://` (hoặc nhập tay secret trong chuỗi đó).
 
 **Đăng ký thành viên mới trên web (OTP qua Mailpit):** http://localhost:3000/dang-ky → điền tên, email bất kỳ (nên dùng `*@lavieco.test`), mật khẩu, tick đồng ý → "Gửi mã xác thực" → mở http://localhost:8025, email "Mã xác thực LAVIECO: …" chứa mã 6 số (hết hạn sau 5 phút). Quên mật khẩu cũng nhận mã ở đây.
+
+### 5.1. Chương trình mẫu (phần program của `dev:seed`)
+
+`npm run dev:seed` chạy thêm `dev:seed` của `program-service` (riêng: `npm run dev:seed -w @lavieco/program-service`). Cùng hàng rào: chỉ `NODE_ENV=development` + Mongo trên máy. Lệnh chạy migration của `lavieco_program` trước (index + 3 loại chương trình), rồi tạo 11 chương trình, mỗi cái một trạng thái cần xem trên web/admin. Nguồn: `services/program-service/src/cli/dev-events.ts`.
+
+| Slug | Trạng thái để xem |
+|---|---|
+| `workshop-tranh-kham-vo-so` | Đang mở, 2 loại vé (vé sớm hết hạn bán sau 7 ngày), form 3 câu hỏi, lưu ý an toàn; đơn đủ trạng thái: đã thanh toán, đang giữ chỗ, hết hạn, đã huỷ, đã hoàn tiền |
+| `talkshow-giao-duc-xanh-truc-tuyen` | Trực tuyến, miễn phí, có link |
+| `workshop-gia-dinh-chuong-gio-vo-oc` | Dành cho trẻ em (tick phụ huynh/người giám hộ), "Còn 2 chỗ" |
+| `workshop-tui-vai-tu-luoi-danh-ca` | Hết chỗ |
+| `trien-lam-song-thu-hai-cua-vo-so` | Chưa mở bán (vé mở sau 7 ngày), không giới hạn số lượng |
+| `webinar-ve-sinh-vo-hai-san` | Trực tuyến chưa có link (không nhận đăng ký) |
+| `workshop-in-tranh-tu-la-cay` | Đã đóng đăng ký, còn vé đã bán |
+| `workshop-ban-nhap-den-ngu-vo-so` | Bản nháp (chỉ thấy ở admin) |
+| `workshop-mo-dau-tranh-vo-nghieu` | Đã kết thúc, có vé đã check-in, vé chưa dùng và vé huỷ |
+| `trien-lam-thi-diem-can-tho-2025`, `lop-hoc-sang-tao-xanh-thi-diem` | Sự kiện đã qua (lưu trữ, không vé) |
+
+- Ngày giờ tính **tương đối với lúc chạy** (giờ Việt Nam), nên chạy lại sẽ "làm mới" lịch. Chạy lại chỉ dựng lại những gì lệnh này tạo (`createdBy = cli:dev-seed`): đơn, vé, câu trả lời của chúng bị xoá và tạo lại. Chương trình tạo ở admin **không bao giờ** bị đụng (trùng slug thì bỏ qua).
+- Người đặt là người giả `*@lavieco.test` (gồm `an@`, `binh@` của mục 5), đơn khách (`userId = null`). Tra vé ở `/tra-cuu-ve` bằng các email này, mã OTP ở Mailpit.
+- Đơn "đang giữ chỗ" hết hạn sau 15 phút như đơn thật (job hết hạn trả chỗ). Không có link thanh toán payOS.
+- Không có ảnh bìa: ảnh đi qua `content-service`/Cloudinary (ADR-020), thêm ở admin nếu cần.
 
 ## 6. Chuyển sang MongoDB Atlas (dev)
 

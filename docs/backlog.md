@@ -36,3 +36,16 @@ Việc đã khảo sát, cố ý **không** làm trong PR phát hiện ra nó, �
 
 - **Nguồn:** PR navbar mới, `TODO(nav-account-routes)` ở `apps/web/src/features/navigation/constants/config.ts`.
 - `/tai-khoan/ve` (Vé của tôi) và `/tai-khoan/chuong-trinh` (Chương trình đã đăng ký): menu tài khoản đã trỏ tới hai đường dẫn này nhưng trang chưa có.
+
+## B5. Báo lỗi theo cách chung cho các panel admin
+
+- **Nguồn:** PR làm lại trang Chương trình + báo lỗi form (22/10/2026). Phạm vi PR đó dừng ở form auth của web/admin, checkout, tra cứu vé, form lead.
+- **Hiện trạng:** 9 chỗ trong admin đã bỏ `.catch(() => null)` (gọi qua `callAction`, lỗi đúng loại, "bận" kèm mã tham chiếu) nhưng **chưa** có dấu `*` (`required`), dòng "Còn N mục…" + vùng đọc ẩn, focus trường lỗi đầu tiên và kiểm tra lại khi gõ: `features/events/components/{details-form,form-builder,ticket-types-section,status-panel,cancel-event-panel,event-types-page}.tsx`, `features/ticketing/components/{checkin-scanner,order-actions,export-panel}.tsx`.
+- **Việc cần làm:** dùng `useFormErrors` + `FormErrorNote`/`RequiredNote` của `@lavieco/ui` như các form auth (`docs/04` §5.5). `details-form` dài và nhiều mục lặp lại: cần quyết định khoá trường cho mục lặp (vd `speakers.0.name`) trước khi làm.
+- **Câu lỗi tiếng Anh:** các panel này kiểm tra bằng schema hợp đồng của `packages/shared`, vốn có câu riêng bằng tiếng Anh (vd "End must be after start", "Sale end must be after sale start", "Lower-case letters, digits and single dashes"). Câu đặt riêng thắng `src/shared/zod-vi.ts`, nên vẫn lộ ra ở admin. Cần ánh xạ theo đường dẫn trường sang câu tiếng Việt ở admin (không đổi câu của hợp đồng, service dùng chúng).
+
+## B6. Gom phần báo lỗi form đang trùng giữa `web` và `admin`
+
+- **Nguồn:** cùng PR trên.
+- **Hiện trạng:** bản sao giống nhau ở hai app: `src/shared/call-action.ts`, `src/shared/form-failures.ts`, `src/shared/constants/form-text.ts`, `src/shared/components/failure-alert.tsx`, `src/lib/action-errors.ts` (kèm spec). Không để ở `@lavieco/ui` vì `call-action` dùng `next/navigation` (`unstable_isUnrecognizedActionError`) và `action-errors` dùng `@lavieco/api-clients`, mà `ui` không phụ thuộc hai gói này.
+- **Việc cần làm:** chọn chỗ chung theo `docs/04` §4 (vd. một export con kiểu `@lavieco/ui/next` có peer dependency `next`, hoặc `@lavieco/service-kit` cho phần server), kiểm tra `npm run deps:check` cho phép, rồi xoá bản sao. Phần `form-failures`/`form-text` không phụ thuộc gì có thể chuyển trước.

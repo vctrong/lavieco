@@ -539,8 +539,9 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `order:refund` (hoàn tiền, huỷ vé) | ✓ | — | ✓ | — |
 | `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
 | `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |
+| `impact:approve` (công bố số liệu tác động, vd. số người tham gia nhập tay của sự kiện lưu trữ, BR-09) | ✓ | — | — | — |
 
-(*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014). Permission GĐ2+ (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cho nội dung (cẩm nang, tác phẩm) cần `content:write`, tải ảnh chương trình cần `program:write`, avatar do chính member tải (`@RequireMember`, ADR-020); sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
+(*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014); "Huỷ chương trình" dùng `program:write` + step-up + audit (22/10/2026). `impact:approve` có sớm từ GĐ1 (22/10/2026) cho số người tham gia của sự kiện lưu trữ; các permission GĐ2+ khác (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cho nội dung (cẩm nang, tác phẩm) cần `content:write`, tải ảnh chương trình cần `program:write`, avatar do chính member tải (`@RequireMember`, ADR-020); sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
 
 **Quy tắc thực thi:**
 1. `admin` ẩn/hiện chức năng theo quyền (chỉ để trải nghiệm tốt), **không phải hàng rào bảo mật**.
