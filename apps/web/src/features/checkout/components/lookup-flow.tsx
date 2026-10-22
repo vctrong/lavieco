@@ -10,17 +10,19 @@ import {
 } from "@lavieco/shared/events";
 import { Button, TextField } from "@lavieco/ui";
 
-import { FormAlert } from "@/shared/components/form-alert";
+import { FailureAlert } from "@/shared/components/failure-alert";
 import { HoneypotField } from "@/shared/components/honeypot-field";
 import { OtpInput } from "@/shared/components/otp-input";
 import { TurnstileWidget } from "@/shared/components/turnstile-widget";
+import { callAction } from "@/shared/call-action";
+import type { FormFailure } from "@/shared/form-failures";
 import { useCountdown } from "@/shared/hooks/use-countdown";
 
 import { requestLookupCode, verifyLookup } from "../actions/lookup";
 import { CHECKOUT_ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { formatDate } from "../utils/format";
-import { messageFor } from "./messages";
+import { failureOf } from "./messages";
 import { TicketStub, type ChipTone } from "./ticket-card";
 
 const ORDER_TONES: Record<OrderDisplayStatus, ChipTone> = {
@@ -42,7 +44,9 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [emailError, setEmailError] = useState<string | undefined>();
-  const [alert, setAlert] = useState<string | null>(null);
+  const [alert, setAlert] = useState<FormFailure | null>(null);
+  // A Turnstile token is single use: every send asks the widget for a new one.
+  const [turnstileReset, setTurnstileReset] = useState(0);
   const [result, setResult] = useState<TicketLookupResponse["items"] | null>(null);
   // The code step never renders on the server, so the clock is always known here.
   const resendIn = useCountdown(pending?.resendAvailableAt ?? null) ?? 0;
@@ -51,11 +55,11 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
   const sendCode = async (values: Record<string, unknown>) => {
     setBusy(true);
     setAlert(null);
-    const sent = await requestLookupCode(values).catch(() => null);
+    const sent = await callAction(() => requestLookupCode(values));
+    setTurnstileReset((count) => count + 1);
     setBusy(false);
-    if (!sent) return setAlert(t.errors.unavailable);
     if (sent.status === "invalid") return setEmailError(sent.fieldErrors.email);
-    if (sent.status === "error") return setAlert(messageFor(sent));
+    if (sent.status === "error") return setAlert(failureOf(sent));
     setEmailError(undefined);
     setCode("");
     setPending({
@@ -74,14 +78,14 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
   const handleCode = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (busy || !pending) return;
-    if (!/^\d{6}$/.test(code)) return setAlert(t.errors.codeFormat);
+    if (!/^\d{6}$/.test(code)) return setAlert({ message: t.errors.codeFormat, reload: false });
     setBusy(true);
     setAlert(null);
-    const found = await verifyLookup({ challengeId: pending.challengeId, code }).catch(() => null);
+    const found = await callAction(() => verifyLookup({ challengeId: pending.challengeId, code }));
     setBusy(false);
-    if (!found) return setAlert(t.errors.unavailable);
-    if (found.status === "invalid") return setAlert(t.errors.codeFormat);
-    if (found.status === "error") return setAlert(messageFor(found));
+    if (found.status === "invalid")
+      return setAlert({ message: t.errors.codeFormat, reload: false });
+    if (found.status === "error") return setAlert(failureOf(found));
     setResult(found.items);
   };
 
@@ -165,8 +169,10 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
         >
           {resendIn > 0 ? t.otp.resendIn(resendIn) : t.otp.resend}
         </button>
-        {resendIn === 0 ? <TurnstileWidget siteKey={turnstileSiteKey} /> : null}
-        <FormAlert tone="error" message={alert} />
+        {resendIn === 0 ? (
+          <TurnstileWidget siteKey={turnstileSiteKey} resetSignal={turnstileReset} />
+        ) : null}
+        <FailureAlert failure={alert} />
         <Button type="submit" disabled={busy} className="w-full disabled:opacity-70">
           {busy ? t.lookup.verifying : t.lookup.verify}
         </Button>
@@ -193,8 +199,8 @@ export function LookupFlow({ turnstileSiteKey }: { turnstileSiteKey: string | nu
         error={emailError}
         disabled={busy}
       />
-      <TurnstileWidget siteKey={turnstileSiteKey} />
-      <FormAlert tone="error" message={alert} />
+      <TurnstileWidget siteKey={turnstileSiteKey} resetSignal={turnstileReset} />
+      <FailureAlert failure={alert} />
       <Button type="submit" disabled={busy} className="w-full disabled:opacity-70">
         {busy ? t.lookup.submitting : t.lookup.submit}
       </Button>

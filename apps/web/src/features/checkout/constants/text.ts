@@ -155,8 +155,6 @@ export const TEXT = {
       event_started: "Chương trình đã bắt đầu.",
     } satisfies Record<RegistrationBlocker, string>,
     errors: {
-      unavailable: "Hệ thống đang bận. Vui lòng thử lại sau ít phút.",
-      bot: "Không xác minh được bạn không phải là máy. Vui lòng tải lại trang.",
       codeFormat: "Mã gồm 6 chữ số.",
       code_invalid: "Mã chưa đúng.",
       code_invalid_left: (left: number) => `Mã chưa đúng. Còn ${left} lần thử.`,
@@ -166,8 +164,10 @@ export const TEXT = {
       send_limited_in: (seconds: number) =>
         `Bạn đã yêu cầu quá nhiều mã. Thử lại sau ${seconds} giây.`,
       verification_invalid: "Phiên xác thực đã hết hạn. Hãy nhập lại thông tin.",
-      sold_out: "Rất tiếc, số chỗ còn lại không đủ cho đơn này.",
-      items_invalid: "Lựa chọn vé không còn hợp lệ. Vui lòng tải lại trang.",
+      sold_out:
+        "Rất tiếc, số chỗ còn lại không đủ cho đơn này. Bạn thử giảm số lượng vé hoặc chọn loại vé khác.",
+      items_invalid:
+        "Số vé vượt giới hạn mỗi đơn hoặc lựa chọn vé không còn hợp lệ. Bạn thử giảm số lượng hoặc chọn loại vé khác.",
       answers_invalid: "Vui lòng trả lời đầy đủ các câu hỏi bắt buộc.",
       consent_required: "Vui lòng tick các ô xác nhận bắt buộc.",
       registration_closed: "Chương trình hiện không nhận đăng ký.",
@@ -179,10 +179,14 @@ export const TEXT = {
     },
     validation: {
       fullName: "Vui lòng nhập họ tên.",
+      emailRequired: "Vui lòng nhập email.",
       email: "Email chưa đúng định dạng.",
+      phoneRequired: "Vui lòng nhập số điện thoại.",
       phone: "Số điện thoại chưa đúng định dạng.",
-      required: "Câu hỏi này bắt buộc.",
-      consent: "Vui lòng đồng ý để tiếp tục.",
+      required: "Vui lòng trả lời câu hỏi này.",
+      choose: "Vui lòng chọn một mục.",
+      consent: "Bạn cần đồng ý để tiếp tục.",
+      invalid: "Thông tin này chưa hợp lệ.",
     },
     meta: {
       checkout: (title: string) => `Đăng ký: ${title}`,

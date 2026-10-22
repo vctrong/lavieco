@@ -55,12 +55,15 @@ export async function verifiedMember(): Promise<{ email: string; displayName: st
 }
 
 /** Proof of the member's own verified email for `email`, or null (then OTP applies). */
-export async function memberProofFor(email: string): Promise<string | null> {
+export async function memberProofFor(
+  email: string,
+  requestIdValue?: string,
+): Promise<string | null> {
   const { accessToken } = await readMemberSession();
   if (!accessToken) return null;
   try {
     const identity = identityClient();
-    const id = await requestId();
+    const id = requestIdValue ?? (await requestId());
     const profile = await identity.getMemberProfile(accessToken, id);
     if (!profile.emailVerifiedAt || normalizeEmail(profile.email) !== normalizeEmail(email)) {
       return null;

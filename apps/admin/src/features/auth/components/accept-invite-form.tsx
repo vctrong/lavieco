@@ -5,14 +5,28 @@ import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { FiShield } from "react-icons/fi";
 
-import { Button, TextField } from "@lavieco/ui";
+import {
+  BusyLabel,
+  Button,
+  FormErrorNote,
+  RequiredNote,
+  TextField,
+  useFormErrors,
+} from "@lavieco/ui";
+
+import { FailureAlert } from "@/shared/components/failure-alert";
+import { FORM_TEXT } from "@/shared/constants/form-text";
+import { callAction } from "@/shared/call-action";
+import type { FormFailure } from "@/shared/form-failures";
 
 import { acceptInvitation } from "../actions/accept-invitation";
 import { TEXT } from "../constants/text";
 import { acceptInviteSchema } from "../schemas";
 import type { InvitationView } from "../server/inspect-invitation";
-import { fieldErrorsOf } from "./field-errors";
-import { FormError } from "./form-error";
+import { failureOf, formErrorsOf } from "./messages";
+
+const FIELD_ORDER = ["displayName", "password", "totpCode"];
+const fieldId = (key: string) => `kich-hoat-${key}`;
 
 /**
  * Account activation: scan the TOTP seed, set name + password, confirm with the first
@@ -26,25 +40,30 @@ export function AcceptInviteForm({
   invitation: InvitationView;
 }) {
   const t = TEXT.vi;
+  const f = FORM_TEXT.vi;
   const [busy, setBusy] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [alert, setAlert] = useState<string | null>(null);
+  const [failure, setFailure] = useState<FormFailure | null>(null);
   const [recoveryCodes, setRecoveryCodes] = useState<string[] | null>(null);
+  const form = useFormErrors({ fieldOrder: FIELD_ORDER, fieldId, paused: busy });
+  const errors = form.errors;
+
+  const recheck = (event: FormEvent<HTMLFormElement>) => {
+    const target = event.target;
+    if (target instanceof HTMLInputElement) form.clearServerError(target.name);
+    form.revalidate(formErrorsOf(acceptInviteSchema, event.currentTarget, { token }));
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (busy) return;
+    setFailure(null);
+    if (!form.check(formErrorsOf(acceptInviteSchema, event.currentTarget, { token }))) return;
     const values = { ...Object.fromEntries(new FormData(event.currentTarget)), token };
-    const parsed = acceptInviteSchema.safeParse(values);
-    if (!parsed.success) return setErrors(fieldErrorsOf(parsed.error));
-    setErrors({});
-    setAlert(null);
     setBusy(true);
-    const result = await acceptInvitation(values).catch(() => null);
+    const result = await callAction(() => acceptInvitation(values));
     setBusy(false);
-    if (!result) setAlert(t.errors.unavailable);
-    else if (result.status === "invalid") setErrors(result.fieldErrors);
-    else if (result.status === "error") setAlert(t.errors[result.reason]);
+    if (result.status === "invalid") form.showServerErrors(result.fieldErrors);
+    else if (result.status === "error") setFailure(failureOf(result));
     else setRecoveryCodes(result.recoveryCodes);
   };
 
@@ -73,7 +92,14 @@ export function AcceptInviteForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} noValidate className="space-y-8">
+    <form
+      onSubmit={handleSubmit}
+      onChange={recheck}
+      onBlur={recheck}
+      noValidate
+      className="space-y-8"
+    >
+      <RequiredNote text={f.requiredNote} />
       <section className="space-y-4">
         <p className="text-sm font-semibold text-deep-blue">{t.invite.step1}</p>
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-hairline bg-soft-white p-5 sm:flex-row sm:items-start">
@@ -100,7 +126,9 @@ export function AcceptInviteForm({
         <TextField tone="light" label={t.invite.email} value={invitation.email} readOnly disabled />
         <TextField
           tone="light"
+          id={fieldId("displayName")}
           label={t.invite.displayName}
+          required
           name="displayName"
           autoComplete="name"
           defaultValue={invitation.displayName}
@@ -109,7 +137,9 @@ export function AcceptInviteForm({
         />
         <TextField
           tone="light"
+          id={fieldId("password")}
           label={t.invite.password}
+          required
           name="password"
           type="password"
           autoComplete="new-password"
@@ -119,7 +149,9 @@ export function AcceptInviteForm({
         />
         <TextField
           tone="light"
+          id={fieldId("totpCode")}
           label={t.invite.totpCode}
+          required
           name="totpCode"
           inputMode="numeric"
           autoComplete="one-time-code"
@@ -130,9 +162,13 @@ export function AcceptInviteForm({
         />
       </section>
 
-      <FormError message={alert} />
-      <Button type="submit" disabled={busy} className="w-full disabled:opacity-70">
-        {busy ? t.invite.submitting : t.invite.submit}
+      <FormErrorNote
+        announcement={form.invalidFields.length > 0 ? f.announce(form.invalidFields.length) : null}
+        message={form.invalidFields.length > 0 ? f.aboveSubmit(form.invalidFields.length) : null}
+      />
+      <FailureAlert failure={failure} />
+      <Button type="submit" disabled={busy} aria-busy={busy} className="w-full disabled:opacity-70">
+        <BusyLabel busy={busy} idle={t.invite.submit} sending={t.invite.submitting} />
       </Button>
     </form>
   );

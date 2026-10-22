@@ -82,6 +82,7 @@ export const TEXT = {
     },
     validation: {
       displayName: "Bạn vui lòng nhập tên (tối đa 80 ký tự).",
+      emailRequired: "Bạn vui lòng nhập email.",
       email: "Email chưa đúng định dạng, ví dụ ten@example.com.",
       password: "Mật khẩu cần từ 8 đến 128 ký tự.",
       passwordRequired: "Bạn vui lòng nhập mật khẩu.",
@@ -101,8 +102,6 @@ export const TEXT = {
       email_taken: "Email này đã có tài khoản. Bạn hãy đăng nhập hoặc đặt lại mật khẩu.",
       password_weak:
         "Mật khẩu quá dễ đoán (quá phổ biến hoặc chứa tên email). Bạn chọn mật khẩu khác nhé.",
-      unavailable: "Hệ thống đang bận. Bạn vui lòng thử lại sau ít phút.",
-      bot: "Không xác minh được bạn không phải máy. Bạn vui lòng tải lại trang và thử lại.",
       google: "Chưa đăng nhập được bằng Google. Bạn thử lại hoặc dùng email và mật khẩu.",
       googleNotAllowed:
         "Email này thuộc tài khoản quản trị nên không đăng nhập bằng Google ở đây được.",

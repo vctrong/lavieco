@@ -15,9 +15,9 @@ import {
 } from "react-icons/fi";
 
 import { orderViewSchema, type OrderView } from "@lavieco/shared/events";
-import { Button } from "@lavieco/ui";
+import { Button, FormAlert } from "@lavieco/ui";
 
-import { FormAlert } from "@/shared/components/form-alert";
+import { callAction } from "@/shared/call-action";
 import { useCountdown } from "@/shared/hooks/use-countdown";
 
 import { cancelOrder, reconcileOrder } from "../actions/order";
@@ -150,12 +150,11 @@ export function PaymentPanel({
   const handleCancel = async () => {
     setBusy(true);
     setAlert(null);
-    const result = await cancelOrder(token).catch(() => null);
+    const result = await callAction(() => cancelOrder(token));
     setBusy(false);
     setConfirmCancel(false);
-    if (result?.status === "ok") setOrder(result.order);
-    else if (result?.status === "error") setAlert(messageFor(result));
-    else setAlert(TEXT.vi.errors.unavailable);
+    if (result.status === "ok") setOrder(result.order);
+    else if (result.status === "error") setAlert(messageFor(result));
   };
 
   if (order.status !== "pending") {

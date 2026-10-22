@@ -12,6 +12,7 @@ import { TEXT } from "../constants/text";
 import { getCheckoutEvent, getOrder, verifiedMember } from "../server/orders";
 import { qrDataUrl } from "../server/qr";
 import { formatDateTime, formatSchedule } from "../utils/format";
+import { initialQuantities, type CheckoutPick } from "../utils/initial-pick";
 import { ticketState } from "../utils/ticket-state";
 import { CheckoutForm } from "./checkout-form";
 import { CheckoutShell } from "./checkout-shell";
@@ -22,7 +23,7 @@ import { PrintButton } from "./print-button";
 import { TicketCard, type TicketCardData } from "./ticket-card";
 
 /** `/chuong-trinh/[slug]/dang-ky`: the checkout of one published event. */
-export async function CheckoutPage({ slug }: { slug: string }) {
+export async function CheckoutPage({ slug, pick }: { slug: string; pick?: CheckoutPick }) {
   const event = await getCheckoutEvent(slug);
   if (!event || event.kind !== "standard") notFound();
   const t = TEXT.vi;
@@ -43,6 +44,7 @@ export async function CheckoutPage({ slug }: { slug: string }) {
         event={event}
         member={await verifiedMember()}
         turnstileSiteKey={turnstileSiteKey()}
+        initialQuantities={initialQuantities(event.ticketTypes, pick)}
       />
     </CheckoutShell>
   );

@@ -5,45 +5,70 @@ import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "rea
 import { FiEdit2, FiLock, FiMail, FiMinus, FiPlus } from "react-icons/fi";
 
 import { ORDER_LIMITS, type PublicEventDetail } from "@lavieco/shared/events";
-import { Button, CheckboxField, SelectField, TextareaField, TextField, cn } from "@lavieco/ui";
+import {
+  BusyLabel,
+  Button,
+  CheckboxField,
+  FieldError,
+  FormAlert,
+  FormErrorNote,
+  RequiredNote,
+  SelectField,
+  TextareaField,
+  TextField,
+  cn,
+  useFormErrors,
+} from "@lavieco/ui";
 
-import { FormAlert } from "@/shared/components/form-alert";
+import { FailureAlert } from "@/shared/components/failure-alert";
 import { HoneypotField } from "@/shared/components/honeypot-field";
 import { OtpInput } from "@/shared/components/otp-input";
 import { TurnstileWidget } from "@/shared/components/turnstile-widget";
+import { FORM_TEXT } from "@/shared/constants/form-text";
+import { callAction } from "@/shared/call-action";
+import type { FormFailure } from "@/shared/form-failures";
 import { useCountdown } from "@/shared/hooks/use-countdown";
 
 import { confirmCheckout, startCheckout } from "../actions/checkout";
 import { TEXT } from "../constants/text";
-import { buyerSchema, type CheckoutDraft } from "../schemas";
+import { validateCheckoutDraft, type CheckoutDraft, type CheckoutDraftInput } from "../schemas";
+import type { CheckoutError } from "../types";
 import { formatVnd } from "../utils/format";
-import { messageFor } from "./messages";
+import { failureOf, fieldOfFailure } from "./messages";
 
 type CheckoutFormProps = {
   event: Pick<PublicEventDetail, "slug" | "ticketTypes" | "registration">;
   member: { email: string; displayName: string } | null;
   turnstileSiteKey: string | null;
+  /** Starting quantities (the choice made on the event page, see `initialQuantities`). */
+  initialQuantities: Record<string, number>;
 };
 
 type Pending = { challengeId: string; resendAvailableAt: string };
 type AnswerValue = string | string[];
+
+/** DOM id of a form field, so the error summary can link and move focus to it. */
+const fieldId = (key: string) => `ck-${key}`;
 
 /**
  * Registration and ticket purchase (docs/05 §5.1–5.2): tickets → booker → questions
  * → consents → email code → seats held. Prices shown here are indicative: the service
  * recomputes them. Nothing is stored in the browser.
  */
-export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormProps) {
+export function CheckoutForm({
+  event,
+  member,
+  turnstileSiteKey,
+  initialQuantities,
+}: CheckoutFormProps) {
   const t = TEXT.vi;
+  const f = FORM_TEXT.vi;
   const router = useRouter();
   const codeHintId = useId();
-  const { questions, safetyAcknowledgementRequired, guardianConfirmationRequired } =
-    event.registration;
+  const rules = event.registration;
+  const { questions, safetyAcknowledgementRequired, guardianConfirmationRequired } = rules;
 
-  const [quantities, setQuantities] = useState<Record<string, number>>(() => {
-    const first = event.ticketTypes.find((ticket) => !ticket.availability.soldOut);
-    return first && event.ticketTypes.length === 1 ? { [first.id]: 1 } : {};
-  });
+  const [quantities, setQuantities] = useState<Record<string, number>>(initialQuantities);
   const [buyer, setBuyer] = useState({
     fullName: member?.displayName ?? "",
     email: member?.email ?? "",
@@ -57,9 +82,10 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
   const [pending, setPending] = useState<Pending | null>(null);
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
-  const [alert, setAlert] = useState<string | null>(null);
+  const [failure, setFailure] = useState<FormFailure | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  // A Turnstile token is single use: every submit asks the widget for a new one.
+  const [turnstileReset, setTurnstileReset] = useState(0);
   // The code step never renders on the server, so the clock is always known here.
   const resendIn = useCountdown(pending?.resendAvailableAt ?? null) ?? 0;
   const codeFormRef = useRef<HTMLFormElement>(null);
@@ -83,74 +109,72 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
     [event.ticketTypes, quantities],
   );
   const total = lines.reduce((sum, line) => sum + line.ticket.price * line.quantity, 0);
-  const ticketCount = lines.reduce((sum, line) => sum + line.quantity, 0);
 
-  const setQuantity = (id: string, max: number, next: number) =>
-    setQuantities((current) => ({ ...current, [id]: Math.max(0, Math.min(max, next)) }));
-
-  /** Client-side checks mirror the service's, for quick feedback only. */
-  const buildDraft = (form: HTMLFormElement): CheckoutDraft | null => {
-    const nextErrors: Record<string, string> = {};
-    const parsedBuyer = buyerSchema.safeParse(buyer);
-    if (!parsedBuyer.success) {
-      for (const issue of parsedBuyer.error.issues) {
-        const field = String(issue.path[0]);
-        nextErrors[field] ??= issue.message;
-      }
-    }
-    if (ticketCount === 0) nextErrors.tickets = t.errors.noTickets;
-    if (ticketCount > ORDER_LIMITS.ticketsPerOrderMax) nextErrors.tickets = t.errors.tooManyTickets;
-    for (const question of questions) {
-      const value = answers[question.id];
-      const empty =
-        value === undefined || (Array.isArray(value) ? value.length === 0 : !value.trim());
-      if (question.required && empty) nextErrors[question.id] = t.validation.required;
-    }
-    if (!consents.data) nextErrors.dataConsent = t.validation.consent;
-    if (safetyAcknowledgementRequired && !consents.safety) nextErrors.safety = t.validation.consent;
-    if (guardianConfirmationRequired && !consents.guardian) {
-      nextErrors.guardian = t.validation.consent;
-    }
-    setErrors(nextErrors);
-    if (Object.keys(nextErrors).length > 0 || !parsedBuyer.success) return null;
-    const formData = new FormData(form);
-    return {
-      eventSlug: event.slug,
-      items: lines.map((line) => ({ ticketTypeId: line.ticket.id, quantity: line.quantity })),
-      buyer: parsedBuyer.data,
-      answers: Object.fromEntries(
-        Object.entries(answers).filter(([, value]) =>
-          Array.isArray(value) ? value.length > 0 : value.trim() !== "",
-        ),
+  const input: CheckoutDraftInput = {
+    eventSlug: event.slug,
+    items: lines.map((line) => ({ ticketTypeId: line.ticket.id, quantity: line.quantity })),
+    buyer,
+    answers: Object.fromEntries(
+      Object.entries(answers).filter(([, value]) =>
+        Array.isArray(value) ? value.length > 0 : value.trim() !== "",
       ),
-      note: note.trim(),
-      dataConsent: true,
-      safetyAcknowledged: consents.safety,
-      isGuardian: consents.guardian,
-      website: String(formData.get("website") ?? ""),
-      turnstileToken: String(formData.get("turnstileToken") ?? "") || undefined,
-    };
+    ),
+    note: note.trim(),
+    dataConsent: consents.data,
+    safetyAcknowledged: consents.safety,
+    isGuardian: consents.guardian,
+  };
+  const checked = validateCheckoutDraft(input, rules);
+
+  // Form order: the summary lists, and focus goes to, the first field from the top.
+  const fieldOrder = [
+    "tickets",
+    "fullName",
+    "email",
+    "phone",
+    ...questions.map((question) => question.id),
+    "dataConsent",
+    "safety",
+    "guardian",
+  ];
+  const form = useFormErrors({
+    fieldOrder,
+    fieldId,
+    live: checked.success ? {} : checked.errors,
+    paused: busy,
+  });
+  const { errors, invalidFields } = form;
+  const touched = form.clearServerError;
+
+  const setQuantity = (id: string, max: number, next: number) => {
+    touched("tickets");
+    setQuantities((current) => ({ ...current, [id]: Math.max(0, Math.min(max, next)) }));
+  };
+
+  /** Shows a failed step: under its field when it has one, and above the button. */
+  const showFailure = (error: CheckoutError) => {
+    const field = fieldOfFailure(error);
+    const shown = failureOf(error);
+    if (field) form.showServerErrors({ [field]: shown.message });
+    setFailure(shown);
   };
 
   const send = async (next: CheckoutDraft) => {
     setBusy(true);
-    setAlert(null);
-    const result = await startCheckout(next).catch(() => null);
-    if (result?.status === "ok" && result.kind === "placed") {
+    setFailure(null);
+    const result = await callAction(() => startCheckout(next));
+    setTurnstileReset((count) => count + 1);
+    if (result.status === "ok" && result.kind === "placed") {
       router.push(result.redirectTo);
       return true;
     }
     setBusy(false);
-    if (!result) {
-      setAlert(t.errors.unavailable);
-      return false;
-    }
     if (result.status === "invalid") {
-      setErrors(result.fieldErrors);
+      form.showServerErrors(result.fieldErrors);
       return false;
     }
     if (result.status === "error") {
-      setAlert(messageFor(result));
+      showFailure(result);
       return false;
     }
     setPending({ challengeId: result.challengeId, resendAvailableAt: result.resendAvailableAt });
@@ -162,8 +186,23 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
   const handleSubmit = async (formEvent: FormEvent<HTMLFormElement>) => {
     formEvent.preventDefault();
     if (busy) return;
-    const next = buildDraft(formEvent.currentTarget);
-    if (!next) return;
+    setFailure(null);
+    // The booker's fields are read from the form itself: a browser autofill may fill
+    // them without a change event, leaving React state behind what the person sees.
+    const formData = new FormData(formEvent.currentTarget);
+    const typed = {
+      fullName: String(formData.get("fullName") ?? buyer.fullName),
+      email: String(formData.get("email") ?? buyer.email),
+      phone: String(formData.get("phone") ?? buyer.phone),
+    };
+    setBuyer(typed);
+    const current = validateCheckoutDraft({ ...input, buyer: typed }, rules);
+    if (!form.check(current.success ? {} : current.errors) || !current.success) return;
+    const next: CheckoutDraft = {
+      ...current.data,
+      website: String(formData.get("website") ?? ""),
+      turnstileToken: String(formData.get("turnstileToken") ?? "") || undefined,
+    };
     setDraft(next);
     await send(next);
   };
@@ -172,26 +211,27 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
     formEvent.preventDefault();
     if (busy || !draft || !pending) return;
     if (!/^\d{6}$/.test(code)) {
-      setAlert(t.errors.codeFormat);
+      setFailure({ message: t.errors.codeFormat, reload: false });
       return;
     }
     setBusy(true);
-    setAlert(null);
-    const result = await confirmCheckout({
-      draft,
-      challengeId: pending.challengeId,
-      code,
-    }).catch(() => null);
-    if (result?.status === "ok") {
+    setFailure(null);
+    const result = await callAction(() =>
+      confirmCheckout({ draft, challengeId: pending.challengeId, code }),
+    );
+    if (result.status === "ok") {
       router.push(result.redirectTo);
       return;
     }
     setBusy(false);
-    if (!result) setAlert(t.errors.unavailable);
-    else if (result.status === "invalid") {
+    if (result.status === "invalid") {
       setStep("form");
-      setErrors(result.fieldErrors);
-    } else setAlert(messageFor(result));
+      form.showServerErrors(result.fieldErrors);
+    } else if (fieldOfFailure(result)) {
+      // Sold out while the code was being typed: back to the tickets to change them.
+      setStep("form");
+      showFailure(result);
+    } else setFailure(failureOf(result));
   };
 
   const handleResend = async () => {
@@ -262,7 +302,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
               value={code}
               onChange={setCode}
               disabled={busy}
-              invalid={Boolean(alert)}
+              invalid={Boolean(failure)}
               describedBy={codeHintId}
             />
             <p id={codeHintId} className="mt-3 text-xs leading-relaxed text-charcoal/65">
@@ -275,7 +315,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
               onClick={() => {
                 setStep("form");
                 setPending(null);
-                setAlert(null);
+                setFailure(null);
                 setNotice(null);
               }}
               className="inline-flex items-center gap-1.5 font-medium text-deep-blue hover:text-emerald-brand"
@@ -292,17 +332,26 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
               {resendIn > 0 ? t.otp.resendIn(resendIn) : t.otp.resend}
             </button>
           </div>
-          {resendIn === 0 ? <TurnstileWidget siteKey={turnstileSiteKey} /> : null}
+          {resendIn === 0 ? (
+            <TurnstileWidget siteKey={turnstileSiteKey} resetSignal={turnstileReset} />
+          ) : null}
           <FormAlert tone="success" message={notice} />
-          <FormAlert tone="error" message={alert} />
-          <Button type="submit" disabled={busy} className="w-full disabled:opacity-70">
-            {busy ? t.otp.submitting : t.otp.submit}
+          <FailureAlert failure={failure} />
+          <Button
+            type="submit"
+            disabled={busy}
+            aria-busy={busy}
+            className="w-full disabled:opacity-70"
+          >
+            <BusyLabel busy={busy} idle={t.otp.submit} sending={t.otp.submitting} />
           </Button>
         </form>
         {summary}
       </div>
     );
   }
+
+  const errorIdOf = (key: string) => `${fieldId(key)}-error`;
 
   return (
     <div
@@ -312,6 +361,8 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
     >
       <form onSubmit={handleSubmit} noValidate className="space-y-8">
         <HoneypotField />
+        <RequiredNote text={f.requiredNote} />
+
         <section
           aria-labelledby="chon-ve"
           className="rounded-3xl border border-hairline bg-white p-6 md:p-8"
@@ -320,7 +371,16 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
             {t.checkout.ticketsTitle}
           </h2>
           <p className="mt-1 text-[13px] text-charcoal/65">{t.checkout.ticketsHint}</p>
-          <ul className="mt-5 divide-y divide-hairline">
+          <ul
+            id={fieldId("tickets")}
+            tabIndex={-1}
+            aria-labelledby="chon-ve"
+            aria-describedby={errors.tickets ? errorIdOf("tickets") : undefined}
+            className={cn(
+              "mt-5 divide-y divide-hairline rounded-2xl outline-none",
+              errors.tickets && "ring-1 ring-error/60",
+            )}
+          >
             {event.ticketTypes.map((ticket) => {
               const quantity = quantities[ticket.id] ?? 0;
               const max = ticket.availability.seatsLeft
@@ -328,7 +388,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
                 : ticket.maxPerOrder;
               const soldOut = ticket.availability.soldOut;
               return (
-                <li key={ticket.id} className="flex items-center justify-between gap-4 py-4">
+                <li key={ticket.id} className="flex items-center justify-between gap-4 px-1 py-4">
                   <div className="min-w-0">
                     <p className="font-semibold text-deep-blue">{ticket.name}</p>
                     <p className="text-[13px] text-charcoal/65">
@@ -371,9 +431,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
             })}
           </ul>
           {errors.tickets ? (
-            <p role="alert" className="mt-2 text-xs text-deep-blue">
-              {errors.tickets}
-            </p>
+            <FieldError id={errorIdOf("tickets")} message={errors.tickets} />
           ) : null}
         </section>
 
@@ -394,39 +452,54 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
           ) : null}
           <TextField
             tone="light"
+            id={fieldId("fullName")}
             label={t.checkout.fullName}
             name="fullName"
             autoComplete="name"
+            required
             placeholder={t.checkout.fullNamePlaceholder}
             value={buyer.fullName}
-            onChange={(e) => setBuyer({ ...buyer, fullName: e.target.value })}
+            onChange={(e) => {
+              touched("fullName");
+              setBuyer({ ...buyer, fullName: e.target.value });
+            }}
             error={errors.fullName}
             disabled={busy}
           />
           <div className="grid gap-5 sm:grid-cols-2">
             <TextField
               tone="light"
+              id={fieldId("email")}
               label={t.checkout.email}
               name="email"
               type="email"
               inputMode="email"
               autoComplete="email"
+              required
               placeholder={t.checkout.emailPlaceholder}
               value={buyer.email}
-              onChange={(e) => setBuyer({ ...buyer, email: e.target.value })}
+              onChange={(e) => {
+                touched("email");
+                setBuyer({ ...buyer, email: e.target.value });
+              }}
               error={errors.email}
               disabled={busy}
             />
             <TextField
               tone="light"
+              id={fieldId("phone")}
               label={t.checkout.phone}
               name="phone"
               type="tel"
               inputMode="tel"
               autoComplete="tel"
+              required
               placeholder={t.checkout.phonePlaceholder}
               value={buyer.phone}
-              onChange={(e) => setBuyer({ ...buyer, phone: e.target.value })}
+              onChange={(e) => {
+                touched("phone");
+                setBuyer({ ...buyer, phone: e.target.value });
+              }}
               error={errors.phone}
               disabled={busy}
             />
@@ -446,19 +519,24 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
                 ? question.label
                 : `${question.label} ${t.checkout.optional}`;
               const value = answers[question.id];
-              const set = (next: AnswerValue) =>
+              const error = errors[question.id];
+              const set = (next: AnswerValue) => {
+                touched(question.id);
                 setAnswers((current) => ({ ...current, [question.id]: next }));
+              };
               if (question.type === "short_text") {
                 return (
                   <TextField
                     key={question.id}
                     tone="light"
+                    id={fieldId(question.id)}
                     label={label}
+                    required={question.required}
                     hint={question.description || undefined}
                     value={typeof value === "string" ? value : ""}
                     maxLength={ORDER_LIMITS.answerTextMax}
                     onChange={(e) => set(e.target.value)}
-                    error={errors[question.id]}
+                    error={error}
                     disabled={busy}
                   />
                 );
@@ -468,13 +546,15 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
                   <TextareaField
                     key={question.id}
                     tone="light"
+                    id={fieldId(question.id)}
                     rows={3}
                     label={label}
+                    required={question.required}
                     hint={question.description || undefined}
                     value={typeof value === "string" ? value : ""}
                     maxLength={ORDER_LIMITS.answerTextMax}
                     onChange={(e) => set(e.target.value)}
-                    error={errors[question.id]}
+                    error={error}
                     disabled={busy}
                   />
                 );
@@ -484,7 +564,9 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
                   <SelectField
                     key={question.id}
                     tone="light"
+                    id={fieldId(question.id)}
                     label={label}
+                    required={question.required}
                     hint={question.description || undefined}
                     value={typeof value === "string" ? value : ""}
                     onChange={(e) => set(e.target.value)}
@@ -495,23 +577,49 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
                         label: option.label,
                       })),
                     ]}
-                    error={errors[question.id]}
+                    error={error}
                     disabled={busy}
                   />
                 );
               }
               const multiple = question.type === "multiple_choice";
               const picked = Array.isArray(value) ? value : value ? [value] : [];
+              const legendId = `${fieldId(question.id)}-legend`;
+              const descriptionId = `${fieldId(question.id)}-description`;
               return (
-                <fieldset key={question.id} className="space-y-2">
-                  <legend className="mb-2 text-[13px] font-semibold text-deep-blue/80">
+                <fieldset
+                  key={question.id}
+                  role={multiple ? "group" : "radiogroup"}
+                  aria-labelledby={legendId}
+                  aria-required={!multiple && question.required ? true : undefined}
+                  aria-invalid={error ? true : undefined}
+                  aria-describedby={
+                    error
+                      ? errorIdOf(question.id)
+                      : question.description
+                        ? descriptionId
+                        : undefined
+                  }
+                  className="space-y-2"
+                >
+                  <legend
+                    id={legendId}
+                    className="mb-2 text-[13px] font-semibold text-deep-blue/80"
+                  >
                     {label}
+                    {question.required ? (
+                      <span aria-hidden="true" className="ml-0.5 text-error">
+                        *
+                      </span>
+                    ) : null}
                   </legend>
                   {question.description ? (
-                    <p className="text-[12px] text-charcoal/60">{question.description}</p>
+                    <p id={descriptionId} className="text-[12px] text-charcoal/60">
+                      {question.description}
+                    </p>
                   ) : null}
                   <div className="flex flex-wrap gap-2">
-                    {question.options.map((option) => {
+                    {question.options.map((option, index) => {
                       const checked = picked.includes(option.id);
                       return (
                         <label
@@ -520,10 +628,13 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
                             "cursor-pointer rounded-full border px-4 py-2 text-[13px] transition-colors has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-emerald-brand/40",
                             checked
                               ? "border-emerald-brand bg-mint-mist text-deep-blue"
-                              : "border-hairline text-charcoal/80 hover:border-emerald-brand",
+                              : error
+                                ? "border-error/60 text-charcoal/80 hover:border-emerald-brand"
+                                : "border-hairline text-charcoal/80 hover:border-emerald-brand",
                           )}
                         >
                           <input
+                            id={index === 0 ? fieldId(question.id) : undefined}
                             type={multiple ? "checkbox" : "radio"}
                             name={`q-${question.id}`}
                             className="sr-only"
@@ -544,11 +655,7 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
                       );
                     })}
                   </div>
-                  {errors[question.id] ? (
-                    <p role="alert" className="text-xs text-deep-blue">
-                      {errors[question.id]}
-                    </p>
-                  ) : null}
+                  {error ? <FieldError id={errorIdOf(question.id)} message={error} /> : null}
                 </fieldset>
               );
             })}
@@ -574,35 +681,59 @@ export function CheckoutForm({ event, member, turnstileSiteKey }: CheckoutFormPr
           />
           <CheckboxField
             tone="light"
+            id={fieldId("dataConsent")}
             label={t.checkout.dataConsent}
+            required
             checked={consents.data}
-            onChange={(e) => setConsents({ ...consents, data: e.target.checked })}
+            onChange={(e) => {
+              touched("dataConsent");
+              setConsents({ ...consents, data: e.target.checked });
+            }}
             error={errors.dataConsent}
           />
           {safetyAcknowledgementRequired ? (
             <CheckboxField
               tone="light"
+              id={fieldId("safety")}
               label={t.checkout.safety}
+              required
               checked={consents.safety}
-              onChange={(e) => setConsents({ ...consents, safety: e.target.checked })}
+              onChange={(e) => {
+                touched("safety");
+                setConsents({ ...consents, safety: e.target.checked });
+              }}
               error={errors.safety}
             />
           ) : null}
           {guardianConfirmationRequired ? (
             <CheckboxField
               tone="light"
+              id={fieldId("guardian")}
               label={t.checkout.guardian}
+              required
               checked={consents.guardian}
-              onChange={(e) => setConsents({ ...consents, guardian: e.target.checked })}
+              onChange={(e) => {
+                touched("guardian");
+                setConsents({ ...consents, guardian: e.target.checked });
+              }}
               error={errors.guardian}
             />
           ) : null}
         </section>
 
-        <TurnstileWidget siteKey={turnstileSiteKey} />
-        <FormAlert tone="error" message={alert} />
-        <Button type="submit" disabled={busy} className="w-full disabled:opacity-70">
-          {busy ? t.checkout.submitting : t.checkout.submit}
+        <TurnstileWidget siteKey={turnstileSiteKey} resetSignal={turnstileReset} />
+        <FormErrorNote
+          announcement={invalidFields.length > 0 ? f.announce(invalidFields.length) : null}
+          message={invalidFields.length > 0 ? f.aboveSubmit(invalidFields.length) : null}
+        />
+        <FailureAlert failure={failure} />
+        <Button
+          type="submit"
+          disabled={busy}
+          aria-busy={busy}
+          className="w-full disabled:opacity-70"
+        >
+          <BusyLabel busy={busy} idle={t.checkout.submit} sending={t.checkout.submitting} />
         </Button>
       </form>
       {summary}

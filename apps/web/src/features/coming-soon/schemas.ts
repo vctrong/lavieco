@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import "@/shared/zod-vi";
+
 import { TEXT } from "./constants/text";
 
 const errors = TEXT.vi.errors;

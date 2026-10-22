@@ -16,13 +16,11 @@ import type { CheckoutResult } from "../types";
 export async function cancelOrder(token: unknown): Promise<CheckoutResult<{ order: OrderView }>> {
   const parsed = orderTokenSchema.safeParse(token);
   if (!parsed.success) return { status: "error", reason: "invalid_state" };
+  const id = await requestId();
   try {
-    return {
-      status: "ok",
-      order: await programClient().cancelOrderByLink(parsed.data, await requestId()),
-    };
+    return { status: "ok", order: await programClient().cancelOrderByLink(parsed.data, id) };
   } catch (error) {
-    return toCheckoutError(error, "order.cancel");
+    return toCheckoutError(error, "order.cancel", id);
   }
 }
 
@@ -35,12 +33,10 @@ export async function reconcileOrder(
 ): Promise<CheckoutResult<{ order: OrderView }>> {
   const parsed = orderTokenSchema.safeParse(token);
   if (!parsed.success) return { status: "error", reason: "invalid_state" };
+  const id = await requestId();
   try {
-    return {
-      status: "ok",
-      order: await programClient().reconcileOrderByLink(parsed.data, await requestId()),
-    };
+    return { status: "ok", order: await programClient().reconcileOrderByLink(parsed.data, id) };
   } catch (error) {
-    return toCheckoutError(error, "order.reconcile");
+    return toCheckoutError(error, "order.reconcile", id);
   }
 }
