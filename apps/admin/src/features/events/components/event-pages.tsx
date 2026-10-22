@@ -61,7 +61,12 @@ export function EditEventPage({
         intro={formatRange(event.startAt, event.endAt)}
         back={<BackLink href="/events" label={t.editor.backToList} />}
       />
-      <EventEditor event={event} types={types} canWrite={can(staff, "program:write")} />
+      <EventEditor
+        event={event}
+        types={types}
+        canWrite={can(staff, "program:write")}
+        canApprove={can(staff, "impact:approve")}
+      />
     </div>
   );
 }

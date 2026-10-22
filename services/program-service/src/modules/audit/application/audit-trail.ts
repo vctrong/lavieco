@@ -7,7 +7,8 @@ import type { Role } from "@lavieco/shared/permissions";
 export const AUDIT_RECORD_JOB = "audit.record";
 
 /** Sensitive actions of program-service (docs/02 §9.7). `<object>.<action>`. */
-export type ProgramAuditAction = "registration.export" | "order.refund";
+export type ProgramAuditAction =
+  "registration.export" | "order.refund" | "event.cancel" | "event.attendance_approve";
 
 export type AuditEntry = {
   action: ProgramAuditAction;

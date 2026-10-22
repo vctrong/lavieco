@@ -5,12 +5,13 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { FiAlertOctagon, FiCamera, FiCameraOff, FiCheckCircle, FiClock } from "react-icons/fi";
 
 import type { CheckinResponse, CheckinStats } from "@lavieco/shared/events";
-import { Button, TextField, cn } from "@lavieco/ui";
+import { Button, cn, FormAlert, TextField } from "@lavieco/ui";
 
 import { checkIn } from "../actions/checkin";
 import { TEXT } from "../constants/text";
 import { formatTime, normaliseTicketCode } from "../utils/format";
-import { FormAlert } from "./form-alert";
+import { callAction } from "@/shared/call-action";
+import { failureText } from "../utils/failure-text";
 
 /** Native detector (Android Chrome, recent Safari); absent elsewhere, then jsQR decodes. */
 type NativeDetector = { detect: (source: CanvasImageSource) => Promise<{ rawValue: string }[]> };
@@ -58,13 +59,13 @@ export function CheckinScanner({
       busyRef.current = true;
       setChecking(true);
       setAlert(null);
-      const response = await checkIn({ eventId, ...input }).catch(() => null);
+      const response = await callAction(() => checkIn({ eventId, ...input }));
       setChecking(false);
-      if (response?.status === "ok") {
+      if (response.status === "ok") {
         setResult(response.data);
         setStats(response.data.stats);
-      } else if (response?.status === "error") {
-        setAlert(TEXT.vi.errors[response.reason]);
+      } else if (response.status === "error") {
+        setAlert(failureText(response));
         busyRef.current = false;
       } else {
         setResult({ result: "invalid", ticket: null, stats });

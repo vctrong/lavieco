@@ -3,11 +3,10 @@
 import { useState, type FormEvent } from "react";
 import { FiDownload, FiShield } from "react-icons/fi";
 
-import { Button, CheckboxField, TextField } from "@lavieco/ui";
+import { Button, CheckboxField, FormAlert, TextField } from "@lavieco/ui";
 
 import { TEXT } from "../constants/text";
 import type { TicketingFailure } from "../types";
-import { FormAlert } from "./form-alert";
 
 /**
  * Excel export with step-up (ADR-0017, ADR-0021): the TOTP code goes with the request to

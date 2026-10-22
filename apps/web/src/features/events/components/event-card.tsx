@@ -1,112 +1,85 @@
 import Link from "next/link";
-import { FiArrowRight, FiCalendar, FiMapPin, FiVideo } from "react-icons/fi";
+import { FiArrowRight, FiClock, FiMapPin, FiVideo } from "react-icons/fi";
 
-import type { PublicAvailability, PublicEventCard } from "@lavieco/shared/events";
-import { cn } from "@lavieco/ui";
+import type { PublicEventCard } from "@lavieco/shared/events";
 
-import { EVENTS_PATH } from "../constants/config";
+import { eventPath } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { formatSchedule, formatVnd } from "../utils/format";
-import { CoverArt } from "./cover-art";
+import { dateTile, formatTimeRange, priceText } from "../utils/format";
+import { EventImage } from "./event-image";
+import { StateBadge } from "./state-badge";
 
-/** "Còn X chỗ" only for few seats, "Hết chỗ" at zero, nothing for unlimited events. */
-export function AvailabilityTag({
-  availability,
-  className,
-}: {
-  availability: PublicAvailability;
-  className?: string;
-}) {
-  const t = TEXT.vi.card;
-  if (availability.soldOut) {
-    return (
-      <span
-        className={cn(
-          "rounded-full bg-deep-blue px-2.5 py-1 text-[11px] font-semibold text-soft-white",
-          className,
-        )}
-      >
-        {t.soldOut}
-      </span>
-    );
-  }
-  if (availability.seatsLeft === null) return null;
-  return (
-    <span
-      className={cn(
-        "rounded-full bg-canary px-2.5 py-1 text-[11px] font-semibold text-deep-blue",
-        className,
-      )}
-    >
-      {t.seatsLeft(availability.seatsLeft)}
-    </span>
-  );
-}
+export const cardPrice = (event: Pick<PublicEventCard, "price">) =>
+  priceText(event.price, { free: TEXT.vi.card.free, from: TEXT.vi.card.priceFrom });
 
-export function priceLabel(event: Pick<PublicEventCard, "pricing">): string | null {
-  const t = TEXT.vi.card;
-  if (event.pricing.isFree) return t.free;
-  return event.pricing.priceFrom === null ? null : t.priceFrom(formatVnd(event.pricing.priceFrom));
-}
-
+/**
+ * One programme in the calendar: poster 4:5 with the date tile and the state badge,
+ * then type, title, time, place and price. The whole card is one link (the title).
+ */
 export function EventCard({ event }: { event: PublicEventCard }) {
   const t = TEXT.vi.card;
+  const tile = dateTile(event.startAt);
   const Place = event.format === "online" ? FiVideo : FiMapPin;
-  const price = priceLabel(event);
-  const statusNote =
-    event.status === "closed" ? t.closed : event.status === "ended" ? t.ended : null;
+  const price = cardPrice(event);
   return (
-    <article className="group relative flex h-full flex-col rounded-arch-sm border border-hairline bg-white p-3 shadow-ambient transition-shadow duration-300 hover:shadow-ambient-hover motion-reduce:transition-none">
+    <article className="group relative flex h-full flex-col rounded-pedestal border border-hairline bg-white p-3 shadow-ambient transition-shadow duration-300 hover:shadow-ambient-hover focus-within:shadow-ambient-hover motion-reduce:transition-none">
       <div className="relative">
-        <CoverArt
+        <EventImage
           title={event.title}
-          cover={event.cover}
-          label={event.type?.name.vi}
-          sizes="(min-width: 1024px) 30vw, (min-width: 640px) 45vw, 100vw"
-          radius="arch-sm"
-          className="aspect-[4/3.4] w-full"
+          image={event.cover}
+          sizes="(min-width: 1024px) 26vw, (min-width: 640px) 44vw, 92vw"
+          className="aspect-[4/5] w-full rounded-2xl"
         />
-        <AvailabilityTag availability={event.availability} className="absolute right-3 top-3" />
-      </div>
-      <div className="flex flex-1 flex-col px-3 pb-3 pt-5">
-        <p className="mb-2 text-[11px] font-semibold uppercase tracking-museum text-deep-blue/60">
-          {event.type?.name.vi}
-          {event.format === "online" ? ` · ${t.online}` : null}
+        <p className="absolute left-3 top-3 flex min-w-12 flex-col items-center rounded-xl bg-white/95 px-2 py-1.5 text-deep-blue shadow-ambient">
+          <span className="font-display text-xl leading-none">{tile.day}</span>
+          <span className="mt-0.5 text-meta uppercase text-charcoal/70">{tile.weekday}</span>
         </p>
-        <h3 className="font-display text-xl leading-snug text-deep-blue">
+        <StateBadge
+          state={event.state}
+          availability={event.availability}
+          className="absolute right-3 top-3"
+        />
+      </div>
+      <div className="flex flex-1 flex-col px-2 pb-2 pt-4">
+        {event.type ? (
+          <p className="mb-1.5 text-label-caps uppercase text-emerald-ink">{event.type.name.vi}</p>
+        ) : null}
+        <h3 className="font-display text-title-editorial text-deep-blue">
           <Link
-            href={`${EVENTS_PATH}/${event.slug}`}
-            className="after:absolute after:inset-0 focus-visible:outline-none"
+            href={eventPath(event.slug)}
+            className="after:absolute after:inset-0 after:rounded-pedestal focus-visible:outline-none focus-visible:after:outline focus-visible:after:outline-2 focus-visible:after:outline-offset-2 focus-visible:after:outline-emerald-brand"
           >
             {event.title}
           </Link>
         </h3>
-        {event.summary ? (
-          <p className="mt-2 line-clamp-2 text-[13.5px] leading-relaxed text-charcoal/70">
-            {event.summary}
-          </p>
-        ) : null}
-        <div className="mb-5 mt-4 space-y-1.5 text-[12.5px] text-charcoal/75">
+        <div className="mb-4 mt-3 space-y-1.5 text-body-sm text-charcoal/75">
           <p className="flex items-start gap-2">
-            <FiCalendar
-              aria-hidden="true"
-              size={13}
-              className="mt-0.5 shrink-0 text-emerald-brand"
-            />
-            {formatSchedule(event.startAt, event.endAt)}
+            <FiClock aria-hidden="true" size={13} className="mt-1 shrink-0 text-emerald-ink" />
+            {formatTimeRange(event.startAt, event.endAt)}
           </p>
           {event.venue || event.format === "online" ? (
             <p className="flex items-start gap-2">
-              <Place aria-hidden="true" size={13} className="mt-0.5 shrink-0 text-emerald-brand" />
-              {event.format === "online" ? t.online : event.venue?.name}
+              <Place aria-hidden="true" size={13} className="mt-1 shrink-0 text-emerald-ink" />
+              <span className="line-clamp-1">
+                {event.format === "online" ? t.online : event.venue?.name}
+              </span>
             </p>
           ) : null}
         </div>
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-hairline pt-4">
-          <span className="font-display text-lg text-deep-blue">{statusNote ?? price}</span>
-          <span className="flex items-center gap-1 text-[12.5px] font-semibold text-deep-blue transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none">
-            {t.details}
-            <FiArrowRight aria-hidden="true" size={13} />
+        <div className="mt-auto flex items-end justify-between gap-3 border-t border-hairline pt-3">
+          {price ? (
+            <p>
+              <span className="block text-meta uppercase text-charcoal/60">{t.fee}</span>
+              <span className="font-display text-lg text-deep-blue">{price}</span>
+            </p>
+          ) : (
+            <span />
+          )}
+          <span
+            aria-hidden="true"
+            className="flex size-9 items-center justify-center rounded-full border border-hairline text-deep-blue transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none"
+          >
+            <FiArrowRight size={15} />
           </span>
         </div>
       </div>

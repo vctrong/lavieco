@@ -32,6 +32,7 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "order:refund",
     "registration:export",
     "checkin:perform",
+    "impact:approve",
   ],
   content_editor: [
     "content:read",

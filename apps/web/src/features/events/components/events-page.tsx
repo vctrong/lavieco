@@ -1,175 +1,179 @@
 import Link from "next/link";
-import { FiArrowRight, FiCalendar, FiMapPin, FiVideo } from "react-icons/fi";
+import { FiAlertCircle, FiArrowRight } from "react-icons/fi";
 
 import type { PublicEventCard } from "@lavieco/shared/events";
-import { Button, Container, Eyebrow, PearlDot, SectionHeader } from "@lavieco/ui";
+import { Button, Container, PearlDot } from "@lavieco/ui";
 
-import { EVENTS_PATH, PAST_PAGE_SIZE, UPCOMING_PAGE_SIZE } from "../constants/config";
+import {
+  EVENTS_PATH,
+  FEATURED_STATES,
+  MONTH_OPTIONS,
+  PAST_PAGE_SIZE,
+  UPCOMING_PAGE_SIZE,
+} from "../constants/config";
 import { TEXT } from "../constants/text";
 import { listEvents, listEventTypes, type EventFilters as Filters } from "../server/events";
-import { formatSchedule } from "../utils/format";
-import { AvailabilityTag, EventCard, priceLabel } from "./event-card";
-import { CoverArt } from "./cover-art";
-import { EventFilters } from "./event-filters";
+import { groupByMonth, monthParts, upcomingMonths } from "../utils/format";
+import { EventCard } from "./event-card";
+import { EventFilters, type ListFilters } from "./event-filters";
+import { FeaturedBanner } from "./featured-banner";
 import { LadderStrip } from "./ladder-strip";
+import { PastStrip } from "./past-strip";
 
-function Featured({ event }: { event: PublicEventCard }) {
-  const t = TEXT.vi;
-  const Place = event.format === "online" ? FiVideo : FiMapPin;
+function Hero() {
+  const t = TEXT.vi.hero;
   return (
-    <article className="grid overflow-hidden rounded-arch-sm border border-hairline bg-white shadow-gallery md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-      <div className="p-4 md:p-5">
-        <CoverArt
-          title={event.title}
-          cover={event.cover}
-          label={event.type?.name.vi}
-          sizes="(min-width: 768px) 50vw, 100vw"
-          className="aspect-[5/4] w-full md:h-full"
-        />
-      </div>
-      <div className="flex flex-col justify-center gap-4 p-6 md:p-10">
-        <div className="flex flex-wrap items-center gap-2">
-          <span className="flex items-center gap-1.5 rounded-full bg-canary/40 px-3 py-1 text-[11px] font-semibold uppercase tracking-museum text-deep-blue">
-            <PearlDot size="sm" tone="emerald" />
-            {t.featured.label}
-          </span>
-          <AvailabilityTag availability={event.availability} />
-        </div>
-        <h2 className="font-display text-3xl leading-tight text-deep-blue md:text-4xl">
-          {event.title}
-        </h2>
-        {event.summary ? (
-          <p className="text-[15px] leading-relaxed text-charcoal/75">{event.summary}</p>
-        ) : null}
-        <div className="space-y-2 text-[14px] text-charcoal/80">
-          <p className="flex items-start gap-2">
-            <FiCalendar
-              aria-hidden="true"
-              size={15}
-              className="mt-0.5 shrink-0 text-emerald-brand"
-            />
-            {formatSchedule(event.startAt, event.endAt)}
-          </p>
-          <p className="flex items-start gap-2">
-            <Place aria-hidden="true" size={15} className="mt-0.5 shrink-0 text-emerald-brand" />
-            {event.format === "online"
-              ? t.card.online
-              : event.venue
-                ? `${event.venue.name}, ${event.venue.address}`
-                : null}
-          </p>
-        </div>
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-4 border-t border-hairline pt-5">
-          <span className="font-display text-2xl text-deep-blue">{priceLabel(event)}</span>
-          <Button as={Link} href={`${EVENTS_PATH}/${event.slug}`}>
-            {t.featured.cta}
-            <FiArrowRight aria-hidden="true" size={15} />
-          </Button>
-        </div>
-      </div>
-    </article>
+    <header className="mx-auto max-w-2xl text-center">
+      <p className="inline-flex items-center gap-2 rounded-full border border-hairline bg-white px-3 py-1 text-label-caps uppercase text-emerald-ink">
+        <PearlDot size="sm" tone="emerald" />
+        {t.eyebrow}
+      </p>
+      <h1 className="mt-5 font-display text-display-hero-mobile text-deep-blue md:text-display-hero">
+        {t.title} <em className="text-emerald-ink">{t.titleAccent}</em>
+      </h1>
+      <p className="mt-5 text-body-lg text-charcoal/75">{t.intro}</p>
+    </header>
+  );
+}
+
+function MonthGroups({ events }: { events: PublicEventCard[] }) {
+  const t = TEXT.vi.list;
+  return (
+    <div className="space-y-14">
+      {groupByMonth(events).map((group) => {
+        const { month, year } = monthParts(group.month);
+        const headingId = `thang-${group.month}`;
+        return (
+          <section key={group.month} aria-labelledby={headingId}>
+            <div className="mb-6 flex items-center gap-3 border-b border-hairline pb-3">
+              <h2
+                id={headingId}
+                className="font-display text-headline-sm text-deep-blue md:text-headline-md"
+              >
+                {t.month(month, year)}
+              </h2>
+              <span className="rounded-full bg-mint-mist px-2.5 py-0.5 text-meta text-charcoal/75">
+                {t.monthCount(group.events.length)}
+              </span>
+            </div>
+            <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+              {group.events.map((event) => (
+                <li key={event.slug}>
+                  <EventCard event={event} />
+                </li>
+              ))}
+            </ul>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+function Notice({
+  title,
+  hint,
+  action,
+}: {
+  title: string;
+  hint: string;
+  action?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-pedestal border border-dashed border-hairline px-6 py-14 text-center">
+      <p className="font-display text-title-editorial text-deep-blue">{title}</p>
+      <p className="mx-auto mt-2 max-w-md text-body-md text-charcoal/70">{hint}</p>
+      {action ? <div className="mt-6 flex justify-center">{action}</div> : null}
+    </div>
   );
 }
 
 /**
- * `/chuong-trinh`: the event list (docs/05 decision), with the four value steps in one
- * strip on top, filters, upcoming events and the archive of past events.
+ * `/chuong-trinh`: compact hero, the featured banner, one sticky filter row, the
+ * calendar grouped by month (Vietnam time), "Đã diễn ra" and the four value steps.
+ * Badges and prices come computed from program-service; nothing is guessed here.
  */
 export async function EventsPage({ filters }: { filters: Filters }) {
-  const t = TEXT.vi;
-  const filtered = Object.values(filters).some(Boolean);
+  const t = TEXT.vi.list;
+  const listFilters: ListFilters = {
+    typeId: filters.typeId,
+    format: filters.format,
+    free: filters.free,
+    month: filters.month,
+  };
+  const filtered = Object.values(listFilters).some(Boolean);
   const [upcoming, past, types] = await Promise.all([
     listEvents("upcoming", filters, UPCOMING_PAGE_SIZE),
     listEvents("past", {}, PAST_PAGE_SIZE),
     listEventTypes(),
   ]);
-  const featured = !filtered ? upcoming.items[0] : undefined;
-  const grid = featured ? upcoming.items.slice(1) : upcoming.items;
+  const items = upcoming.status === "ok" ? upcoming.page.items : [];
+  const featured =
+    !filtered && !filters.cursor
+      ? items.find((event) => (FEATURED_STATES as readonly string[]).includes(event.state))
+      : undefined;
+  const calendar = featured ? items.filter((event) => event !== featured) : items;
+  const nextCursor = upcoming.status === "ok" ? upcoming.page.nextCursor : null;
 
   return (
-    <>
-      <section className="bg-soft-white pt-dock-clearance">
-        <Container className="pb-12 pt-10 md:pt-16">
-          <Eyebrow className="mb-4 flex items-center gap-2">
-            <PearlDot size="sm" tone="emerald" />
-            {t.hero.eyebrow}
-          </Eyebrow>
-          <h1 className="max-w-3xl font-display text-5xl font-light leading-tight tracking-tight text-deep-blue md:text-7xl">
-            {t.hero.title} <em className="text-emerald-brand">{t.hero.titleAccent}</em>
-          </h1>
-          <p className="mt-6 max-w-2xl text-base leading-relaxed text-charcoal/75 md:text-lg">
-            {t.hero.intro}
-          </p>
-          <div className="mt-10">
-            <LadderStrip />
+    <div className="bg-soft-white pb-24 pt-dock-clearance">
+      <Container className="pt-10 md:pt-14">
+        <Hero />
+        {featured ? (
+          <div className="mt-12">
+            <FeaturedBanner event={featured} />
           </div>
-        </Container>
-      </section>
+        ) : null}
 
-      <section id="lich" className="scroll-mt-24 bg-soft-white pb-24">
-        <Container>
-          {featured ? (
-            <div className="mb-14">
-              <Featured event={featured} />
+        <section id="lich" aria-label={t.title} className="mt-14 scroll-mt-28">
+          <EventFilters
+            filters={listFilters}
+            types={types}
+            months={upcomingMonths(MONTH_OPTIONS)}
+            total={upcoming.status === "ok" ? upcoming.page.total : null}
+          />
+          {upcoming.status === "error" ? (
+            <div role="alert">
+              <Notice
+                title={t.error}
+                hint={t.errorHint}
+                action={
+                  <Button as={Link} href={EVENTS_PATH} variant="secondary">
+                    <FiAlertCircle aria-hidden="true" size={15} />
+                    {t.retry}
+                  </Button>
+                }
+              />
             </div>
-          ) : null}
-          <SectionHeader kicker={t.filters.label} title={t.list.title} className="mb-8" />
-          <EventFilters filters={filters} types={types} />
-          {grid.length > 0 ? (
-            <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {grid.map((event) => (
-                <li key={event.slug}>
-                  <EventCard event={event} />
-                </li>
-              ))}
-            </ul>
+          ) : calendar.length > 0 ? (
+            <MonthGroups events={calendar} />
           ) : featured ? null : (
-            <p className="rounded-3xl border border-dashed border-hairline px-6 py-14 text-center text-[15px] text-charcoal/65">
-              {t.list.empty}
-            </p>
+            <Notice title={t.empty} hint={t.emptyHint} />
           )}
-          {upcoming.nextCursor ? (
-            <div className="mt-10 flex justify-center">
+          {nextCursor ? (
+            <div className="mt-12 flex justify-center">
               <Button
                 as={Link}
                 variant="secondary"
                 href={`${EVENTS_PATH}?${new URLSearchParams({
                   ...Object.fromEntries(
-                    Object.entries(filters).filter(([, value]) => Boolean(value)),
+                    Object.entries(listFilters).filter((entry): entry is [string, string] =>
+                      Boolean(entry[1]),
+                    ),
                   ),
-                  cursor: upcoming.nextCursor,
+                  cursor: nextCursor,
                 }).toString()}#lich`}
               >
-                {t.list.more}
+                {t.more}
+                <FiArrowRight aria-hidden="true" size={15} />
               </Button>
             </div>
           ) : null}
-        </Container>
-      </section>
+        </section>
 
-      <section
-        aria-labelledby="da-dien-ra"
-        className="border-t border-hairline bg-mint-mist/50 py-24"
-      >
-        <Container>
-          <SectionHeader kicker={t.hero.eyebrow} title={t.list.pastTitle} className="mb-10">
-            <p id="da-dien-ra" className="mt-4 max-w-sm text-[14px] text-charcoal/70 md:mt-0">
-              {t.list.pastIntro}
-            </p>
-          </SectionHeader>
-          {past.items.length > 0 ? (
-            <ul className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {past.items.map((event) => (
-                <li key={event.slug}>
-                  <EventCard event={event} />
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="text-[14px] text-charcoal/65">{t.list.pastEmpty}</p>
-          )}
-        </Container>
-      </section>
-    </>
+        <PastStrip events={past.status === "ok" ? past.page.items : []} />
+        <LadderStrip />
+      </Container>
+    </div>
   );
 }

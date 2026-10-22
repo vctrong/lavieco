@@ -29,5 +29,6 @@ describe("eventShortcuts", () => {
     expect(keys({ ...published, status: "draft" }, staff)).toEqual([]);
     expect(keys({ ...published, kind: "past" }, staff)).toEqual([]);
     expect(keys({ ...published, status: "ended" }, staff)).toEqual(["registrations", "orders"]);
+    expect(keys({ ...published, status: "cancelled" }, staff)).toEqual(["registrations", "orders"]);
   });
 });

@@ -36,6 +36,12 @@ export const nextPreset = defineConfig([
     rules: { "no-restricted-syntax": restrictedSyntax(without("inlineSvg")) },
   },
   {
+    // JSON-LD (exception approved 22/10/2026, CLAUDE.md §8): one component, which takes
+    // an object and escapes < > & before writing the script. Nowhere else.
+    files: ["src/shared/components/json-ld.tsx"],
+    rules: { "react/no-danger": "off" },
+  },
+  {
     // The only places allowed to read process.env.
     files: ["src/lib/env.ts", "src/lib/env.public.ts"],
     rules: { "no-restricted-syntax": restrictedSyntax(without("processEnv")) },

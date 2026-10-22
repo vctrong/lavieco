@@ -6,6 +6,7 @@ import { isServiceProblem } from "@lavieco/api-clients";
 import {
   EVENT_CACHE_TAGS,
   EVENT_FORMATS,
+  type PublicEventCard,
   type PublicEventDetail,
   type PublicEventList,
   type PublicEventListQuery,
@@ -14,7 +15,7 @@ import {
 
 import { programClient, webLogger } from "@/lib/services";
 
-import { EVENTS_CACHE_SECONDS } from "../constants/config";
+import { EVENTS_CACHE_SECONDS, RELATED_COUNT } from "../constants/config";
 
 export type EventFilters = {
   typeId?: string;
@@ -24,11 +25,15 @@ export type EventFilters = {
   cursor?: string;
 };
 
+/** A list the page can render, or a failure it shows as such (never a fake empty list). */
+export type EventListResult = { status: "ok"; page: PublicEventList } | { status: "error" };
+
 const cacheOptions = (tags: string[]) => ({ tags, revalidate: EVENTS_CACHE_SECONDS });
 
 /**
  * Upcoming or past events. Cached under `program:events`; program-service asks for a
- * revalidation through `/api/revalidate` whenever a public event changes.
+ * revalidation through `/api/revalidate` whenever a public event changes. The badges
+ * depend on the time too (an event ends by itself), hence the short fallback lifetime.
  */
 const cachedList = unstable_cache(
   (query: Partial<PublicEventListQuery>) => programClient().listPublishedEvents(query),
@@ -62,19 +67,18 @@ export function toQuery(
   };
 }
 
-/** A failing service degrades to an empty list, never a broken page. */
 export async function listEvents(
   scope: "upcoming" | "past",
   filters: EventFilters,
   limit: number,
-): Promise<PublicEventList> {
+): Promise<EventListResult> {
   try {
-    return await cachedList(toQuery(scope, filters, limit));
+    return { status: "ok", page: await cachedList(toQuery(scope, filters, limit)) };
   } catch (error) {
     webLogger().warn("events list unavailable", {
       errorCode: isServiceProblem(error) ? error.code : "unavailable",
     });
-    return { items: [], nextCursor: null };
+    return { status: "error" };
   }
 }
 
@@ -99,6 +103,30 @@ export async function getEvent(slug: string): Promise<PublicEventDetail | null> 
     if (isServiceProblem(error) && (error.status === 404 || error.status === 400)) return null;
     throw error;
   }
+}
+
+/**
+ * "N người đã tham gia" of an ended event (checked-in tickets, or an approved count,
+ * BR-09). Optional on the page: a failure only hides the figure.
+ */
+export async function getAttendeeCount(slug: string): Promise<number | null> {
+  const cached = unstable_cache(
+    async () => (await programClient().getPublishedEventAttendance(slug)).attendeeCount,
+    ["program-event-attendance", slug],
+    cacheOptions([EVENT_CACHE_TAGS.list, EVENT_CACHE_TAGS.item(slug)]),
+  );
+  try {
+    return await cached();
+  } catch {
+    return null;
+  }
+}
+
+/** "Chương trình khác": the next upcoming events, this one excluded. */
+export async function listRelated(slug: string): Promise<PublicEventCard[]> {
+  const result = await listEvents("upcoming", {}, RELATED_COUNT + 1);
+  if (result.status === "error") return [];
+  return result.page.items.filter((event) => event.slug !== slug).slice(0, RELATED_COUNT);
 }
 
 /** Preview of any status behind a 10-minute token (D2). Never cached. */

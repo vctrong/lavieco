@@ -19,13 +19,14 @@ export async function callStaff<T>(
   context: string,
   run: (clients: Clients, token: string, requestId: string) => Promise<T>,
 ): Promise<ActionResult<T>> {
-  const { accessToken } = await readStaffSession();
-  if (!accessToken) return { status: "error", reason: "session_expired" };
+  const id = await requestId();
   try {
+    const { accessToken } = await readStaffSession();
+    if (!accessToken) return { status: "error", reason: "session_expired" };
     const clients = { program: programClient(), identity: identityClient() };
-    return { status: "ok", data: await run(clients, accessToken, await requestId()) };
+    return { status: "ok", data: await run(clients, accessToken, id) };
   } catch (error) {
-    return toFailure(error, context);
+    return toFailure(error, context, id);
   }
 }
 

@@ -2,9 +2,9 @@ import { z } from "zod";
 
 /**
  * Event lifecycle (docs/05, ADR-0014, BR-17): no second reviewer, unlike the
- * publishable content pattern. `ended` is final for a standard event.
+ * publishable content pattern. `ended` and `cancelled` are final for a standard event.
  */
-export const EVENT_STATUSES = ["draft", "published", "closed", "ended"] as const;
+export const EVENT_STATUSES = ["draft", "published", "closed", "ended", "cancelled"] as const;
 export const eventStatusSchema = z.enum(EVENT_STATUSES);
 export type EventStatus = z.infer<typeof eventStatusSchema>;
 
@@ -65,3 +65,39 @@ export type PublishBlocker = z.infer<typeof publishBlockerSchema>;
 export const PUBLISH_WARNINGS = ["online_url_missing", "summary_missing"] as const;
 export const publishWarningSchema = z.enum(PUBLISH_WARNINGS);
 export type PublishWarning = z.infer<typeof publishWarningSchema>;
+
+/**
+ * What a public page shows about an event, computed by program-service only (never
+ * guessed by a client): the badge, the main button and which booking parts appear.
+ */
+export const PUBLIC_EVENT_STATES = [
+  "upcoming_sale",
+  "open",
+  "few_left",
+  "sold_out",
+  "closed",
+  "online_link_pending",
+  "ended",
+  "cancelled",
+] as const;
+export const publicEventStateSchema = z.enum(PUBLIC_EVENT_STATES);
+export type PublicEventState = z.infer<typeof publicEventStateSchema>;
+
+/**
+ * Icons a "Bạn sẽ nhận" item can carry. Keys only: each app maps them to its own icon
+ * set (react-icons/fi), so stored data never names a library.
+ */
+export const BENEFIT_ICONS = [
+  "leaf",
+  "gift",
+  "award",
+  "camera",
+  "book",
+  "package",
+  "users",
+  "coffee",
+  "heart",
+  "tool",
+] as const;
+export const benefitIconSchema = z.enum(BENEFIT_ICONS);
+export type BenefitIcon = z.infer<typeof benefitIconSchema>;

@@ -5,6 +5,8 @@ import type {
   TicketStatus,
 } from "@lavieco/shared/events";
 
+import { FORM_TEXT } from "@/shared/constants/form-text";
+
 /** UI copy of orders, registrations and door check-in (docs/05 §5.6–5.8). */
 export const TEXT = {
   vi: {
@@ -183,7 +185,11 @@ export const TEXT = {
     } satisfies Record<PaymentOutcome, string>,
     free: "Miễn phí",
     errors: {
-      unavailable: "Không kết nối được máy chủ. Thử lại sau ít phút.",
+      // Shared wording of the failures every form can meet (src/shared/constants/form-text).
+      unavailable: FORM_TEXT.vi.failures.unavailable,
+      stale_version: FORM_TEXT.vi.failures.stale_version,
+      offline: FORM_TEXT.vi.failures.offline,
+      rate_limited: FORM_TEXT.vi.failures.rate_limited,
       session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang để đăng nhập lại.",
       forbidden: "Bạn không có quyền thực hiện thao tác này.",
       not_found: "Không tìm thấy dữ liệu.",

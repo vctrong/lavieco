@@ -1,132 +1,281 @@
-import Link from "next/link";
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useId, useRef, useTransition, type MouseEvent } from "react";
+import { FiSliders, FiX } from "react-icons/fi";
 
 import type { PublicEventType } from "@lavieco/shared/events";
 import { cn } from "@lavieco/ui";
 
 import { EVENTS_PATH } from "../constants/config";
 import { TEXT } from "../constants/text";
-import type { EventFilters } from "../server/events";
-import { monthLabel, upcomingMonths } from "../utils/format";
+import { monthLabel } from "../utils/format";
 
-function hrefWith(filters: EventFilters, changes: Partial<EventFilters>) {
+/** The filters as they are in the URL (shareable, back/forward restore them). */
+export type ListFilters = {
+  typeId?: string;
+  format?: string;
+  free?: string;
+  month?: string;
+};
+
+function hrefWith(filters: ListFilters, changes: Partial<ListFilters>) {
   const params = new URLSearchParams();
-  for (const [key, value] of Object.entries({ ...filters, cursor: undefined, ...changes })) {
+  // A new filter always starts from the first page (the cursor is dropped).
+  for (const [key, value] of Object.entries({ ...filters, ...changes })) {
     if (value) params.set(key, value);
   }
   const query = params.toString();
+  // Back to the calendar: the page above it changes height (no featured banner when filtered).
   return query ? `${EVENTS_PATH}?${query}#lich` : `${EVENTS_PATH}#lich`;
 }
 
-function Chip({ href, active, children }: { href: string; active: boolean; children: string }) {
+type ControlsProps = {
+  filters: ListFilters;
+  types: PublicEventType[];
+  months: string[];
+  layout: "bar" | "sheet";
+  onChange: (changes: Partial<ListFilters>) => void;
+};
+
+const selectClass =
+  "rounded-full border border-hairline bg-white py-2 pl-4 pr-8 text-body-sm text-charcoal focus:border-emerald-brand focus:outline-none";
+
+/**
+ * The controls themselves. Inside a GET form, so without JavaScript the type buttons
+ * submit and a "Lọc" button appears; with JavaScript every change applies at once.
+ */
+function FilterControls({ filters, types, months, layout, onChange }: ControlsProps) {
+  const t = TEXT.vi.filters;
+  const id = useId();
+  const pick = (event: MouseEvent<HTMLButtonElement>, typeId: string) => {
+    event.preventDefault();
+    onChange({ typeId: typeId || undefined });
+  };
+  const timeLabel = (month: string, index: number) =>
+    index === 0 ? t.thisMonth : index === 1 ? t.nextMonth : monthLabel(month);
+  const sheet = layout === "sheet";
+
   return (
-    <Link
-      href={href}
-      aria-current={active ? "true" : undefined}
-      scroll={false}
-      className={cn(
-        "rounded-full px-4 py-2 text-[13px] transition-colors motion-reduce:transition-none",
-        active
-          ? "bg-emerald-brand font-semibold text-deep-blue shadow-emerald-cta-sm"
-          : "border border-hairline bg-white text-charcoal/75 hover:bg-mint-mist hover:text-deep-blue",
-      )}
+    <form
+      method="get"
+      action={EVENTS_PATH}
+      className={cn("flex gap-3", sheet ? "flex-col" : "flex-wrap items-center")}
     >
-      {children}
-    </Link>
+      <div
+        role="group"
+        aria-label={TEXT.vi.filters.label}
+        className={cn(
+          "flex gap-1 rounded-full bg-mint-mist p-1",
+          sheet ? "flex-wrap" : "overflow-x-auto",
+        )}
+      >
+        {[
+          { id: "", name: t.all },
+          ...types.map((type) => ({ id: type.id, name: type.name.vi })),
+        ].map((option) => {
+          const active = (filters.typeId ?? "") === option.id;
+          return (
+            <button
+              key={option.id || "all"}
+              type="submit"
+              name="typeId"
+              value={option.id}
+              aria-pressed={active}
+              onClick={(event) => pick(event, option.id)}
+              className={cn(
+                "flex shrink-0 items-center gap-1.5 rounded-full px-4 py-1.5 text-body-sm transition-colors motion-reduce:transition-none",
+                active
+                  ? "bg-emerald-brand font-semibold text-charcoal"
+                  : "text-charcoal/80 hover:bg-white",
+              )}
+            >
+              {active ? (
+                <span aria-hidden="true" className="size-1.5 rounded-full bg-canary" />
+              ) : null}
+              {option.name}
+            </button>
+          );
+        })}
+      </div>
+
+      <label htmlFor={`${id}-format`} className="sr-only">
+        {t.format}
+      </label>
+      <select
+        id={`${id}-format`}
+        name="format"
+        value={filters.format ?? ""}
+        onChange={(event) => onChange({ format: event.target.value || undefined })}
+        className={selectClass}
+      >
+        <option value="">{t.anyFormat}</option>
+        <option value="offline">{t.offline}</option>
+        <option value="online">{t.online}</option>
+      </select>
+
+      <label htmlFor={`${id}-month`} className="sr-only">
+        {t.time}
+      </label>
+      <select
+        id={`${id}-month`}
+        name="month"
+        value={filters.month ?? ""}
+        onChange={(event) => onChange({ month: event.target.value || undefined })}
+        className={selectClass}
+      >
+        <option value="">{t.anyTime}</option>
+        {months.map((month, index) => (
+          <option key={month} value={month}>
+            {timeLabel(month, index)}
+          </option>
+        ))}
+      </select>
+
+      <label className="flex cursor-pointer items-center gap-2 text-body-sm text-charcoal">
+        <input
+          type="checkbox"
+          name="free"
+          value="true"
+          checked={filters.free === "true"}
+          onChange={(event) => onChange({ free: event.target.checked ? "true" : undefined })}
+          className="peer sr-only"
+        />
+        <span
+          aria-hidden="true"
+          className="relative h-5 w-9 rounded-full bg-deep-blue/20 transition-colors after:absolute after:left-0.5 after:top-0.5 after:size-4 after:rounded-full after:bg-white after:transition-transform peer-checked:bg-emerald-brand peer-checked:after:translate-x-4 peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-emerald-brand motion-reduce:transition-none motion-reduce:after:transition-none"
+        />
+        {t.free}
+      </label>
+
+      <noscript>
+        <button
+          type="submit"
+          className="rounded-full bg-deep-blue px-4 py-2 text-body-sm font-semibold text-soft-white"
+        >
+          {t.apply}
+        </button>
+      </noscript>
+    </form>
   );
 }
 
 /**
- * Filters as plain links and a GET form: they work without JavaScript and keep
- * the URL shareable (type, online/offline, free, month).
+ * One row that sticks under the navigation while scrolling: type (segmented), format,
+ * time, free only, and the number of results. Every change updates the URL at once
+ * (`router.push`, so back/forward walk through the filters); on phones the controls
+ * live in a "Bộ lọc" dialog.
  */
 export function EventFilters({
   filters,
   types,
+  months,
+  total,
 }: {
-  filters: EventFilters;
+  filters: ListFilters;
   types: PublicEventType[];
+  months: string[];
+  total: number | null;
 }) {
   const t = TEXT.vi.filters;
-  const months = upcomingMonths(6);
+  const router = useRouter();
+  const dialog = useRef<HTMLDialogElement>(null);
+  const [pending, startTransition] = useTransition();
+  const active = Object.values(filters).filter(Boolean).length;
+
+  const change = (changes: Partial<ListFilters>) =>
+    startTransition(() => router.push(hrefWith(filters, changes)));
+
+  const count =
+    total === null ? null : (
+      <p
+        aria-live="polite"
+        className={cn(
+          "flex shrink-0 items-center gap-2 text-label-caps uppercase text-emerald-ink",
+          pending && "opacity-60",
+        )}
+      >
+        <span aria-hidden="true" className="size-1.5 rounded-full bg-emerald-brand" />
+        {t.count(total)}
+      </p>
+    );
+
   return (
-    <nav
-      aria-label={t.label}
-      className="mb-8 flex flex-col gap-4 rounded-3xl bg-mint-mist/60 p-4 md:p-5"
-    >
-      <div className="flex flex-wrap gap-2">
-        <Chip href={hrefWith(filters, { typeId: undefined })} active={!filters.typeId}>
-          {t.all}
-        </Chip>
-        {types.map((type) => (
-          <Chip
-            key={type.id}
-            href={hrefWith(filters, { typeId: type.id })}
-            active={filters.typeId === type.id}
-          >
-            {type.name.vi}
-          </Chip>
-        ))}
+    <div className="sticky top-24 z-30 mb-10">
+      <div className="hidden items-center justify-between gap-4 rounded-full border border-hairline bg-white/95 px-3 py-2 shadow-ambient backdrop-blur md:flex">
+        <FilterControls
+          filters={filters}
+          types={types}
+          months={months}
+          layout="bar"
+          onChange={change}
+        />
+        {count}
       </div>
-      <div className="flex flex-wrap items-center gap-2">
-        <Chip
-          href={hrefWith(filters, { format: filters.format === "offline" ? undefined : "offline" })}
-          active={filters.format === "offline"}
+
+      <div className="flex items-center justify-between gap-3 rounded-full border border-hairline bg-white/95 px-3 py-2 shadow-ambient backdrop-blur md:hidden">
+        <button
+          type="button"
+          onClick={() => dialog.current?.showModal()}
+          className="flex items-center gap-2 rounded-full bg-mint-mist px-4 py-2 text-body-sm font-semibold text-deep-blue"
         >
-          {t.offline}
-        </Chip>
-        <Chip
-          href={hrefWith(filters, { format: filters.format === "online" ? undefined : "online" })}
-          active={filters.format === "online"}
-        >
-          {t.online}
-        </Chip>
-        <Chip
-          href={hrefWith(filters, { free: filters.free === "true" ? undefined : "true" })}
-          active={filters.free === "true"}
-        >
-          {t.free}
-        </Chip>
-        <form
-          method="get"
-          action={`${EVENTS_PATH}#lich`}
-          className="ml-auto flex items-center gap-2"
-        >
-          {filters.typeId ? <input type="hidden" name="typeId" value={filters.typeId} /> : null}
-          {filters.format ? <input type="hidden" name="format" value={filters.format} /> : null}
-          {filters.free ? <input type="hidden" name="free" value={filters.free} /> : null}
-          <label htmlFor="loc-thang" className="sr-only">
-            {t.month}
-          </label>
-          <select
-            id="loc-thang"
-            name="month"
-            defaultValue={filters.month ?? ""}
-            className="rounded-full border border-hairline bg-white px-4 py-2 text-[13px] text-charcoal focus:border-emerald-brand focus:outline-none"
-          >
-            <option value="">{t.anyMonth}</option>
-            {months.map((month) => (
-              <option key={month} value={month}>
-                {monthLabel(month)}
-              </option>
-            ))}
-          </select>
+          <FiSliders aria-hidden="true" size={14} />
+          {t.open}
+          {active > 0 ? (
+            <span className="rounded-full bg-emerald-brand px-1.5 text-meta text-charcoal">
+              {active}
+            </span>
+          ) : null}
+        </button>
+        {count}
+      </div>
+
+      <dialog
+        ref={dialog}
+        aria-label={t.label}
+        className="m-0 mt-auto w-full max-w-none rounded-t-[2rem] bg-soft-white p-6 backdrop:modal-scrim md:hidden"
+      >
+        <div className="mb-5 flex items-center justify-between">
+          <p className="font-display text-headline-sm text-deep-blue">{t.label}</p>
           <button
-            type="submit"
-            className="rounded-full bg-deep-blue px-4 py-2 text-[13px] font-semibold text-soft-white hover:bg-deep-blue/90"
+            type="button"
+            onClick={() => dialog.current?.close()}
+            aria-label={t.close}
+            className="flex size-10 items-center justify-center rounded-full text-deep-blue hover:bg-mint-mist"
           >
-            {t.apply}
+            <FiX aria-hidden="true" size={18} />
           </button>
-        </form>
-        {Object.values(filters).some(Boolean) ? (
-          <Link
-            href={`${EVENTS_PATH}#lich`}
-            scroll={false}
-            className="text-[12.5px] text-deep-blue/70 underline-offset-4 hover:underline"
+        </div>
+        <FilterControls
+          filters={filters}
+          types={types}
+          months={months}
+          layout="sheet"
+          onChange={change}
+        />
+        <div className="mt-6 flex items-center justify-between gap-3">
+          {active > 0 ? (
+            <button
+              type="button"
+              onClick={() =>
+                change({ typeId: undefined, format: undefined, month: undefined, free: undefined })
+              }
+              className="text-body-sm text-deep-blue underline underline-offset-4"
+            >
+              {t.reset}
+            </button>
+          ) : (
+            <span />
+          )}
+          <button
+            type="button"
+            onClick={() => dialog.current?.close()}
+            className="rounded-full bg-deep-blue px-6 py-3 text-sm font-semibold text-soft-white"
           >
-            {t.reset}
-          </Link>
-        ) : null}
-      </div>
-    </nav>
+            {total === null ? t.apply : `${t.apply} (${total})`}
+          </button>
+        </div>
+      </dialog>
+    </div>
   );
 }

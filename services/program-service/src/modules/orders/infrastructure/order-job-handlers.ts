@@ -2,7 +2,11 @@ import { Inject, Injectable, type OnModuleInit } from "@nestjs/common";
 
 import { OutboxWorker } from "@lavieco/service-kit";
 
-import { CANCEL_PAYMENT_LINK_JOB, SEND_TICKETS_JOB } from "../application/order-jobs";
+import {
+  CANCEL_PAYMENT_LINK_JOB,
+  SEND_EVENT_CANCELLED_JOB,
+  SEND_TICKETS_JOB,
+} from "../application/order-jobs";
 import type { OrderSettlementService } from "../application/order-settlement-service";
 import {
   ORDER_REPOSITORY,
@@ -32,6 +36,9 @@ export class OrderJobHandlers implements OnModuleInit {
       await this.mailer.sendTickets(String(payload.orderId), {
         resend: payload.resend === true,
       });
+    });
+    this.worker.register(SEND_EVENT_CANCELLED_JOB, async (payload) => {
+      await this.mailer.sendEventCancelled(String(payload.orderId));
     });
     // The order already ended (expired or cancelled): payOS just stops taking money.
     // If the buyer paid in the meantime, payOS refuses to cancel: settle it instead

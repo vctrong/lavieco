@@ -32,8 +32,12 @@ export function duplicateOf(
       description: source.description,
       safetyNotes: source.safetyNotes,
       cancellationPolicy: source.cancellationPolicy,
+      cancellationRules: source.cancellationRules.map((rule) => ({ ...rule })),
+      minAge: source.minAge,
+      benefits: source.benefits.map((benefit) => ({ ...benefit })),
       forChildren: source.forChildren,
-      speakers: source.speakers,
+      // One image belongs to one event (ADR-0020): portraits are not copied either.
+      speakers: source.speakers.map((speaker) => ({ ...speaker, avatar: null })),
       agenda: source.agenda,
       faq: source.faq,
     },

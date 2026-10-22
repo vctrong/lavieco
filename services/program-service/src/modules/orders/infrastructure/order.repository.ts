@@ -210,6 +210,16 @@ export class MongoOrderRepository implements OrderRepository {
     return docs.map(toRecord);
   }
 
+  async listOpenByEvent(eventId: string, tx?: TxContext) {
+    const docs = await this.model
+      .find({ eventId: new Types.ObjectId(eventId), status: { $in: ["pending", "paid"] } })
+      .sort({ _id: 1 })
+      .session(sessionOf(tx) ?? null)
+      .lean<OrderDoc[]>()
+      .exec();
+    return docs.map(toRecord);
+  }
+
   async listAdmin(query: OrderListQuery) {
     const filter: FilterQuery<OrderDoc> = {};
     if (query.eventId) filter.eventId = new Types.ObjectId(query.eventId);

@@ -66,4 +66,6 @@ export interface OrderLinks {
 export interface TicketMailer {
   /** `resend`: sent again by the team, the email says so. */
   sendTickets(orderId: string, options?: { resend?: boolean }): Promise<void>;
+  /** The event of this paid order was cancelled: reason, and what happens to the money. */
+  sendEventCancelled(orderId: string): Promise<void>;
 }

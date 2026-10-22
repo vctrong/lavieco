@@ -8,7 +8,7 @@ const event = {
   kind: "standard" as const,
   status: "published" as const,
   format: "offline" as const,
-  onlineUrl: null,
+  hasOnlineLink: false,
   startAt: new Date("2026-11-01T02:00:00Z"),
 };
 const ticket = (overrides: Partial<TicketTypeRecord> = {}): TicketTypeRecord => ({
@@ -42,11 +42,7 @@ describe("registrationBlocker", () => {
       "online_link_pending",
     );
     expect(
-      registrationBlocker(
-        { ...event, format: "online", onlineUrl: "https://meet.example" },
-        [ticket()],
-        now,
-      ),
+      registrationBlocker({ ...event, format: "online", hasOnlineLink: true }, [ticket()], now),
     ).toBeNull();
     expect(registrationBlocker(event, [ticket({ hidden: true })], now)).toBe("not_open");
     expect(

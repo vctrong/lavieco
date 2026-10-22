@@ -88,3 +88,53 @@ describe("event images in the details form (ADR-0020)", () => {
     expect(savedImageIds(null).size).toBe(0);
   });
 });
+
+describe("event page fields (22/10/2026)", () => {
+  const base = {
+    ...emptyDetails(TYPE_ID),
+    title: "Trang mới",
+    startLocal: "2026-11-15T09:00",
+    endLocal: "2026-11-15T12:00",
+  };
+  const image = (mediaId: string, alt: string) => ({
+    mediaId,
+    publicId: `lavieco/dev/events/${mediaId}`,
+    width: 800,
+    height: 800,
+    alt,
+  });
+
+  it("sends banner, minimum age, benefits, rules and portraits as the contract expects", () => {
+    const body = toDetailsRequest({
+      ...base,
+      minAge: "12",
+      banner: image("64b7f0c2a1b2c3d4e5f60704", "Toàn cảnh xưởng"),
+      benefits: [{ icon: "award", title: "Tác phẩm mang về", description: "" }],
+      cancellationRules: [{ condition: "Trước 72 giờ", result: "Hoàn 100%" }],
+      speakers: [
+        {
+          name: "Người hướng dẫn",
+          role: "Nghệ sĩ",
+          bio: "Tám năm làm vật liệu tái chế.",
+          avatar: image("64b7f0c2a1b2c3d4e5f60705", "Chân dung"),
+        },
+      ],
+    });
+    const parsed = eventCreateRequestSchema.parse(body);
+    expect(parsed.minAge).toBe(12);
+    expect(parsed.banner).toEqual({ mediaId: "64b7f0c2a1b2c3d4e5f60704", alt: "Toàn cảnh xưởng" });
+    expect(parsed.speakers[0]?.avatar).toEqual({
+      mediaId: "64b7f0c2a1b2c3d4e5f60705",
+      alt: "Chân dung",
+    });
+    expect(parsed.cancellationRules).toHaveLength(1);
+  });
+
+  it("sends a typed attendance only for an archive-only event", () => {
+    expect(toDetailsRequest({ ...base, attendanceCount: "40" }).attendanceCount).toBeNull();
+    expect(toDetailsRequest({ ...base, kind: "past", attendanceCount: "40" }).attendanceCount).toBe(
+      40,
+    );
+    expect(toDetailsRequest({ ...base, minAge: "" }).minAge).toBeNull();
+  });
+});

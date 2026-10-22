@@ -75,6 +75,8 @@ export interface OrderRepository {
   listExpired(now: Date, limit: number): Promise<string[]>;
   /** Paid or refunded orders of one booker, newest first (`/tra-cuu-ve`). */
   listByEmail(emailNormalized: string, limit: number): Promise<OrderRecord[]>;
+  /** Pending and paid orders of one event, oldest first (cancelling the event). */
+  listOpenByEvent(eventId: string, tx?: TxContext): Promise<OrderRecord[]>;
   listAdmin(query: OrderListQuery): Promise<Page<OrderRecord>>;
   /** Paid/refunded orders of one event for the registration list and export. */
   listForRegistrations(

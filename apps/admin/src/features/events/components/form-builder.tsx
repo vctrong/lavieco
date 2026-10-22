@@ -15,13 +15,14 @@ import {
   type FormQuestion,
   type QuestionType,
 } from "@lavieco/shared/events";
-import { Button, CheckboxField, SelectField, TextField, cn } from "@lavieco/ui";
+import { Button, CheckboxField, cn, FormAlert, SelectField, TextField } from "@lavieco/ui";
 
 import { updateEventForm } from "../actions/events";
 import { TEXT } from "../constants/text";
 import { fieldErrorsOf } from "../schemas";
 import { EditorSection } from "./editor-section";
-import { FormAlert } from "./form-alert";
+import { callAction } from "@/shared/call-action";
+import { failureText } from "../utils/failure-text";
 
 const isChoice = (type: QuestionType) => CHOICE_QUESTION_TYPES.includes(type);
 
@@ -291,7 +292,7 @@ export function FormBuilder({ event, canWrite }: { event: EventView; canWrite: b
 
   if (event.kind === "past") {
     return (
-      <EditorSection id="form-dang-ky" index={8} title={t.editor.sections.form}>
+      <EditorSection id="form-dang-ky" index={11} title={t.editor.sections.form}>
         <p className="rounded-2xl bg-soft-white px-4 py-3 text-[13px] text-charcoal/70">
           {t.form.pastEvent}
         </p>
@@ -315,17 +316,17 @@ export function FormBuilder({ event, canWrite }: { event: EventView; canWrite: b
     }
     setErrors({});
     setBusy(true);
-    const result = await updateEventForm(event.id, input).catch(() => null);
+    const result = await callAction(() => updateEventForm(event.id, input));
     setBusy(false);
-    if (result?.status === "ok") {
+    if (result.status === "ok") {
       setAlert({ tone: "success", message: t.editor.saved });
       router.refresh();
       return;
     }
-    if (result?.status === "invalid") setErrors(result.fieldErrors);
+    if (result.status === "invalid") setErrors(result.fieldErrors);
     setAlert({
       tone: "error",
-      message: result?.status === "error" ? t.errors[result.reason] : t.errors.unavailable,
+      message: result.status === "error" ? failureText(result) : t.errors.invalid,
     });
   };
 
@@ -346,7 +347,7 @@ export function FormBuilder({ event, canWrite }: { event: EventView; canWrite: b
   return (
     <EditorSection
       id="form-dang-ky"
-      index={8}
+      index={11}
       title={t.editor.sections.form}
       hint={t.editor.sections.formHint}
     >

@@ -8,10 +8,12 @@ import {
   ZodBody,
   ZodQuery,
   ZodValidationPipe,
+  currentRequestId,
   type StaffPrincipal,
 } from "@lavieco/service-kit";
 import { objectIdSchema } from "@lavieco/shared";
 import {
+  eventAttendanceApproveRequestSchema,
   eventCreateRequestSchema,
   eventFormUpdateRequestSchema,
   eventListQuerySchema,
@@ -25,6 +27,7 @@ import {
   ticketTypeListSchema,
   ticketTypeSchema,
   ticketTypeUpdateRequestSchema,
+  type EventAttendanceApproveRequest,
   type EventCreateRequest,
   type EventFormUpdateRequest,
   type EventListQuery,
@@ -119,6 +122,27 @@ export class EventsAdminController {
     @CurrentPrincipal() principal: StaffPrincipal,
   ) {
     return toEventDto(await this.events.changeStatus(id, body, actorOf(principal)));
+  }
+
+  @Post(":id/attendance/approve")
+  @HttpCode(200)
+  @RequirePermission("impact:approve")
+  @ApiOperation({
+    summary: "BR-09: publish the typed attendance of an archive-only event (audited)",
+  })
+  @ApiZodResponse(200, eventSchema)
+  async approveAttendance(
+    @Param("id", idPipe) id: string,
+    @ZodBody(eventAttendanceApproveRequestSchema) body: EventAttendanceApproveRequest,
+    @CurrentPrincipal() principal: StaffPrincipal,
+  ) {
+    return toEventDto(
+      await this.events.approveAttendance(id, body, {
+        userId: principal.userId,
+        roles: principal.roles,
+        requestId: currentRequestId() ?? null,
+      }),
+    );
   }
 
   @Post(":id/duplicate")

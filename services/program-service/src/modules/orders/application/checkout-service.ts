@@ -4,6 +4,7 @@ import type { OrderCreateRequest } from "@lavieco/shared/events";
 
 import {
   REVALIDATE_EVENT_JOB,
+  bookableOf,
   checkoutQuestions,
   needsSafetyAcknowledgement,
   registrationBlocker,
@@ -67,7 +68,7 @@ export class CheckoutService {
     const event = await this.events.findPublicFullBySlug(input.eventSlug);
     if (!event) throw new DomainError("common.not_found");
     const ticketTypes = await this.ticketTypes.listByEvent(event.id);
-    const blocker = registrationBlocker(event, ticketTypes, now);
+    const blocker = registrationBlocker(bookableOf(event), ticketTypes, now);
     // A sold-out answer comes from the atomic seat update below, never from this read.
     if (blocker !== null && blocker !== "sold_out") {
       throw new DomainError("order.registration_closed", undefined, { reason: blocker });

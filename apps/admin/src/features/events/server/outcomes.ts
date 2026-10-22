@@ -3,6 +3,7 @@ import "server-only";
 import { isServiceProblem } from "@lavieco/api-clients";
 import type { ErrorCode } from "@lavieco/shared";
 
+import { failureKind, refOf } from "@/lib/action-errors";
 import { adminLogger } from "@/lib/services";
 
 import type { ActionResult, EventFailure } from "../types";
@@ -13,6 +14,7 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, EventFailure>> = {
   "common.not_found": "not_found",
   "common.conflict": "conflict",
   "common.validation_failed": "invalid",
+  "common.rate_limited": "rate_limited",
   "event.invalid_transition": "invalid_transition",
   "event.has_registrations": "has_registrations",
   "event.not_publishable": "not_publishable",
@@ -27,10 +29,17 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, EventFailure>> = {
   "event_type.name_taken": "type_name_taken",
   "media.unavailable": "media_unavailable",
   "event.online_url_locked": "online_url_locked",
+  "auth.step_up_required": "step_up_required",
+  "auth.mfa_code_invalid": "code_invalid",
+  "auth.account_locked": "locked",
 };
 
 /** Maps a program-service failure to copy the forms can show; logs codes only. */
-export function toFailure(error: unknown, context: string): ActionResult<never> {
+export function toFailure(
+  error: unknown,
+  context: string,
+  requestId?: string,
+): ActionResult<never> {
   if (isServiceProblem(error)) {
     const reason = FAILURE_BY_CODE[error.code];
     if (reason) return { status: "error", reason };
@@ -38,6 +47,12 @@ export function toFailure(error: unknown, context: string): ActionResult<never> 
   adminLogger().warn("events action failed", {
     context,
     errorCode: isServiceProblem(error) ? error.code : "unavailable",
+    ...(requestId ? { requestId } : {}),
+    ...(isServiceProblem(error) ? {} : failureKind(error)),
   });
-  return { status: "error", reason: "unavailable" };
+  return {
+    status: "error",
+    reason: "unavailable",
+    ...(requestId ? { ref: refOf(requestId) } : {}),
+  };
 }
