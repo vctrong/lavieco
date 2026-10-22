@@ -15,7 +15,12 @@ export const NAV_ITEMS: readonly PrimaryNavItem[] = [
   { id: "impact", href: "/tac-dong", priority: 3 },
 ];
 
-export const CTA_HREF = "/hop-tac";
+/**
+ * "Hợp tác" opens the contact section of the home page, where the partnership form for
+ * schools, businesses and partners already works. TODO(partnership-page): back to
+ * "/hop-tac" once that page exists (it is a coming-soon page for now).
+ */
+export const CTA_HREF = "/#lien-he";
 
 /** Member space; signed-out visitors are sent to the sign-in page by `proxy.ts`. */
 export const ACCOUNT_HREF = "/tai-khoan";
