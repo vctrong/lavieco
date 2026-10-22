@@ -7,3 +7,4 @@ export { JourneySection } from "./components/journey-section";
 export { Manifesto } from "./components/manifesto";
 export { ProgramsSection } from "./components/programs-section";
 export { RoadmapSection } from "./components/roadmap-section";
+export { ROUTES as HOME_ROUTES, SECTION_IDS as HOME_SECTION_IDS } from "./constants/config";

@@ -440,7 +440,7 @@ export const TEXT = {
 
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).
 - Các đường dẫn tiếng Việt không dấu ở trên là đề xuất; tên URL chuẩn và chiến lược tiền tố ngôn ngữ chốt ở PQ3.
-- **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn navbar (`Navbar`, truyền Server Action `logout` của `account` xuống), chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`not-found`, `error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
+- **Khung trang:** `app/layout.tsx` chỉ có `<html>`/`<body>`/font; nhóm route `app/(site)/` (`layout.tsx`) gắn navbar (`Navbar`, truyền Server Action `logout` của `account` xuống), chân trang và `<main>` cho mọi trang thường. Trang tiện ích toàn màn hình (`error`, `global-error`, `/sap-ra-mat`, `/c/[code]`, `/api/*`) nằm **ngoài** `(site)` để không có điều hướng. **404 (22/10/2026):** `(site)/[...missing]/page.tsx` gọi `notFound()` nên `(site)/not-found.tsx` hiện trong navbar + footer (mã 404, `noindex`); `app/not-found.tsx` dùng cùng component cho `notFound()` ngoài `(site)`. **Trang chưa làm** được link từ navbar/footer/CTA: route mỏng gọi `ComingSoonSection` (feature `coming-soon`, cấu hình `constants/pages.ts`, chữ `text.ts`), metadata `noindex`; xoá mục đó khi trang thật ra mắt. Test `app/internal-links.spec.ts`: mọi link nội bộ của navbar/footer/CTA phải trỏ tới route có thật. Trang mới có điều hướng đặt trong `(site)/`. Khung dùng chung của trang tiện ích ở `src/shared/components/utility-page/`.
 - `src/proxy.ts` của `web`: cổng "sắp ra mắt" (TODO UC-28), chuyển hướng UX theo cookie phiên member (`/tai-khoan` → `/dang-nhap?tiep=...`, đã đăng nhập thì rời `/dang-nhap`, `/dang-ky`) và header bảo mật; không chứa logic nghiệp vụ, không phải hàng rào bảo mật.
 - **Phiên member** (`lib/session.ts`): cookie httpOnly `lv_member_at`, `lv_member_rt`, `SameSite=Lax`. Server Component không ghi cookie được, nên khi access token hết hạn thì chuyển sang `/api/auth/refresh?tiep=...`. Tham số `tiep` chỉ nhận đường dẫn tương đối (`safeNextPath`, chống open redirect).
 - **Form công khai:** Zod ở client và Server Action, honeypot `website`, Turnstile chuẩn bị sẵn (`TURNSTILE_ENABLED`, `shared/components/turnstile-widget.tsx`, `lib/turnstile.ts`).
@@ -459,8 +459,8 @@ export const TEXT = {
 | `contact` | Form hợp tác |
 | `gift-request` | Form chọn quà / đặt số lượng lớn |
 | `waitlist` | Form nhận tin |
-| `coming-soon` | Trang chờ ra mắt |
-| `not-found` | Trang 404 (bản dự phòng chữ trong constants) |
+| `coming-soon` | Trang chờ ra mắt `/sap-ra-mat` và `ComingSoonSection` cho các trang chưa làm (`/cau-chuyen`, `/bo-suu-tap`, `/cam-nang`, `/tac-dong`, `/hop-tac`, `/tai-khoan/ve`, `/tai-khoan/chuong-trinh`) |
+| `not-found` | Trang 404 "Calm Gallery" (số 404 Fraunces nhạt, về trang chủ + link gợi ý), trong khung site |
 | `server-error` | Trang 500 dùng chung cho `error.tsx` và `global-error.tsx` (chỉ hiện `digest`, không hiện `message`/stack) |
 | `qr-resolver` | Logic phân giải mã và ghi nhận lượt quét (`route.ts` chỉ gọi vào đây) |
 
