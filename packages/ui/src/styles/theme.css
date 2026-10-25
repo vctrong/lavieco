@@ -173,6 +173,37 @@
   /* Brush underline: paints in once on load (stroke-dashoffset over pathLength=1, right to left) */
   --animate-brush-draw-reverse: brush-draw-reverse 0.9s cubic-bezier(0.65, 0, 0.25, 1) both;
   --animate-pearl-pop: pearl-pop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  /* LaviAgent: the gradient ring of its entry points drifts slowly (pair with `agent-ring`) */
+  --animate-agent-shimmer: agent-shimmer 4s linear infinite;
+  /* LaviAgent: a light line sweeping the photo while it is analysed */
+  --animate-scan-sweep: scan-sweep 2.4s ease-in-out infinite alternate;
+  /* LaviAgent: "typing" dots; stagger with animation-delay */
+  --animate-typing-dot: typing-dot 1.2s ease-in-out infinite;
+  @keyframes agent-shimmer {
+    to {
+      background-position: 200% 50%;
+    }
+  }
+  @keyframes scan-sweep {
+    from {
+      top: 0%;
+    }
+    to {
+      top: 100%;
+    }
+  }
+  @keyframes typing-dot {
+    0%,
+    80%,
+    100% {
+      opacity: 0.3;
+      transform: translateY(0);
+    }
+    40% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
   @keyframes brush-draw-reverse {
     from {
       stroke-dashoffset: -1;
@@ -295,6 +326,22 @@
   background-size:
     48px 48px,
     96px 96px;
+}
+
+/*
+ * LaviAgent ring: Emerald → Canary → Emerald, twice as wide as the element so
+ * `animate-agent-shimmer` can slide it. Used as a 1.5px "border" behind a padded child.
+ */
+@utility agent-ring {
+  background-image: linear-gradient(
+    90deg,
+    var(--color-emerald-brand) 0%,
+    var(--color-canary) 25%,
+    var(--color-emerald-brand) 50%,
+    var(--color-canary) 75%,
+    var(--color-emerald-brand) 100%
+  );
+  background-size: 200% 100%;
 }
 
 @utility film-grain {
