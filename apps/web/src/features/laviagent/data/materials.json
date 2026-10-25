@@ -1,0 +1,137 @@
+{
+  "_note": "NỘI DUNG DEMO cho Business Challenge 2026. Nhóm thay bằng nội dung chính thức; ảnh mẫu thay theo docs/07-laviagent.md §5.",
+  "materials": [
+    {
+      "id": "plastic_bottle",
+      "name": "Chai nhựa",
+      "icon": "droplet",
+      "description": "Chai nước uống bằng nhựa PET trong suốt, nhẹ, dễ cắt và tạo hình.",
+      "safetyNote": "Mép nhựa sau khi cắt có thể sắc. Mài nhẹ bằng giấy nhám hoặc dán băng keo giấy quanh viền; trẻ nhỏ cần người lớn cầm kéo/dao rọc giấy.",
+      "keywords": [
+        "chai nhựa",
+        "chai nước",
+        "chai pet",
+        "chai nhua",
+        "nhựa",
+        "pet",
+        "chai dầu gội",
+        "can nhựa"
+      ],
+      "recyclePotential": 92,
+      "sample": {
+        "image": "/images/laviagent/samples/plastic-bottle.jpg",
+        "alt": "Ảnh mẫu: một chai nước nhựa trong suốt đã uống hết",
+        "shape": "Chai trụ tròn khoảng 500 ml, có nắp vặn",
+        "condition": "Còn nguyên, sạch, đã bóc nhãn một phần",
+        "confidence": 0.94
+      }
+    },
+    {
+      "id": "aluminum_can",
+      "name": "Lon nhôm",
+      "icon": "disc",
+      "description": "Lon nước ngọt bằng nhôm mỏng, bền, giữ màu in đẹp.",
+      "safetyNote": "Miệng lon và mép nhôm sau khi cắt rất sắc. Luôn đeo găng tay vải, gấp mép vào trong; phần cắt nhôm do người lớn làm.",
+      "keywords": ["lon", "lon bia", "lon nước ngọt", "lon nhôm", "nhôm", "vỏ lon"],
+      "recyclePotential": 85,
+      "sample": {
+        "image": "/images/laviagent/samples/aluminum-can.jpg",
+        "alt": "Ảnh mẫu: một lon nước ngọt bằng nhôm",
+        "shape": "Lon trụ 330 ml, nắp giật còn gắn",
+        "condition": "Thân lon còn phẳng, không móp",
+        "confidence": 0.91
+      }
+    },
+    {
+      "id": "paper_box",
+      "name": "Hộp giấy",
+      "icon": "package",
+      "description": "Hộp carton, hộp bánh, lõi giấy: dễ cắt, dán, tô màu.",
+      "safetyNote": "Dao rọc giấy chỉ dùng khi có người lớn hướng dẫn. Không dùng hộp giấy dính dầu mỡ hoặc ẩm mốc.",
+      "keywords": [
+        "hộp giấy",
+        "carton",
+        "các tông",
+        "thùng giấy",
+        "hộp sữa",
+        "lõi giấy",
+        "hộp bánh",
+        "giấy"
+      ],
+      "recyclePotential": 88,
+      "sample": {
+        "image": "/images/laviagent/samples/paper-box.jpg",
+        "alt": "Ảnh mẫu: một hộp giấy carton nhỏ đã mở nắp",
+        "shape": "Hộp chữ nhật, carton một lớp",
+        "condition": "Khô, sạch, góc hộp còn vuông",
+        "confidence": 0.9
+      }
+    },
+    {
+      "id": "glass_jar",
+      "name": "Hũ thủy tinh",
+      "icon": "coffee",
+      "description": "Hũ mứt, hũ cà phê bằng thủy tinh dày, có nắp.",
+      "safetyNote": "Chỉ dùng hũ còn nguyên, không nứt mẻ. Không cắt hay khoan thủy tinh tại nhà; nếu hũ vỡ, xem như rác nguy hại và gói kỹ trước khi bỏ.",
+      "keywords": ["hũ", "lọ thủy tinh", "hũ thủy tinh", "chai thủy tinh", "thủy tinh", "lọ mứt"],
+      "recyclePotential": 80,
+      "sample": {
+        "image": "/images/laviagent/samples/glass-jar.jpg",
+        "alt": "Ảnh mẫu: một hũ thủy tinh rỗng có nắp kim loại",
+        "shape": "Hũ trụ thấp khoảng 300 ml, nắp vặn kim loại",
+        "condition": "Nguyên vẹn, đã rửa sạch",
+        "confidence": 0.89
+      }
+    },
+    {
+      "id": "shell",
+      "name": "Vỏ sò",
+      "icon": "shell",
+      "description": "Vỏ sò, vỏ nghêu, vỏ hàu: chất liệu minh chứng đầu tiên của LAVIECO, thu gom từ quán ăn và chợ hải sản ở Cần Thơ.",
+      "safetyNote": "Luôn làm sạch vỏ theo quy trình chung trước (dùng nước javel: đeo găng tay, làm nơi thoáng khí, phần này do người lớn làm). Cạnh vỏ vỡ có thể sắc: mài nhẹ bằng giấy nhám. Khi mài hoặc nghiền vỏ phải đeo khẩu trang vì bụi mịn.",
+      "keywords": ["vỏ sò", "vỏ nghêu", "vỏ hàu", "vỏ ốc", "vỏ hến", "vỏ hải sản", "sò", "ốc"],
+      "preparation": {
+        "title": "Làm sạch vỏ sò (bước chung)",
+        "summary": "Mọi ý tưởng từ vỏ sò đều bắt đầu bằng bước này, theo quy trình LAVIECO dùng ở xưởng: vỏ sạch, khô, không còn mùi.",
+        "durationLabel": "Khoảng 1 giờ làm, cộng 3–4 giờ ngâm và 1 ngày phơi",
+        "steps": [
+          {
+            "title": "Xịt nước mạnh",
+            "description": "Xịt nước thật mạnh để trôi hết rêu, cặn bẩn và phần thịt còn bám."
+          },
+          {
+            "title": "Luộc vỏ",
+            "description": "Luộc vỏ trong nồi nước sôi để phần thịt còn sót bong ra hết.",
+            "safetyNote": "Nước sôi: người lớn làm bước này."
+          },
+          {
+            "title": "Ngâm javel pha loãng",
+            "description": "Ngâm vỏ trong nước javel pha loãng 3–4 tiếng, hoặc lâu hơn nếu vỏ còn bẩn.",
+            "safetyNote": "Đeo găng tay, làm nơi thoáng khí, để xa tầm tay trẻ em."
+          },
+          {
+            "title": "Chà kỹ",
+            "description": "Dùng bàn chải chà kỹ những chỗ còn dính bẩn."
+          },
+          {
+            "title": "Xả sạch",
+            "description": "Xả nước nhiều lần cho đến khi vỏ hết hẳn mùi javel."
+          },
+          {
+            "title": "Phơi nắng gắt",
+            "description": "Phơi vỏ dưới nắng gắt 1 ngày cho thật khô trước khi dùng."
+          }
+        ],
+        "safetyNote": "Đeo găng tay khi dùng javel, làm nơi thoáng khí. Trẻ em không tự làm bước này: người lớn làm phần luộc và ngâm javel."
+      },
+      "recyclePotential": 95,
+      "sample": {
+        "image": "/images/laviagent/samples/shell.jpg",
+        "alt": "Ảnh mẫu: một nắm vỏ sò đã rửa sạch",
+        "shape": "Vỏ sò hai mảnh, cỡ 3–5 cm",
+        "condition": "Đã rửa sạch, vài vỏ sứt mép",
+        "confidence": 0.87
+      }
+    }
+  ]
+}

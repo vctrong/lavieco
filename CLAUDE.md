@@ -25,6 +25,7 @@ LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật x
 | Collection, trường, index, giao dịch, quyền riêng tư, migration                                             | `docs/03-co-so-du-lieu.md`     |
 | Đặt file ở đâu, đặt tên, tầng trong service, công thức thêm tính năng/endpoint/service, lộ trình dựng khung | `docs/04-cau-truc-ma-nguon.md` |
 | Biến môi trường (ý nghĩa, cách lấy, dev/prod, liên quan giữa service)                                       | `docs/06-bien-moi-truong.md`   |
+| LaviAgent: trợ lý AI tái chế (demo trong `web`, provider, knowledge, prompt, dữ liệu JSON, env)             | `docs/07-laviagent.md`         |
 
 Chỉ đọc **phần liên quan** (dùng mục lục), đừng nạp cả bốn file. Tên use case `UC-xx`, business rule `BR-xx` trỏ ngược về `docs/01`.
 
@@ -110,7 +111,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 ## 8. Frontend (`apps/web`, `apps/admin`)
 
 - **`app/` mỏng**: chỉ định tuyến, ghép `features/*`. Không đặt logic/JSX phức tạp ở đó.
-- **Khung trang:** `app/layout.tsx` chỉ có html/body/font; dock + footer nằm ở `app/(site)/layout.tsx`. Trang tiện ích toàn màn hình (`error`, `global-error`, `sap-ra-mat`) ở ngoài `(site)`, dùng `shared/components/utility-page`. 404 hiện trong khung site (`(site)/[...missing]` → `(site)/not-found.tsx`). Trang được link nhưng chưa làm: `ComingSoonSection` (`features/coming-soon/constants/pages.ts`, `noindex`); `app/internal-links.spec.ts` bắt link nội bộ trỏ tới route không có. Error boundary Next 16.3 dùng `retry` (không phải `reset`); **không bao giờ hiện `error.message`/stack**, chỉ `digest`.
+- **Khung trang:** `app/layout.tsx` chỉ có html/body/font; dock + footer nằm ở `app/(site)/layout.tsx`. Công cụ toàn màn hình (LaviAgent `/laviagent`) ở `app/(agent)/layout.tsx`: navbar gọn, không footer/FAB. Trang tiện ích toàn màn hình (`error`, `global-error`, `sap-ra-mat`) ở ngoài `(site)`, dùng `shared/components/utility-page`. 404 hiện trong khung site (`(site)/[...missing]` → `(site)/not-found.tsx`). Trang được link nhưng chưa làm: `ComingSoonSection` (`features/coming-soon/constants/pages.ts`, `noindex`); `app/internal-links.spec.ts` bắt link nội bộ trỏ tới route không có. Error boundary Next 16.3 dùng `retry` (không phải `reset`); **không bao giờ hiện `error.message`/stack**, chỉ `digest`.
 - **Cấu trúc theo tính năng** `features/<tên>/{components,constants,hooks,server,actions,schemas.ts,types.ts,index.ts}`:
   - F1: import tính năng khác/`app` **chỉ qua `index.ts`**. F2: tính năng **không import tính năng khác** (dùng chung → `@lavieco/ui` hoặc `src/shared/`). F3: chỉ `server/`, `actions/` được gọi `@lavieco/api-clients` và `lib/env`. F4: file `server/` bắt đầu bằng `import "server-only"`.
 - **Chữ giao diện KHÔNG viết cứng trong JSX**: nằm ở `features/<tên>/constants/text.ts`, dạng `{ vi: {...} }` (sẵn sàng thêm `en`). Component đọc constants của chính tính năng, không truyền chữ xuống nhiều tầng props. **Nội dung biên tập** (cẩm nang, tác phẩm, trang giới thiệu) đến từ `content-service`; trang thiết yếu có bản chữ dự phòng trong constants.

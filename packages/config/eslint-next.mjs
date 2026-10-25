@@ -42,6 +42,13 @@ export const nextPreset = defineConfig([
     rules: { "react/no-danger": "off" },
   },
   {
+    // Next.js instrumentation hook: `process.env.NEXT_RUNTIME` must be written literally so
+    // the bundler drops the Node-only branch from the Edge build (Next docs, instrumentation).
+    // It reads that one runtime flag, never configuration.
+    files: ["src/instrumentation.ts"],
+    rules: { "no-restricted-syntax": restrictedSyntax(without("processEnv")) },
+  },
+  {
     // The only places allowed to read process.env.
     files: ["src/lib/env.ts", "src/lib/env.public.ts"],
     rules: { "no-restricted-syntax": restrictedSyntax(without("processEnv")) },

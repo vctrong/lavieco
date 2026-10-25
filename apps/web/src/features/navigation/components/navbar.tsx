@@ -6,6 +6,7 @@ import { CTA_HREF } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { AccountButton, AccountMenu, type LogoutAction } from "./account-menu";
 import { BrandLogo } from "./brand-logo";
+import { LaviAgentPill } from "./laviagent-link";
 import { MobileDrawer } from "./mobile-drawer";
 import { NavbarShell } from "./navbar-shell";
 import { NavLinks } from "./nav-links";
@@ -13,6 +14,8 @@ import { NavLinks } from "./nav-links";
 type NavbarProps = {
   /** Sign-out Server Action, handed over by the layout. */
   logoutAction: LogoutAction;
+  /** Full-screen tools (LaviAgent): a thinner bar closer to the top edge. */
+  compact?: boolean;
 };
 
 /**
@@ -23,10 +26,10 @@ type NavbarProps = {
  * ≥1280px every link · 1024–1279px secondary links in "Thêm" · <1024px logo, account
  * and a drawer with the CTA pinned at the bottom.
  */
-export function Navbar({ logoutAction }: NavbarProps) {
+export function Navbar({ logoutAction, compact = false }: NavbarProps) {
   const t = TEXT.vi;
   return (
-    <NavbarShell>
+    <NavbarShell compact={compact}>
       <Link
         href="/"
         aria-label={t.homeLabel}
@@ -38,8 +41,12 @@ export function Navbar({ logoutAction }: NavbarProps) {
 
       <NavLinks />
 
-      <div className="flex items-center gap-2.5 justify-self-end lg:gap-4">
-        <span aria-hidden="true" className="hidden h-6 w-px bg-hairline lg:block" />
+      <div className="flex items-center gap-2.5 justify-self-end lg:gap-3 xl:gap-4">
+        {/* LaviAgent stands apart from the links, next to the CTA (phones: drawer + FAB). */}
+        <div className="hidden lg:flex lg:items-center">
+          <LaviAgentPill />
+        </div>
+        <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-hairline lg:block" />
         <div className="hidden lg:block">
           <AccountMenu logoutAction={logoutAction} />
         </div>

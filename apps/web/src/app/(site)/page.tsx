@@ -11,12 +11,14 @@ import {
   ProgramsSection,
   RoadmapSection,
 } from "@/features/home";
+import { LaviAgentIntroSection, getLaviagentCatalog } from "@/features/laviagent";
 import { TeamSection } from "@/features/team";
 
 export default function HomePage() {
   return (
     <>
       <Hero />
+      <LaviAgentIntroSection materials={getLaviagentCatalog().materials} />
       <Manifesto />
       <JourneySection />
       <ProgramsSection />

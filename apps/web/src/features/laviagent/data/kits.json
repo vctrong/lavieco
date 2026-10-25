@@ -1,0 +1,85 @@
+{
+  "_note": "NỘI DUNG DEMO. Giá là giá tham khảo để trình diễn (BR-10: giá chốt do đội xác nhận). productUrl tạm trỏ về /bo-suu-tap cho tới khi có trang sản phẩm (TODO(laviagent-kit-page)).",
+  "kits": [
+    {
+      "id": "kit-chau-tu-duong",
+      "name": "KIT Chậu cây tự dưỡng",
+      "summary": "Biến chai nhựa thành chậu cây tự hút nước cho bàn học.",
+      "price": 129000,
+      "contents": [
+        "Bấc cotton tự nhiên 30 cm",
+        "Đất xơ dừa nén",
+        "Gói hạt giống rau thơm",
+        "Dây đay trang trí",
+        "Thẻ hướng dẫn có mã QR vào Cẩm nang"
+      ],
+      "image": "/images/laviagent/kits/kit-chau-tu-duong.jpg",
+      "imageAlt": "Bộ KIT chậu cây tự dưỡng với bấc cotton, đất xơ dừa và hạt giống",
+      "productUrl": "/bo-suu-tap"
+    },
+    {
+      "id": "kit-den-tai-sinh",
+      "name": "KIT Đèn tái sinh",
+      "summary": "Dây đèn LED an toàn và phụ kiện để làm đèn từ lon nhôm hoặc hũ thủy tinh.",
+      "price": 159000,
+      "contents": [
+        "Dây đèn LED pin (an toàn, không nóng)",
+        "Găng tay vải bảo hộ",
+        "Băng keo giấy và giấy nhám",
+        "Mẫu khoan lỗ in sẵn",
+        "Thẻ hướng dẫn có mã QR vào Cẩm nang"
+      ],
+      "image": "/images/laviagent/kits/kit-den-tai-sinh.jpg",
+      "imageAlt": "Bộ KIT đèn tái sinh gồm dây đèn LED, găng tay và giấy nhám",
+      "productUrl": "/bo-suu-tap"
+    },
+    {
+      "id": "kit-hop-giay-sang-tao",
+      "name": "KIT Hộp giấy sáng tạo",
+      "summary": "Màu, keo sữa và khuôn mẫu để biến hộp carton thành đồ dùng học tập.",
+      "price": 99000,
+      "contents": [
+        "Bộ 6 màu nước gốc nước",
+        "Keo sữa an toàn cho trẻ",
+        "Khuôn mẫu cắt in sẵn",
+        "Thước và bút chì",
+        "Thẻ hướng dẫn có mã QR vào Cẩm nang"
+      ],
+      "image": "/images/laviagent/kits/kit-hop-giay-sang-tao.jpg",
+      "imageAlt": "Bộ KIT hộp giấy sáng tạo với màu nước, keo sữa và khuôn mẫu",
+      "productUrl": "/bo-suu-tap"
+    },
+    {
+      "id": "kit-vo-so-nghe-thuat",
+      "name": "KIT Vỏ sò nghệ thuật",
+      "summary": "Vỏ sò đã xử lý sạch cùng phụ kiện để làm móc khóa, phone charm, dây chuyền hoặc tranh ghép.",
+      "price": 149000,
+      "contents": [
+        "Vỏ sò đã làm sạch và phân cỡ",
+        "Khoen móc khóa, dây sáp, móc dán",
+        "Giấy nhám mịn",
+        "Keo dán không độc hại",
+        "Thẻ hướng dẫn có mã QR vào Cẩm nang"
+      ],
+      "image": "/images/laviagent/kits/kit-vo-so-nghe-thuat.jpg",
+      "imageAlt": "Bộ KIT vỏ sò nghệ thuật với vỏ sò sạch, khoen móc khóa và dây",
+      "productUrl": "/bo-suu-tap"
+    },
+    {
+      "id": "kit-gom-vo-so",
+      "name": "KIT Gốm vỏ sò",
+      "summary": "Bột vỏ sò đã xử lý, chất kết dính và khuôn silicone để tự đúc chậu cây mini, lót ly hoặc đĩa trang sức.",
+      "price": 189000,
+      "contents": [
+        "Bột vỏ sò đã làm sạch và nghiền mịn",
+        "Chất kết dính gốc khoáng, kèm tỷ lệ trộn",
+        "Khuôn silicone: chậu mini, lót ly, đĩa nhỏ",
+        "Giấy nhám, găng tay, khẩu trang",
+        "Thẻ hướng dẫn có mã QR vào Cẩm nang"
+      ],
+      "image": "/images/laviagent/kits/kit-gom-vo-so.jpg",
+      "imageAlt": "Bộ KIT gốm vỏ sò với bột vỏ, chất kết dính và khuôn silicone",
+      "productUrl": "/bo-suu-tap"
+    }
+  ]
+}

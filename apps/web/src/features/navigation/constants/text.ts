@@ -11,6 +11,13 @@ export const TEXT = {
       impact: { label: "Tác động", hint: "Từ Cần Thơ, lan tỏa tư duy tuần hoàn" },
     },
     cta: "Hợp tác cùng chúng tôi",
+    laviagent: {
+      name: "LaviAgent",
+      badge: "AI",
+      label: "LaviAgent, trợ lý AI tái chế sáng tạo",
+      drawerTitle: "Hỏi LaviAgent",
+      drawerBody: "Chụp món đồ sắp vứt, nhận ý tưởng tái chế ngay.",
+    },
     navbar: {
       ctaShort: "Hợp tác",
       explore: "Khám phá",

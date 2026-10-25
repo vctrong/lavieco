@@ -12,7 +12,9 @@ const PREVIEW_PREFIX = "/xem-truoc/";
 const SECURITY_HEADERS: Record<string, string> = {
   "x-content-type-options": "nosniff",
   "referrer-policy": "strict-origin-when-cross-origin",
-  "permissions-policy": "camera=(), microphone=(), geolocation=()",
+  // camera=(self): LaviAgent's webcam dialog (getUserMedia) on this site only; never
+  // delegated to other origins or frames (ADR-0024 §9). Microphone and location stay off.
+  "permissions-policy": "camera=(self), microphone=(), geolocation=()",
 };
 
 /**

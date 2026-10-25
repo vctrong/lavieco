@@ -22,6 +22,9 @@ export const NAV_ITEMS: readonly PrimaryNavItem[] = [
  */
 export const CTA_HREF = "/#lien-he";
 
+/** LaviAgent, the AI recycling assistant: set apart from the links, next to the CTA. */
+export const LAVIAGENT_HREF = "/laviagent";
+
 /** Member space; signed-out visitors are sent to the sign-in page by `proxy.ts`. */
 export const ACCOUNT_HREF = "/tai-khoan";
 
@@ -77,6 +80,7 @@ export const FOOTER_LINKS: readonly NavItem[] = [
 export const NAVIGATION_HREFS: readonly string[] = [
   ...NAV_ITEMS.map((item) => item.href),
   CTA_HREF,
+  LAVIAGENT_HREF,
   ACCOUNT_HREF,
   SIGN_IN_HREF,
   ...ACCOUNT_LINKS.map((link) => link.href),
