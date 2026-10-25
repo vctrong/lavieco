@@ -47,6 +47,35 @@ export function googleSignInEnabled(): boolean {
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_REDIRECT_URI);
 }
 
+const laviagentEnvSchema = z.object({
+  /** Which AIProvider answers (docs/07). Only "gemini" exists today. */
+  LAVIAGENT_AI_PROVIDER: z.enum(["gemini", "lavieco"]).default("gemini"),
+  /** "offline": fixed data only, no AI call (demo without network). */
+  LAVIAGENT_DEMO_MODE: z.enum(["online", "offline"]).default("online"),
+  /** Google AI Studio key. Server only; empty = offline mode. */
+  GEMINI_API_KEY: z.string().default(""),
+  GEMINI_MODEL: z.string().min(1).default("gemini-2.5-flash"),
+});
+
+export type LaviagentEnv = z.infer<typeof laviagentEnvSchema>;
+
+let laviagentCached: LaviagentEnv | null = null;
+
+/**
+ * LaviAgent settings, parsed on their own: the demo must keep working (offline) even
+ * where the service URLs of `serverEnv()` are not configured.
+ */
+export function laviagentEnv(): LaviagentEnv {
+  if (laviagentCached) return laviagentCached;
+  const parsed = laviagentEnvSchema.safeParse(process.env);
+  if (!parsed.success) {
+    const keys = [...new Set(parsed.error.issues.map((issue) => String(issue.path[0])))];
+    throw new Error(`Invalid LaviAgent environment: ${keys.join(", ")}`);
+  }
+  laviagentCached = parsed.data;
+  return laviagentCached;
+}
+
 const adminOriginSchema = z.url().transform((value) => new URL(value).origin);
 
 /**

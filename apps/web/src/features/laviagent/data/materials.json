@@ -1,0 +1,80 @@
+{
+  "_note": "NỘI DUNG DEMO cho Business Challenge 2026. Nhóm thay bằng nội dung chính thức; ảnh mẫu thay theo docs/07-laviagent.md §5.",
+  "materials": [
+    {
+      "id": "plastic_bottle",
+      "name": "Chai nhựa",
+      "icon": "droplet",
+      "description": "Chai nước uống bằng nhựa PET trong suốt, nhẹ, dễ cắt và tạo hình.",
+      "safetyNote": "Mép nhựa sau khi cắt có thể sắc. Mài nhẹ bằng giấy nhám hoặc dán băng keo giấy quanh viền; trẻ nhỏ cần người lớn cầm kéo/dao rọc giấy.",
+      "recyclePotential": 92,
+      "sample": {
+        "image": "/images/laviagent/samples/plastic-bottle.jpg",
+        "alt": "Ảnh mẫu: một chai nước nhựa trong suốt đã uống hết",
+        "shape": "Chai trụ tròn khoảng 500 ml, có nắp vặn",
+        "condition": "Còn nguyên, sạch, đã bóc nhãn một phần",
+        "confidence": 0.94
+      }
+    },
+    {
+      "id": "aluminum_can",
+      "name": "Lon nhôm",
+      "icon": "disc",
+      "description": "Lon nước ngọt bằng nhôm mỏng, bền, giữ màu in đẹp.",
+      "safetyNote": "Miệng lon và mép nhôm sau khi cắt rất sắc. Luôn đeo găng tay vải, gấp mép vào trong; phần cắt nhôm do người lớn làm.",
+      "recyclePotential": 85,
+      "sample": {
+        "image": "/images/laviagent/samples/aluminum-can.jpg",
+        "alt": "Ảnh mẫu: một lon nước ngọt bằng nhôm",
+        "shape": "Lon trụ 330 ml, nắp giật còn gắn",
+        "condition": "Thân lon còn phẳng, không móp",
+        "confidence": 0.91
+      }
+    },
+    {
+      "id": "paper_box",
+      "name": "Hộp giấy",
+      "icon": "package",
+      "description": "Hộp carton, hộp bánh, lõi giấy: dễ cắt, dán, tô màu.",
+      "safetyNote": "Dao rọc giấy chỉ dùng khi có người lớn hướng dẫn. Không dùng hộp giấy dính dầu mỡ hoặc ẩm mốc.",
+      "recyclePotential": 88,
+      "sample": {
+        "image": "/images/laviagent/samples/paper-box.jpg",
+        "alt": "Ảnh mẫu: một hộp giấy carton nhỏ đã mở nắp",
+        "shape": "Hộp chữ nhật, carton một lớp",
+        "condition": "Khô, sạch, góc hộp còn vuông",
+        "confidence": 0.9
+      }
+    },
+    {
+      "id": "glass_jar",
+      "name": "Hũ thủy tinh",
+      "icon": "coffee",
+      "description": "Hũ mứt, hũ cà phê bằng thủy tinh dày, có nắp.",
+      "safetyNote": "Chỉ dùng hũ còn nguyên, không nứt mẻ. Không cắt hay khoan thủy tinh tại nhà; nếu hũ vỡ, xem như rác nguy hại và gói kỹ trước khi bỏ.",
+      "recyclePotential": 80,
+      "sample": {
+        "image": "/images/laviagent/samples/glass-jar.jpg",
+        "alt": "Ảnh mẫu: một hũ thủy tinh rỗng có nắp kim loại",
+        "shape": "Hũ trụ thấp khoảng 300 ml, nắp vặn kim loại",
+        "condition": "Nguyên vẹn, đã rửa sạch",
+        "confidence": 0.89
+      }
+    },
+    {
+      "id": "shell",
+      "name": "Vỏ sò, vỏ hải sản",
+      "icon": "anchor",
+      "description": "Vỏ sò, vỏ nghêu, vỏ hàu: chất liệu minh chứng đầu tiên của LAVIECO.",
+      "safetyNote": "Rửa và luộc sạch vỏ trước khi dùng. Cạnh vỏ vỡ có thể sắc; mài cạnh và rửa tay sau khi làm. Bột vỏ khi mài cần đeo khẩu trang.",
+      "recyclePotential": 95,
+      "sample": {
+        "image": "/images/laviagent/samples/shell.jpg",
+        "alt": "Ảnh mẫu: một nắm vỏ sò đã rửa sạch",
+        "shape": "Vỏ sò hai mảnh, cỡ 3–5 cm",
+        "condition": "Đã rửa sạch, vài vỏ sứt mép",
+        "confidence": 0.87
+      }
+    }
+  ]
+}

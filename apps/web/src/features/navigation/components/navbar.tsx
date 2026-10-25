@@ -6,6 +6,7 @@ import { CTA_HREF } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { AccountButton, AccountMenu, type LogoutAction } from "./account-menu";
 import { BrandLogo } from "./brand-logo";
+import { LaviAgentPill } from "./laviagent-link";
 import { MobileDrawer } from "./mobile-drawer";
 import { NavbarShell } from "./navbar-shell";
 import { NavLinks } from "./nav-links";
@@ -38,7 +39,11 @@ export function Navbar({ logoutAction }: NavbarProps) {
 
       <NavLinks />
 
-      <div className="flex items-center gap-2.5 justify-self-end lg:gap-4">
+      <div className="flex items-center gap-2.5 justify-self-end lg:gap-3 xl:gap-4">
+        {/* LaviAgent stands apart from the links, next to the CTA (phones: drawer + FAB). */}
+        <div className="hidden lg:block">
+          <LaviAgentPill />
+        </div>
         <span aria-hidden="true" className="hidden h-6 w-px bg-hairline lg:block" />
         <div className="hidden lg:block">
           <AccountMenu logoutAction={logoutAction} />

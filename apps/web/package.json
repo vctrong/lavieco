@@ -11,10 +11,13 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@ai-sdk/google": "4.0.105",
+    "@ai-sdk/react": "4.0.157",
     "@lavieco/api-clients": "*",
     "@lavieco/observability": "*",
     "@lavieco/shared": "*",
     "@lavieco/ui": "*",
+    "ai": "7.0.153",
     "motion": "^13.4.0",
     "next": "16.3.5",
     "qrcode": "1.5.4",

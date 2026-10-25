@@ -1,0 +1,393 @@
+{
+  "_note": "NỘI DUNG DEMO. Mỗi vật liệu 2–3 ý tưởng; nhóm thay bằng hướng dẫn đã thử nghiệm thật. id là slug URL (/laviagent/y-tuong/<id>), đừng đổi sau khi đã chia sẻ link.",
+  "ideas": [
+    {
+      "id": "chau-cay-tu-duong",
+      "material": "plastic_bottle",
+      "title": "Chậu cây tự dưỡng",
+      "summary": "Cắt đôi chai, lộn ngược phần cổ làm chậu, bấc cotton hút nước từ đáy lên: cây tự uống nước cả tuần.",
+      "difficulty": "easy",
+      "durationMinutes": 25,
+      "ageMin": 8,
+      "coverImage": "/images/laviagent/ideas/chau-cay-tu-duong.jpg",
+      "coverAlt": "Chậu cây nhỏ làm từ chai nhựa cắt đôi, có bấc cotton",
+      "toolsHave": ["Chai nhựa 500 ml đã rửa sạch", "Kéo", "Bút lông"],
+      "toolsNeed": ["Dây cotton hoặc dây dù 20 cm", "Đất trồng", "Cây con hoặc hạt giống"],
+      "steps": [
+        {
+          "title": "Đánh dấu và cắt đôi chai",
+          "description": "Kẻ một vòng quanh thân chai, cách đáy khoảng 1/3. Cắt theo vạch.",
+          "safetyNote": "Người lớn rạch đường cắt đầu tiên; mép nhựa có thể sắc."
+        },
+        {
+          "title": "Luồn bấc qua nắp",
+          "description": "Đục một lỗ nhỏ giữa nắp chai, luồn dây cotton qua sao cho hai đầu dài bằng nhau.",
+          "safetyNote": "Dùng đinh nung nóng để đục lỗ thì chỉ người lớn làm."
+        },
+        {
+          "title": "Lắp chậu",
+          "description": "Vặn nắp lại, úp ngược phần cổ chai vào phần đáy. Một đầu bấc thả xuống đáy, đầu kia nằm trong phần chậu."
+        },
+        {
+          "title": "Cho đất, trồng cây và châm nước",
+          "description": "Đổ đất vào phần chậu, trồng cây, rồi rót nước vào phần đáy tới khoảng 2/3. Thêm nước khi mực nước xuống thấp."
+        }
+      ],
+      "kitId": "kit-chau-tu-duong"
+    },
+    {
+      "id": "ong-but-chu-heo",
+      "material": "plastic_bottle",
+      "title": "Ống đựng bút hình chú heo",
+      "summary": "Phần đáy chai thành ống bút có bốn chân bằng nắp chai, tô màu theo ý thích.",
+      "difficulty": "easy",
+      "durationMinutes": 30,
+      "ageMin": 6,
+      "coverImage": "/images/laviagent/ideas/ong-but-chu-heo.jpg",
+      "coverAlt": "Ống đựng bút hình chú heo làm từ đáy chai nhựa và nắp chai",
+      "toolsHave": ["Chai nhựa", "4 nắp chai", "Kéo"],
+      "toolsNeed": ["Màu acrylic hoặc giấy màu", "Keo sữa"],
+      "steps": [
+        {
+          "title": "Cắt phần đáy chai",
+          "description": "Cắt lấy phần đáy cao khoảng 10 cm.",
+          "safetyNote": "Dán băng keo giấy quanh mép cắt cho an toàn."
+        },
+        {
+          "title": "Gắn chân",
+          "description": "Dán bốn nắp chai dưới đáy làm chân."
+        },
+        {
+          "title": "Trang trí",
+          "description": "Tô màu, vẽ mắt, mũi và dán tai bằng giấy màu."
+        }
+      ],
+      "kitId": "kit-hop-giay-sang-tao"
+    },
+    {
+      "id": "vuon-treo-chai-nhua",
+      "material": "plastic_bottle",
+      "title": "Vườn treo thẳng đứng",
+      "summary": "Nhiều chai nằm ngang nối bằng dây, thành một bức tường cây xanh cho ban công.",
+      "difficulty": "medium",
+      "durationMinutes": 60,
+      "ageMin": 10,
+      "coverImage": "/images/laviagent/ideas/vuon-treo-chai-nhua.jpg",
+      "coverAlt": "Vườn treo thẳng đứng gồm nhiều chai nhựa nằm ngang",
+      "toolsHave": ["3–5 chai nhựa 1,5 lít", "Kéo", "Bút lông"],
+      "toolsNeed": ["Dây dù chắc", "Đất trồng", "Cây con"],
+      "steps": [
+        {
+          "title": "Khoét cửa sổ trồng cây",
+          "description": "Đặt chai nằm ngang, khoét một ô chữ nhật trên thân chai.",
+          "safetyNote": "Dao rọc giấy chỉ do người lớn dùng."
+        },
+        {
+          "title": "Đục lỗ thoát nước và lỗ treo",
+          "description": "Đục vài lỗ nhỏ dưới đáy ô và hai lỗ ở hai đầu chai để luồn dây."
+        },
+        {
+          "title": "Nối thành vườn",
+          "description": "Luồn dây qua các chai, thắt nút dưới mỗi chai để giữ khoảng cách đều."
+        },
+        {
+          "title": "Trồng cây và treo",
+          "description": "Cho đất, trồng cây, treo ở nơi có nắng nhẹ."
+        }
+      ]
+    },
+    {
+      "id": "den-lon-nhom",
+      "material": "aluminum_can",
+      "title": "Đèn lồng lon nhôm",
+      "summary": "Đục hoa văn chấm trên thân lon, thả dây đèn LED vào trong: ánh sáng lấp lánh như sao.",
+      "difficulty": "medium",
+      "durationMinutes": 45,
+      "ageMin": 10,
+      "coverImage": "/images/laviagent/ideas/den-lon-nhom.jpg",
+      "coverAlt": "Đèn lồng làm từ lon nhôm đục lỗ hoa văn, ánh sáng hắt ra",
+      "toolsHave": ["Lon nhôm đã rửa sạch", "Bút lông", "Khăn ẩm"],
+      "toolsNeed": ["Dây đèn LED pin", "Đinh và búa nhỏ", "Găng tay vải"],
+      "steps": [
+        {
+          "title": "Đổ nước và cấp đông",
+          "description": "Đổ đầy nước vào lon và để ngăn đá qua đêm: đá giữ lon không bị móp khi đục."
+        },
+        {
+          "title": "Vẽ hoa văn",
+          "description": "Vẽ hoa văn chấm lên thân lon bằng bút lông."
+        },
+        {
+          "title": "Đục lỗ theo hoa văn",
+          "description": "Đặt lon trên khăn, đục từng lỗ theo nét vẽ.",
+          "safetyNote": "Người lớn dùng búa và đinh; luôn đeo găng tay."
+        },
+        {
+          "title": "Lắp đèn",
+          "description": "Để đá tan, lau khô, thả dây đèn LED pin vào trong lon."
+        }
+      ],
+      "kitId": "kit-den-tai-sinh"
+    },
+    {
+      "id": "chau-sen-da-lon",
+      "material": "aluminum_can",
+      "title": "Chậu sen đá mini",
+      "summary": "Lon nhôm quấn dây đay thành chậu sen đá nhỏ xinh cho góc học tập.",
+      "difficulty": "easy",
+      "durationMinutes": 20,
+      "ageMin": 8,
+      "coverImage": "/images/laviagent/ideas/chau-sen-da-lon.jpg",
+      "coverAlt": "Chậu sen đá mini làm từ lon nhôm quấn dây đay",
+      "toolsHave": ["Lon nhôm", "Kéo"],
+      "toolsNeed": ["Dây đay", "Keo sữa", "Sỏi nhỏ", "Cây sen đá"],
+      "steps": [
+        {
+          "title": "Xử lý miệng lon",
+          "description": "Gấp phần nắp giật ra ngoài, dán băng keo giấy quanh miệng lon.",
+          "safetyNote": "Miệng lon sắc: người lớn kiểm tra kỹ trước khi đưa cho trẻ."
+        },
+        {
+          "title": "Quấn dây đay",
+          "description": "Phết keo sữa từng đoạn và quấn dây đay từ đáy lên miệng lon."
+        },
+        {
+          "title": "Trồng sen đá",
+          "description": "Lót sỏi dưới đáy, cho đất và trồng sen đá. Tưới rất ít nước."
+        }
+      ],
+      "kitId": "kit-chau-tu-duong"
+    },
+    {
+      "id": "ke-sach-hop-giay",
+      "material": "paper_box",
+      "title": "Kệ sách bàn học",
+      "summary": "Cắt chéo hộp carton thành kệ đựng sách vở đứng thẳng, gọn gàng.",
+      "difficulty": "easy",
+      "durationMinutes": 30,
+      "ageMin": 8,
+      "coverImage": "/images/laviagent/ideas/ke-sach-hop-giay.jpg",
+      "coverAlt": "Kệ đựng sách vở làm từ hộp carton cắt chéo",
+      "toolsHave": ["Hộp carton (hộp ngũ cốc, hộp giày)", "Kéo", "Thước"],
+      "toolsNeed": ["Giấy gói quà hoặc màu", "Keo sữa"],
+      "steps": [
+        {
+          "title": "Kẻ đường cắt chéo",
+          "description": "Kẻ một đường chéo từ góc trên mặt hông xuống khoảng giữa thân hộp, làm giống ở mặt bên kia."
+        },
+        {
+          "title": "Cắt hộp",
+          "description": "Cắt theo đường kẻ để hộp thành kệ có phần lưng cao.",
+          "safetyNote": "Nếu dùng dao rọc giấy, người lớn cắt giúp."
+        },
+        {
+          "title": "Bọc và trang trí",
+          "description": "Bọc giấy hoặc tô màu, dán nhãn tên môn học."
+        }
+      ],
+      "kitId": "kit-hop-giay-sang-tao"
+    },
+    {
+      "id": "nha-chim-hop-sua",
+      "material": "paper_box",
+      "title": "Nhà cho chim bằng hộp sữa",
+      "summary": "Hộp sữa giấy có lớp tráng chống nước thành nhà cho chim nhỏ ngoài ban công.",
+      "difficulty": "medium",
+      "durationMinutes": 40,
+      "ageMin": 9,
+      "coverImage": "/images/laviagent/ideas/nha-chim-hop-sua.jpg",
+      "coverAlt": "Ngôi nhà nhỏ cho chim làm từ hộp sữa giấy treo trên cành",
+      "toolsHave": ["Hộp sữa giấy 1 lít đã rửa sạch", "Kéo"],
+      "toolsNeed": ["Que kem hoặc que tre", "Dây treo", "Màu acrylic"],
+      "steps": [
+        {
+          "title": "Khoét cửa",
+          "description": "Khoét một lỗ tròn đường kính khoảng 4 cm ở một mặt hộp.",
+          "safetyNote": "Người lớn khoét lỗ bằng dao rọc giấy."
+        },
+        {
+          "title": "Làm mái và chỗ đậu",
+          "description": "Dán que kem lên nóc làm mái, cắm một que dưới cửa làm chỗ đậu."
+        },
+        {
+          "title": "Tô màu và treo",
+          "description": "Tô màu bên ngoài, đục lỗ nhỏ trên nóc, luồn dây và treo nơi kín gió."
+        }
+      ]
+    },
+    {
+      "id": "hop-bi-mat-giay",
+      "material": "paper_box",
+      "title": "Hộp bí mật có ngăn kéo",
+      "summary": "Ghép các hộp diêm, hộp bánh nhỏ thành tủ ngăn kéo mini cất đồ dùng.",
+      "difficulty": "advanced",
+      "durationMinutes": 75,
+      "ageMin": 11,
+      "coverImage": "/images/laviagent/ideas/hop-bi-mat-giay.jpg",
+      "coverAlt": "Tủ ngăn kéo mini làm từ nhiều hộp giấy nhỏ ghép lại",
+      "toolsHave": ["4–6 hộp giấy nhỏ cùng cỡ", "Kéo", "Thước"],
+      "toolsNeed": ["Bìa carton cứng", "Keo sữa", "Nút áo cũ làm tay nắm"],
+      "steps": [
+        {
+          "title": "Làm khung",
+          "description": "Cắt bìa carton thành khung hộp vừa khít các hộp nhỏ xếp chồng."
+        },
+        {
+          "title": "Làm ngăn kéo",
+          "description": "Cắt nắp các hộp nhỏ để thành ngăn kéo, đính nút áo làm tay nắm."
+        },
+        {
+          "title": "Ghép và trang trí",
+          "description": "Dán khung, lắp ngăn kéo, bọc giấy hoặc tô màu."
+        }
+      ],
+      "kitId": "kit-hop-giay-sang-tao"
+    },
+    {
+      "id": "den-ngu-hu-thuy-tinh",
+      "material": "glass_jar",
+      "title": "Đèn ngủ đom đóm",
+      "summary": "Thả dây đèn LED và lá khô vào hũ thủy tinh: một chiếc đèn ngủ dịu mắt.",
+      "difficulty": "easy",
+      "durationMinutes": 20,
+      "ageMin": 7,
+      "coverImage": "/images/laviagent/ideas/den-ngu-hu-thuy-tinh.jpg",
+      "coverAlt": "Hũ thủy tinh có dây đèn LED nhỏ phát sáng như đom đóm",
+      "toolsHave": ["Hũ thủy tinh có nắp, còn nguyên vẹn"],
+      "toolsNeed": ["Dây đèn LED pin", "Lá khô hoặc hoa khô", "Giấy can (tùy chọn)"],
+      "steps": [
+        {
+          "title": "Kiểm tra hũ",
+          "description": "Rửa sạch, lau khô, kiểm tra hũ không nứt mẻ.",
+          "safetyNote": "Hũ có vết nứt thì không dùng."
+        },
+        {
+          "title": "Sắp xếp bên trong",
+          "description": "Thả lá khô, hoa khô vào hũ, đặt dây đèn LED quấn nhẹ bên trong."
+        },
+        {
+          "title": "Đậy nắp và bật đèn",
+          "description": "Để hộp pin nằm trên nắp hoặc trong hũ, bật đèn. Có thể dán giấy can quanh hũ cho ánh sáng mềm hơn."
+        }
+      ],
+      "kitId": "kit-den-tai-sinh"
+    },
+    {
+      "id": "lo-hoa-quan-day",
+      "material": "glass_jar",
+      "title": "Lọ hoa quấn dây",
+      "summary": "Quấn dây đay hoặc len vụn quanh hũ thủy tinh thành lọ hoa mộc mạc.",
+      "difficulty": "easy",
+      "durationMinutes": 25,
+      "ageMin": 7,
+      "coverImage": "/images/laviagent/ideas/lo-hoa-quan-day.jpg",
+      "coverAlt": "Lọ hoa làm từ hũ thủy tinh quấn dây đay",
+      "toolsHave": ["Hũ thủy tinh", "Kéo"],
+      "toolsNeed": ["Dây đay hoặc len vụn", "Keo sữa"],
+      "steps": [
+        {
+          "title": "Phết keo",
+          "description": "Phết keo sữa một dải quanh đáy hũ."
+        },
+        {
+          "title": "Quấn dây",
+          "description": "Quấn dây từ đáy lên, các vòng sát nhau; phết keo dần theo từng đoạn."
+        },
+        {
+          "title": "Hoàn thiện",
+          "description": "Thắt nơ ở cổ hũ, cắm hoa hoặc cành khô."
+        }
+      ]
+    },
+    {
+      "id": "khay-vo-so-mau",
+      "material": "shell",
+      "title": "Khay nhỏ vỏ sò tô màu",
+      "summary": "Vỏ sò lớn tô màu và phủ bóng thành khay đựng nhẫn, kẹp giấy.",
+      "difficulty": "easy",
+      "durationMinutes": 30,
+      "ageMin": 6,
+      "coverImage": "/images/laviagent/ideas/khay-vo-so-mau.jpg",
+      "coverAlt": "Khay nhỏ làm từ vỏ sò tô màu xanh và vàng",
+      "toolsHave": ["Vỏ sò lớn đã rửa sạch", "Cọ vẽ"],
+      "toolsNeed": ["Màu acrylic gốc nước", "Keo bóng gốc nước"],
+      "steps": [
+        {
+          "title": "Làm sạch vỏ",
+          "description": "Luộc vỏ 10 phút, chải sạch và phơi khô.",
+          "safetyNote": "Luộc vỏ là việc của người lớn."
+        },
+        {
+          "title": "Tô màu",
+          "description": "Tô lớp nền bên trong vỏ, để khô rồi vẽ hoa văn."
+        },
+        {
+          "title": "Phủ bóng",
+          "description": "Phủ một lớp keo bóng để màu bền và dễ lau."
+        }
+      ],
+      "kitId": "kit-vo-so-nghe-thuat"
+    },
+    {
+      "id": "tranh-ghep-vo-so",
+      "material": "shell",
+      "title": "Tranh ghép vỏ sò",
+      "summary": "Ghép mảnh vỏ sò lên bìa thành bức tranh biển, kể câu chuyện vật liệu bị bỏ đi.",
+      "difficulty": "medium",
+      "durationMinutes": 60,
+      "ageMin": 9,
+      "coverImage": "/images/laviagent/ideas/tranh-ghep-vo-so.jpg",
+      "coverAlt": "Bức tranh ghép từ nhiều mảnh vỏ sò trên nền bìa",
+      "toolsHave": ["Vỏ sò nhiều cỡ", "Bìa carton cứng", "Bút chì"],
+      "toolsNeed": ["Keo dán không độc hại", "Màu acrylic"],
+      "steps": [
+        {
+          "title": "Phác thảo",
+          "description": "Vẽ phác bức tranh lên bìa: sóng, cá, mặt trời..."
+        },
+        {
+          "title": "Phân loại vỏ",
+          "description": "Chia vỏ theo cỡ và màu; vỏ vỡ dùng cho chi tiết nhỏ.",
+          "safetyNote": "Cạnh vỏ vỡ có thể sắc, cầm bằng nhíp hoặc đeo găng."
+        },
+        {
+          "title": "Ghép và dán",
+          "description": "Dán vỏ từ chi tiết lớn đến nhỏ theo nét phác."
+        },
+        {
+          "title": "Tô điểm",
+          "description": "Tô màu nền những chỗ trống, ký tên và ghi ngày hoàn thành."
+        }
+      ],
+      "kitId": "kit-vo-so-nghe-thuat"
+    },
+    {
+      "id": "chuong-gio-vo-so",
+      "material": "shell",
+      "title": "Chuông gió vỏ sò",
+      "summary": "Treo vỏ sò trên cành khô thành chuông gió kêu leng keng bên cửa sổ.",
+      "difficulty": "advanced",
+      "durationMinutes": 70,
+      "ageMin": 11,
+      "coverImage": "/images/laviagent/ideas/chuong-gio-vo-so.jpg",
+      "coverAlt": "Chuông gió gồm nhiều vỏ sò treo trên một cành cây khô",
+      "toolsHave": ["10–15 vỏ sò", "Cành cây khô", "Kéo"],
+      "toolsNeed": ["Dây cước", "Mũi khoan tay nhỏ", "Khẩu trang"],
+      "steps": [
+        {
+          "title": "Khoan lỗ vỏ sò",
+          "description": "Khoan một lỗ nhỏ gần bản lề mỗi vỏ.",
+          "safetyNote": "Người lớn khoan; đeo khẩu trang vì bụi vỏ."
+        },
+        {
+          "title": "Xâu dây",
+          "description": "Xâu 3–4 vỏ trên mỗi sợi cước, thắt nút giữa các vỏ."
+        },
+        {
+          "title": "Buộc lên cành",
+          "description": "Buộc các sợi lên cành khô, so le độ dài để vỏ chạm nhau khi có gió."
+        }
+      ]
+    }
+  ]
+}

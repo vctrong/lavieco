@@ -1,0 +1,202 @@
+export const TEXT = {
+  vi: {
+    meta: {
+      title: "LaviAgent: trợ lý tái chế sáng tạo",
+      description:
+        "Chụp món đồ sắp vứt, LaviAgent gợi ý ý tưởng tái chế sáng tạo theo độ khó, hướng dẫn từng bước và KIT của LAVIECO.",
+      ideaTitle: (title: string) => `${title} · Ý tưởng từ LaviAgent`,
+    },
+    name: "LaviAgent",
+    aiBadge: "AI",
+    tagline: "Trợ lý tái chế sáng tạo",
+    mascotAlt: "Linh vật LaviAgent: mầm cây và tia sáng",
+
+    difficulty: { easy: "Dễ", medium: "Trung bình", advanced: "Nâng cao" },
+    minutes: (value: number) => `${value} phút`,
+    ageFrom: (value: number) => `Từ ${value} tuổi`,
+    price: (value: number) => `${value.toLocaleString("vi-VN")} đ`,
+
+    home: {
+      kicker: "Nº 07 · Trợ lý tái chế sáng tạo",
+      greeting:
+        "Chào bạn! Mình là LaviAgent. Đừng vội vứt đi, cho mình xem món đồ, mình gợi ý nó có thể thành gì nhé.",
+      title: "Chụp món đồ sắp vứt, nhận ý tưởng sáng tạo ngay",
+      lead: "Chai nhựa, lon nhôm, hộp giấy, hũ thủy tinh hay vỏ sò: LaviAgent nhận diện chất liệu và gợi ý cách biến chúng thành đồ hữu ích.",
+      dropTitle: "Kéo và thả ảnh món đồ vào đây",
+      dropHint: "Ảnh rõ, đủ sáng, một món đồ ở giữa khung. JPG, PNG, WebP hoặc HEIC.",
+      dropActive: "Thả ảnh để LaviAgent xem nhé",
+      takePhoto: "Chụp ảnh",
+      choosePhoto: "Chọn ảnh từ máy",
+      quickMaterials: "Hoặc chọn nhanh chất liệu",
+      stepsTitle: "Bốn bước từ đồ bỏ đi đến tác phẩm",
+      samplesTitle: "Thử với ảnh mẫu",
+      samplesHint: "Không cần ảnh của bạn: bấm một ảnh mẫu để xem LaviAgent hoạt động.",
+      privacy: "Ảnh chỉ dùng để phân tích, không được lưu lại.",
+    },
+    steps: [
+      { title: "Chụp ảnh", body: "Chụp hoặc chọn ảnh món đồ bạn định bỏ đi." },
+      { title: "AI nhận diện", body: "LaviAgent đoán chất liệu, hình dáng và tình trạng." },
+      { title: "Chọn ý tưởng", body: "Lọc theo độ khó, thời gian và độ tuổi phù hợp." },
+      { title: "Làm cùng KIT", body: "Làm theo từng bước, thiếu gì đã có KIT của LAVIECO." },
+    ],
+
+    review: {
+      title: "Xem lại ảnh",
+      lead: "Ảnh đã rõ món đồ chưa? Nếu ổn, bấm Phân tích.",
+      imageAlt: "Ảnh món đồ bạn vừa chọn",
+      retake: "Chụp lại",
+      analyze: "Phân tích",
+    },
+    analyzing: {
+      title: "LaviAgent đang xem…",
+      messages: ["Đang xem món đồ của bạn…", "Đang đoán chất liệu…", "Đang tìm ý tưởng hay ho…"],
+      cancel: "Huỷ",
+    },
+
+    result: {
+      kicker: "Kết quả nhận diện",
+      detected: "Chất liệu chính",
+      shape: "Hình dáng",
+      condition: "Tình trạng",
+      confidence: (value: number) => `Độ tin cậy ${Math.round(value * 100)}%`,
+      sourceSample: "Kết quả mẫu",
+      sourceManual: "Bạn đã chọn",
+      correct: "Không đúng? Sửa lại",
+      safetyTitle: "Lưu ý an toàn",
+      sharpEdges: "Món đồ có cạnh sắc: đeo găng tay và nhờ người lớn hỗ trợ khi cắt.",
+      potentialTitle: "Tiềm năng tái chế",
+      potentialHint: "Ước tính độ dễ tạo hình và độ bền khi tái chế (số liệu minh hoạ).",
+      ideasTitle: (count: number) => `${count} ý tưởng dành cho bạn`,
+      filterLabel: "Lọc theo độ khó",
+      filterAll: "Tất cả",
+      noIdeas: "Chưa có ý tưởng ở độ khó này. Thử mức khác nhé.",
+      viewIdea: "Xem hướng dẫn",
+      kitAvailable: "Có KIT",
+      retry: "Chụp món đồ khác",
+      askAgent: "Hỏi LaviAgent",
+      imageAlt: (material: string) => `Ảnh món đồ: ${material}`,
+    },
+
+    picker: {
+      title: "Chọn chất liệu",
+      lead: "Chọn chất liệu gần đúng nhất với món đồ của bạn.",
+      offline: "Chế độ demo offline — chọn chất liệu để xem ý tưởng",
+      unknown:
+        "Mình chưa nhận ra món đồ này. Bạn chọn chất liệu gần đúng nhất, hoặc thử một ảnh mẫu nhé.",
+      failed: "Mình chưa phân tích được ảnh lúc này. Bạn chọn chất liệu, hoặc thử một ảnh mẫu nhé.",
+      timeout:
+        "Mạng hơi chậm nên mình chưa xem xong ảnh. Bạn chọn chất liệu, hoặc thử một ảnh mẫu nhé.",
+      network: "Có vẻ bạn đang mất kết nối mạng. Bạn vẫn có thể chọn chất liệu để xem ý tưởng.",
+      rateLimited:
+        "Bạn đã phân tích khá nhiều ảnh rồi. Nghỉ tay một chút nhé, trong lúc đó hãy chọn chất liệu.",
+      correct: "Chọn lại chất liệu đúng của món đồ.",
+      orSamples: "Hoặc thử ảnh mẫu",
+      back: "Về đầu",
+    },
+    imageErrors: {
+      invalid: "Ảnh này mình không đọc được. Bạn thử ảnh JPG, PNG hoặc chụp lại nhé.",
+      heic: "Trình duyệt chưa đọc được ảnh HEIC. Bạn chụp trực tiếp hoặc chọn ảnh JPG/PNG nhé.",
+      tooLarge: "Ảnh quá lớn. Bạn chọn ảnh dưới 20 MB nhé.",
+      dismiss: "Đóng thông báo",
+    },
+    hazard: {
+      kicker: "Đồ cần xử lý đặc biệt",
+      title: "Món này không nên tự tái chế tại nhà",
+      body: "Có vẻ đây là đồ nguy hại. Vì an toàn, LaviAgent không hướng dẫn tái chế món này.",
+      kinds: {
+        none: "Đồ nguy hại",
+        battery: "Pin hoặc ắc quy",
+        light_bulb: "Bóng đèn",
+        broken_glass: "Thủy tinh vỡ",
+        medical_waste: "Rác y tế",
+        chemical: "Hóa chất",
+        other: "Đồ nguy hại",
+      },
+      tipsTitle: "Bạn nên làm gì",
+      tips: [
+        "Để riêng, không bỏ chung với rác sinh hoạt.",
+        "Gói kín (thủy tinh vỡ: bọc nhiều lớp giấy báo, ghi chú bên ngoài).",
+        "Mang tới điểm thu gom rác nguy hại gần nhất; hỏi chính quyền địa phương hoặc cửa hàng điện máy có nhận thu hồi.",
+        "Không đốt, không đập vỡ, không đổ hóa chất xuống cống.",
+      ],
+      another: "Thử món đồ khác",
+    },
+
+    idea: {
+      back: "Ý tưởng khác",
+      backHome: "Về LaviAgent",
+      duration: "Thời lượng",
+      difficulty: "Độ khó",
+      age: "Độ tuổi",
+      have: "Đã có",
+      need: "Cần chuẩn bị",
+      needNone: "Không cần thêm gì.",
+      stepsTitle: "Các bước thực hiện",
+      stepLabel: (index: number) => `Bước ${index}`,
+      safety: "Lưu ý an toàn",
+      generalSafety: "An toàn chung",
+      workshop: "Học trực tiếp tại workshop LAVIECO",
+      workshopHint: "Được hướng dẫn tận tay, cùng bạn bè cùng chí hướng.",
+      handbook: "Mỗi KIT có mã QR dẫn vào Cẩm nang xanh số của LAVIECO.",
+      askAboutIdea: "Hỏi LaviAgent về ý tưởng này",
+    },
+    kit: {
+      kicker: "DIY KIT của LAVIECO",
+      contents: "Trong KIT có",
+      priceNote: "Giá tham khảo; giá chốt do đội LAVIECO xác nhận.",
+      view: "Xem KIT",
+      community:
+        "Mỗi KIT được lắp ráp bởi hộ thu nhập thấp, người khuyết tật và lao động không có thu nhập chính thức — tạo thêm sinh kế cho cộng đồng.",
+    },
+
+    chat: {
+      title: "Hỏi LaviAgent",
+      status: "Trợ lý tái chế sáng tạo",
+      open: "Hỏi LaviAgent",
+      close: "Đóng khung chat",
+      expand: "Mở toàn màn hình",
+      collapse: "Thu nhỏ",
+      dragHandle: "Kéo để mở rộng hoặc thu nhỏ",
+      logLabel: "Cuộc trò chuyện với LaviAgent",
+      welcome: (material: string | null) =>
+        material
+          ? `Chào bạn! Mình thấy bạn đang có **${material.toLowerCase()}**. Bạn muốn hỏi gì thêm về cách làm, dụng cụ hay độ an toàn không?`
+          : "Chào bạn! Bạn đang muốn tái chế món gì? Hỏi mình bất cứ điều gì về đồ tự làm từ phế liệu nhé.",
+      you: "Bạn",
+      agent: "LaviAgent",
+      placeholder: "Hỏi về vật liệu, dụng cụ hoặc mẹo làm…",
+      inputLabel: "Tin nhắn cho LaviAgent",
+      send: "Gửi",
+      attach: "Đính kèm ảnh",
+      removeAttachment: "Bỏ ảnh đính kèm",
+      attachmentAlt: "Ảnh bạn gửi kèm",
+      suggestionsLabel: "Câu hỏi gợi ý",
+      typing: "LaviAgent đang trả lời…",
+      stop: "Dừng",
+      tooLong: (max: number) => `Tin nhắn dài quá, bạn rút gọn dưới ${max} ký tự nhé.`,
+      errors: {
+        rate_limited:
+          "Hôm nay bạn đã hỏi khá nhiều rồi. LaviAgent nghỉ một chút nhé; bạn vẫn có thể bấm các câu hỏi gợi ý.",
+        too_long: "Tin nhắn dài quá, bạn rút gọn lại nhé.",
+        invalid_image: "Ảnh đính kèm chưa hợp lệ. Bạn thử ảnh JPG hoặc PNG khác nhé.",
+        network: "Mất kết nối mạng. Bạn vẫn có thể bấm các câu hỏi gợi ý bên dưới.",
+        unavailable:
+          "LaviAgent đang bận một chút. Bạn thử lại sau, hoặc bấm các câu hỏi gợi ý bên dưới nhé.",
+      },
+      fallbackNote: "Câu trả lời soạn sẵn",
+      privacy: "Ảnh chỉ dùng để trả lời, không được lưu lại.",
+      disclaimer: "LaviAgent là AI, có thể nhầm. Luôn ưu tiên an toàn khi làm.",
+    },
+
+    fab: { label: "Hỏi LaviAgent", short: "Hỏi LaviAgent: chụp đồ, nhận ý tưởng tái chế" },
+
+    intro: {
+      kicker: "LaviAgent · Trợ lý AI",
+      title: "Đừng vội vứt đi — chụp thử xem nó có thể thành gì?",
+      lead: "LaviAgent nhìn món đồ bạn định bỏ, gợi ý ý tưởng tái chế sáng tạo vừa sức, hướng dẫn từng bước an toàn, và KIT của LAVIECO khi bạn cần thêm phụ kiện.",
+      cta: "Thử LaviAgent ngay",
+      note: "Miễn phí · Không cần đăng nhập · Ảnh không được lưu lại",
+      bubble: "Chai nhựa này làm chậu cây tự dưỡng được đó!",
+    },
+  },
+} as const;

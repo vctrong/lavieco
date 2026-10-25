@@ -25,6 +25,7 @@ LAVIECO là nền tảng số của thương hiệu **giáo dục mỹ thuật x
 | Collection, trường, index, giao dịch, quyền riêng tư, migration                                             | `docs/03-co-so-du-lieu.md`     |
 | Đặt file ở đâu, đặt tên, tầng trong service, công thức thêm tính năng/endpoint/service, lộ trình dựng khung | `docs/04-cau-truc-ma-nguon.md` |
 | Biến môi trường (ý nghĩa, cách lấy, dev/prod, liên quan giữa service)                                       | `docs/06-bien-moi-truong.md`   |
+| LaviAgent: trợ lý AI tái chế (demo trong `web`, provider, knowledge, prompt, dữ liệu JSON, env)             | `docs/07-laviagent.md`         |
 
 Chỉ đọc **phần liên quan** (dùng mục lục), đừng nạp cả bốn file. Tên use case `UC-xx`, business rule `BR-xx` trỏ ngược về `docs/01`.
 

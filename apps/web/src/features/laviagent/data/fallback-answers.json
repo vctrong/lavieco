@@ -1,0 +1,31 @@
+{
+  "_note": "NỘI DUNG DEMO. Câu hỏi gợi ý (chip) và câu trả lời viết sẵn, dùng khi chat AI lỗi hoặc LAVIAGENT_DEMO_MODE=offline. Có thể chèn thẻ [[idea:<id>]] / [[kit:<id>]].",
+  "suggestions": [
+    {
+      "id": "khong-co-sung-keo",
+      "question": "Không có súng bắn keo thì sao?",
+      "answer": "Không sao đâu bạn! Mình gợi ý mấy cách thay súng bắn keo:\n\n- **Keo sữa** (keo trắng): an toàn cho trẻ, chỉ cần chờ khô lâu hơn, khoảng 30 phút.\n- **Băng keo giấy hai mặt**: hợp với giấy, bìa carton.\n- **Buộc dây** hoặc **luồn bấc**: nhiều ý tưởng như chậu cây tự dưỡng không cần keo.\n\nKeo nóng có thể gây bỏng, nên với bạn nhỏ thì keo sữa là lựa chọn an toàn hơn.\n\n[[idea:chau-cay-tu-duong]]"
+    },
+    {
+      "id": "lam-cho-lop-5",
+      "question": "Làm cho em lớp 5 được không?",
+      "answer": "Được nhé! Với bạn lớp 5 (khoảng 10 tuổi), bạn nên:\n\n1. Chọn ý tưởng độ khó **Dễ**.\n2. Để **người lớn làm các bước cắt, đục lỗ**; em nhỏ phụ trách tô màu, trang trí, trồng cây.\n3. Dùng **keo sữa** thay keo nóng.\n\nVí dụ ý tưởng hợp với lớp 5:\n\n[[idea:ong-but-chu-heo]]"
+    },
+    {
+      "id": "mat-bao-lau",
+      "question": "Mất bao lâu?",
+      "answer": "Phần lớn ý tưởng **Dễ** mất khoảng **20–30 phút**, ý tưởng **Trung bình** 40–60 phút, còn **Nâng cao** có thể hơn một giờ. Thời gian từng ý tưởng ghi ngay trên thẻ. Mẹo nhỏ: rửa sạch và phơi khô vật liệu từ hôm trước sẽ đỡ mất thời gian hơn."
+    },
+    {
+      "id": "mua-kit-o-dau",
+      "question": "KIT của LAVIECO có gì?",
+      "answer": "Mỗi KIT có đủ phụ kiện khó tìm (bấc cotton, đèn LED an toàn, màu gốc nước...) và một thẻ có mã QR dẫn vào **Cẩm nang xanh số** của LAVIECO. Mỗi KIT được lắp ráp bởi hộ thu nhập thấp, người khuyết tật và lao động không có thu nhập chính thức.\n\n[[kit:kit-chau-tu-duong]]"
+    },
+    {
+      "id": "workshop-o-dau",
+      "question": "Có lớp học trực tiếp không?",
+      "answer": "Có nhé! LAVIECO tổ chức **workshop trải nghiệm** tại Cần Thơ, nơi bạn được hướng dẫn tận tay biến phế liệu thành tác phẩm. Bạn xem lịch ở mục **Chương trình** trên website."
+    }
+  ],
+  "offlineDefault": "Mình đang chạy ở chế độ demo offline nên chỉ trả lời được các câu hỏi gợi ý bên dưới. Bạn bấm thử một câu nhé!"
+}

@@ -14,6 +14,7 @@ import { groupNavItems } from "../utils/group-nav-items";
 import { isNavItemActive } from "../utils/is-nav-item-active";
 import { AccountPanelBody, NeutralAccountLink, type LogoutAction } from "./account-menu";
 import { BrandLogo } from "./brand-logo";
+import { LaviAgentDrawerCard } from "./laviagent-link";
 import { fullTitleOf } from "./nav-links";
 
 const t = TEXT.vi;
@@ -109,7 +110,11 @@ export function MobileDrawer({ logoutAction }: { logoutAction: LogoutAction }) {
           </div>
 
           <div className="flex-1 overflow-y-auto overscroll-contain px-5 pb-6">
-            <DrawerAccount logoutAction={logoutAction} onNavigate={close} />
+            <LaviAgentDrawerCard onNavigate={close} />
+
+            <div className="mt-4">
+              <DrawerAccount logoutAction={logoutAction} onNavigate={close} />
+            </div>
 
             <nav aria-label={t.primaryNavLabel} className="mt-8">
               <ul className="space-y-4">
