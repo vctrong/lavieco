@@ -41,10 +41,10 @@ export function Navbar({ logoutAction }: NavbarProps) {
 
       <div className="flex items-center gap-2.5 justify-self-end lg:gap-3 xl:gap-4">
         {/* LaviAgent stands apart from the links, next to the CTA (phones: drawer + FAB). */}
-        <div className="hidden lg:block">
+        <div className="hidden lg:flex lg:items-center">
           <LaviAgentPill />
         </div>
-        <span aria-hidden="true" className="hidden h-6 w-px bg-hairline lg:block" />
+        <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-hairline lg:block" />
         <div className="hidden lg:block">
           <AccountMenu logoutAction={logoutAction} />
         </div>

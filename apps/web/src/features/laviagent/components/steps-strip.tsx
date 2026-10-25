@@ -18,7 +18,7 @@ export function StepsStrip({
   return (
     <ol
       className={cn(
-        "-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] md:mx-0 md:grid md:grid-cols-4 md:overflow-visible md:px-0",
+        "flex min-w-0 snap-x gap-3 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none] md:grid md:grid-cols-4 md:overflow-visible",
         className,
       )}
     >
@@ -28,7 +28,7 @@ export function StepsStrip({
           <li
             key={step.title}
             className={cn(
-              "w-[15.5rem] shrink-0 snap-start rounded-3xl border p-5 md:w-auto",
+              "w-[min(15.5rem,80%)] shrink-0 snap-start rounded-3xl border p-5 md:w-auto",
               dark ? "border-hairline-light bg-soft-white/5" : "border-hairline bg-soft-white",
             )}
           >

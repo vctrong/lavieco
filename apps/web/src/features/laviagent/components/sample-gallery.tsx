@@ -13,21 +13,16 @@ type SampleGalleryProps = {
 /** "Thử với ảnh mẫu": one photo per material, a fixed answer and no API call. */
 export function SampleGallery({ materials, onPick, className }: SampleGalleryProps) {
   return (
-    <ul
-      className={cn(
-        "-mx-6 flex snap-x gap-3 overflow-x-auto px-6 pb-2 [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-5 sm:overflow-visible sm:px-0",
-        className,
-      )}
-    >
+    <ul className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5", className)}>
       {materials.map((material) => (
-        <li key={material.id} className="w-28 shrink-0 snap-start sm:w-auto">
+        <li key={material.id} className="min-w-0">
           <button type="button" onClick={() => onPick(material)} className="group w-full text-left">
             <span className="relative block aspect-[3/4] overflow-hidden rounded-t-[3rem] rounded-b-2xl border border-hairline bg-mint-mist">
               <Image
                 src={material.sample.image}
                 alt={material.sample.alt}
                 fill
-                sizes="(min-width: 640px) 18vw, 112px"
+                sizes="(min-width: 1024px) 160px, (min-width: 640px) 30vw, 45vw"
                 className="object-cover transition-transform duration-500 group-hover:scale-105"
               />
             </span>

@@ -25,7 +25,7 @@ export function MaterialChips({
       className={cn(
         grid
           ? "grid grid-cols-2 gap-3 sm:grid-cols-3"
-          : "-mx-6 flex snap-x gap-2 overflow-x-auto px-6 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0",
+          : "flex min-w-0 snap-x gap-2 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none] sm:flex-wrap",
         className,
       )}
     >

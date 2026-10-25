@@ -55,7 +55,7 @@ export function MessageBubble({ message, catalog, known, streaming }: MessageBub
             ) : null,
           )}
           {text ? (
-            <p className="whitespace-pre-wrap rounded-3xl rounded-br-md bg-deep-blue px-4 py-2.5 text-sm leading-relaxed text-soft-white">
+            <p className="whitespace-pre-wrap break-words rounded-3xl rounded-br-md bg-deep-blue px-4 py-2.5 text-sm leading-relaxed text-soft-white">
               {text}
             </p>
           ) : null}
@@ -107,7 +107,7 @@ export function AgentBubble({
         <span className="sr-only">{t.agent}</span>
         <div
           className={cn(
-            "space-y-2.5 rounded-3xl rounded-tl-md border border-hairline bg-soft-white px-4 py-3 text-sm leading-relaxed text-charcoal shadow-ambient",
+            "space-y-2.5 break-words rounded-3xl rounded-tl-md border border-hairline bg-soft-white px-4 py-3 text-sm leading-relaxed text-charcoal shadow-ambient",
           )}
         >
           {children}

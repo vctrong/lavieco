@@ -35,7 +35,7 @@ export function IdeaDetail({ idea, catalog }: { idea: Idea; catalog: Catalog }) 
           {material ? `${t.idea.back} · ${material.name}` : t.idea.backHome}
         </Link>
 
-        <header className="grid gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-end lg:gap-14">
+        <header className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-end lg:gap-14">
           <div className="relative aspect-[4/3] overflow-hidden rounded-t-[6rem] rounded-b-[1.5rem] border border-hairline bg-mint-mist shadow-hero-arch-soft sm:rounded-t-[10rem]">
             <Image
               src={idea.coverImage}
@@ -50,27 +50,32 @@ export function IdeaDetail({ idea, catalog }: { idea: Idea; catalog: Catalog }) 
             <Eyebrow className="mb-3">
               {t.name} · {material?.name}
             </Eyebrow>
-            <h1 className="font-display text-4xl font-light leading-[1.1] tracking-tight text-deep-blue sm:text-5xl">
+            <h1 className="font-display text-4xl font-light leading-[1.1] tracking-tight break-words text-deep-blue sm:text-5xl">
               {idea.title}
             </h1>
             <p className="mt-4 text-base leading-relaxed text-charcoal/75">{idea.summary}</p>
             <dl className="mt-6 grid grid-cols-3 gap-3">
               {stats.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="rounded-2xl bg-mint-mist p-3 text-center">
+                <div
+                  key={label}
+                  className="min-w-0 rounded-2xl bg-mint-mist p-2.5 text-center sm:p-3"
+                >
                   <Icon aria-hidden="true" size={16} className="mx-auto text-emerald-ink" />
-                  <dt className="mt-1.5 text-[11px] uppercase tracking-museum text-charcoal/55">
+                  <dt className="mt-1.5 text-[10px] uppercase tracking-wide break-words text-charcoal/55 sm:text-[11px] sm:tracking-museum">
                     {label}
                   </dt>
-                  <dd className="mt-0.5 text-sm font-semibold text-deep-blue">{value}</dd>
+                  <dd className="mt-0.5 text-sm font-semibold break-words text-deep-blue">
+                    {value}
+                  </dd>
                 </div>
               ))}
             </dl>
           </div>
         </header>
 
-        <div className="mt-12 grid gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-14">
+        <div className="mt-12 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-14">
           <div className="min-w-0 space-y-12">
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <IdeaChecklist
                 title={t.idea.have}
                 items={idea.toolsHave}

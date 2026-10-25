@@ -101,8 +101,8 @@ export function HomeScreen({
         </div>
       </div>
 
-      <div className="mt-8 grid gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-14">
-        <div>
+      <div className="mt-8 grid grid-cols-1 gap-10 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)] lg:gap-14">
+        <div className="min-w-0">
           <h1 className="font-display text-4xl font-light leading-[1.1] tracking-tight text-deep-blue sm:text-5xl lg:text-[3.4rem]">
             {t.home.title}
           </h1>
@@ -179,11 +179,7 @@ export function HomeScreen({
         <aside className="rounded-[2rem] bg-mint-mist/60 p-5 sm:p-7 lg:self-start">
           <h2 className="font-display text-2xl text-deep-blue">{t.home.samplesTitle}</h2>
           <p className="mb-5 mt-1 text-sm text-charcoal/70">{t.home.samplesHint}</p>
-          <SampleGallery
-            materials={materials}
-            onPick={onPickSample}
-            className="sm:grid-cols-3 lg:grid-cols-3"
-          />
+          <SampleGallery materials={materials} onPick={onPickSample} />
         </aside>
       </div>
 

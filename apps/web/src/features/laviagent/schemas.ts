@@ -22,7 +22,7 @@ export const DIFFICULTIES = ["easy", "medium", "advanced"] as const;
 export const difficultySchema = z.enum(DIFFICULTIES);
 
 /** Feather icon names allowed in materials.json (mapped to components in constants/icons.ts). */
-export const MATERIAL_ICON_NAMES = ["droplet", "disc", "package", "coffee", "anchor"] as const;
+export const MATERIAL_ICON_NAMES = ["droplet", "disc", "package", "coffee", "feather"] as const;
 
 const imagePathSchema = z.string().regex(/^\/images\/laviagent\/[a-z0-9/-]+\.(jpg|png|webp)$/);
 const idSchema = z.string().regex(/^[a-z0-9-]{3,60}$/);

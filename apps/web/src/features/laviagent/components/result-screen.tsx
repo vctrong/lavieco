@@ -68,7 +68,7 @@ export function ResultScreen({
     <div className="pb-28 lg:grid lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-10 lg:pb-0 xl:grid-cols-[minmax(0,1fr)_420px]">
       <div className="min-w-0">
         {/* Material card */}
-        <section className="grid gap-6 rounded-[2rem] border border-hairline bg-soft-white p-5 shadow-ambient sm:grid-cols-[180px_minmax(0,1fr)] sm:p-6">
+        <section className="grid grid-cols-1 gap-6 rounded-[2rem] border border-hairline bg-soft-white p-5 shadow-ambient sm:grid-cols-[180px_minmax(0,1fr)] sm:p-6">
           <PhotoFrame
             image={shownImage}
             alt={image?.kind === "sample" ? image.alt : t.result.imageAlt(material.name)}
@@ -126,7 +126,7 @@ export function ResultScreen({
         </section>
 
         {/* Safety + potential */}
-        <div className="mt-5 grid gap-5 md:grid-cols-2">
+        <div className="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2">
           <section className="flex gap-3 rounded-[1.5rem] border border-canary bg-canary/10 p-5">
             <FiAlertTriangle
               aria-hidden="true"
@@ -153,7 +153,7 @@ export function ResultScreen({
             <div
               role="group"
               aria-label={t.result.filterLabel}
-              className="-mx-6 flex gap-2 overflow-x-auto px-6 pb-1 [scrollbar-width:none] sm:mx-0 sm:px-0"
+              className="flex min-w-0 gap-2 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none]"
             >
               {(["all", ...DIFFICULTIES] as const).map((value) => {
                 const active = filter === value;
@@ -184,7 +184,7 @@ export function ResultScreen({
             </div>
           </div>
           {visible.length > 0 ? (
-            <ul className="grid gap-5 sm:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-5 sm:grid-cols-2">
               {visible.map((idea) => (
                 <li key={idea.id}>
                   <IdeaCard idea={idea} />
@@ -200,7 +200,7 @@ export function ResultScreen({
 
         {/* KIT + workshop */}
         {kit ? (
-          <section className="mt-12 grid gap-6 rounded-[2rem] bg-mint-mist/60 p-5 sm:p-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
+          <section className="mt-12 grid grid-cols-1 gap-6 rounded-[2rem] bg-mint-mist/60 p-5 sm:p-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-start">
             <KitCard kit={kit} />
             <WorkshopLink />
           </section>

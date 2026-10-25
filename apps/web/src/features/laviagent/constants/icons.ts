@@ -1,4 +1,4 @@
-import { FiAnchor, FiCoffee, FiDisc, FiDroplet, FiPackage } from "react-icons/fi";
+import { FiCoffee, FiDisc, FiDroplet, FiFeather, FiPackage } from "react-icons/fi";
 
 import type { Material } from "../types";
 
@@ -8,5 +8,6 @@ export const MATERIAL_ICONS: Record<Material["icon"], typeof FiDroplet> = {
   disc: FiDisc,
   package: FiPackage,
   coffee: FiCoffee,
-  anchor: FiAnchor,
+  // Feather has no shell; a feather reads as "natural material" without the sea cliché.
+  feather: FiFeather,
 };

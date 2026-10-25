@@ -27,6 +27,10 @@ function AiBadge() {
  * LaviAgent in the bar: a pill with a slowly drifting Emerald → Canary ring, set apart
  * from the plain links and next to the CTA. The ring stops under reduced motion (global
  * rule in theme.css). From 1280px the name shows; below, the mascot and badge only.
+ *
+ * The link must be a box (`inline-flex`), never a plain inline element: an inline <a>
+ * around a flex child is split into empty fragments that keep the padding and the
+ * gradient, which drew a stray Emerald line beside the pill.
  */
 export function LaviAgentPill() {
   const active = isNavItemActive(usePathname(), LAVIAGENT_HREF);
@@ -35,7 +39,7 @@ export function LaviAgentPill() {
       href={LAVIAGENT_HREF}
       aria-label={t.label}
       aria-current={active ? "page" : undefined}
-      className="group/agent agent-ring animate-agent-shimmer rounded-full p-[1.5px] transition-shadow duration-300 hover:shadow-neon-emerald-soft"
+      className="group/agent agent-ring animate-agent-shimmer isolate inline-flex shrink-0 items-center overflow-hidden rounded-full p-[1.5px] align-middle transition-shadow duration-300 hover:shadow-neon-emerald-soft"
     >
       <span
         className={cn(
@@ -57,7 +61,7 @@ export function LaviAgentDrawerCard({ onNavigate }: { onNavigate: () => void }) 
     <Link
       href={LAVIAGENT_HREF}
       onClick={onNavigate}
-      className="agent-ring animate-agent-shimmer block rounded-2xl p-[1.5px] shadow-ambient"
+      className="agent-ring animate-agent-shimmer isolate block overflow-hidden rounded-2xl p-[1.5px] shadow-ambient"
     >
       <span className="flex items-center gap-3 rounded-[calc(1rem-1.5px)] bg-soft-white p-3">
         <LaviAgentMascot className="size-11" />

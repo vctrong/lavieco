@@ -63,8 +63,8 @@
     },
     {
       "id": "shell",
-      "name": "Vỏ sò, vỏ hải sản",
-      "icon": "anchor",
+      "name": "Vỏ sò",
+      "icon": "feather",
       "description": "Vỏ sò, vỏ nghêu, vỏ hàu: chất liệu minh chứng đầu tiên của LAVIECO.",
       "safetyNote": "Rửa và luộc sạch vỏ trước khi dùng. Cạnh vỏ vỡ có thể sắc; mài cạnh và rửa tay sau khi làm. Bột vỏ khi mài cần đeo khẩu trang.",
       "recyclePotential": 95,

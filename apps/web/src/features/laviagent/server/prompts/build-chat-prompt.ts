@@ -1,5 +1,6 @@
 import "server-only";
 
+import { staticData } from "../knowledge/catalog";
 import type { ChatKnowledge } from "../knowledge/knowledge-source";
 import { ideaPassage } from "../knowledge/static-knowledge-source";
 import { CHAT_SYSTEM_PROMPT } from "./system-prompt";
@@ -16,10 +17,12 @@ export function buildChatInstructions(knowledge: ChatKnowledge): string {
     "# NGỮ CẢNH (dữ liệu của LAVIECO, chỉ dùng thông tin này cho ý tưởng và KIT)",
   ];
 
+  const material = staticData().materials.find((item) => item.id === knowledge.material);
   lines.push(
-    knowledge.material
-      ? `Vật liệu người dùng đang xem: ${knowledge.material}.`
-      : "Người dùng chưa chọn vật liệu.",
+    material
+      ? // The visitor already showed or chose it: never ask again whether they have one.
+        `Chất liệu của người dùng ĐÃ BIẾT: ${material.name} (${material.id}), được nhận diện từ ảnh hoặc do người dùng chọn. Coi như họ đang có món đồ này; trả lời thẳng cho chất liệu này, KHÔNG hỏi lại họ có món đồ gì hay là chất liệu gì.`
+      : 'Chưa biết chất liệu. Nếu tin nhắn của người dùng nhắc tới món đồ (ví dụ "lon bia" là lon nhôm, "hộp sữa" là hộp giấy), tự suy ra chất liệu và gợi ý ngay; chỉ hỏi lại khi thật sự không đoán được.',
   );
   if (knowledge.focusIdea) {
     lines.push(`Ý tưởng đang mở: ${knowledge.focusIdea.id}.`);

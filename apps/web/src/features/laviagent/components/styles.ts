@@ -6,7 +6,7 @@ export const BOTTOM_BAR =
 
 /** Bottom-bar buttons: 48px tall, tight padding so two fit side by side at 360px. */
 export const BAR_BUTTON =
-  "inline-flex min-h-12 items-center justify-center gap-2 whitespace-nowrap rounded-full px-3 text-sm transition-transform active:scale-[0.98]";
+  "inline-flex min-h-12 min-w-0 items-center justify-center gap-2 rounded-full px-3 text-center text-sm leading-tight transition-transform active:scale-[0.98]";
 
 export const BAR_PRIMARY = "bg-emerald-brand font-bold text-charcoal shadow-emerald-cta";
 export const BAR_SECONDARY =

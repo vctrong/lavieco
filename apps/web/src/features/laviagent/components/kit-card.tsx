@@ -26,7 +26,9 @@ export function KitCard({ kit }: { kit: Kit }) {
         <div>
           <Eyebrow className="mb-1.5">{t.kit.kicker}</Eyebrow>
           <div className="flex items-start justify-between gap-3">
-            <h3 className="font-display text-xl leading-snug text-deep-blue">{kit.name}</h3>
+            <h3 className="min-w-0 break-words font-display text-xl leading-snug text-deep-blue">
+              {kit.name}
+            </h3>
             <p className="shrink-0 font-display text-xl text-emerald-ink">{t.price(kit.price)}</p>
           </div>
           <p className="mt-1 text-sm text-charcoal/75">{kit.summary}</p>

@@ -26,8 +26,8 @@ export function LaviAgentIntroSection({ materials }: { materials: Material[] }) 
       className="relative overflow-hidden deep-sea-pattern py-20 text-soft-white md:py-28"
     >
       <Container>
-        <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
-          <div>
+        <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-16">
+          <div className="min-w-0">
             <Eyebrow tone="mint" className="mb-4 flex items-center gap-2">
               <span className="inline-flex rounded-full bg-canary px-1.5 text-[10px] font-bold tracking-normal text-charcoal">
                 {t.aiBadge}
