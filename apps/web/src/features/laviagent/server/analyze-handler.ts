@@ -1,5 +1,7 @@
 import "server-only";
 
+import { laviagentEnv } from "@/lib/env";
+
 import {
   ANALYZE_IP_LIMIT,
   ANALYZE_SESSION_LIMIT,
@@ -11,8 +13,10 @@ import {
 import type { AnalyzeResponse, ClassifyResult } from "../types";
 import { sniffImageType } from "../utils/sniff-image";
 import { aiProvider, isOffline } from "./ai/get-provider";
-import { logProviderError } from "./log";
+import { demoShellResult } from "./demo-shell";
+import { logOutcome, logProviderError } from "./log";
 import { clientIpOf, consume, isSameOrigin, readSession } from "./rate-limit";
+import type { StreamOutcome } from "./stream-outcome";
 
 const STATUS: Record<string, number> = {
   invalid_image: 400,
@@ -41,9 +45,7 @@ export function settle(result: ClassifyResult): ClassifyResult {
  */
 export async function handleAnalyze(request: Request): Promise<Response> {
   if (!isSameOrigin(request)) return respond({ status: "error", reason: "unavailable" });
-  const provider = aiProvider();
-  if (isOffline(provider)) return respond({ status: "offline" });
-
+  const startedAt = Date.now();
   const session = readSession(request);
   const ip = clientIpOf(request);
   if (
@@ -73,18 +75,40 @@ export async function handleAnalyze(request: Request): Promise<Response> {
   const mediaType = sniffImageType(bytes);
   if (!mediaType) return respond({ status: "error", reason: "invalid_image" }, session.setCookie);
 
+  // Pitch mode (independent of offline): the photo was checked, the model is not called.
+  if (laviagentEnv().LAVIAGENT_DEMO_VO_SO) {
+    logOutcome("analyze", { provider: "demo_vo_so", outcome: "demo_shell", totalMs: 0 });
+    return respond({ status: "ok", result: demoShellResult() }, session.setCookie);
+  }
+  const provider = aiProvider();
+  if (isOffline(provider)) return respond({ status: "offline" }, session.setCookie);
+
   const timeout = AbortSignal.timeout(ANALYZE_TIMEOUT_MS);
+  const report = (outcome: StreamOutcome) =>
+    logOutcome("analyze", {
+      provider: provider.id,
+      model: provider.model,
+      outcome,
+      totalMs: Date.now() - startedAt,
+    });
   try {
     const result = await provider.classifyImage(
       { mediaType, bytes },
       { signal: AbortSignal.any([timeout, request.signal]) },
     );
+    report("completed");
     return respond({ status: "ok", result: settle(result) }, session.setCookie);
   } catch (error) {
     if (timeout.aborted) {
+      report("total_timeout");
       return respond({ status: "error", reason: "timeout" }, session.setCookie);
     }
+    if (request.signal.aborted) {
+      report("stopped");
+      return respond({ status: "error", reason: "unavailable" }, session.setCookie);
+    }
     logProviderError("analyze", provider, error);
+    report("provider_error");
     return respond({ status: "error", reason: "unavailable" }, session.setCookie);
   }
 }

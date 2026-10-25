@@ -10,6 +10,7 @@ export { LaviAgentFab } from "./components/laviagent-fab";
 export { LaviAgentIntroSection } from "./components/intro-section";
 export { handleAnalyze } from "./server/analyze-handler";
 export { handleChat } from "./server/chat-handler";
+export { logLaviagentStartup } from "./server/startup";
 export { getCatalog as getLaviagentCatalog } from "./server/knowledge/catalog";
 export type { Catalog as LaviagentCatalog } from "./types";
 

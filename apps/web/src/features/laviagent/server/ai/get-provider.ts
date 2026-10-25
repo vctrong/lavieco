@@ -21,7 +21,7 @@ export function aiProvider(): AIProvider {
   } else if (env.LAVIAGENT_AI_PROVIDER === "lavieco") {
     instance = new LaviecoModelProvider();
   } else if (env.GEMINI_API_KEY) {
-    instance = new GeminiProvider(env.GEMINI_API_KEY, env.GEMINI_MODEL);
+    instance = new GeminiProvider(env.GEMINI_API_KEY, env.GEMINI_MODEL, env.GEMINI_THINKING);
   } else {
     instance = new OfflineProvider();
   }

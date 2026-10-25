@@ -37,7 +37,8 @@ export const RESIZE_MAX_SIDE = 1024;
 export const RESIZE_QUALITY = 0.85;
 /** What the server accepts after resizing (Caddy caps request bodies at 4 MB). */
 export const MAX_UPLOAD_BYTES = 3 * 1024 * 1024;
-export const ACCEPTED_IMAGE_TYPES = "image/jpeg,image/png,image/webp,image/heic,image/heif";
+/** Any image the device offers; the client converts it to JPEG and reports what it cannot read. */
+export const ACCEPTED_IMAGE_TYPES = "image/*";
 
 /** The client gives up and offers samples / manual choice after this (the server too). */
 export const ANALYZE_TIMEOUT_MS = 8_000;
@@ -55,7 +56,15 @@ export const CHAT_IP_WINDOW_MS = 60 * 60 * 1000;
 export const ANALYZE_SESSION_LIMIT = 15;
 export const ANALYZE_IP_LIMIT = 40;
 export const ANALYZE_WINDOW_MS = 10 * 60 * 1000;
+/** No first word from the model by then: it is stuck, give up (separate from the total). */
+export const CHAT_FIRST_CHUNK_TIMEOUT_MS = 15_000;
 export const CHAT_TIMEOUT_MS = 30_000;
+/**
+ * The scan animation stays at least this long (plus up to the jitter), even when the
+ * answer is instant (pitch mode, docs/07 §4.4): a result that pops up looks fake.
+ */
+export const ANALYZE_MIN_DISPLAY_MS = 2_500;
+export const ANALYZE_MIN_DISPLAY_JITTER_MS = 1_000;
 
 /** Pages where the floating button would cover a primary action (checkout, tickets). */
 export const FAB_HIDDEN_PREFIXES: readonly string[] = [

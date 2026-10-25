@@ -52,17 +52,33 @@
     {
       "id": "kit-vo-so-nghe-thuat",
       "name": "KIT Vỏ sò nghệ thuật",
-      "summary": "Vỏ sò đã xử lý sạch cùng màu và đế gỗ, đúng chất liệu minh chứng của LAVIECO.",
+      "summary": "Vỏ sò đã xử lý sạch cùng phụ kiện để làm móc khóa, phone charm, dây chuyền hoặc tranh ghép.",
       "price": 149000,
       "contents": [
         "Vỏ sò đã làm sạch và phân cỡ",
-        "Đế gỗ tái chế",
-        "Bộ màu acrylic gốc nước",
+        "Khoen móc khóa, dây sáp, móc dán",
+        "Giấy nhám mịn",
         "Keo dán không độc hại",
         "Thẻ hướng dẫn có mã QR vào Cẩm nang"
       ],
       "image": "/images/laviagent/kits/kit-vo-so-nghe-thuat.jpg",
-      "imageAlt": "Bộ KIT vỏ sò nghệ thuật với vỏ sò sạch, đế gỗ và màu acrylic",
+      "imageAlt": "Bộ KIT vỏ sò nghệ thuật với vỏ sò sạch, khoen móc khóa và dây",
+      "productUrl": "/bo-suu-tap"
+    },
+    {
+      "id": "kit-gom-vo-so",
+      "name": "KIT Gốm vỏ sò",
+      "summary": "Bột vỏ sò đã xử lý, chất kết dính và khuôn silicone để tự đúc chậu cây mini, lót ly hoặc đĩa trang sức.",
+      "price": 189000,
+      "contents": [
+        "Bột vỏ sò đã làm sạch và nghiền mịn",
+        "Chất kết dính gốc khoáng, kèm tỷ lệ trộn",
+        "Khuôn silicone: chậu mini, lót ly, đĩa nhỏ",
+        "Giấy nhám, găng tay, khẩu trang",
+        "Thẻ hướng dẫn có mã QR vào Cẩm nang"
+      ],
+      "image": "/images/laviagent/kits/kit-gom-vo-so.jpg",
+      "imageAlt": "Bộ KIT gốm vỏ sò với bột vỏ, chất kết dính và khuôn silicone",
       "productUrl": "/bo-suu-tap"
     }
   ]

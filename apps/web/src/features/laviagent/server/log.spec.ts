@@ -25,11 +25,23 @@ describe("logProviderError", () => {
     expect(JSON.stringify(logger.error.mock.calls)).not.toContain("requestBodyValues");
   });
 
-  it("logs other failures as warnings", () => {
+  it("logs other provider failures as errors", () => {
     logProviderError("analyze", { id: "gemini" }, new Error("boom"));
-    expect(logger.warn).toHaveBeenCalledWith(
-      "laviagent analyze failed",
+    expect(logger.error).toHaveBeenCalledWith(
+      "laviagent analyze provider error",
       expect.objectContaining({ errorName: "Error" }),
+    );
+  });
+
+  it("reads the status through the SDK's retry wrapper (503 = overloaded model)", () => {
+    const retry = Object.assign(new Error("Failed after 2 attempts"), {
+      name: "AI_RetryError",
+      lastError: apiError(503),
+    });
+    logProviderError("chat", { id: "gemini", model: "gemini-3.8-flash" }, retry);
+    expect(logger.error).toHaveBeenCalledWith(
+      expect.stringContaining("overloaded"),
+      expect.objectContaining({ statusCode: 503, model: "gemini-3.8-flash" }),
     );
   });
 });

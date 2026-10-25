@@ -27,6 +27,22 @@ export const MATERIAL_ICON_NAMES = ["droplet", "disc", "package", "coffee", "she
 const imagePathSchema = z.string().regex(/^\/images\/laviagent\/[a-z0-9/-]+\.(jpg|png|webp)$/);
 const idSchema = z.string().regex(/^[a-z0-9-]{3,60}$/);
 
+export const ideaStepSchema = z.object({
+  title: z.string().min(1),
+  description: z.string().min(1),
+  image: imagePathSchema.optional(),
+  safetyNote: z.string().min(1).optional(),
+});
+
+/** A preparation shared by every idea of a material (e.g. cleaning shells). */
+export const preparationSchema = z.object({
+  title: z.string().min(1),
+  summary: z.string().min(1),
+  durationLabel: z.string().min(1),
+  steps: z.array(ideaStepSchema).min(1).max(12),
+  safetyNote: z.string().min(1),
+});
+
 export const materialSchema = z.object({
   id: materialIdSchema,
   name: z.string().min(1),
@@ -36,6 +52,8 @@ export const materialSchema = z.object({
   safetyNote: z.string().min(1),
   /** Words that point to this material in a chat message (no diacritics needed). */
   keywords: z.array(z.string().min(2)).min(1),
+  /** Done once before any idea of this material; shown on its idea pages and given to the chat. */
+  preparation: preparationSchema.optional(),
   /** 0–100, drives the "tiềm năng tái chế" meter. Demo value. */
   recyclePotential: z.number().int().min(0).max(100),
   /** Fixed answer for "Thử với ảnh mẫu" (no API call). */
@@ -46,13 +64,6 @@ export const materialSchema = z.object({
     condition: z.string().min(1),
     confidence: z.number().min(0).max(1),
   }),
-});
-
-export const ideaStepSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(1),
-  image: imagePathSchema.optional(),
-  safetyNote: z.string().min(1).optional(),
 });
 
 export const ideaSchema = z.object({

@@ -7,6 +7,7 @@ import { ACCEPTED_IMAGE_TYPES } from "../../constants/config";
 import { TEXT } from "../../constants/text";
 import { textOf, useConversation } from "../../hooks/use-conversation";
 import type { AgentMessage, Catalog } from "../../types";
+import { prefersNativeCapture } from "../../utils/camera";
 import { prepareImage, type PrepareFailure, type PreparedImage } from "../../utils/resize-image";
 import type { CardActions } from "../cards";
 import { AnalyzingBubble } from "./analyzing-bubble";
@@ -14,6 +15,7 @@ import { Composer } from "./composer";
 import { EmptyState } from "./empty-state";
 import { AgentBubble, MessageBubble } from "./message-bubble";
 import { TypingDots } from "./typing-dots";
+import { WebcamDialog } from "./webcam-dialog";
 
 const t = TEXT.vi;
 
@@ -22,6 +24,14 @@ const IMAGE_NOTICE: Record<PrepareFailure, string> = {
   heic: t.imageErrors.heic,
   too_large: t.imageErrors.tooLarge,
 };
+
+/** The photo (thumbnail or sample) of the user message just before `index`, if any. */
+function photoBefore(messages: readonly AgentMessage[], index: number): string | null {
+  const previous = messages[index - 1];
+  if (previous?.role !== "user") return null;
+  const file = previous.parts.find((part) => part.type === "file");
+  return file?.type === "file" ? file.url : null;
+}
 
 /** Changes when something worth saving changed (not on every streamed token). */
 const persistKey = (messages: readonly AgentMessage[]) => {
@@ -54,6 +64,7 @@ export function ConversationView({
   const [attachment, setAttachment] = useState<PreparedImage | null>(null);
   const [imageNotice, setImageNotice] = useState<PrepareFailure | null>(null);
   const [dragging, setDragging] = useState(false);
+  const [webcamOpen, setWebcamOpen] = useState(false);
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const logRef = useRef<HTMLDivElement>(null);
@@ -117,6 +128,13 @@ export function ConversationView({
     }
   };
 
+  // Phones: the camera app through `capture`. Laptops: the webcam dialog.
+  const openCamera = () => {
+    if (prefersNativeCapture()) cameraRef.current?.click();
+    else setWebcamOpen(true);
+  };
+  const openGallery = () => galleryRef.current?.click();
+
   const onDrop = (event: DragEvent<HTMLDivElement>) => {
     event.preventDefault();
     setDragging(false);
@@ -140,7 +158,7 @@ export function ConversationView({
     <input
       ref={ref}
       type="file"
-      accept={capture ? "image/*" : ACCEPTED_IMAGE_TYPES}
+      accept={ACCEPTED_IMAGE_TYPES}
       // `capture` opens the camera directly on phones; desktops fall back to a file picker.
       {...(capture ? { capture: "environment" as const } : {})}
       className="sr-only"
@@ -173,8 +191,8 @@ export function ConversationView({
           <EmptyState
             catalog={catalog}
             dragging={dragging}
-            onOpenCamera={() => cameraRef.current?.click()}
-            onOpenGallery={() => galleryRef.current?.click()}
+            onOpenCamera={openCamera}
+            onOpenGallery={openGallery}
             onPickMaterial={(material) => controls.pickMaterial(material)}
             onPickSample={controls.pickSample}
             onAsk={controls.ask}
@@ -194,6 +212,7 @@ export function ConversationView({
                 known={known}
                 streaming={streaming && index === messages.length - 1}
                 actions={actions}
+                photo={photoBefore(messages, index)}
               />
             ))}
             {controls.analyzing ? (
@@ -217,11 +236,18 @@ export function ConversationView({
         </div>
       ) : null}
 
+      <WebcamDialog
+        open={webcamOpen}
+        onClose={() => setWebcamOpen(false)}
+        onCapture={(file) => void takeFile(file)}
+        onFallback={openGallery}
+      />
+
       <Composer
         attachment={attachment}
         onRemoveAttachment={() => setAttachment(null)}
-        onOpenCamera={() => cameraRef.current?.click()}
-        onOpenGallery={() => galleryRef.current?.click()}
+        onOpenCamera={openCamera}
+        onOpenGallery={openGallery}
         onSubmit={submit}
         onStop={controls.stop}
         busy={busy}

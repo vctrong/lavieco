@@ -27,7 +27,29 @@ const modelAnswerSchema = z.object({
   sharpEdges: z.boolean(),
 });
 
-const CHAT_MAX_OUTPUT_TOKENS = 700;
+/**
+ * Gemini counts thinking tokens in the output budget: the cap must leave room for a
+ * short answer after the thinking, or the answer comes back empty.
+ */
+const CHAT_MAX_OUTPUT_TOKENS = 2_048;
+
+export type GeminiThinking = "off" | "minimal" | "low" | "medium" | "high";
+
+/** Gemini 2.5 takes a token budget; later generations a level ("off" → their lowest). */
+const THINKING_BUDGET_25: Record<GeminiThinking, number> = {
+  off: 0,
+  minimal: 0,
+  low: 512,
+  medium: 2_048,
+  high: 8_192,
+};
+const THINKING_LEVEL: Record<GeminiThinking, "minimal" | "low" | "medium" | "high"> = {
+  off: "minimal",
+  minimal: "minimal",
+  low: "low",
+  medium: "medium",
+  high: "high",
+};
 const clip = (value: string, max: number) => value.trim().slice(0, max);
 
 /**
@@ -44,18 +66,19 @@ export class GeminiProvider implements AIProvider {
   constructor(
     apiKey: string,
     readonly model: string,
+    private readonly thinking: GeminiThinking,
   ) {
     this.google = createGoogle({ apiKey });
   }
 
   /**
-   * Speed over depth: classification and short chat answers do not need long thinking.
-   * Gemini 2.5 takes a token budget, later generations a level.
+   * Speed over depth: classification and short chat answers need little thinking
+   * (GEMINI_THINKING, default "low"). Thoughts are never sent back to us.
    */
   private providerOptions(): { google: GoogleLanguageModelOptions } {
     const thinkingConfig = this.model.startsWith("gemini-2.5")
-      ? { thinkingBudget: 0 }
-      : { thinkingLevel: "low" as const };
+      ? { thinkingBudget: THINKING_BUDGET_25[this.thinking], includeThoughts: false }
+      : { thinkingLevel: THINKING_LEVEL[this.thinking], includeThoughts: false };
     return { google: { thinkingConfig } };
   }
 

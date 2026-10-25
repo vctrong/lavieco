@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useState } from "react";
 import { FiAlertTriangle, FiEdit2, FiHeart, FiInfo, FiShield, FiX } from "react-icons/fi";
 
@@ -44,10 +45,13 @@ export function AnalysisCard({
   data,
   catalog,
   actions,
+  photo = null,
 }: {
   data: AgentDataTypes["analysis"];
   catalog: Catalog;
   actions: CardActions;
+  /** The visitor's own photo (thumbnail) the card answers, if any. */
+  photo?: string | null;
 }) {
   const [filter, setFilter] = useState<Difficulty | "all">("all");
   const [correcting, setCorrecting] = useState(false);
@@ -64,9 +68,25 @@ export function AnalysisCard({
   return (
     <article className={CARD}>
       <header className="flex items-start gap-3">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-mint-mist text-emerald-ink">
-          <Icon aria-hidden="true" size={22} />
-        </span>
+        {photo ? (
+          <span className="relative shrink-0">
+            <Image
+              src={photo}
+              alt={t.chat.sentImageAlt}
+              width={72}
+              height={72}
+              unoptimized={photo.startsWith("data:")}
+              className="size-[72px] rounded-2xl border border-hairline object-cover"
+            />
+            <span className="absolute -bottom-1.5 -right-1.5 flex size-7 items-center justify-center rounded-full border-2 border-soft-white bg-mint-mist text-emerald-ink">
+              <Icon aria-hidden="true" size={14} />
+            </span>
+          </span>
+        ) : (
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-full bg-mint-mist text-emerald-ink">
+            <Icon aria-hidden="true" size={22} />
+          </span>
+        )}
         <div className="min-w-0 flex-1">
           <Eyebrow className="mb-1">
             {source === "sample"

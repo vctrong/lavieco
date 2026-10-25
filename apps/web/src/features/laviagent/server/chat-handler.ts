@@ -1,6 +1,6 @@
 import "server-only";
 
-import { createUIMessageStreamResponse } from "ai";
+import { createUIMessageStreamResponse, type UIMessageChunk } from "ai";
 import { z } from "zod";
 
 import {
@@ -10,6 +10,7 @@ import {
   CHAT_MESSAGE_MAX_CHARS,
   CHAT_SESSION_LIMIT,
   CHAT_SESSION_WINDOW_MS,
+  CHAT_FIRST_CHUNK_TIMEOUT_MS,
   CHAT_TIMEOUT_MS,
   MAX_UPLOAD_BYTES,
 } from "../constants/config";
@@ -21,7 +22,8 @@ import { aiProvider } from "./ai/get-provider";
 import { staticData } from "./knowledge/catalog";
 import { knowledgeSource } from "./knowledge/composite-knowledge-source";
 import type { ChatKnowledge } from "./knowledge/knowledge-source";
-import { logProviderError } from "./log";
+import { logOutcome, logProviderError } from "./log";
+import { TIMEOUT_REASONS, classifyStreamEnd, type StreamOutcome } from "./stream-outcome";
 import { buildChatInstructions } from "./prompts/build-chat-prompt";
 import { clientIpOf, consume, isSameOrigin, readSession } from "./rate-limit";
 
@@ -179,18 +181,107 @@ export async function handleChat(request: Request): Promise<Response> {
     undefined;
   const knowledge = await gatherKnowledge(lastText, { ...context, material });
   const provider = aiProvider();
+  const timeouts = new AbortController();
+  const startedAt = Date.now();
+  // Two clocks: no first word within 15 s means the model is stuck; 30 s caps the answer.
+  const firstChunkTimer = setTimeout(
+    () => timeouts.abort(TIMEOUT_REASONS.firstChunk),
+    CHAT_FIRST_CHUNK_TIMEOUT_MS,
+  );
+  const totalTimer = setTimeout(() => timeouts.abort(TIMEOUT_REASONS.total), CHAT_TIMEOUT_MS);
+  const clearTimers = () => {
+    clearTimeout(firstChunkTimer);
+    clearTimeout(totalTimer);
+  };
   try {
     const stream = provider.chatStream(
       { instructions: buildChatInstructions(knowledge), turns, knowledge },
-      { signal: AbortSignal.any([AbortSignal.timeout(CHAT_TIMEOUT_MS), request.signal]) },
+      { signal: AbortSignal.any([timeouts.signal, request.signal]) },
     );
     const headers = new Headers({ "cache-control": "no-store" });
     if (session.setCookie) headers.set("set-cookie", session.setCookie);
-    return createUIMessageStreamResponse({ stream, headers });
+    return createUIMessageStreamResponse({
+      stream: monitorStream(stream, {
+        onFirstText: () => clearTimeout(firstChunkTimer),
+        timeoutReason: () => (timeouts.signal.aborted ? String(timeouts.signal.reason) : null),
+        clientAborted: () => request.signal.aborted,
+        onEnd: (outcome, firstChunkMs) => {
+          clearTimers();
+          logOutcome("chat", {
+            provider: provider.id,
+            model: provider.model,
+            outcome,
+            firstChunkMs,
+            totalMs: Date.now() - startedAt,
+          });
+        },
+        startedAt,
+      }),
+      headers,
+    });
   } catch (error) {
+    clearTimers();
     logProviderError("chat", provider, error);
     return Response.json({ status: "error", reason: "unavailable" }, { status: 503 });
   }
+}
+
+/** What the browser gets when the server gives up waiting: a readable `error` chunk. */
+const TIMEOUT_ERROR_TEXT = JSON.stringify({ status: "error", reason: "timeout" });
+
+/**
+ * Watches the UI message stream without changing the answer: notes the first text,
+ * errors and aborts, and reports how it ended. A server timeout turns the `abort` chunk
+ * into an `error` chunk, so the browser shows a message instead of a silent stop.
+ */
+function monitorStream(
+  stream: ReadableStream<UIMessageChunk>,
+  hooks: {
+    onFirstText: () => void;
+    timeoutReason: () => string | null;
+    clientAborted: () => boolean;
+    onEnd: (outcome: StreamOutcome, firstChunkMs: number | undefined) => void;
+    startedAt: number;
+  },
+): ReadableStream<UIMessageChunk> {
+  let firstChunkMs: number | undefined;
+  let sawError = false;
+  let aborted = false;
+  let ended = false;
+  const end = () => {
+    if (ended) return;
+    ended = true;
+    hooks.onEnd(
+      classifyStreamEnd({
+        sawText: firstChunkMs !== undefined,
+        sawError,
+        aborted,
+        timeoutReason: hooks.timeoutReason(),
+        clientAborted: hooks.clientAborted(),
+      }),
+      firstChunkMs,
+    );
+  };
+  return stream.pipeThrough(
+    new TransformStream<UIMessageChunk, UIMessageChunk>({
+      transform(chunk, controller) {
+        if (chunk.type === "text-delta" && firstChunkMs === undefined) {
+          firstChunkMs = Date.now() - hooks.startedAt;
+          hooks.onFirstText();
+        }
+        if (chunk.type === "error") sawError = true;
+        if (chunk.type === "abort") {
+          aborted = true;
+          if (hooks.timeoutReason() && !hooks.clientAborted()) {
+            controller.enqueue({ type: "error", errorText: TIMEOUT_ERROR_TEXT });
+            return;
+          }
+        }
+        controller.enqueue(chunk);
+      },
+      flush: end,
+    }),
+  );
 }
 
 /**

@@ -6,6 +6,8 @@ import { useCallback, useState } from "react";
 
 import {
   ANALYZE_ENDPOINT,
+  ANALYZE_MIN_DISPLAY_JITTER_MS,
+  ANALYZE_MIN_DISPLAY_MS,
   ANALYZE_TIMEOUT_MS,
   CHAT_ENDPOINT,
   CHAT_HISTORY_LIMIT,
@@ -28,7 +30,8 @@ import { makeThumbnail, type PreparedImage } from "../utils/resize-image";
 
 const t = TEXT.vi.chat;
 
-export type ChatFailure = "rate_limited" | "too_long" | "invalid_image" | "network" | "unavailable";
+export type ChatFailure =
+  "rate_limited" | "too_long" | "invalid_image" | "timeout" | "network" | "unavailable";
 
 /** Route errors and mid-stream errors both arrive as `{ status, reason }` JSON text. */
 export function chatFailureOf(error: Error | undefined): ChatFailure | null {
@@ -38,7 +41,12 @@ export function chatFailureOf(error: Error | undefined): ChatFailure | null {
     const body: unknown = JSON.parse(error.message);
     if (body && typeof body === "object" && "reason" in body) {
       const reason = String(body.reason);
-      if (reason === "rate_limited" || reason === "too_long" || reason === "invalid_image") {
+      if (
+        reason === "rate_limited" ||
+        reason === "too_long" ||
+        reason === "invalid_image" ||
+        reason === "timeout"
+      ) {
         return reason;
       }
     }
@@ -69,6 +77,23 @@ export const textOf = (message: AgentMessage | undefined) =>
     .map((part) => (part.type === "text" ? part.text : ""))
     .join("")
     .trim() ?? "";
+
+/**
+ * Resolves true at `time`, or false as soon as the visitor cancels ("cancel" reason; a
+ * timeout abort has already produced its own message and must not be dropped).
+ */
+function waitUntil(time: number, signal: AbortSignal): Promise<boolean> {
+  const cancelled = () => signal.aborted && signal.reason === "cancel";
+  return new Promise((resolve) => {
+    if (cancelled()) return resolve(false);
+    const timer = window.setTimeout(() => resolve(true), Math.max(0, time - Date.now()));
+    signal.addEventListener("abort", () => {
+      if (!cancelled()) return;
+      window.clearTimeout(timer);
+      resolve(false);
+    });
+  });
+}
 
 /** The material of the newest analysis card: what the conversation is about. */
 export function currentMaterial(messages: readonly AgentMessage[]): MaterialId | null {
@@ -232,9 +257,28 @@ class AgentConversation {
     if (text) this.send(text);
   }
 
+  /**
+   * The analysis, shown for at least ANALYZE_MIN_DISPLAY_MS (+ a little jitter) so an
+   * instant answer (pitch mode, a cached model) still reads as "looking at the photo".
+   */
   private async analyze(blob: Blob): Promise<AgentMessage | "cancelled"> {
     const controller = new AbortController();
     this.analyzeController = controller;
+    const showUntil =
+      Date.now() + ANALYZE_MIN_DISPLAY_MS + Math.random() * ANALYZE_MIN_DISPLAY_JITTER_MS;
+    try {
+      const outcome = await this.requestAnalysis(blob, controller);
+      if (outcome === "cancelled") return outcome;
+      return (await waitUntil(showUntil, controller.signal)) ? outcome : "cancelled";
+    } finally {
+      this.analyzeController = null;
+    }
+  }
+
+  private async requestAnalysis(
+    blob: Blob,
+    controller: AbortController,
+  ): Promise<AgentMessage | "cancelled"> {
     const timer = window.setTimeout(() => controller.abort("timeout"), ANALYZE_TIMEOUT_MS);
     const form = new FormData();
     form.append("image", blob, "photo.jpg");
@@ -268,7 +312,6 @@ class AgentConversation {
       return picker(navigator.onLine ? "failed" : "network");
     } finally {
       window.clearTimeout(timer);
-      this.analyzeController = null;
     }
   }
 

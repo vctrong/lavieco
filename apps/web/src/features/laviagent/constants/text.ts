@@ -121,6 +121,7 @@ export const TEXT = {
       have: "Đã có",
       need: "Cần chuẩn bị",
       needNone: "Không cần thêm gì.",
+      preparationKicker: "Chuẩn bị chung",
       stepsTitle: "Các bước thực hiện",
       stepLabel: (index: number) => `Bước ${index}`,
       safety: "Lưu ý an toàn",
@@ -169,12 +170,29 @@ export const TEXT = {
         too_long: "Tin nhắn dài quá, bạn rút gọn lại nhé.",
         invalid_image: "Ảnh đính kèm chưa hợp lệ. Bạn thử ảnh JPG hoặc PNG khác nhé.",
         network: "Mất kết nối mạng. Bạn vẫn có thể bấm các câu hỏi gợi ý bên dưới.",
+        timeout:
+          "LaviAgent nghĩ hơi lâu nên mình dừng lại. Bạn thử hỏi lại, hoặc bấm các câu hỏi gợi ý bên dưới nhé.",
         unavailable:
           "LaviAgent đang bận một chút. Bạn thử lại sau, hoặc bấm các câu hỏi gợi ý bên dưới nhé.",
       },
       fallbackNote: "Câu trả lời soạn sẵn",
       disclaimer: "LaviAgent là AI, có thể nhầm. Luôn ưu tiên an toàn khi làm.",
       dropOverlay: "Thả ảnh vào đây để gửi",
+    },
+
+    webcam: {
+      title: "Chụp ảnh món đồ",
+      close: "Đóng máy ảnh",
+      preview: "Xem trước từ máy ảnh",
+      capturedAlt: "Ảnh vừa chụp",
+      starting: "Đang mở máy ảnh…",
+      shoot: "Chụp",
+      retake: "Chụp lại",
+      use: "Dùng ảnh này",
+      denied:
+        "Trình duyệt chưa được phép dùng máy ảnh. Bạn có thể cho phép trong cài đặt của trình duyệt, hoặc chọn ảnh có sẵn trên máy.",
+      unavailable: "Không tìm thấy máy ảnh trên thiết bị này. Bạn chọn ảnh có sẵn trên máy nhé.",
+      fallback: "Chọn ảnh từ máy",
     },
 
     history: {

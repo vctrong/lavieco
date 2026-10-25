@@ -51,7 +51,13 @@ export class StaticKnowledgeSource implements KnowledgeSource {
     if (current) {
       passages.push({
         source: `Vật liệu: ${current.id}`,
-        text: `${current.name}. ${current.description} An toàn: ${current.safetyNote}`,
+        text: `${current.name}. ${current.description} An toàn: ${current.safetyNote}${
+          current.preparation
+            ? ` Bước chuẩn bị chung "${current.preparation.title}": ${current.preparation.steps
+                .map((step, index) => `${index + 1}. ${step.title}: ${step.description}`)
+                .join(" ")} (${current.preparation.safetyNote})`
+            : ""
+        }`,
       });
     }
     const ranked = ideas

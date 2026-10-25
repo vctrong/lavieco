@@ -25,9 +25,18 @@ type MessageBubbleProps = {
   /** The answer still arriving: hide half-written card tokens. */
   streaming: boolean;
   actions: CardActions;
+  /** Thumbnail of the photo right before this message (shown in its analysis card). */
+  photo?: string | null;
 };
 
-export function MessageBubble({ message, catalog, known, streaming, actions }: MessageBubbleProps) {
+export function MessageBubble({
+  message,
+  catalog,
+  known,
+  streaming,
+  actions,
+  photo = null,
+}: MessageBubbleProps) {
   if (message.role === "user") {
     const text = textOf(message);
     return (
@@ -67,7 +76,15 @@ export function MessageBubble({ message, catalog, known, streaming, actions }: M
   // Cards posted by LaviAgent itself (no model): full width, no bubble.
   const cards = message.parts.flatMap((part, index) => {
     if (part.type === "data-analysis") {
-      return [<AnalysisCard key={index} data={part.data} catalog={catalog} actions={actions} />];
+      return [
+        <AnalysisCard
+          key={index}
+          data={part.data}
+          catalog={catalog}
+          actions={actions}
+          photo={photo}
+        />,
+      ];
     }
     if (part.type === "data-hazard") return [<HazardCard key={index} data={part.data} />];
     if (part.type === "data-picker") {

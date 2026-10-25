@@ -87,9 +87,43 @@
       "id": "shell",
       "name": "Vỏ sò",
       "icon": "shell",
-      "description": "Vỏ sò, vỏ nghêu, vỏ hàu: chất liệu minh chứng đầu tiên của LAVIECO.",
-      "safetyNote": "Rửa và luộc sạch vỏ trước khi dùng. Cạnh vỏ vỡ có thể sắc; mài cạnh và rửa tay sau khi làm. Bột vỏ khi mài cần đeo khẩu trang.",
+      "description": "Vỏ sò, vỏ nghêu, vỏ hàu: chất liệu minh chứng đầu tiên của LAVIECO, thu gom từ quán ăn và chợ hải sản ở Cần Thơ.",
+      "safetyNote": "Luôn làm sạch vỏ theo quy trình chung trước (dùng nước javel: đeo găng tay, làm nơi thoáng khí, phần này do người lớn làm). Cạnh vỏ vỡ có thể sắc: mài nhẹ bằng giấy nhám. Khi mài hoặc nghiền vỏ phải đeo khẩu trang vì bụi mịn.",
       "keywords": ["vỏ sò", "vỏ nghêu", "vỏ hàu", "vỏ ốc", "vỏ hến", "vỏ hải sản", "sò", "ốc"],
+      "preparation": {
+        "title": "Làm sạch vỏ sò (bước chung)",
+        "summary": "Mọi ý tưởng từ vỏ sò đều bắt đầu bằng bước này, theo quy trình LAVIECO dùng ở xưởng: vỏ sạch, khô, không còn mùi.",
+        "durationLabel": "Khoảng 1 giờ làm, cộng 3–4 giờ ngâm và 1 ngày phơi",
+        "steps": [
+          {
+            "title": "Xịt nước mạnh",
+            "description": "Xịt nước thật mạnh để trôi hết rêu, cặn bẩn và phần thịt còn bám."
+          },
+          {
+            "title": "Luộc vỏ",
+            "description": "Luộc vỏ trong nồi nước sôi để phần thịt còn sót bong ra hết.",
+            "safetyNote": "Nước sôi: người lớn làm bước này."
+          },
+          {
+            "title": "Ngâm javel pha loãng",
+            "description": "Ngâm vỏ trong nước javel pha loãng 3–4 tiếng, hoặc lâu hơn nếu vỏ còn bẩn.",
+            "safetyNote": "Đeo găng tay, làm nơi thoáng khí, để xa tầm tay trẻ em."
+          },
+          {
+            "title": "Chà kỹ",
+            "description": "Dùng bàn chải chà kỹ những chỗ còn dính bẩn."
+          },
+          {
+            "title": "Xả sạch",
+            "description": "Xả nước nhiều lần cho đến khi vỏ hết hẳn mùi javel."
+          },
+          {
+            "title": "Phơi nắng gắt",
+            "description": "Phơi vỏ dưới nắng gắt 1 ngày cho thật khô trước khi dùng."
+          }
+        ],
+        "safetyNote": "Đeo găng tay khi dùng javel, làm nơi thoáng khí. Trẻ em không tự làm bước này: người lớn làm phần luộc và ngâm javel."
+      },
       "recyclePotential": 95,
       "sample": {
         "image": "/images/laviagent/samples/shell.jpg",

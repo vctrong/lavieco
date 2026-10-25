@@ -82,6 +82,52 @@ export function IdeaDetail({ idea, catalog }: { idea: Idea; catalog: Catalog }) 
               />
             </div>
 
+            {material?.preparation ? (
+              <section className="rounded-[1.75rem] bg-mint-mist/70 p-5 sm:p-6">
+                <p className="text-xs font-semibold uppercase tracking-museum text-emerald-ink">
+                  {t.idea.preparationKicker}
+                </p>
+                <h2 className="mt-1 font-display text-2xl text-deep-blue">
+                  {material.preparation.title}
+                </h2>
+                <p className="mt-1 text-sm text-charcoal/75">{material.preparation.summary}</p>
+                <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-deep-blue">
+                  <FiClock aria-hidden="true" size={13} />
+                  {material.preparation.durationLabel}
+                </p>
+                <ol className="mt-4 space-y-3">
+                  {material.preparation.steps.map((step, index) => (
+                    <li key={step.title} className="flex gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="flex size-7 shrink-0 items-center justify-center rounded-full bg-soft-white text-sm font-semibold text-emerald-ink"
+                      >
+                        {index + 1}
+                      </span>
+                      <div className="min-w-0 text-sm leading-relaxed">
+                        <p className="font-semibold text-deep-blue">{step.title}</p>
+                        <p className="text-charcoal/80">{step.description}</p>
+                        {step.safetyNote ? (
+                          <p className="mt-1 text-xs text-charcoal">
+                            <span className="font-semibold">{t.idea.safety}: </span>
+                            {step.safetyNote}
+                          </p>
+                        ) : null}
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-4 flex gap-2 rounded-xl border border-canary bg-canary/10 px-3 py-2 text-xs leading-relaxed text-charcoal">
+                  <FiAlertTriangle
+                    aria-hidden="true"
+                    size={13}
+                    className="mt-0.5 shrink-0 text-deep-blue"
+                  />
+                  {material.preparation.safetyNote}
+                </p>
+              </section>
+            ) : null}
+
             <section>
               <h2 className="mb-6 font-display text-3xl text-deep-blue">{t.idea.stepsTitle}</h2>
               <ol className="space-y-5">

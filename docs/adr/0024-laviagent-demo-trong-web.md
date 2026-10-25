@@ -25,6 +25,9 @@ Repo có luật: logic nghiệp vụ ở service, `web` chỉ là BFF (CLAUDE.md
 7. **Chat-first, card do client tạo** (quyết định 25/10/2026): `/laviagent` là khung chat (nhóm route `(agent)`, không footer). Card kết quả phân tích ảnh, ảnh mẫu, chip chất liệu là data part do client tạo từ `/analyze` hoặc dữ liệu cố định, không dùng tool calling: nhanh, chạy được offline, không tốn lượt gọi mô hình. Server đổi card thành dòng tóm tắt khi đưa lịch sử cho mô hình.
 8. **Lịch sử trò chuyện chỉ trên thiết bị** (`ChatHistoryStore` → `LocalChatHistoryStore`, localStorage, ≤ 30 cuộc, ≤ 60 tin/cuộc, ảnh chỉ còn thumbnail ~96px). Đồng bộ theo tài khoản là `TODO(laviagent-server-history)`.
 
+9. **Máy ảnh trên laptop** (25/10/2026): nút "Chụp ảnh" mở hộp thoại webcam bằng `getUserMedia` khi thiết bị không phải cảm ứng (trình duyệt desktop bỏ qua `capture`). Header `Permissions-Policy` đổi `camera=()` thành `camera=(self)`: chỉ chính site được xin quyền máy ảnh, không trao cho origin hay iframe khác; micro và vị trí vẫn tắt. Trình duyệt vẫn hỏi người dùng trước khi bật máy ảnh; ảnh không rời máy cho tới khi người dùng gửi.
+10. **Chế độ diễn demo vỏ sò** (`LAVIAGENT_DEMO_VO_SO`, 25/10/2026): chỉ khi thuyết trình, phân tích ảnh trả kết quả vỏ sò cố định, chat vẫn là AI thật; mặc định `false`, log cảnh báo lúc khởi động khi bật.
+
 ## Điều kiện để tách thành `laviagent-service`
 
 Một trong các điều kiện sau thì dựng service theo `docs/04` §13.3 (cổng nội bộ, service token từ `web`, database riêng):

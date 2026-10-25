@@ -47,6 +47,9 @@ export function googleSignInEnabled(): boolean {
   return Boolean(env.GOOGLE_CLIENT_ID && env.GOOGLE_REDIRECT_URI);
 }
 
+/** Logged at start-up when `.env.local` (or the server env) overrides it. */
+export const DEFAULT_GEMINI_MODEL = "gemini-3.8-flash";
+
 const laviagentEnvSchema = z.object({
   /** Which AIProvider answers (docs/07). Only "gemini" exists today. */
   LAVIAGENT_AI_PROVIDER: z.enum(["gemini", "lavieco"]).default("gemini"),
@@ -55,7 +58,21 @@ const laviagentEnvSchema = z.object({
   /** Google AI Studio key. Server only; empty = offline mode. */
   GEMINI_API_KEY: z.string().default(""),
   /** Model names change over time: list them with GET …/v1beta/models (docs/07 §7). */
-  GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
+  GEMINI_MODEL: z.string().min(1).default(DEFAULT_GEMINI_MODEL),
+  /**
+   * How much the model "thinks" before answering, for chat and analyze. Lower is faster.
+   * Gemini 2.5 takes a token budget (off = 0); later models a level, and some refuse
+   * "minimal" (HTTP 400, logged with its status).
+   */
+  GEMINI_THINKING: z.enum(["off", "minimal", "low", "medium", "high"]).default("low"),
+  /**
+   * Pitch mode: every photo "is" a seashell (fixed analysis, no model call), chat stays
+   * real. Only while presenting; must be false in production (docs/07 §4.4).
+   */
+  LAVIAGENT_DEMO_VO_SO: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
 });
 
 export type LaviagentEnv = z.infer<typeof laviagentEnvSchema>;

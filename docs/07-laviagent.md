@@ -68,7 +68,10 @@ UI (client) ──fetch──▶ /api/laviagent/analyze ─┐
 - `confidence < 0.55` → `unknown` (trừ khi `hazardous`). Đồ nguy hại (pin, bóng đèn, thủy tinh vỡ, rác y tế, hoá chất) → `safetyFlags.hazardous = true`, UI từ chối lịch sự + mẹo chung.
 - Hết 8 giây → `timeout`; client cũng tự huỷ ở 8 giây và đưa ra bộ chọn thủ công + ảnh mẫu.
 - Giới hạn trong bộ nhớ: chat 20 tin/phiên/ngày và 60 tin/IP/giờ; phân tích 15 ảnh/phiên và 40 ảnh/IP mỗi 10 phút. Phiên = cookie `lv_agent` (UUID ngẫu nhiên, httpOnly, `Path=/api/laviagent`). Chặn POST từ origin khác (không cho trang khác tiêu hạn mức).
-- **Không lưu ảnh, không log ảnh hay nội dung chat.** Log chỉ có `provider` và tên lỗi.
+- **Thời gian chờ chat:** 15 giây cho chunk chữ đầu tiên (model kẹt thì bỏ sớm) và 30 giây cho cả câu trả lời, đặt trong `chat-handler.ts`. Hết giờ, server đổi chunk `abort` thành chunk `error` có `reason: "timeout"` để trình duyệt hiện câu "LaviAgent nghĩ hơi lâu…"; người dùng bấm Dừng thì không coi là lỗi.
+- **Log mỗi request** (`server/log.ts`, `stream-outcome.ts`): `operation`, `provider`, `model` (đọc từ env lúc chạy), `firstChunkMs`, `totalMs`, `outcome` ∈ `completed` · `first_chunk_timeout` · `total_timeout` · `provider_error` · `empty` (info, warn, warn, error). Lỗi provider log thêm `statusCode` và gợi ý: 400 (tuỳ chọn model không hỗ trợ, ví dụ `GEMINI_THINKING`), 404 (model đã ngừng), 429 (hạn mức), 503 (model quá tải phía Google). Người dùng bấm Dừng: không log.
+- **Lúc khởi động** (`src/instrumentation.ts`): log info khi `GEMINI_MODEL` khác mặc định (biết ngay `.env.local` có đè hay không), cảnh báo khi `LAVIAGENT_DEMO_VO_SO` bật, info khi chạy offline.
+- **Không lưu ảnh, không log ảnh, nội dung chat hay key.** Log chỉ có tên, mã trạng thái và thời gian.
 
 ## 4. Màn hình và dự phòng khi demo
 
@@ -86,6 +89,16 @@ UI (client) ──fetch──▶ /api/laviagent/analyze ─┐
 ### 4.2 Dự phòng
 
 **Ảnh mẫu** trả kết quả cố định không gọi API; analyze lỗi/timeout → card chọn chất liệu + ảnh mẫu; **chip gợi ý** luôn có, chat lỗi (kể cả lỗi giữa stream, mất kết nối, câu trả lời rỗng) thì câu trùng chip được trả bằng câu viết sẵn (`fallback-answers.json`, ghi "Câu trả lời soạn sẵn"), câu khác hiện thông báo thân thiện trên ô nhập; `LAVIAGENT_DEMO_MODE=offline` chạy hoàn toàn không mạng.
+
+### 4.4 Chế độ diễn demo vỏ sò (`LAVIAGENT_DEMO_VO_SO`)
+
+**Chỉ dùng khi thuyết trình, nhớ tắt khi deploy thật.** Khi `true`, `/api/laviagent/analyze` vẫn kiểm tra ảnh (định dạng, dung lượng) nhưng không gọi Gemini, trả kết quả cố định (`server/demo-shell.ts`): vỏ sò, "Vỏ sò nguyên vẹn, đã làm sạch", độ tin cậy 96%. Client vẫn chạy hiệu ứng quét trên ảnh của người dùng ít nhất 2,5–3,5 giây (áp dụng cho mọi lần phân tích, `ANALYZE_MIN_DISPLAY_MS`), card hiện như kết quả nhận diện bình thường (không có nhãn "Kết quả mẫu") kèm thumbnail ảnh của người dùng. Sau đó ngữ cảnh là vỏ sò và chat tiếp với Gemini thật. Độc lập với `LAVIAGENT_DEMO_MODE=offline`: nếu bật cả hai, phân tích ảnh vẫn ra vỏ sò, chat trả lời bằng câu viết sẵn. Server log cảnh báo một lần lúc khởi động khi chế độ này bật.
+
+Vỏ sò có **bước chuẩn bị chung** "Làm sạch vỏ sò" (`materials.json` → `preparation`): xịt nước, luộc, ngâm javel pha loãng 3–4 tiếng, chà, xả hết mùi, phơi nắng 1 ngày; hiện trên mọi trang ý tưởng vỏ sò và được đưa vào ngữ cảnh chat. Ý tưởng: móc khóa / phone charm / dây chuyền (dễ), tranh ghép (trung bình), gốm từ bột vỏ sò (nâng cao, KIT Gốm vỏ sò).
+
+### 4.5 Chụp ảnh
+
+Hai input riêng: "Chọn ảnh từ máy" (`accept="image/*"`, không `capture`) và "Chụp ảnh" (`capture="environment"`). Chọn cách chụp theo khả năng, không theo user agent (`utils/camera.ts`): thiết bị cảm ứng (`pointer: coarse`) hoặc trình duyệt không có `getUserMedia` dùng input `capture` (mở thẳng camera sau); laptop dùng hộp thoại webcam (`webcam-dialog.tsx`: xem trước, chụp, chụp lại, dùng ảnh này; đóng là dừng stream). Bị từ chối quyền hoặc không có camera thì báo thân thiện và chuyển sang chọn file. Vì vậy header `Permissions-Policy` là `camera=(self)` (ADR-024 mục 9).
 
 ### 4.3 Lịch sử trò chuyện
 
@@ -138,7 +151,7 @@ Mọi tệp ở `apps/web/src/features/laviagent/data/` đều được kiểm t
 1. Vào **Google AI Studio** (`https://aistudio.google.com`), đăng nhập tài khoản Google của đội.
 2. Chọn **Get API key** → **Create API key** (chọn hoặc tạo một Google Cloud project riêng cho LAVIECO; dev và prod nên là hai project/khoá khác nhau).
 3. Dán vào `apps/web/.env.local`: `GEMINI_API_KEY=...` (không commit, không gửi qua chat). Production: `/opt/lavieco/env/web.env`.
-4. `GEMINI_MODEL` mặc định `gemini-3.8-flash`. **Bị giới hạn tần suất (lỗi 429, LaviAgent báo "đang bận") thì đổi `GEMINI_MODEL` sang bản Flash-Lite** rồi khởi động lại `web`.
+4. `GEMINI_MODEL` mặc định `gemini-3.8-flash`. Đo ngày 25/10/2026 với key của đội: `gemini-3.8-flash` và `gemini-3.7-flash` không trả lời trong 45 giây (quá tải phía Google), `gemini-3.5-flash` ~4 giây tới chữ đầu, `gemini-3.5-flash-lite` ~1,3 giây; `gemini-3.8-flash` từ chối `GEMINI_THINKING=minimal` (HTTP 400). Model nào cũng có thể quá tải theo giờ: trước buổi demo hãy thử và đặt `GEMINI_MODEL` cho phù hợp. **Bị giới hạn tần suất (lỗi 429, LaviAgent báo "đang bận") thì đổi `GEMINI_MODEL` sang bản Flash-Lite** rồi khởi động lại `web`.
 5. **Tên model Gemini thay đổi theo thời gian.** Model cũ có thể bị ngừng cho người dùng mới (API trả **404**; server ghi log `laviagent model not found` kèm tên model). Xem danh sách model mà key của bạn dùng được:
    ```bash
    curl -s -H "x-goog-api-key: $GEMINI_API_KEY" "https://generativelanguage.googleapis.com/v1beta/models?pageSize=200" | grep '"name"'

@@ -300,30 +300,44 @@
       ]
     },
     {
-      "id": "khay-vo-so-mau",
+      "id": "moc-khoa-vo-so",
       "material": "shell",
-      "title": "Khay nhỏ vỏ sò tô màu",
-      "summary": "Vỏ sò lớn tô màu và phủ bóng thành khay đựng nhẫn, kẹp giấy.",
+      "title": "Móc khóa, phone charm, dây chuyền vỏ sò",
+      "summary": "Từ vỏ sò nguyên đã làm sạch: khoan một lỗ nhỏ hoặc dán móc, xâu dây là có móc khóa, phone charm hay dây chuyền mang câu chuyện của vật liệu bị bỏ đi.",
       "difficulty": "easy",
       "durationMinutes": 30,
-      "ageMin": 6,
-      "coverImage": "/images/laviagent/ideas/khay-vo-so-mau.jpg",
-      "coverAlt": "Khay nhỏ làm từ vỏ sò tô màu xanh và vàng",
-      "toolsHave": ["Vỏ sò lớn đã rửa sạch", "Cọ vẽ"],
-      "toolsNeed": ["Màu acrylic gốc nước", "Keo bóng gốc nước"],
+      "ageMin": 8,
+      "coverImage": "/images/laviagent/ideas/moc-khoa-vo-so.jpg",
+      "coverAlt": "Móc khóa và dây chuyền làm từ vỏ sò nguyên",
+      "toolsHave": ["Vỏ sò nguyên đã làm sạch", "Kéo"],
+      "toolsNeed": [
+        "Giấy nhám mịn",
+        "Khoan tay mini hoặc móc dán",
+        "Dây dù, dây sáp hoặc khoen móc khóa",
+        "Keo dán không độc hại"
+      ],
       "steps": [
         {
           "title": "Làm sạch vỏ",
-          "description": "Luộc vỏ 10 phút, chải sạch và phơi khô.",
-          "safetyNote": "Luộc vỏ là việc của người lớn."
+          "description": "Làm sạch vỏ theo bước chung “Làm sạch vỏ sò” ở trên nếu vỏ chưa xử lý."
         },
         {
-          "title": "Tô màu",
-          "description": "Tô lớp nền bên trong vỏ, để khô rồi vẽ hoa văn."
+          "title": "Chọn vỏ đẹp",
+          "description": "Chọn những vỏ còn nguyên, không nứt, cỡ vừa tay."
         },
         {
-          "title": "Phủ bóng",
-          "description": "Phủ một lớp keo bóng để màu bền và dễ lau."
+          "title": "Mài cạnh",
+          "description": "Mài nhẹ mép vỏ bằng giấy nhám cho tròn, không còn chỗ sắc.",
+          "safetyNote": "Cạnh vỏ có thể sắc; đeo khẩu trang khi mài."
+        },
+        {
+          "title": "Tạo chỗ treo",
+          "description": "Khoan một lỗ nhỏ gần bản lề vỏ, hoặc dán móc kim loại vào mặt trong bằng keo.",
+          "safetyNote": "Người lớn cầm khoan; khoan chậm để vỏ không vỡ."
+        },
+        {
+          "title": "Xâu dây, hoàn thiện",
+          "description": "Xâu dây hoặc gắn khoen, thắt nút chắc. Có thể phủ một lớp keo bóng gốc nước cho vỏ bóng đẹp."
         }
       ],
       "kitId": "kit-vo-so-nghe-thuat"
@@ -332,15 +346,19 @@
       "id": "tranh-ghep-vo-so",
       "material": "shell",
       "title": "Tranh ghép vỏ sò",
-      "summary": "Ghép mảnh vỏ sò lên bìa thành bức tranh biển, kể câu chuyện vật liệu bị bỏ đi.",
+      "summary": "Ghép mảnh vỏ sò lên bìa thành bức tranh, kể câu chuyện vật liệu bị bỏ đi. Vỏ vỡ cũng dùng được.",
       "difficulty": "medium",
       "durationMinutes": 60,
       "ageMin": 9,
       "coverImage": "/images/laviagent/ideas/tranh-ghep-vo-so.jpg",
       "coverAlt": "Bức tranh ghép từ nhiều mảnh vỏ sò trên nền bìa",
-      "toolsHave": ["Vỏ sò nhiều cỡ", "Bìa carton cứng", "Bút chì"],
-      "toolsNeed": ["Keo dán không độc hại", "Màu acrylic"],
+      "toolsHave": ["Vỏ sò đã làm sạch, cả vỏ vỡ", "Bìa carton cứng", "Bút chì"],
+      "toolsNeed": ["Keo dán không độc hại", "Màu acrylic gốc nước", "Nhíp"],
       "steps": [
+        {
+          "title": "Làm sạch vỏ",
+          "description": "Làm sạch vỏ theo bước chung “Làm sạch vỏ sò” ở trên nếu vỏ chưa xử lý."
+        },
         {
           "title": "Phác thảo",
           "description": "Vẽ phác bức tranh lên bìa: sóng, cá, mặt trời..."
@@ -348,7 +366,7 @@
         {
           "title": "Phân loại vỏ",
           "description": "Chia vỏ theo cỡ và màu; vỏ vỡ dùng cho chi tiết nhỏ.",
-          "safetyNote": "Cạnh vỏ vỡ có thể sắc, cầm bằng nhíp hoặc đeo găng."
+          "safetyNote": "Cạnh vỏ vỡ có thể sắc: cầm bằng nhíp hoặc đeo găng."
         },
         {
           "title": "Ghép và dán",
@@ -362,32 +380,53 @@
       "kitId": "kit-vo-so-nghe-thuat"
     },
     {
-      "id": "chuong-gio-vo-so",
+      "id": "gom-vo-so",
       "material": "shell",
-      "title": "Chuông gió vỏ sò",
-      "summary": "Treo vỏ sò trên cành khô thành chuông gió kêu leng keng bên cửa sổ.",
+      "title": "Gốm từ bột vỏ sò: chậu mini, lót ly, đĩa trang sức",
+      "summary": "Nghiền vỏ đã làm sạch thành bột, trộn với chất kết dính, đổ khuôn silicone: ra chậu cây mini, lót ly hay đĩa đựng trang sức. Đây là kỹ thuật LAVIECO dùng cho sản phẩm minh chứng.",
       "difficulty": "advanced",
-      "durationMinutes": 70,
-      "ageMin": 11,
-      "coverImage": "/images/laviagent/ideas/chuong-gio-vo-so.jpg",
-      "coverAlt": "Chuông gió gồm nhiều vỏ sò treo trên một cành cây khô",
-      "toolsHave": ["10–15 vỏ sò", "Cành cây khô", "Kéo"],
-      "toolsNeed": ["Dây cước", "Mũi khoan tay nhỏ", "Khẩu trang"],
+      "durationMinutes": 90,
+      "ageMin": 12,
+      "coverImage": "/images/laviagent/ideas/gom-vo-so.jpg",
+      "coverAlt": "Chậu cây mini, lót ly và đĩa nhỏ làm từ gốm bột vỏ sò",
+      "toolsHave": ["Vỏ sò đã làm sạch và phơi khô", "Cối hoặc túi vải dày và chày", "Rây bột"],
+      "toolsNeed": [
+        "Chất kết dính theo KIT",
+        "Khuôn silicone (chậu mini, lót ly, đĩa)",
+        "Cốc và que trộn",
+        "Giấy nhám",
+        "Khẩu trang, găng tay"
+      ],
       "steps": [
         {
-          "title": "Khoan lỗ vỏ sò",
-          "description": "Khoan một lỗ nhỏ gần bản lề mỗi vỏ.",
-          "safetyNote": "Người lớn khoan; đeo khẩu trang vì bụi vỏ."
+          "title": "Làm sạch vỏ",
+          "description": "Làm sạch và phơi khô vỏ theo bước chung “Làm sạch vỏ sò” ở trên. Vỏ phải thật khô."
         },
         {
-          "title": "Xâu dây",
-          "description": "Xâu 3–4 vỏ trên mỗi sợi cước, thắt nút giữa các vỏ."
+          "title": "Nghiền thành bột",
+          "description": "Cho vỏ vào cối (hoặc túi vải dày) nghiền nhỏ, rồi rây lấy phần bột mịn.",
+          "safetyNote": "Bụi vỏ rất mịn: đeo khẩu trang, làm nơi thoáng; trẻ em cần người lớn hỗ trợ."
         },
         {
-          "title": "Buộc lên cành",
-          "description": "Buộc các sợi lên cành khô, so le độ dài để vỏ chạm nhau khi có gió."
+          "title": "Trộn với chất kết dính",
+          "description": "Trộn bột vỏ với chất kết dính đúng tỷ lệ ghi trên thẻ hướng dẫn của KIT, khuấy đến khi hỗn hợp mịn, sệt.",
+          "safetyNote": "Đeo găng tay khi trộn chất kết dính."
+        },
+        {
+          "title": "Đổ khuôn",
+          "description": "Đổ hỗn hợp vào khuôn silicone, gõ nhẹ khuôn cho bọt khí nổi lên, gạt phẳng mặt."
+        },
+        {
+          "title": "Chờ khô, tách khuôn",
+          "description": "Để khô theo thời gian ghi trên KIT (thường 24–48 giờ), rồi nhẹ nhàng tách sản phẩm khỏi khuôn."
+        },
+        {
+          "title": "Chà nhám hoàn thiện",
+          "description": "Chà nhám các cạnh cho mịn; có thể phủ lớp chống thấm cho lót ly và chậu cây.",
+          "safetyNote": "Đeo khẩu trang khi chà nhám."
         }
-      ]
+      ],
+      "kitId": "kit-gom-vo-so"
     }
   ]
 }
