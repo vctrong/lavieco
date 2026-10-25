@@ -1,13 +1,11 @@
 import Image from "next/image";
-import Link from "next/link";
-import { FiAlertTriangle, FiArrowLeft, FiBarChart2, FiClock, FiUsers } from "react-icons/fi";
+import { FiAlertTriangle, FiBarChart2, FiClock, FiUsers } from "react-icons/fi";
 
 import { Container, Eyebrow } from "@lavieco/ui";
 
-import { materialResultsHref } from "../constants/config";
 import { TEXT } from "../constants/text";
 import type { Catalog, Idea } from "../types";
-import { IdeaActions } from "./idea-actions";
+import { IdeaActions, IdeaBackLink } from "./idea-actions";
 import { IdeaChecklist } from "./idea-checklist";
 import { KitCard } from "./kit-card";
 import { WorkshopLink } from "./workshop-link";
@@ -27,13 +25,7 @@ export function IdeaDetail({ idea, catalog }: { idea: Idea; catalog: Catalog }) 
   return (
     <div className="bg-soft-white pb-32 pt-28 lg:pb-20 lg:pt-32">
       <Container>
-        <Link
-          href={materialResultsHref(idea.material)}
-          className="mb-6 inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-deep-blue hover:text-emerald-ink"
-        >
-          <FiArrowLeft aria-hidden="true" size={16} />
-          {material ? `${t.idea.back} · ${material.name}` : t.idea.backHome}
-        </Link>
+        <IdeaBackLink materialName={material?.name ?? null} />
 
         <header className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] lg:items-end lg:gap-14">
           <div className="relative aspect-[4/3] overflow-hidden rounded-t-[6rem] rounded-b-[1.5rem] border border-hairline bg-mint-mist shadow-hero-arch-soft sm:rounded-t-[10rem]">
@@ -162,12 +154,7 @@ export function IdeaDetail({ idea, catalog }: { idea: Idea; catalog: Catalog }) 
           <aside className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             {kit ? <KitCard kit={kit} /> : null}
             <p className="px-2 text-xs text-charcoal/60">{t.idea.handbook}</p>
-            <IdeaActions
-              catalog={catalog}
-              idea={idea}
-              kit={kit}
-              materialName={material?.name ?? ""}
-            />
+            <IdeaActions idea={idea} kit={kit} />
           </aside>
         </div>
       </Container>

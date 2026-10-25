@@ -1,3 +1,4 @@
+import type { UIMessage } from "ai";
 import type { z } from "zod";
 
 import type {
@@ -31,3 +32,24 @@ export type Catalog = {
   kits: Kit[];
   suggestions: FallbackAnswer[];
 };
+
+/** How a material entered the conversation. */
+export type AnalysisSource = "ai" | "sample" | "manual";
+
+/** Why the conversation asks the visitor to pick a material. */
+export type PickReason = "offline" | "unknown" | "failed" | "timeout" | "network" | "rate_limited";
+
+/**
+ * Cards LaviAgent posts without the model (docs/07 §4): built on the client from the
+ * analyze route, a sample or a chip, and kept in the conversation like any message.
+ */
+export type AgentDataTypes = {
+  analysis: { material: MaterialId; source: AnalysisSource; result: ClassifyResult | null };
+  hazard: { result: ClassifyResult };
+  picker: { reason: PickReason };
+};
+
+/** Marks answers written in advance (chips while the AI is unavailable). */
+export type AgentMessageMetadata = { fallback?: boolean };
+
+export type AgentMessage = UIMessage<AgentMessageMetadata, AgentDataTypes>;

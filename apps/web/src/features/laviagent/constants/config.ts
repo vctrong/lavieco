@@ -1,10 +1,28 @@
 /** LaviAgent limits and routes (docs/07). Shared by the client checks and the route handlers. */
 
 export const LAVIAGENT_HREF = "/laviagent";
-export const ideaHref = (id: string) => `/laviagent/y-tuong/${id}`;
-/** Back to the results of one material, e.g. from an idea page. */
-export const materialResultsHref = (material: string) => `/laviagent?vat-lieu=${material}`;
-export const MATERIAL_QUERY_PARAM = "vat-lieu";
+
+/** `?hoi-thoai=<id>`: reopen a conversation (from history, or back from an idea page). */
+export const CONVERSATION_PARAM = "hoi-thoai";
+/** `?y-tuong=<id>`: start a conversation about an idea (idea page opened directly). */
+export const IDEA_PARAM = "y-tuong";
+/** `?vat-lieu=<material>`: start a conversation with that material's card. */
+export const MATERIAL_PARAM = "vat-lieu";
+
+export const conversationHref = (conversationId: string) =>
+  `${LAVIAGENT_HREF}?${CONVERSATION_PARAM}=${encodeURIComponent(conversationId)}`;
+
+/** An idea guide; from a conversation it carries the way back to it. */
+export const ideaHref = (id: string, conversationId?: string | null) =>
+  `/laviagent/y-tuong/${id}${
+    conversationId ? `?${CONVERSATION_PARAM}=${encodeURIComponent(conversationId)}` : ""
+  }`;
+
+/** "Hỏi LaviAgent về ý tưởng này": back to its conversation, or a new one about the idea. */
+export const askAboutIdeaHref = (ideaId: string, conversationId?: string | null) =>
+  conversationId
+    ? conversationHref(conversationId)
+    : `${LAVIAGENT_HREF}?${IDEA_PARAM}=${encodeURIComponent(ideaId)}`;
 
 export const ANALYZE_ENDPOINT = "/api/laviagent/analyze";
 export const CHAT_ENDPOINT = "/api/laviagent/chat";

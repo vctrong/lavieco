@@ -14,6 +14,8 @@ import { NavLinks } from "./nav-links";
 type NavbarProps = {
   /** Sign-out Server Action, handed over by the layout. */
   logoutAction: LogoutAction;
+  /** Full-screen tools (LaviAgent): a thinner bar closer to the top edge. */
+  compact?: boolean;
 };
 
 /**
@@ -24,10 +26,10 @@ type NavbarProps = {
  * ≥1280px every link · 1024–1279px secondary links in "Thêm" · <1024px logo, account
  * and a drawer with the CTA pinned at the bottom.
  */
-export function Navbar({ logoutAction }: NavbarProps) {
+export function Navbar({ logoutAction, compact = false }: NavbarProps) {
   const t = TEXT.vi;
   return (
-    <NavbarShell>
+    <NavbarShell compact={compact}>
       <Link
         href="/"
         aria-label={t.homeLabel}

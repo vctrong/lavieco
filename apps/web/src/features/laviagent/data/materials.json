@@ -7,6 +7,16 @@
       "icon": "droplet",
       "description": "Chai nước uống bằng nhựa PET trong suốt, nhẹ, dễ cắt và tạo hình.",
       "safetyNote": "Mép nhựa sau khi cắt có thể sắc. Mài nhẹ bằng giấy nhám hoặc dán băng keo giấy quanh viền; trẻ nhỏ cần người lớn cầm kéo/dao rọc giấy.",
+      "keywords": [
+        "chai nhựa",
+        "chai nước",
+        "chai pet",
+        "chai nhua",
+        "nhựa",
+        "pet",
+        "chai dầu gội",
+        "can nhựa"
+      ],
       "recyclePotential": 92,
       "sample": {
         "image": "/images/laviagent/samples/plastic-bottle.jpg",
@@ -22,6 +32,7 @@
       "icon": "disc",
       "description": "Lon nước ngọt bằng nhôm mỏng, bền, giữ màu in đẹp.",
       "safetyNote": "Miệng lon và mép nhôm sau khi cắt rất sắc. Luôn đeo găng tay vải, gấp mép vào trong; phần cắt nhôm do người lớn làm.",
+      "keywords": ["lon", "lon bia", "lon nước ngọt", "lon nhôm", "nhôm", "vỏ lon"],
       "recyclePotential": 85,
       "sample": {
         "image": "/images/laviagent/samples/aluminum-can.jpg",
@@ -37,6 +48,16 @@
       "icon": "package",
       "description": "Hộp carton, hộp bánh, lõi giấy: dễ cắt, dán, tô màu.",
       "safetyNote": "Dao rọc giấy chỉ dùng khi có người lớn hướng dẫn. Không dùng hộp giấy dính dầu mỡ hoặc ẩm mốc.",
+      "keywords": [
+        "hộp giấy",
+        "carton",
+        "các tông",
+        "thùng giấy",
+        "hộp sữa",
+        "lõi giấy",
+        "hộp bánh",
+        "giấy"
+      ],
       "recyclePotential": 88,
       "sample": {
         "image": "/images/laviagent/samples/paper-box.jpg",
@@ -52,6 +73,7 @@
       "icon": "coffee",
       "description": "Hũ mứt, hũ cà phê bằng thủy tinh dày, có nắp.",
       "safetyNote": "Chỉ dùng hũ còn nguyên, không nứt mẻ. Không cắt hay khoan thủy tinh tại nhà; nếu hũ vỡ, xem như rác nguy hại và gói kỹ trước khi bỏ.",
+      "keywords": ["hũ", "lọ thủy tinh", "hũ thủy tinh", "chai thủy tinh", "thủy tinh", "lọ mứt"],
       "recyclePotential": 80,
       "sample": {
         "image": "/images/laviagent/samples/glass-jar.jpg",
@@ -64,9 +86,10 @@
     {
       "id": "shell",
       "name": "Vỏ sò",
-      "icon": "feather",
+      "icon": "shell",
       "description": "Vỏ sò, vỏ nghêu, vỏ hàu: chất liệu minh chứng đầu tiên của LAVIECO.",
       "safetyNote": "Rửa và luộc sạch vỏ trước khi dùng. Cạnh vỏ vỡ có thể sắc; mài cạnh và rửa tay sau khi làm. Bột vỏ khi mài cần đeo khẩu trang.",
+      "keywords": ["vỏ sò", "vỏ nghêu", "vỏ hàu", "vỏ ốc", "vỏ hến", "vỏ hải sản", "sò", "ốc"],
       "recyclePotential": 95,
       "sample": {
         "image": "/images/laviagent/samples/shell.jpg",

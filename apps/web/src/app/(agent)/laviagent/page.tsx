@@ -5,7 +5,7 @@ import { LaviAgentApp, getLaviagentCatalog, laviagentMetadata } from "@/features
 export const metadata = laviagentMetadata;
 
 export default function LaviAgentPage() {
-  // Suspense: the app reads `?vat-lieu=` on the client; the rest of the page stays static.
+  // Suspense: the app reads `?hoi-thoai=` and friends on the client; the page stays static.
   return (
     <Suspense>
       <LaviAgentApp catalog={getLaviagentCatalog()} />

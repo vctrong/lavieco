@@ -22,7 +22,7 @@ export const DIFFICULTIES = ["easy", "medium", "advanced"] as const;
 export const difficultySchema = z.enum(DIFFICULTIES);
 
 /** Feather icon names allowed in materials.json (mapped to components in constants/icons.ts). */
-export const MATERIAL_ICON_NAMES = ["droplet", "disc", "package", "coffee", "feather"] as const;
+export const MATERIAL_ICON_NAMES = ["droplet", "disc", "package", "coffee", "shell"] as const;
 
 const imagePathSchema = z.string().regex(/^\/images\/laviagent\/[a-z0-9/-]+\.(jpg|png|webp)$/);
 const idSchema = z.string().regex(/^[a-z0-9-]{3,60}$/);
@@ -34,6 +34,8 @@ export const materialSchema = z.object({
   description: z.string().min(1),
   /** General safety advice shown on the result card. */
   safetyNote: z.string().min(1),
+  /** Words that point to this material in a chat message (no diacritics needed). */
+  keywords: z.array(z.string().min(2)).min(1),
   /** 0–100, drives the "tiềm năng tái chế" meter. Demo value. */
   recyclePotential: z.number().int().min(0).max(100),
   /** Fixed answer for "Thử với ảnh mẫu" (no API call). */

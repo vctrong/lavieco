@@ -13,10 +13,12 @@ import {
   CHAT_TIMEOUT_MS,
   MAX_UPLOAD_BYTES,
 } from "../constants/config";
-import { chatContextSchema } from "../schemas";
+import { chatContextSchema, classifyResultSchema, materialIdSchema } from "../schemas";
+import { inferMaterial } from "../utils/infer-material";
 import { sniffImageType } from "../utils/sniff-image";
 import type { ChatTurn, ImageInput } from "./ai/ai-provider";
 import { aiProvider } from "./ai/get-provider";
+import { staticData } from "./knowledge/catalog";
 import { knowledgeSource } from "./knowledge/composite-knowledge-source";
 import type { ChatKnowledge } from "./knowledge/knowledge-source";
 import { logProviderError } from "./log";
@@ -55,10 +57,41 @@ function fail(reason: ChatFailure, setCookie: string | null = null): Response {
   return Response.json({ status: "error", reason }, { status: STATUS[reason], headers });
 }
 
+const analysisPartSchema = z.object({
+  type: z.literal("data-analysis"),
+  data: z.object({ material: materialIdSchema, result: classifyResultSchema.nullable() }),
+});
+const hazardPartSchema = z.object({
+  type: z.literal("data-hazard"),
+  data: z.object({ result: classifyResultSchema }),
+});
+
+/**
+ * Cards LaviAgent posted without the model (analysis, hazard) become one line the model
+ * can read, so a follow-up question keeps the material without asking again.
+ */
+function summaryOf(part: z.infer<typeof partSchema>): string | null {
+  const analysis = analysisPartSchema.safeParse(part);
+  if (analysis.success) {
+    const { material, result } = analysis.data.data;
+    const name = staticData().materials.find((item) => item.id === material)?.name ?? material;
+    const details = result ? ` (${result.shape}; ${result.condition})` : "";
+    return `[LaviAgent đã nhận diện chất liệu: ${name}${details} và gợi ý các ý tưởng tương ứng.]`;
+  }
+  const hazard = hazardPartSchema.safeParse(part);
+  if (hazard.success) {
+    const kind = hazard.data.data.result.safetyFlags.hazardKind;
+    return `[LaviAgent đã nhận diện đồ nguy hại (${kind}) và từ chối hướng dẫn tái chế.]`;
+  }
+  return null;
+}
+
 const textOf = (parts: z.infer<typeof partSchema>[]) =>
   parts
-    .filter((part) => part.type === "text" && typeof part.text === "string")
-    .map((part) => String(part.text))
+    .map((part) =>
+      part.type === "text" && typeof part.text === "string" ? String(part.text) : summaryOf(part),
+    )
+    .filter((value): value is string => Boolean(value))
     .join("\n")
     .trim();
 
@@ -116,22 +149,35 @@ export async function handleChat(request: Request): Promise<Response> {
     return fail("rate_limited", session.setCookie);
   }
 
-  const turns: ChatTurn[] = recent.map((message, index) => {
-    const isLast = index === recent.length - 1;
-    const text = textOf(message.parts);
-    if (message.role === "assistant") {
-      return { role: "assistant", text: text.slice(0, ASSISTANT_TURN_MAX_CHARS) };
-    }
-    if (isLast) return { role: "user", text: lastText, ...(lastImage ? { image: lastImage } : {}) };
-    // Older photos are not resent: the model only needs to know there was one.
-    const hadImage = message.parts.some((part) => part.type === "file");
-    return {
-      role: "user",
-      text: `${text.slice(0, CHAT_MESSAGE_MAX_CHARS)}${hadImage ? " [đã gửi kèm một ảnh]" : ""}`.trim(),
-    };
-  });
+  const turns = mergeTurns(
+    recent.map((message, index): ChatTurn => {
+      const isLast = index === recent.length - 1;
+      const text = textOf(message.parts);
+      if (message.role === "assistant") {
+        return { role: "assistant", text: text.slice(0, ASSISTANT_TURN_MAX_CHARS) };
+      }
+      if (isLast)
+        return { role: "user", text: lastText, ...(lastImage ? { image: lastImage } : {}) };
+      // Older photos are not resent: the model only needs to know there was one.
+      const hadImage = message.parts.some((part) => part.type === "file");
+      return {
+        role: "user",
+        text: `${text.slice(0, CHAT_MESSAGE_MAX_CHARS)}${hadImage ? " [đã gửi kèm một ảnh]" : ""}`.trim(),
+      };
+    }),
+  );
 
-  const knowledge = await gatherKnowledge(lastText, body.context ?? {});
+  // No material from the page: infer it from what the visitor wrote, newest first.
+  const context = body.context ?? {};
+  const material =
+    context.material ??
+    recent
+      .filter((message) => message.role === "user")
+      .reverse()
+      .map((message) => inferMaterial(textOf(message.parts), staticData().materials))
+      .find((found) => found !== null) ??
+    undefined;
+  const knowledge = await gatherKnowledge(lastText, { ...context, material });
   const provider = aiProvider();
   try {
     const stream = provider.chatStream(
@@ -145,6 +191,27 @@ export async function handleChat(request: Request): Promise<Response> {
     logProviderError("chat", provider, error);
     return Response.json({ status: "error", reason: "unavailable" }, { status: 503 });
   }
+}
+
+/**
+ * Cards posted without the model make consecutive turns of one role (photo, card,
+ * question...). Merged, so every provider gets a clean user / assistant alternation.
+ */
+function mergeTurns(turns: ChatTurn[]): ChatTurn[] {
+  const merged: ChatTurn[] = [];
+  for (const turn of turns) {
+    if (!turn.text && !turn.image) continue;
+    // Models expect the user to speak first; an opening card is already in the context.
+    if (merged.length === 0 && turn.role === "assistant") continue;
+    const previous = merged.at(-1);
+    if (previous && previous.role === turn.role) {
+      previous.text = [previous.text, turn.text].filter(Boolean).join("\n");
+      if (turn.image) previous.image = turn.image;
+    } else {
+      merged.push({ ...turn });
+    }
+  }
+  return merged;
 }
 
 async function gatherKnowledge(

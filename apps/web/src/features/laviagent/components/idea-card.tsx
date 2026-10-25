@@ -30,10 +30,10 @@ export function DifficultyBadge({ difficulty }: { difficulty: Difficulty }) {
 }
 
 /** One idea in the results list: the whole card is the link to its guide. */
-export function IdeaCard({ idea }: { idea: Idea }) {
+export function IdeaCard({ idea, conversationId }: { idea: Idea; conversationId?: string | null }) {
   return (
     <Link
-      href={ideaHref(idea.id)}
+      href={ideaHref(idea.id, conversationId)}
       className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-hairline bg-soft-white shadow-ambient transition-[box-shadow,translate] duration-300 hover:-translate-y-0.5 hover:shadow-ambient-hover"
     >
       <div className="relative aspect-[4/3] overflow-hidden rounded-t-[1.75rem] bg-mint-mist">
@@ -79,10 +79,10 @@ export function IdeaCard({ idea }: { idea: Idea }) {
 }
 
 /** Compact card inside a chat answer (`[[idea:<id>]]`). */
-export function IdeaChip({ idea }: { idea: Idea }) {
+export function IdeaChip({ idea, conversationId }: { idea: Idea; conversationId?: string | null }) {
   return (
     <Link
-      href={ideaHref(idea.id)}
+      href={ideaHref(idea.id, conversationId)}
       className="group flex items-center gap-3 rounded-2xl border border-hairline bg-soft-white p-2 pr-3 transition-colors hover:border-emerald-brand"
     >
       <span className="relative size-14 shrink-0 overflow-hidden rounded-xl bg-mint-mist">

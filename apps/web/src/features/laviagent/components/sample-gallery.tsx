@@ -7,13 +7,26 @@ import type { Material } from "../types";
 type SampleGalleryProps = {
   materials: Material[];
   onPick: (material: Material) => void;
+  /** In a half-width panel: three columns at most. */
+  compact?: boolean;
   className?: string;
 };
 
 /** "Thử với ảnh mẫu": one photo per material, a fixed answer and no API call. */
-export function SampleGallery({ materials, onPick, className }: SampleGalleryProps) {
+export function SampleGallery({
+  materials,
+  onPick,
+  compact = false,
+  className,
+}: SampleGalleryProps) {
   return (
-    <ul className={cn("grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5", className)}>
+    <ul
+      className={cn(
+        "grid grid-cols-2 gap-3 sm:grid-cols-3",
+        compact ? "" : "lg:grid-cols-5",
+        className,
+      )}
+    >
       {materials.map((material) => (
         <li key={material.id} className="min-w-0">
           <button type="button" onClick={() => onPick(material)} className="group w-full text-left">

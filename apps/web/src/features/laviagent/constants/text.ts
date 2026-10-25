@@ -21,17 +21,17 @@ export const TEXT = {
       greeting:
         "Chào bạn! Mình là LaviAgent. Đừng vội vứt đi, cho mình xem món đồ, mình gợi ý nó có thể thành gì nhé.",
       title: "Chụp món đồ sắp vứt, nhận ý tưởng sáng tạo ngay",
-      lead: "Chai nhựa, lon nhôm, hộp giấy, hũ thủy tinh hay vỏ sò: LaviAgent nhận diện chất liệu và gợi ý cách biến chúng thành đồ hữu ích.",
+      lead: "Gửi ảnh, chọn chất liệu, hoặc cứ hỏi mình bằng lời: chai nhựa, lon nhôm, hộp giấy, hũ thủy tinh hay vỏ sò đều được.",
       dropTitle: "Kéo và thả ảnh món đồ vào đây",
       dropHint: "Ảnh rõ, đủ sáng, một món đồ ở giữa khung. JPG, PNG, WebP hoặc HEIC.",
       dropActive: "Thả ảnh để LaviAgent xem nhé",
       takePhoto: "Chụp ảnh",
       choosePhoto: "Chọn ảnh từ máy",
       quickMaterials: "Hoặc chọn nhanh chất liệu",
-      stepsTitle: "Bốn bước từ đồ bỏ đi đến tác phẩm",
+      quickQuestions: "Hoặc hỏi thử",
       samplesTitle: "Thử với ảnh mẫu",
       samplesHint: "Không cần ảnh của bạn: bấm một ảnh mẫu để xem LaviAgent hoạt động.",
-      privacy: "Ảnh chỉ dùng để phân tích, không được lưu lại.",
+      privacy: "Ảnh không được lưu trên máy chủ. Lịch sử chỉ lưu trên thiết bị của bạn.",
     },
     steps: [
       { title: "Chụp ảnh", body: "Chụp hoặc chọn ảnh món đồ bạn định bỏ đi." },
@@ -40,17 +40,10 @@ export const TEXT = {
       { title: "Làm cùng KIT", body: "Làm theo từng bước, thiếu gì đã có KIT của LAVIECO." },
     ],
 
-    review: {
-      title: "Xem lại ảnh",
-      lead: "Ảnh đã rõ món đồ chưa? Nếu ổn, bấm Phân tích.",
-      imageAlt: "Ảnh món đồ bạn vừa chọn",
-      retake: "Chụp lại",
-      analyze: "Phân tích",
-    },
     analyzing: {
-      title: "LaviAgent đang xem…",
       messages: ["Đang xem món đồ của bạn…", "Đang đoán chất liệu…", "Đang tìm ý tưởng hay ho…"],
       cancel: "Huỷ",
+      imageAlt: "Ảnh món đồ đang được phân tích",
     },
 
     result: {
@@ -72,14 +65,13 @@ export const TEXT = {
       noIdeas: "Chưa có ý tưởng ở độ khó này. Thử mức khác nhé.",
       viewIdea: "Xem hướng dẫn",
       kitAvailable: "Có KIT",
-      retry: "Chụp món đồ khác",
-      askAgent: "Hỏi LaviAgent",
-      imageAlt: (material: string) => `Ảnh món đồ: ${material}`,
+      kitTitle: "Thiếu phụ kiện? Có KIT cho bạn",
+      pickTitle: "Chọn chất liệu đúng",
+      cancelPick: "Thôi, giữ kết quả này",
     },
 
     picker: {
       title: "Chọn chất liệu",
-      lead: "Chọn chất liệu gần đúng nhất với món đồ của bạn.",
       offline: "Chế độ demo offline — chọn chất liệu để xem ý tưởng",
       unknown:
         "Mình chưa nhận ra món đồ này. Bạn chọn chất liệu gần đúng nhất, hoặc thử một ảnh mẫu nhé.",
@@ -89,9 +81,7 @@ export const TEXT = {
       network: "Có vẻ bạn đang mất kết nối mạng. Bạn vẫn có thể chọn chất liệu để xem ý tưởng.",
       rateLimited:
         "Bạn đã phân tích khá nhiều ảnh rồi. Nghỉ tay một chút nhé, trong lúc đó hãy chọn chất liệu.",
-      correct: "Chọn lại chất liệu đúng của món đồ.",
       orSamples: "Hoặc thử ảnh mẫu",
-      back: "Về đầu",
     },
     imageErrors: {
       invalid: "Ảnh này mình không đọc được. Bạn thử ảnh JPG, PNG hoặc chụp lại nhé.",
@@ -113,13 +103,13 @@ export const TEXT = {
         other: "Đồ nguy hại",
       },
       tipsTitle: "Bạn nên làm gì",
+      anotherHint: "Bạn có thể gửi ảnh một món đồ khác ở ô bên dưới.",
       tips: [
         "Để riêng, không bỏ chung với rác sinh hoạt.",
         "Gói kín (thủy tinh vỡ: bọc nhiều lớp giấy báo, ghi chú bên ngoài).",
         "Mang tới điểm thu gom rác nguy hại gần nhất; hỏi chính quyền địa phương hoặc cửa hàng điện máy có nhận thu hồi.",
         "Không đốt, không đập vỡ, không đổ hóa chất xuống cống.",
       ],
-      another: "Thử món đồ khác",
     },
 
     idea: {
@@ -152,24 +142,23 @@ export const TEXT = {
     chat: {
       title: "Hỏi LaviAgent",
       status: "Trợ lý tái chế sáng tạo",
-      open: "Hỏi LaviAgent",
-      close: "Đóng khung chat",
-      expand: "Mở toàn màn hình",
-      collapse: "Thu nhỏ",
-      dragHandle: "Kéo để mở rộng hoặc thu nhỏ",
       logLabel: "Cuộc trò chuyện với LaviAgent",
-      welcome: (material: string | null) =>
-        material
-          ? `Chào bạn! Mình thấy bạn đang có **${material.toLowerCase()}**. Bạn muốn hỏi gì thêm về cách làm, dụng cụ hay độ an toàn không?`
-          : "Chào bạn! Bạn đang muốn tái chế món gì? Hỏi mình bất cứ điều gì về đồ tự làm từ phế liệu nhé.",
+      ideaSeed: (title: string, id: string) =>
+        `Bạn đang xem ý tưởng **${title}**. Hỏi mình bất cứ điều gì về cách làm, dụng cụ hay độ an toàn nhé.\n\n[[idea:${id}]]`,
+      iHave: (material: string) => `Mình có ${material.toLowerCase()}.`,
+      correctedTo: (material: string) => `Món đồ của mình là ${material.toLowerCase()}.`,
+      photoMarker: "[Ảnh món đồ]",
       you: "Bạn",
       agent: "LaviAgent",
-      placeholder: "Hỏi về vật liệu, dụng cụ hoặc mẹo làm…",
+      placeholder: "Hỏi LaviAgent hoặc gửi ảnh món đồ…",
+      placeholderWithPhoto: "Thêm câu hỏi (không bắt buộc)…",
       inputLabel: "Tin nhắn cho LaviAgent",
       send: "Gửi",
-      attach: "Đính kèm ảnh",
+      attach: "Chọn ảnh từ máy",
+      camera: "Chụp ảnh",
       removeAttachment: "Bỏ ảnh đính kèm",
-      attachmentAlt: "Ảnh bạn gửi kèm",
+      attachmentAlt: "Ảnh bạn sắp gửi",
+      sentImageAlt: "Ảnh món đồ bạn đã gửi",
       suggestionsLabel: "Câu hỏi gợi ý",
       typing: "LaviAgent đang trả lời…",
       stop: "Dừng",
@@ -184,8 +173,23 @@ export const TEXT = {
           "LaviAgent đang bận một chút. Bạn thử lại sau, hoặc bấm các câu hỏi gợi ý bên dưới nhé.",
       },
       fallbackNote: "Câu trả lời soạn sẵn",
-      privacy: "Ảnh chỉ dùng để trả lời, không được lưu lại.",
       disclaimer: "LaviAgent là AI, có thể nhầm. Luôn ưu tiên an toàn khi làm.",
+      dropOverlay: "Thả ảnh vào đây để gửi",
+    },
+
+    history: {
+      title: "Lịch sử trò chuyện",
+      open: "Mở lịch sử trò chuyện",
+      close: "Đóng lịch sử",
+      collapse: "Thu gọn lịch sử",
+      expand: "Mở rộng lịch sử",
+      newChat: "Cuộc trò chuyện mới",
+      untitled: "Cuộc trò chuyện mới",
+      empty: "Chưa có cuộc trò chuyện nào. Gửi ảnh hoặc câu hỏi đầu tiên nhé.",
+      groups: { today: "Hôm nay", week: "7 ngày qua", older: "Cũ hơn" },
+      remove: (title: string) => `Xoá cuộc trò chuyện "${title}"`,
+      deviceOnly: "Lịch sử chỉ lưu trên thiết bị này.",
+      home: "Về trang chủ LAVIECO",
     },
 
     fab: { label: "Hỏi LaviAgent", short: "Hỏi LaviAgent: chụp đồ, nhận ý tưởng tái chế" },
@@ -195,7 +199,7 @@ export const TEXT = {
       title: "Đừng vội vứt đi — chụp thử xem nó có thể thành gì?",
       lead: "LaviAgent nhìn món đồ bạn định bỏ, gợi ý ý tưởng tái chế sáng tạo vừa sức, hướng dẫn từng bước an toàn, và KIT của LAVIECO khi bạn cần thêm phụ kiện.",
       cta: "Thử LaviAgent ngay",
-      note: "Miễn phí · Không cần đăng nhập · Ảnh không được lưu lại",
+      note: "Miễn phí · Không cần đăng nhập · Ảnh không lưu trên máy chủ",
       bubble: "Chai nhựa này làm chậu cây tự dưỡng được đó!",
     },
   },

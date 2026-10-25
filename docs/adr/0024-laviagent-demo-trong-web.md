@@ -22,6 +22,9 @@ Repo có luật: logic nghiệp vụ ở service, `web` chỉ là BFF (CLAUDE.md
 5. **Giới hạn tần suất trong bộ nhớ** (theo phiên ẩn danh + IP), đủ cho một instance (ADR-022). Cookie `lv_agent` là UUID ngẫu nhiên, httpOnly, chỉ để đếm, không định danh ai.
 6. **Ảnh**: client thu nhỏ còn ~1024 px JPEG (canvas, mất luôn EXIF); server kiểm tra magic bytes JPEG/PNG/WebP, ≤ 3 MB, chỉ giữ trong bộ nhớ trong lúc gọi mô hình. Ảnh gửi sang Google (máy chủ ngoài nước, cùng loại chấp nhận như Cloudinary ở ADR-020, AQ4 vẫn mở); trang ghi rõ "Ảnh chỉ dùng để phân tích, không được lưu lại".
 
+7. **Chat-first, card do client tạo** (quyết định 25/10/2026): `/laviagent` là khung chat (nhóm route `(agent)`, không footer). Card kết quả phân tích ảnh, ảnh mẫu, chip chất liệu là data part do client tạo từ `/analyze` hoặc dữ liệu cố định, không dùng tool calling: nhanh, chạy được offline, không tốn lượt gọi mô hình. Server đổi card thành dòng tóm tắt khi đưa lịch sử cho mô hình.
+8. **Lịch sử trò chuyện chỉ trên thiết bị** (`ChatHistoryStore` → `LocalChatHistoryStore`, localStorage, ≤ 30 cuộc, ≤ 60 tin/cuộc, ảnh chỉ còn thumbnail ~96px). Đồng bộ theo tài khoản là `TODO(laviagent-server-history)`.
+
 ## Điều kiện để tách thành `laviagent-service`
 
 Một trong các điều kiện sau thì dựng service theo `docs/04` §13.3 (cổng nội bộ, service token từ `web`, database riêng):

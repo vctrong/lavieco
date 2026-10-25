@@ -7,9 +7,10 @@ import { cn } from "@lavieco/ui";
 import { LaviAgentMascot } from "@/shared/components/illustrations/laviagent-mascot";
 
 import { TEXT } from "../../constants/text";
-import type { AgentMessage } from "../../hooks/use-agent-chat";
-import type { Catalog } from "../../types";
+import { textOf } from "../../hooks/use-conversation";
+import type { AgentMessage, Catalog } from "../../types";
 import { parseCardTokens, type KnownIds } from "../../utils/parse-card-tokens";
+import { AnalysisCard, HazardCard, PickerCard, type CardActions } from "../cards";
 import { IdeaChip } from "../idea-card";
 import { KitChip } from "../kit-card";
 import { MarkdownText } from "./markdown-text";
@@ -23,38 +24,31 @@ type MessageBubbleProps = {
   known: KnownIds;
   /** The answer still arriving: hide half-written card tokens. */
   streaming: boolean;
+  actions: CardActions;
 };
 
-const textOf = (message: AgentMessage) =>
-  message.parts
-    .map((part) => (part.type === "text" ? part.text : ""))
-    .join("")
-    .trim();
-
-export function MessageBubble({ message, catalog, known, streaming }: MessageBubbleProps) {
+export function MessageBubble({ message, catalog, known, streaming, actions }: MessageBubbleProps) {
   if (message.role === "user") {
-    const images = message.parts.filter(
-      (part) => part.type === "file" && part.mediaType.startsWith("image/"),
-    );
     const text = textOf(message);
     return (
       <li className="flex justify-end gap-2.5">
-        <div className="flex max-w-[85%] flex-col items-end gap-1.5">
+        <div className="flex min-w-0 max-w-[85%] flex-col items-end gap-1.5">
           <span className="sr-only">{t.you}</span>
-          {images.map((part, index) =>
-            part.type === "file" ? (
+          {message.parts.map((part, index) =>
+            part.type === "file" && part.mediaType.startsWith("image/") ? (
               <Image
                 key={index}
                 src={part.url}
-                alt={t.attachmentAlt}
-                width={160}
-                height={160}
-                unoptimized
-                className="h-auto max-h-40 w-auto rounded-2xl border border-hairline object-cover"
+                alt={t.sentImageAlt}
+                width={112}
+                height={112}
+                // History thumbnails are data URLs; samples are static files.
+                unoptimized={part.url.startsWith("data:")}
+                className="size-28 rounded-2xl border border-hairline object-cover"
               />
             ) : null,
           )}
-          {text ? (
+          {text && text !== t.photoMarker ? (
             <p className="whitespace-pre-wrap break-words rounded-3xl rounded-br-md bg-deep-blue px-4 py-2.5 text-sm leading-relaxed text-soft-white">
               {text}
             </p>
@@ -70,6 +64,31 @@ export function MessageBubble({ message, catalog, known, streaming }: MessageBub
     );
   }
 
+  // Cards posted by LaviAgent itself (no model): full width, no bubble.
+  const cards = message.parts.flatMap((part, index) => {
+    if (part.type === "data-analysis") {
+      return [<AnalysisCard key={index} data={part.data} catalog={catalog} actions={actions} />];
+    }
+    if (part.type === "data-hazard") return [<HazardCard key={index} data={part.data} />];
+    if (part.type === "data-picker") {
+      return [
+        <PickerCard key={index} reason={part.data.reason} catalog={catalog} actions={actions} />,
+      ];
+    }
+    return [];
+  });
+  if (cards.length > 0) {
+    return (
+      <li className="flex gap-2.5">
+        <LaviAgentMascot className="mt-1 hidden size-7 sm:block" />
+        <div className="min-w-0 flex-1">
+          <span className="sr-only">{t.agent}</span>
+          {cards}
+        </div>
+      </li>
+    );
+  }
+
   const text = textOf(message);
   // An answer that ended empty is removed by the conversation; never show a frozen bubble.
   if (!text && !streaming) return null;
@@ -80,7 +99,9 @@ export function MessageBubble({ message, catalog, known, streaming }: MessageBub
           if (segment.type === "text") return <MarkdownText key={index} text={segment.text} />;
           if (segment.type === "idea") {
             const idea = catalog.ideas.find((item) => item.id === segment.id);
-            return idea ? <IdeaChip key={index} idea={idea} /> : null;
+            return idea ? (
+              <IdeaChip key={index} idea={idea} conversationId={actions.conversationId} />
+            ) : null;
           }
           const kit = catalog.kits.find((item) => item.id === segment.id);
           return kit ? <KitChip key={index} kit={kit} /> : null;
@@ -92,13 +113,15 @@ export function MessageBubble({ message, catalog, known, streaming }: MessageBub
   );
 }
 
-/** Assistant row: mascot avatar and a soft bubble. Also used for the welcome line. */
+/** Assistant row: mascot avatar and a soft bubble. */
 export function AgentBubble({
   children,
   fallback = false,
+  className,
 }: {
   children: ReactNode;
   fallback?: boolean;
+  className?: string;
 }) {
   return (
     <li className="flex gap-2.5">
@@ -108,6 +131,7 @@ export function AgentBubble({
         <div
           className={cn(
             "space-y-2.5 break-words rounded-3xl rounded-tl-md border border-hairline bg-soft-white px-4 py-3 text-sm leading-relaxed text-charcoal shadow-ambient",
+            className,
           )}
         >
           {children}

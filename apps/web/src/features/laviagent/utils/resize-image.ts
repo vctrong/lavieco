@@ -50,3 +50,25 @@ export function blobToDataUrl(blob: Blob): Promise<string> {
     reader.readAsDataURL(blob);
   });
 }
+
+const THUMBNAIL_MAX_SIDE = 96;
+const THUMBNAIL_QUALITY = 0.7;
+
+/**
+ * The only image kept in chat history (docs/07 §4.3): ~96px JPEG data URL drawn from the
+ * already resized photo, a few KB, no EXIF. Null if the browser cannot draw it.
+ */
+export async function makeThumbnail(blob: Blob): Promise<string | null> {
+  try {
+    const bitmap = await createImageBitmap(blob);
+    const scale = Math.min(1, THUMBNAIL_MAX_SIDE / Math.max(bitmap.width, bitmap.height));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.max(1, Math.round(bitmap.width * scale));
+    canvas.height = Math.max(1, Math.round(bitmap.height * scale));
+    canvas.getContext("2d")?.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+    bitmap.close();
+    return canvas.toDataURL("image/jpeg", THUMBNAIL_QUALITY);
+  } catch {
+    return null;
+  }
+}
