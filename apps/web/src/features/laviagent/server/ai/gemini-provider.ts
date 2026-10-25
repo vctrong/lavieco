@@ -6,6 +6,7 @@ import { z } from "zod";
 
 import { HAZARD_KINDS, detectedMaterialSchema } from "../../schemas";
 import type { ClassifyResult } from "../../types";
+import { logProviderError } from "../log";
 import { CLASSIFY_PROMPT } from "../prompts/classify-prompt";
 import type {
   AIProvider,
@@ -29,6 +30,12 @@ const modelAnswerSchema = z.object({
 const CHAT_MAX_OUTPUT_TOKENS = 700;
 const clip = (value: string, max: number) => value.trim().slice(0, max);
 
+/**
+ * What the browser receives when the model fails mid-stream: the same JSON shape as the
+ * route's own errors, so the client maps both to one friendly message (chatFailureOf).
+ */
+export const STREAM_ERROR_TEXT = JSON.stringify({ status: "error", reason: "unavailable" });
+
 /** Google Gemini through the AI SDK. Key and model come from env (docs/06), never the client. */
 export class GeminiProvider implements AIProvider {
   readonly id = "gemini";
@@ -36,7 +43,7 @@ export class GeminiProvider implements AIProvider {
 
   constructor(
     apiKey: string,
-    private readonly modelId: string,
+    readonly model: string,
   ) {
     this.google = createGoogle({ apiKey });
   }
@@ -46,7 +53,7 @@ export class GeminiProvider implements AIProvider {
    * Gemini 2.5 takes a token budget, later generations a level.
    */
   private providerOptions(): { google: GoogleLanguageModelOptions } {
-    const thinkingConfig = this.modelId.startsWith("gemini-2.5")
+    const thinkingConfig = this.model.startsWith("gemini-2.5")
       ? { thinkingBudget: 0 }
       : { thinkingLevel: "low" as const };
     return { google: { thinkingConfig } };
@@ -54,13 +61,13 @@ export class GeminiProvider implements AIProvider {
 
   async classifyImage(image: ImageInput, { signal }: CallOptions): Promise<ClassifyResult> {
     const { output } = await generateText({
-      model: this.google(this.modelId),
+      model: this.google(this.model),
       instructions: CLASSIFY_PROMPT,
       messages: [
         {
           role: "user",
           content: [
-            { type: "image", image: image.bytes, mediaType: image.mediaType },
+            { type: "file", data: image.bytes, mediaType: image.mediaType },
             { type: "text", text: "Phân loại món đồ trong ảnh." },
           ],
         },
@@ -86,7 +93,7 @@ export class GeminiProvider implements AIProvider {
 
   chatStream(request: ChatModelRequest, { signal }: CallOptions) {
     const result = streamText({
-      model: this.google(this.modelId),
+      model: this.google(this.model),
       instructions: request.instructions,
       messages: request.turns.map(toModelMessage),
       temperature: 0.6,
@@ -95,8 +102,15 @@ export class GeminiProvider implements AIProvider {
       abortSignal: signal,
       providerOptions: this.providerOptions(),
     });
-    // The client shows its own friendly copy; provider errors never reach the browser.
-    return toUIMessageStream({ stream: result.stream, onError: () => "unavailable" });
+    // Errors after the response started (a retired model's 404, quota, network) become an
+    // `error` chunk: logged here with their status, sent to the browser without details.
+    return toUIMessageStream({
+      stream: result.stream,
+      onError: (error) => {
+        logProviderError("chat", this, error);
+        return STREAM_ERROR_TEXT;
+      },
+    });
   }
 }
 
@@ -106,7 +120,7 @@ function toModelMessage(turn: ChatTurn): ModelMessage {
     role: "user",
     content: [
       ...(turn.image
-        ? [{ type: "image" as const, image: turn.image.bytes, mediaType: turn.image.mediaType }]
+        ? [{ type: "file" as const, data: turn.image.bytes, mediaType: turn.image.mediaType }]
         : []),
       { type: "text" as const, text: turn.text || "Bạn xem giúp mình món đồ trong ảnh nhé." },
     ],

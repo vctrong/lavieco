@@ -54,7 +54,8 @@ const laviagentEnvSchema = z.object({
   LAVIAGENT_DEMO_MODE: z.enum(["online", "offline"]).default("online"),
   /** Google AI Studio key. Server only; empty = offline mode. */
   GEMINI_API_KEY: z.string().default(""),
-  GEMINI_MODEL: z.string().min(1).default("gemini-2.5-flash"),
+  /** Model names change over time: list them with GET …/v1beta/models (docs/07 §7). */
+  GEMINI_MODEL: z.string().min(1).default("gemini-3.8-flash"),
 });
 
 export type LaviagentEnv = z.infer<typeof laviagentEnvSchema>;

@@ -148,7 +148,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `LAVIAGENT_AI_PROVIDER` | Tuỳ chọn (mặc định `gemini`) | Không | Mô hình trả lời LaviAgent (`gemini`; `lavieco` = mô hình riêng, chưa có), `docs/07` §2 | Tự đặt | Như nhau | `gemini` |
 | `LAVIAGENT_DEMO_MODE` | Tuỳ chọn (mặc định `online`) | Không | `offline` = chỉ dùng dữ liệu cố định, không gọi AI (demo không mạng) | Tự đặt | Prod: `online` | `offline` |
 | `GEMINI_API_KEY` | Tuỳ chọn (trống = LaviAgent tự chạy offline) | **Có** | Khoá Gemini cho nhận diện ảnh và chat LaviAgent; chỉ ở server | Google AI Studio → Get API key (`docs/07` §7) | Dev và prod nên là hai khoá (hai project) | `AIza-gia-khoa` |
-| `GEMINI_MODEL` | Tuỳ chọn (mặc định `gemini-2.5-flash`) | Không | Tên model Gemini; bị giới hạn tần suất thì đổi sang bản Flash-Lite | Tự đặt | Như nhau | `gemini-2.5-flash-lite` |
+| `GEMINI_MODEL` | Tuỳ chọn (mặc định `gemini-3.8-flash`) | Không | Tên model Gemini. Tên thay đổi theo thời gian (model cũ trả 404 cho người dùng mới): kiểm tra bằng endpoint list models, `docs/07` §7. Bị giới hạn tần suất thì đổi sang bản Flash-Lite | Tự đặt | Như nhau | `gemini-3.5-flash-lite` |
 
 ## `apps/admin`: `apps/admin/.env.local`
 
@@ -291,4 +291,5 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 20/10/2026 | `admin`: `ADMIN_APP_URL` | Thêm (gốc URL chuyển hướng); `web` dùng `NEXT_PUBLIC_SITE_URL` cho chuyển hướng | `fix/redirect-base-url` |
 | 20/10/2026 | `identity-service`, `program-service`: `BREVO_SMTP_HOST`, `BREVO_SMTP_PORT`, `BREVO_SMTP_USER`, `BREVO_SMTP_KEY`, `BREVO_COOLDOWN_MINUTES`, `MAIL_FROM_FALLBACK`, `MAIL_REPLY_TO` | Thêm (Brevo làm đường chính, Gmail `SMTP_*` làm dự phòng, ADR-0023); `MAIL_FROM` thành người gửi của đường Brevo; `mail:test` thêm `--provider` | `feat/mail-brevo-fallback` |
 | 25/10/2026 | `web`: `LAVIAGENT_AI_PROVIDER`, `LAVIAGENT_DEMO_MODE`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Thêm (LaviAgent demo, ADR-0024, `docs/07`) | `feat/web-laviagent-demo` |
+| 25/10/2026 | `web`: `GEMINI_MODEL` | Đổi mặc định `gemini-2.5-flash` → `gemini-3.8-flash` (bản 2.5 trả 404 cho người dùng mới) | `feat/web-laviagent-demo` |
 | 21/10/2026 | Root: `MONGO_PORT`; `identity-service`, `content-service`, `program-service`: `MONGODB_URI` | Đổi mặc định dev sang cổng `27018` (Mongo local trong compose); thêm mẫu Atlas dạng comment trong `.env.example`. `env:check` báo lỗi khi `SMTP_HOST=localhost` (Node phân giải ra `::1`, Mailpit chỉ nghe `127.0.0.1`). Không đổi tên biến | `docs/dev-local.md` |

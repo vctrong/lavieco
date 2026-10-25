@@ -11,6 +11,8 @@ import type { ChatKnowledge } from "../knowledge/knowledge-source";
  */
 export type AIProvider = {
   readonly id: string;
+  /** Model name, for logs (e.g. a 404 when GEMINI_MODEL is retired). */
+  readonly model?: string;
   classifyImage(image: ImageInput, options: CallOptions): Promise<ClassifyResult>;
   /**
    * Streams the assistant's reply in the UI message stream protocol (`text-*` chunks),

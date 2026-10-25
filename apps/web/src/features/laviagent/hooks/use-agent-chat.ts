@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { CHAT_ENDPOINT } from "../constants/config";
 import type { ChatContext, FallbackAnswer } from "../types";
+import { normalizeSearchText } from "../utils/normalize-search-text";
 
 /** Marks answers written in advance (chips while the AI is unavailable). */
 export type AgentMessageMetadata = { fallback?: boolean };
@@ -13,7 +14,7 @@ export type AgentMessage = UIMessage<AgentMessageMetadata>;
 
 export type ChatFailure = "rate_limited" | "too_long" | "invalid_image" | "network" | "unavailable";
 
-/** useChat surfaces the route's JSON body (or the stream's error text) as the message. */
+/** Route errors and mid-stream errors both arrive as `{ status, reason }` JSON text. */
 export function chatFailureOf(error: Error | undefined): ChatFailure | null {
   if (!error) return null;
   if (typeof navigator !== "undefined" && !navigator.onLine) return "network";
@@ -26,7 +27,7 @@ export function chatFailureOf(error: Error | undefined): ChatFailure | null {
       }
     }
   } catch {
-    // Not JSON: a network failure or a stream error.
+    // Not JSON: a network failure or an unexpected stream error.
   }
   return error.name === "TypeError" ? "network" : "unavailable";
 }
@@ -37,31 +38,48 @@ const textMessage = (
   metadata?: AgentMessageMetadata,
 ): AgentMessage => ({ id: generateId(), role, parts: [{ type: "text", text }], metadata });
 
+const textOf = (message: AgentMessage | undefined) =>
+  message?.parts
+    .map((part) => (part.type === "text" ? part.text : ""))
+    .join("")
+    .trim() ?? "";
+
+type Callbacks = {
+  onDegraded: () => void;
+  onFailure: (failure: ChatFailure | null) => void;
+};
+
 /**
  * A `Chat` plus what it needs outside React's render: the page context sent with each
- * request, and the suggestion chip waiting for an answer (answered from
- * fallback-answers.json if the request fails).
+ * request, and recovery when an answer fails. A failure can come as a refused request,
+ * an `error` chunk mid-stream (the model failed after the response started), a dropped
+ * connection, or an answer that ended empty; all of them end in `recover`.
  */
 class AgentConversation {
   readonly chat: Chat<AgentMessage>;
   private context: ChatContext = {};
-  private pendingChip: FallbackAnswer | null = null;
+  /** The current request already recovered (onError and onFinish both fire on errors). */
+  private recovered = false;
+  private stoppedByUser = false;
 
-  constructor(onDegraded: () => void) {
+  constructor(
+    private readonly suggestions: readonly FallbackAnswer[],
+    private readonly callbacks: Callbacks,
+  ) {
     this.chat = new Chat<AgentMessage>({
       transport: new DefaultChatTransport({
         api: CHAT_ENDPOINT,
         body: () => ({ context: this.context }),
       }),
-      onError: (error) => {
-        const failure = chatFailureOf(error);
-        if (failure !== "too_long" && failure !== "invalid_image") onDegraded();
-        const chip = this.pendingChip;
-        this.pendingChip = null;
-        if (chip) this.append(textMessage("assistant", chip.answer, { fallback: true }));
-      },
-      onFinish: () => {
-        this.pendingChip = null;
+      onError: (error) => this.recover(chatFailureOf(error) ?? "unavailable"),
+      onFinish: ({ message, isAbort, isDisconnect, isError }) => {
+        if (this.stoppedByUser) return;
+        const empty = message.role !== "assistant" || textOf(message) === "";
+        if (isError || isDisconnect || isAbort || empty) {
+          this.recover(isDisconnect ? "network" : "unavailable");
+        } else {
+          this.callbacks.onFailure(null);
+        }
       },
     });
   }
@@ -70,17 +88,57 @@ class AgentConversation {
     this.context = context;
   }
 
+  send(message: Parameters<Chat<AgentMessage>["sendMessage"]>[0]) {
+    this.recovered = false;
+    this.stoppedByUser = false;
+    this.callbacks.onFailure(null);
+    void this.chat.sendMessage(message);
+  }
+
+  stop() {
+    this.stoppedByUser = true;
+    void this.chat.stop();
+  }
+
   /** A suggestion chip: the AI while it works, the written answer once it does not. */
   ask(suggestion: FallbackAnswer, degraded: boolean) {
     if (degraded) {
+      this.callbacks.onFailure(null);
       this.append(
         textMessage("user", suggestion.question),
         textMessage("assistant", suggestion.answer, { fallback: true }),
       );
       return;
     }
-    this.pendingChip = suggestion;
-    void this.chat.sendMessage({ text: suggestion.question });
+    this.send({ text: suggestion.question });
+  }
+
+  /**
+   * Never leave the visitor in front of a silent or empty bubble: drop the empty answer,
+   * answer from fallback-answers.json when the question is a known one, otherwise show
+   * a friendly notice (the chips keep working).
+   */
+  private recover(failure: ChatFailure) {
+    if (this.recovered) return;
+    this.recovered = true;
+    if (failure !== "too_long" && failure !== "invalid_image") this.callbacks.onDegraded();
+
+    const messages = this.chat.messages;
+    const last = messages.at(-1);
+    const kept =
+      last?.role === "assistant" && textOf(last) === "" ? messages.slice(0, -1) : messages;
+    const question = kept.at(-1)?.role === "user" ? normalizeSearchText(textOf(kept.at(-1))) : "";
+    const known = question
+      ? this.suggestions.find((item) => normalizeSearchText(item.question) === question)
+      : undefined;
+
+    if (known) {
+      this.chat.messages = [...kept, textMessage("assistant", known.answer, { fallback: true })];
+      this.callbacks.onFailure(null);
+      return;
+    }
+    if (kept !== messages) this.chat.messages = kept;
+    this.callbacks.onFailure(failure);
   }
 
   private append(...messages: AgentMessage[]) {
@@ -92,9 +150,16 @@ class AgentConversation {
  * One conversation per screen, shared by the desktop panel and the mobile sheet so
  * switching layouts never loses it.
  */
-export function useAgentChat(context: ChatContext) {
+export function useAgentChat(context: ChatContext, suggestions: readonly FallbackAnswer[]) {
   const [degraded, setDegraded] = useState(false);
-  const [conversation] = useState(() => new AgentConversation(() => setDegraded(true)));
+  const [failure, setFailure] = useState<ChatFailure | null>(null);
+  const [conversation] = useState(
+    () =>
+      new AgentConversation(suggestions, {
+        onDegraded: () => setDegraded(true),
+        onFailure: setFailure,
+      }),
+  );
 
   const { material, ideaId } = context;
   useEffect(() => {
@@ -105,6 +170,13 @@ export function useAgentChat(context: ChatContext) {
     (suggestion: FallbackAnswer) => conversation.ask(suggestion, degraded),
     [conversation, degraded],
   );
+  const send = useCallback(
+    (message: Parameters<AgentConversation["send"]>[0]) => conversation.send(message),
+    [conversation],
+  );
+  const stop = useCallback(() => conversation.stop(), [conversation]);
 
-  return { chat: conversation.chat, degraded, ask };
+  return { chat: conversation.chat, failure, ask, send, stop };
 }
+
+export type AgentChatControls = ReturnType<typeof useAgentChat>;

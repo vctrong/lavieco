@@ -71,6 +71,8 @@ export function MessageBubble({ message, catalog, known, streaming }: MessageBub
   }
 
   const text = textOf(message);
+  // An answer that ended empty is removed by the conversation; never show a frozen bubble.
+  if (!text && !streaming) return null;
   return (
     <AgentBubble fallback={Boolean(message.metadata?.fallback)}>
       {text ? (

@@ -19,7 +19,7 @@ import type { ChatTurn, ImageInput } from "./ai/ai-provider";
 import { aiProvider } from "./ai/get-provider";
 import { knowledgeSource } from "./knowledge/composite-knowledge-source";
 import type { ChatKnowledge } from "./knowledge/knowledge-source";
-import { logWarn } from "./log";
+import { logProviderError } from "./log";
 import { buildChatInstructions } from "./prompts/build-chat-prompt";
 import { clientIpOf, consume, isSameOrigin, readSession } from "./rate-limit";
 
@@ -142,10 +142,7 @@ export async function handleChat(request: Request): Promise<Response> {
     if (session.setCookie) headers.set("set-cookie", session.setCookie);
     return createUIMessageStreamResponse({ stream, headers });
   } catch (error) {
-    logWarn("laviagent chat failed", {
-      provider: provider.id,
-      errorName: error instanceof Error ? error.name : "unknown",
-    });
+    logProviderError("chat", provider, error);
     return Response.json({ status: "error", reason: "unavailable" }, { status: 503 });
   }
 }

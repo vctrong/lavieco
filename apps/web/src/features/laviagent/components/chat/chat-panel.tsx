@@ -1,6 +1,6 @@
 "use client";
 
-import { useChat, type Chat } from "@ai-sdk/react";
+import { useChat } from "@ai-sdk/react";
 import Image from "next/image";
 import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from "react";
 import { FiAlertCircle, FiImage, FiLock, FiSend, FiSquare, FiX } from "react-icons/fi";
@@ -11,8 +11,8 @@ import { LaviAgentMascot } from "@/shared/components/illustrations/laviagent-mas
 
 import { ACCEPTED_IMAGE_TYPES, CHAT_MESSAGE_MAX_CHARS } from "../../constants/config";
 import { TEXT } from "../../constants/text";
-import { chatFailureOf, type AgentMessage } from "../../hooks/use-agent-chat";
-import type { Catalog, FallbackAnswer } from "../../types";
+import type { AgentChatControls } from "../../hooks/use-agent-chat";
+import type { Catalog } from "../../types";
 import { blobToDataUrl, prepareImage } from "../../utils/resize-image";
 import { AgentBubble, MessageBubble } from "./message-bubble";
 import { MarkdownText } from "./markdown-text";
@@ -21,8 +21,8 @@ import { TypingDots } from "./typing-dots";
 const t = TEXT.vi.chat;
 
 type ChatPanelProps = {
-  chat: Chat<AgentMessage>;
-  ask: (suggestion: FallbackAnswer) => void;
+  /** From useAgentChat: the conversation and its recovery when an answer fails. */
+  controls: AgentChatControls;
   catalog: Catalog;
   /** Name of the material on screen, for the welcome line. */
   materialName: string | null;
@@ -35,15 +35,9 @@ type ChatPanelProps = {
  * The conversation: header, log (aria-live), suggestion chips and the composer. Layout
  * agnostic: the desktop split view and the mobile sheet both host it.
  */
-export function ChatPanel({
-  chat,
-  ask,
-  catalog,
-  materialName,
-  actions,
-  className,
-}: ChatPanelProps) {
-  const { messages, sendMessage, status, error, stop } = useChat({ chat, throttle: 50 });
+export function ChatPanel({ controls, catalog, materialName, actions, className }: ChatPanelProps) {
+  const { chat, failure, ask, send: sendMessage, stop } = controls;
+  const { messages, status } = useChat({ chat, throttle: 50 });
   const [input, setInput] = useState("");
   const [attachment, setAttachment] = useState<string | null>(null);
   const [localError, setLocalError] = useState<string | null>(null);
@@ -60,10 +54,8 @@ export function ChatPanel({
   );
 
   const busy = status === "submitted" || status === "streaming";
-  const failure = chatFailureOf(error);
-  const lastMessage = messages.at(-1);
-  // A failed question stays unanswered; once a written answer follows, the notice goes.
-  const showFailure = failure !== null && lastMessage?.role === "user";
+  // Set by the conversation when an answer failed and no written answer could replace it.
+  const showFailure = failure !== null && !busy;
   const rateLimited = failure === "rate_limited";
 
   // Follow the conversation while it grows.
@@ -72,7 +64,7 @@ export function ChatPanel({
     if (log) log.scrollTop = log.scrollHeight;
   }, [messages, status]);
 
-  const send = async () => {
+  const send = () => {
     const text = input.trim();
     if (busy || (!text && !attachment)) return;
     if (text.length > CHAT_MESSAGE_MAX_CHARS) {
@@ -85,7 +77,7 @@ export function ChatPanel({
       : undefined;
     setInput("");
     setAttachment(null);
-    await sendMessage({ text, files });
+    sendMessage({ text, files });
   };
 
   const attach = async (file: File | undefined) => {
@@ -201,7 +193,7 @@ export function ChatPanel({
         <form
           onSubmit={(event) => {
             event.preventDefault();
-            void send();
+            send();
           }}
           className="flex items-end gap-2 rounded-[1.75rem] border border-hairline bg-soft-white p-1.5 focus-within:border-emerald-brand focus-within:shadow-[0_0_0_3px_var(--color-neon-glow)]"
         >
@@ -240,7 +232,7 @@ export function ChatPanel({
             onKeyDown={(event) => {
               if (event.key === "Enter" && !event.shiftKey && !event.nativeEvent.isComposing) {
                 event.preventDefault();
-                void send();
+                send();
               }
             }}
             className="max-h-32 min-h-11 flex-1 resize-none bg-transparent px-1 py-2.5 text-base leading-snug text-charcoal outline-none [field-sizing:content] placeholder:text-charcoal/45 sm:text-sm"
@@ -248,7 +240,7 @@ export function ChatPanel({
           {busy ? (
             <button
               type="button"
-              onClick={() => void stop()}
+              onClick={stop}
               aria-label={t.stop}
               className="flex size-11 shrink-0 items-center justify-center rounded-full bg-deep-blue text-soft-white"
             >

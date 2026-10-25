@@ -32,7 +32,7 @@ export function IdeaActions({
   materialName: string;
 }) {
   const [open, setOpen] = useState(false);
-  const { chat, ask } = useAgentChat({ material: idea.material, ideaId: idea.id });
+  const controls = useAgentChat({ material: idea.material, ideaId: idea.id }, catalog.suggestions);
 
   return (
     <>
@@ -70,8 +70,7 @@ export function IdeaActions({
       <ChatSheet
         open={open}
         onClose={() => setOpen(false)}
-        chat={chat}
-        ask={ask}
+        controls={controls}
         catalog={catalog}
         materialName={materialName}
       />

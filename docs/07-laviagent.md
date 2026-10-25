@@ -46,7 +46,7 @@ UI (client) ──fetch──▶ /api/laviagent/analyze ─┐
 ```
 
 1. **`AIProvider`** — `classifyImage(image) → { material, shape, condition, confidence, safetyFlags }` và `chatStream(request) → ReadableStream<UIMessageChunk>`. UI chỉ biết route của mình và giao thức stream của AI SDK, không biết bên dưới là gì.
-   - `GeminiProvider`: `generateText` + `Output.object` (Gemini chỉ được trả JSON đúng schema; `material` là enum 5 vật liệu + `unknown`), `streamText` cho chat. Gemini 2.5 tắt "thinking" (`thinkingBudget: 0`), đời sau dùng `thinkingLevel: "low"` để trả lời nhanh.
+   - `GeminiProvider`: `generateText` + `Output.object` (Gemini chỉ được trả JSON đúng schema; `material` là enum 5 vật liệu + `unknown`), `streamText` cho chat. Gemini 2.5 tắt "thinking" (`thinkingBudget: 0`), đời sau dùng `thinkingLevel: "low"` để trả lời nhanh. Ảnh gửi cho mô hình là `file` part có `mediaType: image/*` (kiểu `image` part đã bị AI SDK đánh dấu lỗi thời).
    - `OfflineProvider`: không mạng. Ảnh thật → client chuyển thẳng sang bộ chọn chất liệu với câu "Chế độ demo offline — chọn chất liệu để xem ý tưởng". Chat → câu trả lời viết sẵn của chip, câu khác nhận câu mặc định.
    - `LaviecoModelProvider`: stub, `TODO(laviagent-own-model)`.
    - Chọn bằng `get-provider.ts`: `LAVIAGENT_DEMO_MODE=offline` → offline; `LAVIAGENT_AI_PROVIDER=lavieco` → mô hình riêng; có `GEMINI_API_KEY` → Gemini; thiếu key → offline (demo không bao giờ vỡ vì thiếu bí mật).
@@ -114,7 +114,12 @@ Mọi tệp ở `apps/web/src/features/laviagent/data/` đều được kiểm t
 1. Vào **Google AI Studio** (`https://aistudio.google.com`), đăng nhập tài khoản Google của đội.
 2. Chọn **Get API key** → **Create API key** (chọn hoặc tạo một Google Cloud project riêng cho LAVIECO; dev và prod nên là hai project/khoá khác nhau).
 3. Dán vào `apps/web/.env.local`: `GEMINI_API_KEY=...` (không commit, không gửi qua chat). Production: `/opt/lavieco/env/web.env`.
-4. `GEMINI_MODEL` mặc định `gemini-2.5-flash`. **Bị giới hạn tần suất (lỗi 429, LaviAgent báo "đang bận") thì đổi `GEMINI_MODEL` sang bản Flash-Lite** (ví dụ `gemini-2.5-flash-lite`) rồi khởi động lại `web`. Danh sách model và hạn mức miễn phí xem trong AI Studio; Google đổi model theo thời gian.
-5. Không có mạng khi thuyết trình: `LAVIAGENT_DEMO_MODE=offline`.
+4. `GEMINI_MODEL` mặc định `gemini-3.8-flash`. **Bị giới hạn tần suất (lỗi 429, LaviAgent báo "đang bận") thì đổi `GEMINI_MODEL` sang bản Flash-Lite** rồi khởi động lại `web`.
+5. **Tên model Gemini thay đổi theo thời gian.** Model cũ có thể bị ngừng cho người dùng mới (API trả **404**; server ghi log `laviagent model not found` kèm tên model). Xem danh sách model mà key của bạn dùng được:
+   ```bash
+   curl -s -H "x-goog-api-key: $GEMINI_API_KEY" "https://generativelanguage.googleapis.com/v1beta/models?pageSize=200" | grep '"name"'
+   ```
+   Chọn một model có `generateContent` trong `supportedGenerationMethods`, bỏ tiền tố `models/`, rồi đặt vào `GEMINI_MODEL`. Lưu ý `.env.local` đã có dòng `GEMINI_MODEL=` thì giá trị đó thắng giá trị mặc định trong code.
+6. Không có mạng khi thuyết trình: `LAVIAGENT_DEMO_MODE=offline`.
 
 **Lưu ý dữ liệu:** ở gói miễn phí, Google có thể dùng nội dung gửi lên (ảnh, câu hỏi) để cải thiện sản phẩm của họ. Với người dùng thật (nhất là học sinh), cân nhắc gói trả phí hoặc mô hình riêng trước khi mở rộng; trang đã ghi rõ ảnh không được LAVIECO lưu lại.

@@ -44,7 +44,7 @@ export function ResultScreen({
 }: ResultScreenProps) {
   const [filter, setFilter] = useState<Difficulty | "all">("all");
   const [sheetOpen, setSheetOpen] = useState(false);
-  const { chat, ask } = useAgentChat({ material: material.id });
+  const controls = useAgentChat({ material: material.id }, catalog.suggestions);
 
   const ideas = useMemo(
     () => catalog.ideas.filter((idea) => idea.material === material.id),
@@ -56,7 +56,7 @@ export function ResultScreen({
     return catalog.kits.find((item) => item.id === kitId) ?? null;
   }, [catalog.kits, ideas]);
 
-  const chatProps = { chat, ask, catalog, materialName: material.name };
+  const chatProps = { controls, catalog, materialName: material.name };
   const Icon = MATERIAL_ICONS[material.icon];
   const shownImage: FlowImage = image ?? {
     kind: "sample",

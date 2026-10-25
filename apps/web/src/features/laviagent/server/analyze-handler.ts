@@ -11,7 +11,7 @@ import {
 import type { AnalyzeResponse, ClassifyResult } from "../types";
 import { sniffImageType } from "../utils/sniff-image";
 import { aiProvider, isOffline } from "./ai/get-provider";
-import { logWarn } from "./log";
+import { logProviderError } from "./log";
 import { clientIpOf, consume, isSameOrigin, readSession } from "./rate-limit";
 
 const STATUS: Record<string, number> = {
@@ -84,10 +84,7 @@ export async function handleAnalyze(request: Request): Promise<Response> {
     if (timeout.aborted) {
       return respond({ status: "error", reason: "timeout" }, session.setCookie);
     }
-    logWarn("laviagent analyze failed", {
-      provider: provider.id,
-      errorName: error instanceof Error ? error.name : "unknown",
-    });
+    logProviderError("analyze", provider, error);
     return respond({ status: "error", reason: "unavailable" }, session.setCookie);
   }
 }
