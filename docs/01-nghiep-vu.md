@@ -204,6 +204,8 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Hoàn tiền, huỷ vé | — | — | — | — | ✓ | — | ✓ | — |
 | Xuất danh sách người đăng ký | — | — | — | — | ✓ | — | ✓ | — |
 | Check-in tại cửa | — | — | — | — | ✓ | — | ✓ | — |
+| Quản lý mã ưu đãi | — | — | — | — | ✓ | — | ✓ | — |
+| Soạn, mở, đóng khảo sát | — | — | — | — | ✓ | — | ✓ | — |
 | Huỷ chương trình (nhập lại 2FA, ghi nhật ký) | — | — | — | — | ✓ | — | ✓ | — |
 | Duyệt số người tham gia của sự kiện lưu trữ (BR-09) | — | — | — | — | ✓ | — | — | — |
 | Yêu cầu/đơn quà tặng | — | — | — | — | ✓ | — | ✓ | đọc |
@@ -300,6 +302,7 @@ flowchart LR
 | UC-29 | Xem nhật ký hoạt động, xử lý yêu cầu xóa dữ liệu cá nhân | Admin | M10 | 2 |
 | UC-30 | Xem chương trình, đăng ký và mua vé (xác thực email bằng OTP) | Guest, Member | M4 | 1 |
 | UC-31 | Nhận vé QR qua email; xem lại vé (link ký số, tra cứu bằng email + OTP, Vé của tôi) | Guest, Member | M4 | 1 |
+| UC-37 | Khảo sát: admin soạn khảo sát độc lập hoặc feedback sự kiện, mở/đóng, xem kết quả, xuất Excel/CSV. Người tham gia trả lời qua link hoặc QR; feedback sự kiện mở qua link riêng từng vé, mỗi vé một lần. | BR-06, BR-08 |
 | UC-36 | Mã ưu đãi: admin tạo mã theo sự kiện hoặc toàn app (điều kiện đơn, đối tượng, giới hạn lượt); khách nhập hoặc chọn mã ở checkout. Mã công khai hiện trên trang sự kiện kèm số lượt còn lại và đếm ngược. | BR-18 |
 | UC-32 | Tạo, xem trước, xuất bản, nhân bản sự kiện; loại vé; form đăng ký | Admin | M4 | 1 |
 | UC-33 | Người đăng ký, xuất Excel; đơn hàng, đối soát, hoàn tiền/huỷ vé | Admin | M4 | 1 |

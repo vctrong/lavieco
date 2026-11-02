@@ -15,7 +15,11 @@ export type ProgramAuditAction =
   | "ticket.reissue_qr"
   | "voucher.create"
   | "voucher.update"
-  | "voucher.status";
+  | "voucher.status"
+  | "survey.create"
+  | "survey.update"
+  | "survey.status"
+  | "survey.export";
 
 export type AuditEntry = {
   action: ProgramAuditAction;

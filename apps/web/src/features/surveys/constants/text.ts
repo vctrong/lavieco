@@ -1,0 +1,55 @@
+export const TEXT = {
+  vi: {
+    meta: { title: "Khảo sát" },
+    eyebrow: "Khảo sát LAVIECO",
+    required: "Trường có dấu * là bắt buộc.",
+    progress: (done: number, total: number) => `Đã trả lời ${done}/${total} câu`,
+    anonymous: "Khảo sát này ẩn danh: câu trả lời không gắn với tên, email hay vé của bạn.",
+    name: "Họ và tên",
+    email: "Email",
+    consentDefault: "Tôi đồng ý cho LAVIECO dùng thông tin này để xử lý khảo sát.",
+    submit: "Gửi câu trả lời",
+    sending: "Đang gửi…",
+    draftKept: "Câu trả lời được tự lưu trên trình duyệt này cho đến khi bạn gửi.",
+    stars: (value: number) => `${value} sao`,
+    scaleValue: (value: number) => `${value} điểm`,
+    choose: "Chọn một mục",
+    thanks: {
+      title: "Cảm ơn bạn!",
+      body: "Câu trả lời của bạn đã được ghi nhận.",
+      programs: "Xem các chương trình",
+      agent: "Hỏi LaviAgent cách tái chế",
+    },
+    states: {
+      not_open: { title: "Khảo sát chưa mở", body: "Bạn quay lại sau khi khảo sát mở nhé." },
+      opensAt: (when: string) => `Khảo sát mở từ ${when}.`,
+      closed: { title: "Khảo sát đã đóng", body: "Khảo sát này không còn nhận câu trả lời." },
+      full: { title: "Khảo sát đã đủ phản hồi", body: "Cảm ơn bạn đã quan tâm." },
+      already_answered: {
+        title: "Bạn đã trả lời rồi",
+        body: "Mỗi người trả lời một lần. Cảm ơn bạn đã chia sẻ!",
+      },
+      invalid_link: {
+        title: "Link chưa đúng",
+        body: "Khảo sát này chỉ mở qua link riêng trong vé của bạn. Hãy mở từ email vé hoặc trang vé.",
+      },
+    },
+    errors: {
+      required: "Vui lòng trả lời câu này.",
+      email: "Email chưa đúng định dạng.",
+      name: "Vui lòng nhập họ và tên.",
+      consent: "Vui lòng đánh dấu đồng ý để gửi.",
+      invalid: "Một số câu trả lời chưa hợp lệ. Vui lòng kiểm tra lại.",
+      closed: "Khảo sát vừa đóng nên chưa ghi nhận được câu trả lời.",
+      already: "Bạn đã trả lời khảo sát này rồi.",
+      link: "Link khảo sát chưa đúng. Hãy mở từ email vé hoặc trang vé.",
+      rate_limited: "Có quá nhiều lượt gửi từ mạng này. Vui lòng thử lại sau vài phút.",
+      unavailable: "Chưa gửi được. Thử lại sau ít phút; câu trả lời của bạn vẫn được giữ.",
+      stale_version: "Trang vừa được cập nhật. Tải lại trang rồi gửi lại.",
+      offline: "Mất kết nối mạng. Kiểm tra mạng rồi gửi lại.",
+    },
+    summary: "Vui lòng trả lời các câu được đánh dấu.",
+  },
+} as const;
+
+export const SURVEY_PATHS = { programs: "/chuong-trinh", agent: "/laviagent" } as const;

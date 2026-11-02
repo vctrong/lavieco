@@ -35,6 +35,8 @@ const MATRIX: Record<Permission, [boolean, boolean, boolean, boolean]> = {
   "checkin:perform": [true, false, true, false],
   "impact:approve": [true, false, false, false],
   "voucher:write": [true, false, true, false],
+  "survey:read": [true, false, true, true],
+  "survey:write": [true, false, true, false],
 };
 
 const COLUMNS: readonly Role[] = ["super_admin", "content_editor", "coordinator", "auditor"];

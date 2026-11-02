@@ -5,7 +5,12 @@ import {
   orderDetailSchema,
   orderListSchema,
   orderViewSchema,
+  eventFeedbackLinkSchema,
+  publicSurveySchema,
   publicVoucherListSchema,
+  surveyListSchema,
+  surveyResultsSchema,
+  surveySchema,
   sharedTicketViewSchema,
   voucherCheckResponseSchema,
   voucherListSchema,
@@ -18,6 +23,12 @@ import {
   type OrderCreateRequest,
   type OrderListQuery,
   type OrderRefundRequest,
+  type PublicSurveyQuery,
+  type SurveyCreateRequest,
+  type SurveyListQuery,
+  type SurveyStatusRequest,
+  type SurveySubmitRequest,
+  type SurveyUpdateRequest,
   type TicketReissueRequest,
   type VoucherCheckRequest,
   type VoucherCreateRequest,
@@ -321,6 +332,30 @@ export function createProgramClient(options: ProgramClientOptions) {
         schema: publicVoucherListSchema,
         requestId,
       }),
+    getPublicSurvey: (slug: string, query: PublicSurveyQuery, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/public-surveys/${segment(slug)}${queryString(query)}`,
+        auth: service,
+        schema: publicSurveySchema,
+        requestId,
+      }),
+    submitSurvey: (slug: string, body: SurveySubmitRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/public-surveys/${segment(slug)}/responses`,
+        auth: service,
+        body,
+        requestId,
+      }),
+    getFeedbackSurvey: (eventSlug: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-events/${segment(eventSlug)}/feedback-survey`,
+        auth: service,
+        schema: eventFeedbackLinkSchema,
+        requestId,
+      }),
     getSharedTicket: (token: string, requestId?: string) =>
       http.call({
         method: "GET",
@@ -461,6 +496,88 @@ export function createProgramClient(options: ProgramClientOptions) {
         path: `${V1}/vouchers/${segment(id)}/duplicate`,
         auth: user(accessToken),
         schema: voucherSchema,
+        requestId,
+      }),
+    listSurveys: (accessToken: string, query: Partial<SurveyListQuery>, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/surveys${queryString(query)}`,
+        auth: user(accessToken),
+        schema: surveyListSchema,
+        requestId,
+      }),
+    getSurvey: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/surveys/${segment(id)}`,
+        auth: user(accessToken),
+        schema: surveySchema,
+        requestId,
+      }),
+    getSurveyResults: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/surveys/${segment(id)}/results`,
+        auth: user(accessToken),
+        schema: surveyResultsSchema,
+        requestId,
+      }),
+    createSurvey: (accessToken: string, body: SurveyCreateRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/surveys`,
+        auth: user(accessToken),
+        body,
+        schema: surveySchema,
+        requestId,
+      }),
+    updateSurvey: (
+      accessToken: string,
+      id: string,
+      body: SurveyUpdateRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "PATCH",
+        path: `${V1}/surveys/${segment(id)}`,
+        auth: user(accessToken),
+        body,
+        schema: surveySchema,
+        requestId,
+      }),
+    setSurveyStatus: (
+      accessToken: string,
+      id: string,
+      body: SurveyStatusRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/surveys/${segment(id)}/status`,
+        auth: user(accessToken),
+        body,
+        schema: surveySchema,
+        requestId,
+      }),
+    duplicateSurvey: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/surveys/${segment(id)}/duplicate`,
+        auth: user(accessToken),
+        schema: surveySchema,
+        requestId,
+      }),
+    exportSurvey: (
+      accessToken: string,
+      id: string,
+      options: { format: "xlsx" | "csv"; stepUpToken: string },
+      requestId?: string,
+    ) =>
+      http.download({
+        path: `${V1}/surveys/${segment(id)}/export${queryString({ format: options.format })}`,
+        auth: user(accessToken),
+        headers: { [STEP_UP_HEADER]: options.stepUpToken },
+        timeoutMs: 30_000,
         requestId,
       }),
     reissueTicketQr: (

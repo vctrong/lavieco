@@ -131,6 +131,7 @@ export const TEXT = {
         cancelled: "Đã huỷ",
       },
       checkedInAt: (time: string) => `Đã check-in lúc ${time}`,
+      feedback: "Gửi cảm nhận",
       position: (index: number, total: number) => `Vé ${index}/${total}`,
       combo: (people: number, unit: number, seat: number) =>
         `Combo ${people} người · suất ${unit} · vé ${seat}/${people}`,

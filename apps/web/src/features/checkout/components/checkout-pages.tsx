@@ -13,6 +13,7 @@ import { TEXT } from "../constants/text";
 import {
   getCheckoutEvent,
   getCheckoutVouchers,
+  getFeedbackSlug,
   getOrder,
   getSharedTicket,
   verifiedMember,
@@ -105,6 +106,7 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
   const order = await getOrder(token);
   if (!order) notFound();
   const t = TEXT.vi.ticket;
+  const feedbackSlug = await getFeedbackSlug(order.event.slug, order.event.endAt);
   const tickets: TicketCardData[] = await Promise.all(
     order.tickets.map(async (ticket) => ({
       code: ticket.code,
@@ -113,6 +115,10 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
       checkedInAt: ticket.checkedInAt ? formatDateTime(ticket.checkedInAt) : null,
       qrImage: ticket.qrToken ? await qrDataUrl(ticket.qrToken, 560) : null,
       combo: comboOf(ticket),
+      feedbackHref:
+        feedbackSlug && ticket.shareToken
+          ? CHECKOUT_ROUTES.feedback(feedbackSlug, ticket.shareToken)
+          : null,
       shareUrl: ticket.shareToken
         ? new URL(CHECKOUT_ROUTES.sharedTicket(ticket.shareToken), publicEnv.siteUrl).toString()
         : null,
@@ -254,6 +260,7 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
 export async function SharedTicketPage({ token }: { token: string }) {
   const t = TEXT.vi.ticket;
   const shared = await getSharedTicket(token);
+  const feedbackSlug = shared ? await getFeedbackSlug(shared.event.slug, shared.event.endAt) : null;
   if (!shared) {
     return (
       <CheckoutShell eyebrow={t.shared.eyebrow} title={t.shared.goneTitle} step={null}>
@@ -291,6 +298,10 @@ export async function SharedTicketPage({ token }: { token: string }) {
             qrImage: shared.qrToken ? await qrDataUrl(shared.qrToken, 560) : null,
             combo: comboOf(shared),
             shareUrl: null,
+            feedbackHref:
+              feedbackSlug && shared.status !== "void"
+                ? CHECKOUT_ROUTES.feedback(feedbackSlug, token)
+                : null,
           }}
           index={1}
           total={1}

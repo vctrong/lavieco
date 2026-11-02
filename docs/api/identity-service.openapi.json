@@ -892,7 +892,9 @@
                           "registration:export",
                           "checkin:perform",
                           "impact:approve",
-                          "voucher:write"
+                          "voucher:write",
+                          "survey:read",
+                          "survey:write"
                         ]
                       }
                     }

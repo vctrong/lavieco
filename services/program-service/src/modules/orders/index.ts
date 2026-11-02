@@ -25,7 +25,13 @@ export {
   type VerifiedPayment,
 } from "./application/ports/order-services.port";
 export { newOrderCode, newQrToken, newTicketCode } from "./domain/codes";
-export { answerText, type OrderAnswer, type OrderRecord, type PaymentLink } from "./domain/order";
+export {
+  answerText,
+  validateAnswers,
+  type OrderAnswer,
+  type OrderRecord,
+  type PaymentLink,
+} from "./domain/order";
 export type { TicketRecord } from "./domain/ticket";
 export { DisabledPaymentGateway } from "./infrastructure/disabled-payment-gateway";
 export { OrderExpiryScheduler } from "./infrastructure/order-expiry.scheduler";

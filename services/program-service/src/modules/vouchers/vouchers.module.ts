@@ -56,6 +56,6 @@ import { VOUCHER_ADMIN_SERVICE, VOUCHER_LEDGER } from "./vouchers.tokens";
       inject: [VOUCHER_REPOSITORY, VOUCHER_REDEMPTION_REPOSITORY, RATE_LIMITER, SERVICE_CONFIG],
     },
   ],
-  exports: [VOUCHER_LEDGER],
+  exports: [VOUCHER_LEDGER, RATE_LIMITER],
 })
 export class VouchersModule {}

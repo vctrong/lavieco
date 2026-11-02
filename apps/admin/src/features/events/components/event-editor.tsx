@@ -54,6 +54,7 @@ export function EventEditor({
   canWrite,
   canApprove,
   vouchersSection,
+  surveysSection,
 }: {
   event: EventView;
   types: EventType[];
@@ -61,6 +62,7 @@ export function EventEditor({
   canApprove: boolean;
   /** "Mã giảm giá", composed by the route: features do not import each other (F2). */
   vouchersSection?: ReactNode;
+  surveysSection?: ReactNode;
 }) {
   const { dirtyBlocks, setDirty, register, saveDirty } = useEditorBlocks(event);
   const { leavingTo, stay } = useLeaveGuard(dirtyBlocks.size > 0);
@@ -74,13 +76,18 @@ export function EventEditor({
         saveDirty={saveDirty}
       />
       <div className="grid gap-6 lg:grid-cols-[11rem_minmax(0,1fr)] xl:grid-cols-[11rem_minmax(0,1fr)_20rem]">
-        <EditorSideNav event={event} withVouchers={Boolean(vouchersSection)} />
+        <EditorSideNav
+          event={event}
+          withVouchers={Boolean(vouchersSection)}
+          withSurveys={Boolean(surveysSection)}
+        />
         <div className="min-w-0 space-y-6">
           {/* Forms keep their own state; submits read the latest `revision` from props. */}
           <DetailsForm event={event} types={types} canWrite={canWrite} {...blockProps} />
           <TicketTypesSection event={event} canWrite={canWrite} {...blockProps} />
           <FormBuilder event={event} canWrite={canWrite} {...blockProps} />
           {vouchersSection}
+          {surveysSection}
         </div>
         <div className="lg:col-start-2 xl:sticky xl:top-24 xl:col-start-3 xl:self-start">
           <StatusPanel

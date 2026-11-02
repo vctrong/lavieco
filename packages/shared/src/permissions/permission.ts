@@ -29,6 +29,9 @@ export const PERMISSIONS = [
   "impact:approve",
   /** Create, edit and pause vouchers; their allowlists hold personal data. */
   "voucher:write",
+  /** Surveys and their responses (which may hold personal data). */
+  "survey:read",
+  "survey:write",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
