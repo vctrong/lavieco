@@ -219,6 +219,7 @@ export const TEXT = {
       cta: "Thử LaviAgent ngay",
       note: "Miễn phí · Không cần đăng nhập · Ảnh không lưu trên máy chủ",
       bubble: "Chai nhựa này làm chậu cây tự dưỡng được đó!",
+      imageAlt: "Chai nhựa trên bàn gỗ được LaviAgent quét và nhận diện là nhựa PET tái chế được",
     },
   },
 } as const;

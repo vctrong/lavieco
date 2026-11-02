@@ -268,7 +268,8 @@ apps/<web|admin>/
 │       ├── brand/               # logo, ảnh chia sẻ mặc định
 │       ├── team/                # ảnh thành viên
 │       ├── illustrations/       # hình trang trí (sóng, hạt ngọc, họa tiết vỏ sò)
-│       └── placeholders/        # ảnh dự phòng khi chưa có nội dung
+│       ├── placeholders/        # ảnh dự phòng khi chưa có nội dung
+│       └── landing/             # ảnh chụp của trang chủ (webp), không phải ảnh tải lên
 ├── next.config.ts
 ├── package.json  tsconfig.json
 ├── .env.example                 # commit
