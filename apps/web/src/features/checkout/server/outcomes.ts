@@ -18,6 +18,8 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, CheckoutFailure>> = {
   "otp.attempts_exceeded": "attempts_exceeded",
   "otp.send_limited": "send_limited",
   "otp.verification_invalid": "verification_invalid",
+  "voucher.invalid": "voucher_invalid",
+  "voucher.amount_too_low": "voucher_invalid",
   "order.sold_out": "sold_out",
   "order.items_invalid": "items_invalid",
   "order.answers_invalid": "answers_invalid",

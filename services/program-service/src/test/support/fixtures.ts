@@ -99,6 +99,7 @@ export async function book(
     answers?: Record<string, unknown>;
     proof?: string;
     extra?: Record<string, unknown>;
+    voucherCode?: string;
   },
 ) {
   const buyer = input.buyer ?? BUYER;
@@ -114,6 +115,7 @@ export async function book(
       dataConsent: true,
       consentVersion: "checkout-2026-10",
       verificationToken: input.proof ?? (await t.emailProof(buyer.email)),
+      ...(input.voucherCode ? { voucherCode: input.voucherCode } : {}),
       ...input.extra,
     });
 }

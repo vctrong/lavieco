@@ -92,6 +92,10 @@ export class OrderAdminService {
     );
   }
 
+  voucherStats(voucherId: string) {
+    return this.orders.voucherStats(voucherId);
+  }
+
   /**
    * "Cấp lại QR" when a ticket was shared by mistake: a new random token (BR-16), so the
    * old QR and the ticket's share link stop working. A used or void ticket has nothing

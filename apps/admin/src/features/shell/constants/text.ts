@@ -14,6 +14,7 @@ export const TEXT = {
     items: {
       overview: "Tổng quan",
       events: "Chương trình",
+      vouchers: "Ưu đãi",
       orders: "Đơn hàng & payOS",
       checkin: "Quét check-in",
       handbook: "Cẩm nang",

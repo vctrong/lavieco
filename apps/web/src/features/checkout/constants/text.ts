@@ -92,6 +92,29 @@ export const TEXT = {
         "Chúng tôi đã nhận tiền nhưng chương trình đã hết chỗ. Đội LAVIECO sẽ hoàn tiền và liên hệ với bạn.",
       backToEvent: "Về trang chương trình",
     },
+    voucher: {
+      label: "Mã ưu đãi",
+      apply: "Áp dụng",
+      applying: "Đang kiểm tra…",
+      remove: "Gỡ mã",
+      choose: "Chọn ưu đãi",
+      hint: "Mỗi đơn dùng một mã. Mã dành riêng cho một số khách cần nhập email trước khi áp dụng.",
+      subtotal: "Tạm tính",
+      discount: (code: string) => `Giảm giá (${code})`,
+      offerPercent: (value: number, cap: string | null) =>
+        cap ? `Giảm ${value}%, tối đa ${cap}` : `Giảm ${value}%`,
+      offerFixed: (amount: string) => `Giảm ${amount}`,
+      remaining: (count: number) => `Còn ${count} lượt`,
+      errors: {
+        invalid: "Mã này không dùng được cho đơn hàng hiện tại.",
+        too_low:
+          "Sau khi giảm, số tiền còn lại thấp hơn mức cổng thanh toán nhận. Mã này chưa áp dụng được cho đơn này.",
+        rate_limited: "Bạn thử mã hơi nhiều. Vui lòng đợi vài phút rồi thử lại.",
+        unavailable: "Chưa kiểm tra được mã. Thử lại sau ít phút.",
+        stale_version: "Trang vừa được cập nhật. Tải lại trang rồi thử lại.",
+        offline: "Mất kết nối mạng. Kiểm tra mạng rồi thử lại.",
+      },
+    },
     ticket: {
       eyebrow: "Vé của bạn",
       orderCode: "Mã đơn",
@@ -184,6 +207,8 @@ export const TEXT = {
       send_limited_in: (seconds: number) =>
         `Bạn đã yêu cầu quá nhiều mã. Thử lại sau ${seconds} giây.`,
       verification_invalid: "Phiên xác thực đã hết hạn. Hãy nhập lại thông tin.",
+      voucher_invalid:
+        "Mã ưu đãi không còn dùng được cho đơn này. Gỡ mã rồi đặt lại, hoặc thử mã khác.",
       sold_out:
         "Rất tiếc, số chỗ còn lại không đủ cho đơn này. Bạn thử giảm số lượng vé hoặc chọn loại vé khác.",
       items_invalid:

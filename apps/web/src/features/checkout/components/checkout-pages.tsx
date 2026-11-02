@@ -10,7 +10,13 @@ import { turnstileSiteKey } from "@/lib/turnstile";
 
 import { CHECKOUT_ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { getCheckoutEvent, getOrder, getSharedTicket, verifiedMember } from "../server/orders";
+import {
+  getCheckoutEvent,
+  getCheckoutVouchers,
+  getOrder,
+  getSharedTicket,
+  verifiedMember,
+} from "../server/orders";
 import { qrDataUrl } from "../server/qr";
 import { formatDateTime, formatSchedule } from "../utils/format";
 import { initialQuantities, type CheckoutPick } from "../utils/initial-pick";
@@ -43,6 +49,7 @@ export async function CheckoutPage({ slug, pick }: { slug: string; pick?: Checko
     <CheckoutShell eyebrow={t.checkout.eyebrow} title={event.title} step={1} back={back}>
       <CheckoutForm
         event={event}
+        vouchers={await getCheckoutVouchers(event.slug)}
         member={await verifiedMember()}
         turnstileSiteKey={turnstileSiteKey()}
         initialQuantities={initialQuantities(event.ticketTypes, pick)}

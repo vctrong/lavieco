@@ -61,6 +61,13 @@ describe("ticketEmail", () => {
     expect(ticketEmail(cases[1]!.input).html).not.toContain("/dang-ky");
   });
 
+  it("shows subtotal, discount and total when a code was used", () => {
+    const mail = ticketEmail(cases.find((item) => item.name === "with-voucher")!.input);
+    expect(mail.text).toContain("Giảm giá (GIAM2NGUOI)");
+    expect(mail.text).toContain("Tạm tính");
+    expect(mail.html).toContain("GIAM2NGUOI");
+  });
+
   it("says when a QR was reissued, not that the codes are unchanged", () => {
     const mail = ticketEmail(cases.find((item) => item.name === "reissued-qr")!.input);
     expect(mail.subject).toContain("Mã QR mới");
@@ -79,7 +86,7 @@ describe("ticketEmail", () => {
   });
 
   it("says when the tickets are sent again", () => {
-    const mail = ticketEmail(cases[7]!.input);
+    const mail = ticketEmail(cases[8]!.input);
     expect(mail.subject).toBe("Gửi lại vé: Workshop làm chậu cây từ bột vỏ sò");
     expect(mail.text).toContain("Vé và mã QR không thay đổi");
   });
@@ -89,7 +96,7 @@ describe("ticketEmail", () => {
       Array.from({ length: ORDER_LIMITS.ticketsPerOrderMax }, () => "Vé tiêu chuẩn có tên khá dài"),
     );
     const mail = ticketEmail({
-      ...cases[8]!.input,
+      ...cases[9]!.input,
       tickets,
       event: fakeEvent({ safetyNotes: "x".repeat(2000), title: "t".repeat(200) }),
     });

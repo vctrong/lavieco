@@ -11,6 +11,7 @@ export type CheckoutFailure =
   | "send_limited"
   | "verification_invalid"
   | "sold_out"
+  | "voucher_invalid"
   | "items_invalid"
   | "answers_invalid"
   | "consent_required"

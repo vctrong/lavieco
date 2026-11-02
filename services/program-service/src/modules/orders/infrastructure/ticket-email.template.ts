@@ -136,6 +136,15 @@ export function ticketEmail(input: TicketEmailInput) {
           ["Thời gian", escapeHtml(schedule)],
           [online ? "Tham gia" : "Địa điểm", placeHtml],
           ["Vé", lines.map(escapeHtml).join("<br>")],
+          ...(order.discount
+            ? ([
+                ["Tạm tính", escapeHtml(MONEY.format(order.subtotal))],
+                [
+                  `Giảm giá (${escapeHtml(order.discount.code)})`,
+                  `−${escapeHtml(MONEY.format(order.discount.amount))}`,
+                ],
+              ] as [string, string][])
+            : []),
           ["Tổng", escapeHtml(total)],
           ["Mã đơn", String(order.orderCode)],
         ]),
@@ -172,6 +181,12 @@ export function ticketEmail(input: TicketEmailInput) {
     `Thời gian: ${schedule}`,
     `${online ? "Tham gia" : "Địa điểm"}: ${place}`,
     `Vé: ${lines.join(", ")}`,
+    ...(order.discount
+      ? [
+          `Tạm tính: ${MONEY.format(order.subtotal)}`,
+          `Giảm giá (${order.discount.code}): -${MONEY.format(order.discount.amount)}`,
+        ]
+      : []),
     `Tổng: ${total}`,
     `Mã đơn: ${order.orderCode} · ${status}`,
     "",

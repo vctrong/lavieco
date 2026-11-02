@@ -68,6 +68,15 @@ export const ERROR_CATALOG = {
   },
   "ticket_type.limit_reached": { status: 422, title: "Too many ticket types for this event" },
 
+  // One answer for an unknown, expired, used-up or not-for-you code (no code probing).
+  "voucher.invalid": { status: 422, title: "This code cannot be used for this order" },
+  "voucher.amount_too_low": {
+    status: 422,
+    title: "The amount left after this code is below what the payment provider accepts",
+  },
+  "voucher.code_taken": { status: 409, title: "Another voucher already uses this code" },
+  "voucher.locked": { status: 409, title: "Voucher change not allowed once it has been used" },
+
   "order.registration_closed": { status: 409, title: "Event does not take registrations now" },
   "order.sold_out": { status: 409, title: "Not enough seats left for this order" },
   "order.items_invalid": { status: 422, title: "Ticket selection is not allowed" },

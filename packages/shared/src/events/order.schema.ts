@@ -112,6 +112,8 @@ export const orderCreateRequestSchema = z.object({
   /** Required (true) when the event is for children; stored as `buyer.isGuardian`. */
   isGuardian: z.boolean().default(false),
   verificationToken: z.string().min(10).max(4096),
+  /** One code per order (BR-18); checked and priced again by the service. */
+  voucherCode: z.string().trim().toUpperCase().max(30).optional(),
 });
 export type OrderCreateRequest = z.infer<typeof orderCreateRequestSchema>;
 
@@ -202,6 +204,9 @@ export type SharedTicketView = z.infer<typeof sharedTicketViewSchema>;
 export const orderViewSchema = z.object({
   orderCode: z.number().int(),
   status: orderStatusSchema,
+  /** Before any discount; `amount` is what is paid. */
+  subtotal: z.number().int(),
+  discount: z.object({ code: z.string(), amount: z.number().int() }).nullable(),
   amount: z.number().int(),
   expiresAt: isoDateTimeSchema,
   paidAt: isoDateTimeSchema.nullable(),
@@ -284,6 +289,9 @@ export const orderListItemSchema = z.object({
   orderCode: z.number().int(),
   event: z.object({ id: objectIdSchema, title: z.string() }),
   buyer: adminBuyerSchema,
+  subtotal: z.number().int(),
+  voucherCode: z.string().nullable(),
+  discountAmount: z.number().int(),
   amount: z.number().int(),
   status: orderStatusSchema,
   ticketCount: z.number().int(),

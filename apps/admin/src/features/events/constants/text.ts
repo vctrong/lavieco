@@ -329,6 +329,7 @@ export const TEXT = {
         tickets: "Vé & giá",
         form: "Form đăng ký",
       },
+      navVouchers: "Mã giảm giá",
       navOk: "Đã ổn",
       navAttention: "Cần xem lại",
       leaveTitle: "Rời trang khi chưa lưu?",

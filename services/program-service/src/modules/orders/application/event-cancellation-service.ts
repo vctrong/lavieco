@@ -10,6 +10,7 @@ import {
   type EventRepository,
 } from "../../events";
 import type { TicketTypeRepository } from "../../ticketing";
+import type { VoucherLedger } from "../../vouchers";
 import type { OrderRecord } from "../domain/order";
 import type { StaffActor } from "./order-admin-service";
 import { CANCEL_PAYMENT_LINK_JOB, SEND_EVENT_CANCELLED_JOB } from "./order-jobs";
@@ -36,6 +37,7 @@ export class EventCancellationService {
     private readonly audit: AuditTrail,
     private readonly unitOfWork: UnitOfWork,
     private readonly outbox: OutboxPort,
+    private readonly vouchers: VoucherLedger,
   ) {}
 
   /** What a cancellation would touch, shown in the confirmation dialog. */
@@ -116,6 +118,7 @@ export class EventCancellationService {
     );
     if (!cancelled) throw new DomainError("common.conflict");
     await releaseSeats({ ticketTypes: this.ticketTypes, events: this.events }, order, "held", tx);
+    await this.vouchers.release(order.id, now, tx);
     if (order.payment) {
       await this.outbox.enqueue(tx, {
         type: CANCEL_PAYMENT_LINK_JOB,

@@ -2,11 +2,13 @@ import type {
   OrderDetail,
   OrderListItem,
   OrderView,
+  PublicVoucher,
   SharedTicketView,
   TicketLookupResponse,
 } from "@lavieco/shared/events";
 
 import type { EventRecord } from "../../events";
+import type { VoucherRecord } from "../../vouchers";
 import type { OrderBundle } from "../application/checkout-service";
 import type { AdminOrderDetail } from "../application/order-admin-service";
 import { maskEmail, maskPhone } from "../domain/masking";
@@ -33,6 +35,8 @@ export function toOrderView({ order, event, tickets, shareTokens }: OrderBundle)
   return {
     orderCode: order.orderCode,
     status: order.status,
+    subtotal: order.subtotal,
+    discount: order.discount ? { code: order.discount.code, amount: order.discount.amount } : null,
     amount: order.amount,
     expiresAt: order.expiresAt.toISOString(),
     paidAt: iso(order.paidAt),
@@ -114,6 +118,27 @@ export function toSharedTicketView({
   };
 }
 
+export function toPublicVoucher({
+  voucher,
+  remaining,
+}: {
+  voucher: VoucherRecord;
+  remaining: number | null;
+}): PublicVoucher {
+  return {
+    code: voucher.code,
+    name: voucher.name,
+    description: voucher.description,
+    discountType: voucher.discountType,
+    value: voucher.value,
+    maxDiscount: voucher.maxDiscount,
+    minSeats: voucher.minSeats,
+    minSubtotal: voucher.minSubtotal,
+    remaining,
+    endAt: iso(voucher.endAt),
+  };
+}
+
 export function toLookupDto(
   items: { accessToken: string; order: OrderRecord; event: EventRecord }[],
 ): TicketLookupResponse {
@@ -140,6 +165,9 @@ export function toOrderListItemDto(order: OrderRecord, event: EventRecord | null
       email: order.buyer.email,
       phone: order.buyer.phone,
     },
+    subtotal: order.subtotal,
+    voucherCode: order.discount?.code ?? null,
+    discountAmount: order.discount?.amount ?? 0,
     amount: order.amount,
     status: order.status,
     ticketCount: peopleOf(order.items),

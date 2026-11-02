@@ -1,6 +1,10 @@
 import type { OutboxPort, TxContext, UnitOfWork } from "@lavieco/service-kit/ports";
 import { DomainError, normalizeEmail, normalizePhone } from "@lavieco/shared";
-import type { OrderCreateRequest } from "@lavieco/shared/events";
+import type {
+  OrderCreateRequest,
+  VoucherCheckRequest,
+  VoucherCheckResponse,
+} from "@lavieco/shared/events";
 
 import {
   REVALIDATE_EVENT_JOB,
@@ -13,7 +17,15 @@ import {
 } from "../../events";
 import type { TicketTypeRepository } from "../../ticketing";
 import { newOrderCode } from "../domain/codes";
-import { HOLD_MS, NO_FLAGS, priceOrder, validateAnswers, type OrderRecord } from "../domain/order";
+import type { VoucherLedger } from "../../vouchers";
+import {
+  HOLD_MS,
+  NO_FLAGS,
+  PAYMENT_MIN_AMOUNT,
+  priceOrder,
+  validateAnswers,
+  type OrderRecord,
+} from "../domain/order";
 import type { TicketRecord } from "../domain/ticket";
 import { CANCEL_PAYMENT_LINK_JOB, issueAndSend } from "./order-jobs";
 import { releaseSeats, takeSeats } from "./seats";
@@ -24,6 +36,13 @@ import {
   type TicketRepository,
 } from "./ports/order-repositories.port";
 import type { EmailProofVerifier, OrderLinks, PaymentGateway } from "./ports/order-services.port";
+
+/** 0 goes the free way; a small positive amount would only fail at the provider. */
+function assertPayable(amount: number) {
+  if (amount > 0 && amount < PAYMENT_MIN_AMOUNT) {
+    throw new DomainError("voucher.amount_too_low");
+  }
+}
 
 /** An order with what its holder's page shows. */
 export type OrderBundle = {
@@ -57,6 +76,7 @@ export class CheckoutService {
     private readonly unitOfWork: UnitOfWork,
     private readonly outbox: OutboxPort,
     private readonly config: CheckoutConfig,
+    private readonly vouchers: VoucherLedger,
   ) {}
 
   async create(
@@ -89,7 +109,22 @@ export class CheckoutService {
     }
     const priced = priceOrder(ticketTypes, input.items, now);
     const answers = validateAnswers(checkoutQuestions(event.form.questions), input.answers);
-    const free = priced.amount === 0;
+    const customer = { email: emailNormalized, userId: proof.uid ?? null };
+    // BR-18: one code per order; the email is proven here, so this is the real check.
+    const quote = input.voucherCode
+      ? await this.vouchers.quote(input.voucherCode, {
+          eventId: event.id,
+          eventTypeId: event.typeId,
+          lines: priced.items,
+          email: emailNormalized,
+          userId: customer.userId,
+          paidOrders: await this.orders.countPaidBy(emailNormalized, customer.userId),
+          now,
+        })
+      : null;
+    const amount = priced.amount - (quote?.discount ?? 0);
+    assertPayable(amount);
+    const free = amount === 0;
     if (!free && !this.gateway.enabled) throw new DomainError("payment.unavailable");
 
     let orderCode = newOrderCode();
@@ -106,6 +141,9 @@ export class CheckoutService {
           tx,
         );
         if (!taken) throw new DomainError("order.sold_out");
+        if (quote) {
+          await this.vouchers.take(quote, orderId, customer, free ? "redeemed" : "held", now, tx);
+        }
         const order = await this.orders.insert(
           {
             id: orderId,
@@ -122,7 +160,11 @@ export class CheckoutService {
               isGuardian: event.forChildren && input.isGuardian,
             },
             items: priced.items,
-            amount: priced.amount,
+            subtotal: priced.amount,
+            discount: quote
+              ? { voucherId: quote.voucher.id, code: quote.voucher.code, amount: quote.discount }
+              : null,
+            amount,
             // Free: paid with amount 0, tickets issued right away (docs/05 §5.2).
             status: free ? "paid" : "pending",
             seatState: free ? "sold" : "held",
@@ -152,6 +194,38 @@ export class CheckoutService {
 
     if (!free) await this.attachPaymentLink(orderId, now);
     return this.withToken(orderId);
+  }
+
+  /**
+   * "Áp dụng" at checkout: what the code would give, for display. The email is not proven
+   * yet, so `create` decides again. Limited per IP and email; one generic refusal.
+   */
+  async checkVoucher(input: VoucherCheckRequest, now = new Date()): Promise<VoucherCheckResponse> {
+    await this.vouchers.throttleCheck(input, now);
+    const event = await this.events.findPublicFullBySlug(input.eventSlug);
+    if (!event) throw new DomainError("voucher.invalid");
+    const ticketTypes = await this.ticketTypes.listByEvent(event.id);
+    const priced = priceOrder(ticketTypes, input.items, now);
+    const email = input.email ? normalizeEmail(input.email) : null;
+    const userId = input.userId ?? null;
+    const { voucher, discount } = await this.vouchers.quote(input.code, {
+      eventId: event.id,
+      eventTypeId: event.typeId,
+      lines: priced.items,
+      email,
+      userId,
+      paidOrders: email ? await this.orders.countPaidBy(email, userId) : 0,
+      now,
+    });
+    const amount = priced.amount - discount;
+    assertPayable(amount);
+    return { code: voucher.code, name: voucher.name, subtotal: priced.amount, discount, amount };
+  }
+
+  /** Public vouchers of an event page and of "Chọn ưu đãi". */
+  async publicVouchers(slug: string) {
+    const event = await this.events.findPublicBySlug(slug);
+    return event ? this.vouchers.listPublic(event) : [];
   }
 
   /** The order behind a signed link, or 404. */
@@ -200,6 +274,7 @@ export class CheckoutService {
   /** Seats back and payOS link cancelled; shared with the expiry job. */
   async releaseHeld(order: OrderRecord, tx: TxContext) {
     await releaseSeats({ ticketTypes: this.ticketTypes, events: this.events }, order, "held", tx);
+    await this.vouchers.release(order.id, new Date(), tx);
     if (order.payment) {
       await this.outbox.enqueue(tx, {
         type: CANCEL_PAYMENT_LINK_JOB,
@@ -249,11 +324,14 @@ export class CheckoutService {
       const link = await this.gateway.createLink({
         orderCode: order.orderCode,
         amount: order.amount,
-        items: order.items.map((item) => ({
-          name: item.name,
-          quantity: item.quantity,
-          price: item.unitPrice,
-        })),
+        // With a discount the lines no longer add up to the amount: one line says what is paid.
+        items: order.discount
+          ? [{ name: "Ve LAVIECO", quantity: 1, price: order.amount }]
+          : order.items.map((item) => ({
+              name: item.name,
+              quantity: item.quantity,
+              price: item.unitPrice,
+            })),
         returnUrl: `${page}?ket-qua=1`,
         cancelUrl: `${page}?huy=1`,
         expiresAt: order.expiresAt,

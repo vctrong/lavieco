@@ -5,7 +5,12 @@ import {
   orderDetailSchema,
   orderListSchema,
   orderViewSchema,
+  publicVoucherListSchema,
   sharedTicketViewSchema,
+  voucherCheckResponseSchema,
+  voucherListSchema,
+  voucherSchema,
+  voucherStatsSchema,
   payosWebhookResponseSchema,
   registrationListSchema,
   ticketLookupResponseSchema,
@@ -14,6 +19,11 @@ import {
   type OrderListQuery,
   type OrderRefundRequest,
   type TicketReissueRequest,
+  type VoucherCheckRequest,
+  type VoucherCreateRequest,
+  type VoucherListQuery,
+  type VoucherStatusRequest,
+  type VoucherUpdateRequest,
   type RegistrationListQuery,
   eventCancelImpactSchema,
   eventListSchema,
@@ -294,6 +304,23 @@ export function createProgramClient(options: ProgramClientOptions) {
         schema: orderViewSchema,
         requestId,
       }),
+    checkVoucher: (body: VoucherCheckRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/voucher-checks`,
+        auth: service,
+        body,
+        schema: voucherCheckResponseSchema,
+        requestId,
+      }),
+    listPublicVouchers: (slug: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-events/${segment(slug)}/vouchers`,
+        auth: service,
+        schema: publicVoucherListSchema,
+        requestId,
+      }),
     getSharedTicket: (token: string, requestId?: string) =>
       http.call({
         method: "GET",
@@ -365,6 +392,75 @@ export function createProgramClient(options: ProgramClientOptions) {
         auth: user(accessToken),
         schema: orderDetailSchema,
         timeoutMs: 20_000,
+        requestId,
+      }),
+    listVouchers: (accessToken: string, query: Partial<VoucherListQuery>, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/vouchers${queryString(query)}`,
+        auth: user(accessToken),
+        schema: voucherListSchema,
+        requestId,
+      }),
+    getVoucher: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/vouchers/${segment(id)}`,
+        auth: user(accessToken),
+        schema: voucherSchema,
+        requestId,
+      }),
+    getVoucherStats: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/orders/voucher-stats/${segment(id)}`,
+        auth: user(accessToken),
+        schema: voucherStatsSchema,
+        requestId,
+      }),
+    createVoucher: (accessToken: string, body: VoucherCreateRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/vouchers`,
+        auth: user(accessToken),
+        body,
+        schema: voucherSchema,
+        requestId,
+      }),
+    updateVoucher: (
+      accessToken: string,
+      id: string,
+      body: VoucherUpdateRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "PATCH",
+        path: `${V1}/vouchers/${segment(id)}`,
+        auth: user(accessToken),
+        body,
+        schema: voucherSchema,
+        requestId,
+      }),
+    setVoucherStatus: (
+      accessToken: string,
+      id: string,
+      body: VoucherStatusRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/vouchers/${segment(id)}/status`,
+        auth: user(accessToken),
+        body,
+        schema: voucherSchema,
+        requestId,
+      }),
+    duplicateVoucher: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/vouchers/${segment(id)}/duplicate`,
+        auth: user(accessToken),
+        schema: voucherSchema,
         requestId,
       }),
     reissueTicketQr: (

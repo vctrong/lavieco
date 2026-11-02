@@ -10,7 +10,13 @@ import { JsonLd } from "@/shared/components/json-ld";
 
 import { eventPath } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { getAttendeeCount, getEvent, getPreview, listRelated } from "../server/events";
+import {
+  getAttendeeCount,
+  getEvent,
+  getPreview,
+  listPublicVouchers,
+  listRelated,
+} from "../server/events";
 import { hasMemberSession } from "../server/member";
 import { eventJsonLd, shareImageOf } from "../utils/seo";
 import { EventDetail } from "./event-detail";
@@ -22,10 +28,11 @@ const pageUrlOf = (slug: string) => new URL(eventPath(slug), publicEnv.siteUrl).
 export async function EventDetailPage({ slug }: { slug: string }) {
   const event = await getEvent(slug);
   if (!event) notFound();
-  const [attendeeCount, related, signedIn] = await Promise.all([
+  const [attendeeCount, related, signedIn, vouchers] = await Promise.all([
     event.state === "ended" ? getAttendeeCount(slug) : Promise.resolve(null),
     listRelated(slug),
     hasMemberSession(),
+    listPublicVouchers(slug),
   ]);
   const pageUrl = pageUrlOf(slug);
   return (
@@ -48,6 +55,7 @@ export async function EventDetailPage({ slug }: { slug: string }) {
         related={related}
         signedIn={signedIn}
         pageUrl={pageUrl}
+        vouchers={vouchers}
       />
     </>
   );

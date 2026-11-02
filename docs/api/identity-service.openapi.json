@@ -891,7 +891,8 @@
                           "order:refund",
                           "registration:export",
                           "checkin:perform",
-                          "impact:approve"
+                          "impact:approve",
+                          "voucher:write"
                         ]
                       }
                     }

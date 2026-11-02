@@ -96,6 +96,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
 | BR-15 | Thanh toán chỉ xác nhận bằng webhook có chữ ký hợp lệ hoặc truy vấn API payOS phía server (không bao giờ bằng tham số `returnUrl`); hoàn tiền thủ công |
 | BR-16 | Mỗi vé một QR ngẫu nhiên, check-in một lần                                                                                                             |
 | BR-17 | Sự kiện tự xuất bản (không duyệt 2 người); form đã có người trả lời chỉ thêm/ẩn câu hỏi                                                                |
+| BR-18 | Mỗi đơn một mã ưu đãi, giá tính ở server, không vượt tổng lượt; hoàn tiền không trả lại lượt dùng                                                      |
 
 ## 7. QR: quy tắc riêng (dễ làm sai nhất)
 
@@ -140,7 +141,7 @@ Khi làm việc, **chạy có phạm vi** thay vì toàn bộ, ví dụ `npx tur
   - `domain`: quy tắc **thuần TypeScript** (máy trạng thái, người duyệt khác người soạn, điều kiện xuất bản, phát hiện trùng). **Không import Nest/Mongoose.**
   - `infrastructure`: model Mongoose, repository, client ngoài.
 - S1: **chỉ `infrastructure` được import `mongoose`**; repository trả kiểu thuần, không trả tài liệu Mongoose. S2: module khác chỉ import `modules/<tên>/index.ts`. S3: truy vấn công khai có repository/projection riêng, **chỉ lấy `published`**. S4: mọi endpoint khai báo `@RequirePermission`; thiếu → từ chối mặc định. S6: lỗi nghiệp vụ là kiểu lỗi có mã (ở `shared`), không ném `HttpException` từ tầng dưới `api`. S7: log qua `@lavieco/observability`, **không PII**.
-- **Permission** (`packages/shared/permissions`, kiểm tra permission chứ không kiểm tra tên vai trò): `content:read|write|publish`, `qr:read|manage`, `site:read|write|system`, `lead:read|write|export`, `user:read|manage`, `audit:read`, `privacy:process`, `program:read|write`, `order:read|refund`, `registration:export`, `checkin:perform`, `impact:approve` (BR-09, chỉ Super Admin). Vai trò & permission là **hằng số trong code**, không phải dữ liệu DB. Thêm permission: theo `docs/04` §13.5 và cập nhật `docs/01` §4.4 + `docs/02` §9.3.
+- **Permission** (`packages/shared/permissions`, kiểm tra permission chứ không kiểm tra tên vai trò): `content:read|write|publish`, `qr:read|manage`, `site:read|write|system`, `lead:read|write|export`, `user:read|manage`, `audit:read`, `privacy:process`, `program:read|write`, `order:read|refund`, `registration:export`, `checkin:perform`, `impact:approve` (BR-09, chỉ Super Admin), `voucher:write`. Vai trò & permission là **hằng số trong code**, không phải dữ liệu DB. Thêm permission: theo `docs/04` §13.5 và cập nhật `docs/01` §4.4 + `docs/02` §9.3.
 - **Quyền truy cập route** (ADR-018, S8): mỗi route dùng đúng một decorator của `@lavieco/service-kit`: `@RequirePermission(...)`, `@RequireStaff()`, `@RequireMember()` (lọc theo `userId`), `@AllowServices("web"|"admin"...)`, `@PublicEndpoint()` (chỉ health/JWKS). Không dùng bí mật dùng chung; service token Ed25519 theo bên gọi.
 - **`application/` không import Nest/Mongoose** (S9): use case là class thuần, nối bằng `useFactory`; port từ `@lavieco/service-kit/ports`. `MongooseModule.forFeature` đặt trong `infrastructure/*.model.ts`. Đầu vào/ra khai báo bằng `@ZodBody` + `@ApiZodResponse` (S10).
 - **Phiên bản:** NestJS 11 (CJS), Mongoose 8, jose 5, Vitest + `unplugin-swc`, Testcontainers (ADR-019).

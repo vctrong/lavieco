@@ -28,6 +28,7 @@ export function messageFor(error: CheckoutError): string {
     case "attempts_exceeded":
     case "verification_invalid":
     case "sold_out":
+    case "voucher_invalid":
     case "items_invalid":
     case "answers_invalid":
     case "consent_required":
