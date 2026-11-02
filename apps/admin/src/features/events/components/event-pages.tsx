@@ -51,16 +51,15 @@ export function EditEventPage({
 }) {
   const t = TEXT.vi;
   return (
-    <div className="mx-auto max-w-7xl">
-      <PageHeader
-        // Only archive-only events need a second label; standard events are the default.
-        eyebrow={
-          event.kind === "past" ? `${t.editor.editEyebrow} · ${t.kind.past}` : t.editor.editEyebrow
-        }
-        title={event.title}
-        intro={formatRange(event.startAt, event.endAt)}
-        back={<BackLink href="/events" label={t.editor.backToList} />}
-      />
+    <div className="mx-auto max-w-[90rem]">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
+        <BackLink href="/events" label={t.editor.backToList} />
+        <p className="text-[12.5px] text-charcoal/65">
+          {/* Only archive-only events need a label; standard events are the default. */}
+          {event.kind === "past" ? `${t.kind.past} · ` : null}
+          {formatRange(event.startAt, event.endAt)}
+        </p>
+      </div>
       <EventEditor
         event={event}
         types={types}

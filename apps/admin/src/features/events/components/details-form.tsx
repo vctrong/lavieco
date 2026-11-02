@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { FiLock } from "react-icons/fi";
 
 import {
@@ -37,6 +37,7 @@ import {
 import { EditorSection } from "./editor-section";
 import { CoverField, GalleryField } from "./image-fields";
 import { BenefitsField, SpeakersField } from "./page-fields";
+import type { EditorBlockProps } from "../hooks/use-editor-blocks";
 import { RepeatableRows } from "./repeatable-rows";
 import { callAction } from "@/shared/call-action";
 import { failureText } from "../utils/failure-text";
@@ -45,8 +46,7 @@ type DetailsFormProps = {
   event: EventView | null;
   types: EventType[];
   canWrite: boolean;
-  onDirtyChange?: (dirty: boolean) => void;
-};
+} & EditorBlockProps;
 
 function KindPicker({
   value,
@@ -98,7 +98,13 @@ function KindPicker({
  * place, people, "Bạn sẽ nhận", agenda, safety notes, cancellation policy, FAQ, and the
  * typed attendance. Creating saves a draft and opens the full editor.
  */
-export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFormProps) {
+export function DetailsForm({
+  event,
+  types,
+  canWrite,
+  onDirtyChange,
+  registerSaver,
+}: DetailsFormProps) {
   const t = TEXT.vi;
   const router = useRouter();
   const selectableTypes = types.filter((type) => !type.archived || type.id === event?.typeId);
@@ -114,12 +120,12 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
   const set = <K extends keyof DetailsValues>(key: K, value: DetailsValues[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
     setAlert(null);
-    onDirtyChange?.(true);
+    onDirtyChange?.("details", true);
   };
 
-  const handleSubmit = async (formEvent: FormEvent<HTMLFormElement>) => {
-    formEvent.preventDefault();
-    if (busy || !canWrite) return;
+  /** Resolves true once saved; a refused save shows its errors on the form. */
+  const save = async (): Promise<boolean> => {
+    if (busy || !canWrite) return false;
     const body = toDetailsRequest(values);
     const schema = event ? eventUpdateRequestSchema : eventCreateRequestSchema;
     const input = event ? { ...body, revision: event.revision } : { ...body, kind: values.kind };
@@ -127,7 +133,7 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
     if (!parsed.success) {
       setErrors(fieldErrorsOf(parsed.error));
       setAlert({ tone: "error", message: t.errors.invalid });
-      return;
+      return false;
     }
     setErrors({});
     setBusy(true);
@@ -135,23 +141,23 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
       const result = await callAction(() => updateEvent(event.id, input));
       setBusy(false);
       if (result.status === "ok") {
-        onDirtyChange?.(false);
+        onDirtyChange?.("details", false);
         setAlert({ tone: "success", message: t.editor.saved });
         router.refresh();
-        return;
+        return true;
       }
       if (result.status === "invalid") setErrors(result.fieldErrors);
       setAlert({
         tone: "error",
         message: result.status === "error" ? failureText(result) : t.errors.invalid,
       });
-      return;
+      return false;
     }
     const result = await callAction(() => createEvent(input));
     if (result.status === "ok") {
-      onDirtyChange?.(false);
+      onDirtyChange?.("details", false);
       router.push(`/events/${result.data.id}`);
-      return;
+      return true;
     }
     setBusy(false);
     if (result.status === "invalid") setErrors(result.fieldErrors);
@@ -159,6 +165,16 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
       tone: "error",
       message: result.status === "error" ? failureText(result) : t.errors.invalid,
     });
+    return false;
+  };
+
+  useEffect(() => {
+    registerSaver?.("details", save);
+  });
+
+  const handleSubmit = (formEvent: FormEvent<HTMLFormElement>) => {
+    formEvent.preventDefault();
+    void save();
   };
 
   const typeOptions = selectableTypes.map((type) => ({

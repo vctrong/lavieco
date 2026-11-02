@@ -10,7 +10,6 @@ import {
   type EventListQuery,
 } from "@lavieco/shared/events";
 
-import { serverEnv } from "@/lib/env";
 import { requestId } from "@/lib/request-meta";
 import { programClient } from "@/lib/services";
 import { readStaffSession } from "@/lib/session";
@@ -79,25 +78,5 @@ export async function loadEventTypes() {
   return withStaffToken("/events/types", async (token) => {
     const types = await programClient().listEventTypes(token, true, await requestId());
     return types.items;
-  });
-}
-
-/**
- * Preview (D2): a fresh 10-minute token, rendered by `web` in an iframe. The admin
- * page itself is the link shared with teammates (it requires `program:read`).
- */
-export async function loadPreview(eventId: string) {
-  if (!/^[0-9a-f]{24}$/.test(eventId)) notFound();
-  return withStaffToken(`/events/${eventId}/preview`, async (token) => {
-    const id = await requestId();
-    const [event, preview] = await Promise.all([
-      programClient().getEvent(token, eventId, id),
-      programClient().createEventPreviewToken(token, eventId, id),
-    ]);
-    const frameUrl = new URL(
-      `/xem-truoc/chuong-trinh/${encodeURIComponent(preview.token)}`,
-      serverEnv().WEB_APP_URL,
-    ).toString();
-    return { event, frameUrl };
   });
 }

@@ -143,7 +143,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `TURNSTILE_SITE_KEY` | Tuỳ chọn | Không | Site key Turnstile | Cloudflare Dashboard → Turnstile → site | Mỗi tên miền một site | `0x4AAAA-gia` |
 | `TURNSTILE_SECRET_KEY` | Tuỳ chọn | **Có** | Secret Turnstile | Cloudflare Dashboard → Turnstile → site → Secret key | Như trên | `0x4AAAA-gia-secret` |
 | `REVALIDATE_SECRET` | Tuỳ chọn (trống = `/api/revalidate` từ chối mọi lời gọi) | **Có** | HMAC webhook làm mới cache | Giá trị `RANDOM_32B` của `keys:generate`; **cùng giá trị** với `program-service` | Khác nhau giữa dev và prod | `R2lBLWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYQ==` |
-| `ADMIN_APP_URL` | Tuỳ chọn (trống = chặn nhúng) | Không | Origin duy nhất được nhúng trang xem trước | Tự đặt | Prod: origin của admin | `http://localhost:3001` |
+| `ADMIN_APP_URL` | Tuỳ chọn | Không | Origin admin, nơi nút "Làm mới" của trang xem trước quay về để lấy token mới (trống = không có nút) | Tự đặt | Prod: origin của admin | `http://localhost:3001` |
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | Prod: `info` | `debug` |
 | `LAVIAGENT_AI_PROVIDER` | Tuỳ chọn (mặc định `gemini`) | Không | Mô hình trả lời LaviAgent (`gemini`; `lavieco` = mô hình riêng, chưa có), `docs/07` §2 | Tự đặt | Như nhau | `gemini` |
 | `LAVIAGENT_DEMO_MODE` | Tuỳ chọn (mặc định `online`) | Không | `offline` = chỉ dùng dữ liệu cố định, không gọi AI (demo không mạng) | Tự đặt | Prod: `online` | `offline` |
@@ -161,7 +161,7 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `CONTENT_SERVICE_URL` | Bắt buộc | Không | content-service (tải ảnh chương trình) | Tự đặt | Như trên | `http://127.0.0.1:4002` |
 | `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Tuỳ chọn | Không | Cloud name trong URL ảnh | Cloudinary Dashboard → API Keys | Dev/prod hai environment | `demo-dev` |
 | `ADMIN_APP_URL` | Tuỳ chọn (mặc định `http://localhost:3001`) | Không | Origin công khai của chính admin, làm gốc cho mọi URL chuyển hướng (không lấy từ host của request, vốn là `0.0.0.0:3001` sau Caddy) | Tự đặt | Prod: `https://admin.lavieco.io.vn` (đọc lúc chạy từ `admin.env`) | `http://localhost:3001` |
-| `WEB_APP_URL` | Bắt buộc | Không | Origin của `web`, để nhúng trang xem trước | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
+| `WEB_APP_URL` | Bắt buộc | Không | Origin của `web`, đích chuyển hướng của nút Xem trước | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
 | `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của `admin` | `npm run keys:generate -- admin` → `PRIVATE_JWK` | Mỗi môi trường một cặp | `'{"kty":"OKP","crv":"Ed25519","x":"GIA-x","d":"GIA-d"}'` |
 | `LOG_LEVEL` | Tuỳ chọn (mặc định `info`) | Không | Mức log | Tự đặt | | `info` |
 
@@ -292,6 +292,7 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 18/10/2026 | Hạ tầng deploy chuyển sang VPS amd64: mẫu env dời về `infra/env/prod/`; thêm `ACME_EMAIL`, `NODE_OPTIONS`/`GOMEMLIMIT` trong compose; xoá `LAVIECO_ENV_DIR`, `LAVIECO_CERT_DIR`, `COMPOSE_PROFILES`, `MONGO_INITDB_ROOT_*` (bỏ profile `mongo`), secrets `DEPLOY_*` (chưa có bước SSH deploy) | Đổi hạ tầng (không đổi biến của ứng dụng) | `chore/deploy-oracle` |
 | 20/10/2026 | `admin`: `ADMIN_APP_URL` | Thêm (gốc URL chuyển hướng); `web` dùng `NEXT_PUBLIC_SITE_URL` cho chuyển hướng | `fix/redirect-base-url` |
 | 20/10/2026 | `identity-service`, `program-service`: `BREVO_SMTP_HOST`, `BREVO_SMTP_PORT`, `BREVO_SMTP_USER`, `BREVO_SMTP_KEY`, `BREVO_COOLDOWN_MINUTES`, `MAIL_FROM_FALLBACK`, `MAIL_REPLY_TO` | Thêm (Brevo làm đường chính, Gmail `SMTP_*` làm dự phòng, ADR-0023); `MAIL_FROM` thành người gửi của đường Brevo; `mail:test` thêm `--provider` | `feat/mail-brevo-fallback` |
+| 02/11/2026 | `web`: `ADMIN_APP_URL`; `admin`: `WEB_APP_URL` | Đổi ý nghĩa: không còn nhúng iframe, dùng cho chuyển hướng xem trước và nút Làm mới | `feat/event-preview-tab` |
 | 25/10/2026 | `web`: `LAVIAGENT_AI_PROVIDER`, `LAVIAGENT_DEMO_MODE`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Thêm (LaviAgent demo, ADR-0024, `docs/07`) | `feat/web-laviagent-demo` |
 | 25/10/2026 | `web`: `GEMINI_MODEL` | Đổi mặc định `gemini-2.5-flash` → `gemini-3.8-flash` (bản 2.5 trả 404 cho người dùng mới) | `feat/web-laviagent-demo` |
 | 25/10/2026 | `web`: `GEMINI_THINKING`, `LAVIAGENT_DEMO_VO_SO` | Thêm (mức thinking cấu hình được; chế độ diễn demo vỏ sò) | `feat/web-laviagent-demo` |

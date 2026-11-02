@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 
-import { EventsListPage, loadEventList, type EventListFilters } from "@/features/events";
+import {
+  EventsListPage,
+  PREVIEW_ERROR_PARAM,
+  PREVIEW_ERROR_VALUE,
+  loadEventList,
+  type EventListFilters,
+} from "@/features/events";
 import { requireStaff } from "@/features/shell";
 
 export const metadata: Metadata = { title: "Chương trình" };
@@ -18,5 +24,13 @@ export default async function EventsRoute({ searchParams }: PageProps<"/events">
     cursor: first(params.cursor),
   };
   const [staff, { page, types }] = await Promise.all([requireStaff(), loadEventList(filters)]);
-  return <EventsListPage staff={staff} filters={filters} page={page} types={types} />;
+  return (
+    <EventsListPage
+      staff={staff}
+      filters={filters}
+      page={page}
+      types={types}
+      previewFailed={first(params[PREVIEW_ERROR_PARAM]) === PREVIEW_ERROR_VALUE}
+    />
+  );
 }

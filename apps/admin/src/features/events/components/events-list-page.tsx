@@ -24,10 +24,11 @@ import {
   type EventType,
 } from "@lavieco/shared/events";
 import { can } from "@lavieco/shared/permissions";
-import { Button, SelectField, TextField, cn } from "@lavieco/ui";
+import { Button, FormAlert, SelectField, TextField, cn } from "@lavieco/ui";
 
 import { MediaImage } from "@/shared/components/media-image";
 
+import { previewPath } from "../constants/preview";
 import { TEXT } from "../constants/text";
 import type { EventListFilters } from "../types";
 import { eventShortcuts } from "../utils/event-shortcuts";
@@ -40,6 +41,7 @@ type EventsListPageProps = {
   filters: EventListFilters;
   page: EventList;
   types: EventType[];
+  previewFailed?: boolean;
 };
 
 /** Builds `/events?...` keeping the current filters, minus the cursor. */
@@ -259,13 +261,16 @@ function EventRow({
           <FiEdit2 aria-hidden="true" size={13} />
           {t.list.edit}
         </Link>
-        <Link
-          href={`/events/${event.id}/preview`}
+        {/* A plain link: the route redirects to `web` and must not be prefetched. */}
+        <a
+          href={previewPath(event.id)}
+          target="_blank"
+          rel="noopener"
           className="flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
         >
           <FiEye aria-hidden="true" size={13} />
           {t.list.preview}
-        </Link>
+        </a>
       </div>
       {shortcuts.length > 0 ? (
         <nav
@@ -292,7 +297,13 @@ function EventRow({
 }
 
 /** `/events`: list with status tabs, filters (plain GET form) and cursor pages. */
-export function EventsListPage({ staff, filters, page, types }: EventsListPageProps) {
+export function EventsListPage({
+  staff,
+  filters,
+  page,
+  types,
+  previewFailed = false,
+}: EventsListPageProps) {
   const t = TEXT.vi.list;
   const typeNames = new Map(types.map((type) => [type.id, type.name.vi]));
   const canWrite = can(staff, "program:write");
@@ -319,6 +330,11 @@ export function EventsListPage({ staff, filters, page, types }: EventsListPagePr
           </>
         }
       />
+      {previewFailed ? (
+        <div className="mb-6">
+          <FormAlert message={TEXT.vi.previewFailed} />
+        </div>
+      ) : null}
       <StatusTabs filters={filters} counts={page.counts} />
       <Filters filters={filters} types={types} />
 

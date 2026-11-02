@@ -8,7 +8,6 @@ import {
   FiCamera,
   FiCheckCircle,
   FiCopy,
-  FiEye,
   FiInfo,
   FiUsers,
   FiXCircle,
@@ -167,16 +166,7 @@ export function StatusPanel({
       aria-label={t.actions.title}
       className="space-y-4 rounded-3xl border border-hairline bg-white p-5 shadow-ambient"
     >
-      <div className="flex items-center justify-between gap-3">
-        <StatusBadge status={event.status} />
-        <Link
-          href={`/events/${event.id}/preview`}
-          className="flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
-        >
-          <FiEye aria-hidden="true" size={13} />
-          {t.actions.preview}
-        </Link>
-      </div>
+      <StatusBadge status={event.status} />
       {event.cancellation ? (
         <p className="rounded-2xl bg-soft-white p-4 text-[12.5px] leading-relaxed text-charcoal/80">
           <span className="block font-semibold text-deep-blue">
