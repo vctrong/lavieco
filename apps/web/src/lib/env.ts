@@ -97,8 +97,8 @@ export function laviagentEnv(): LaviagentEnv {
 const adminOriginSchema = z.url().transform((value) => new URL(value).origin);
 
 /**
- * Origin of `admin`, the only page allowed to frame the event preview (D2). Parsed on
- * its own so `proxy.ts` never depends on the other variables; `null` = framing denied.
+ * Origin of `admin`, where the event preview's "Làm mới" goes for a new token (D2).
+ * Parsed on its own so the preview never depends on the other variables; `null` = no button.
  */
 export function adminOrigin(): string | null {
   const parsed = adminOriginSchema.safeParse(process.env.ADMIN_APP_URL);

@@ -7,12 +7,16 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-/** Never cached: the token decides, and it expires after 10 minutes (D2). */
+/** Never cached (no-store): the token decides, and it expires after 10 minutes (D2). */
 export const dynamic = "force-dynamic";
 
 export default async function EventPreviewRoute({
   params,
+  searchParams,
 }: PageProps<"/xem-truoc/chuong-trinh/[token]">) {
   const { token } = await params;
-  return <EventPreviewPage token={token} />;
+  const eventId = (await searchParams)["su-kien"];
+  return (
+    <EventPreviewPage token={token} eventId={typeof eventId === "string" ? eventId : undefined} />
+  );
 }

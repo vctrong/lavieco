@@ -32,6 +32,8 @@ type TicketCardProps = {
   price: PublicPriceRange | null;
   /** Registration open now and not a preview: the main button leads to the checkout. */
   bookable: boolean;
+  /** The main button only explains that nothing can be booked from a preview. */
+  preview?: boolean;
   blocker: RegistrationBlocker | null;
   signedIn: boolean;
   pageUrl: string;
@@ -91,7 +93,19 @@ export function TicketCard(props: TicketCardProps) {
   };
 
   const mainButton = (className?: string) =>
-    canBook ? (
+    props.preview ? (
+      <button
+        type="button"
+        aria-disabled="true"
+        onClick={() => setShareNote(TEXT.vi.preview.buyDisabled)}
+        className={cn(
+          "cursor-not-allowed rounded-full bg-charcoal/10 px-6 py-3 text-sm font-semibold text-charcoal/70",
+          className,
+        )}
+      >
+        {mainLabel}
+      </button>
+    ) : canBook ? (
       <Link
         href={href}
         className={cn(
@@ -289,6 +303,9 @@ export function TicketCard(props: TicketCardProps) {
 
       {/* Phones: the same booking as a bar at the bottom of the screen. */}
       <div className="fixed inset-x-0 bottom-0 z-40 border-t border-hairline bg-white/95 px-4 py-3 shadow-dock backdrop-blur lg:hidden print:hidden">
+        {props.preview && shareNote ? (
+          <p className="mx-auto mb-2 max-w-xl text-meta text-emerald-ink">{shareNote}</p>
+        ) : null}
         <div className="mx-auto flex max-w-xl items-center justify-between gap-4">
           <p className="min-w-0">
             <span className="block text-meta uppercase text-charcoal/60">{t.mobileFrom}</span>

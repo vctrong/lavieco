@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { FiEdit2, FiEyeOff, FiLock, FiPlus } from "react-icons/fi";
 
 import {
@@ -14,6 +14,7 @@ import { Button, CheckboxField, FormAlert, TextField } from "@lavieco/ui";
 
 import { createTicketType, updateTicketType } from "../actions/ticket-types";
 import { TEXT } from "../constants/text";
+import type { EditorBlockProps } from "../hooks/use-editor-blocks";
 import { fieldErrorsOf } from "../schemas";
 import { formatVnd, isoToVietnamLocal, vietnamLocalToIso } from "../utils/format";
 import { EditorSection } from "./editor-section";
@@ -67,12 +68,14 @@ function TicketForm({
   ticket,
   sortOrder,
   onDone,
+  onDirtyChange,
+  registerSaver,
 }: {
   eventId: string;
   ticket: TicketType | null;
   sortOrder: number;
   onDone: () => void;
-}) {
+} & EditorBlockProps) {
   const t = TEXT.vi;
   const router = useRouter();
   const [values, setValues] = useState(() => valuesOf(ticket, sortOrder));
@@ -80,15 +83,19 @@ function TicketForm({
   const [alert, setAlert] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const locked = ticket !== null && ticket.sold + ticket.held > 0;
-  const set = <K extends keyof TicketValues>(key: K, value: TicketValues[K]) =>
+  const set = <K extends keyof TicketValues>(key: K, value: TicketValues[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
+    onDirtyChange?.("tickets", true);
+  };
 
-  const handleSubmit = async (formEvent: FormEvent<HTMLFormElement>) => {
-    formEvent.preventDefault();
-    if (busy) return;
+  const save = async (): Promise<boolean> => {
+    if (busy) return false;
     const body = toRequest(values);
     const parsed = ticketTypeCreateRequestSchema.safeParse(body);
-    if (!parsed.success) return setErrors(fieldErrorsOf(parsed.error));
+    if (!parsed.success) {
+      setErrors(fieldErrorsOf(parsed.error));
+      return false;
+    }
     setErrors({});
     setBusy(true);
     const result = await callAction(() =>
@@ -98,12 +105,31 @@ function TicketForm({
     );
     setBusy(false);
     if (result.status === "ok") {
+      onDirtyChange?.("tickets", false);
       router.refresh();
       onDone();
-      return;
+      return true;
     }
     if (result.status === "invalid") setErrors(result.fieldErrors);
     setAlert(result.status === "error" ? failureText(result) : t.errors.invalid);
+    return false;
+  };
+
+  // Only an open form has anything to save, and closing it discards the changes.
+  useEffect(() => {
+    registerSaver?.("tickets", save);
+  });
+  useEffect(
+    () => () => {
+      registerSaver?.("tickets", null);
+      onDirtyChange?.("tickets", false);
+    },
+    [registerSaver, onDirtyChange],
+  );
+
+  const handleSubmit = (formEvent: FormEvent<HTMLFormElement>) => {
+    formEvent.preventDefault();
+    void save();
   };
 
   return (
@@ -238,7 +264,12 @@ function TicketSummary({
 }
 
 /** Section 7: ticket types, each saved on its own (they have their own revision). */
-export function TicketTypesSection({ event, canWrite }: { event: EventView; canWrite: boolean }) {
+export function TicketTypesSection({
+  event,
+  canWrite,
+  onDirtyChange,
+  registerSaver,
+}: { event: EventView; canWrite: boolean } & EditorBlockProps) {
   const t = TEXT.vi;
   const [editing, setEditing] = useState<string | "new" | null>(null);
   const blocked =
@@ -275,6 +306,8 @@ export function TicketTypesSection({ event, canWrite }: { event: EventView; canW
               ticket={ticket}
               sortOrder={ticket.sortOrder}
               onDone={() => setEditing(null)}
+              onDirtyChange={onDirtyChange}
+              registerSaver={registerSaver}
             />
           ) : (
             <TicketSummary
@@ -291,6 +324,8 @@ export function TicketTypesSection({ event, canWrite }: { event: EventView; canW
             ticket={null}
             sortOrder={nextSort}
             onDone={() => setEditing(null)}
+            onDirtyChange={onDirtyChange}
+            registerSaver={registerSaver}
           />
         ) : null}
         {event.ticketTypes.length === 0 && editing !== "new" && blocked === null ? (

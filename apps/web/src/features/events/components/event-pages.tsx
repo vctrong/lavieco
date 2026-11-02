@@ -1,9 +1,10 @@
 import { notFound } from "next/navigation";
 import type { ReactNode } from "react";
-import { FiCheck, FiEye } from "react-icons/fi";
+import { FiCheck, FiRefreshCw } from "react-icons/fi";
 
 import { Container, Eyebrow, PearlDot } from "@lavieco/ui";
 
+import { adminOrigin } from "@/lib/env";
 import { publicEnv } from "@/lib/env.public";
 import { JsonLd } from "@/shared/components/json-ld";
 
@@ -13,6 +14,7 @@ import { getAttendeeCount, getEvent, getPreview, listRelated } from "../server/e
 import { hasMemberSession } from "../server/member";
 import { eventJsonLd, shareImageOf } from "../utils/seo";
 import { EventDetail } from "./event-detail";
+import { PreviewBar } from "./preview-bar";
 
 const pageUrlOf = (slug: string) => new URL(eventPath(slug), publicEnv.siteUrl).toString();
 
@@ -51,20 +53,48 @@ export async function EventDetailPage({ slug }: { slug: string }) {
   );
 }
 
-/** `/xem-truoc/chuong-trinh/[token]`: same rendering, any status, framed by admin only. */
-export async function EventPreviewPage({ token }: { token: string }) {
+/**
+ * `/xem-truoc/chuong-trinh/[token]`: same rendering as the public page, any status.
+ * "Làm mới" goes back to the admin route that checks the permission and mints a token.
+ */
+export async function EventPreviewPage({
+  token,
+  eventId,
+}: {
+  token: string;
+  eventId: string | undefined;
+}) {
   const event = await getPreview(token);
-  if (!event) notFound();
-  const t = TEXT.vi.preview;
+  const admin = adminOrigin();
+  const refreshHref =
+    admin && eventId && /^[0-9a-f]{24}$/.test(eventId)
+      ? new URL(`/events/${eventId}/preview`, admin).toString()
+      : null;
+  if (!event) {
+    const t = TEXT.vi.preview;
+    return (
+      <section className="bg-soft-white pb-24 pt-dock-clearance">
+        <Container className="max-w-2xl pt-16 text-center">
+          <h1 className="font-display text-headline-lg-mobile text-deep-blue md:text-headline-lg">
+            {t.expiredTitle}
+          </h1>
+          <p className="mt-4 text-body-md text-charcoal/75">{t.expiredBody}</p>
+          {refreshHref ? (
+            <a
+              href={refreshHref}
+              className="mt-8 inline-flex items-center gap-2 rounded-full bg-emerald-brand px-6 py-3 text-sm font-bold text-charcoal shadow-emerald-cta"
+            >
+              <FiRefreshCw aria-hidden="true" size={15} />
+              {t.refresh}
+            </a>
+          ) : null}
+        </Container>
+      </section>
+    );
+  }
   return (
     <>
-      <div
-        role="note"
-        className="fixed inset-x-0 top-0 z-50 flex items-center justify-center gap-2 bg-deep-blue px-4 py-2 text-body-sm font-semibold text-soft-white"
-      >
-        <FiEye aria-hidden="true" size={14} />
-        {t.banner} · {t.status[event.status]}
-      </div>
+      <PreviewBar status={event.status} refreshHref={refreshHref} />
       <EventDetail event={event} preview pageUrl={pageUrlOf(event.slug)} />
     </>
   );

@@ -1,12 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
 
-import { adminOrigin } from "@/lib/env";
 import { MEMBER_COOKIES } from "@/lib/session-cookies";
 import { siteUrl } from "@/lib/site-url";
 
 const ACCOUNT_PREFIX = "/tai-khoan";
 const SIGN_IN_PAGES = new Set(["/dang-nhap", "/dang-ky"]);
-/** Event preview: the only page another origin (admin) may embed (D2). */
+/** Event preview (D2): opened in its own tab, must never reach a search index. */
 const PREVIEW_PREFIX = "/xem-truoc/";
 
 const SECURITY_HEADERS: Record<string, string> = {
@@ -39,23 +38,13 @@ export function proxy(request: NextRequest) {
   }
 
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) response.headers.set(name, value);
-  setFramingHeaders(response, pathname);
-  return response;
-}
-
-/**
- * Every page refuses to be framed, except the preview, which only the admin origin
- * may embed. Without a valid ADMIN_APP_URL the preview is not frameable either.
- */
-function setFramingHeaders(response: NextResponse, pathname: string) {
-  const admin = pathname.startsWith(PREVIEW_PREFIX) ? adminOrigin() : null;
-  if (admin) {
-    response.headers.set("content-security-policy", `frame-ancestors ${admin}`);
-    response.headers.set("x-robots-tag", "noindex, nofollow");
-    return;
-  }
+  // Every page refuses to be framed.
   response.headers.set("x-frame-options", "DENY");
   response.headers.set("content-security-policy", "frame-ancestors 'none'");
+  if (pathname.startsWith(PREVIEW_PREFIX)) {
+    response.headers.set("x-robots-tag", "noindex, nofollow");
+  }
+  return response;
 }
 
 export const config = {

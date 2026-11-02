@@ -220,6 +220,7 @@ export function EventDetail({
                 state={event.state}
                 ticketTypes={event.ticketTypes}
                 price={event.price}
+                preview={preview}
                 bookable={event.registration.open && !preview}
                 blocker={event.registration.blocker}
                 signedIn={signedIn}

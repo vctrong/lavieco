@@ -475,7 +475,7 @@ apps/admin/src/
 │       ├── layout.tsx               # requireStaff() + AdminShell (khung gộp chung)
 │       ├── page.tsx                 # tổng quan
 │       ├── events/  orders/  checkin/   # phân hệ Chương trình (Phase 2 → 6); UI ghi "Chương trình"
-│       │   # events/: danh sách, new/, [id]/ (soạn), [id]/preview/ (iframe web), types/ (loại chương trình)
+│       │   # events/: danh sách, new/, [id]/ (soạn), [id]/preview/ (Route Handler chuyển hướng sang web), types/ (loại chương trình)
 │       ├── leads/                   # danh sách, chi tiết
 │       ├── handbook/                # chương, soạn, duyệt
 │       ├── works/                   # tác phẩm, story card
@@ -497,7 +497,7 @@ apps/admin/src/
 
 - **Loại chương trình** quản lý ở `/events/types` (quyền `program:write`), không ở `/site`: Coordinator không có `site:read` (D3, 18/10/2026).
 - **Ảnh chương trình** (ADR-020): form soạn có ảnh bìa + thư viện ≤ 12 ảnh (mỗi ảnh có mô tả `alt`). Tệp đi qua Route Handler `/api/media/event-images` (Server Action giới hạn thân 1 MB), BFF chuyển `content-service` bằng token staff; form chỉ lưu `{ mediaId, alt }`, `program-service` lấy thông tin tệp từ `content-service`. Ảnh hiển thị bằng `shared/components/media-image.tsx` (loader `next/image` chỉ dựng URL named transformation), có ở cả `web` và `admin`.
-- **Xem trước sự kiện** (`/events/[id]/preview`): trang admin (cần `program:read`) là link chia sẻ cho đồng đội; trang tạo token 10 phút và nhúng `web` `/xem-truoc/chuong-trinh/<token>` trong iframe (D2).
+- **Xem trước sự kiện** (`/events/[id]/preview`): Route Handler của admin (cần `program:read`), cũng là link chia sẻ cho đồng đội; mỗi lần mở tạo token 10 phút rồi chuyển hướng `302` sang `web` `/xem-truoc/chuong-trinh/<token>` ở tab riêng (D2).
 - **Ẩn/hiện theo quyền chỉ để trải nghiệm.** Hàng rào thật nằm ở service (P5 ở `02`). Dùng `can(user, "lead:write")` từ `@lavieco/shared/permissions` để ẩn nút; **không** dựa vào đó để bảo vệ.
 - Các thao tác nhạy cảm (xuất lead, xuất người đăng ký, hoàn tiền, đổi vai trò, thu hồi QR) đi qua bước xác thực lại (step-up, `02` §9.2).
 - Đăng nhập staff 2 bước: mật khẩu → `mfaToken` trong cookie httpOnly 5 phút → TOTP hoặc mã khôi phục. Mục điều hướng chưa có màn hình hiện "Sắp có" (`features/shell/constants/nav.ts`), không để link chết.
@@ -938,7 +938,7 @@ Dựng **`program-service`** theo công thức §13.3: database `lavieco_program
 **Điều chỉnh khi duyệt kế hoạch (18/10/2026), đã áp dụng:**
 
 - D1 ảnh bìa: schema có `cover`, Phase 2 dùng hình minh hoạ; module `media` là điều kiện trước khi mở cho người dùng thật (Phase 2b ở 15.1).
-- D2 xem trước: token 10 phút + iframe; chỉ `/xem-truoc/*` cho phép origin admin nhúng, mọi trang khác chặn nhúng (`X-Frame-Options: DENY` và `frame-ancestors 'none'`).
+- D2 xem trước: token 10 phút + chuyển hướng từ admin sang tab riêng; mọi trang web chặn nhúng (`X-Frame-Options: DENY` và `frame-ancestors 'none'`), `/xem-truoc/*` thêm `noindex` và `no-store`.
 - D3 loại chương trình ở `/events/types`. D4 mô tả là văn bản thuần (TODO PQ5).
 - `safetyNotes` không bắt buộc; trường cố định còn 4 (họ tên, email, SĐT, đồng ý dữ liệu), ô "đã đọc lưu ý an toàn" chỉ hiện khi có lưu ý.
 - Thiếu `onlineUrl` là cảnh báo, không chặn xuất bản.

@@ -91,6 +91,8 @@ Kế hoạch: `docs/ke-hoach-chuong-trinh-v2.md`. Thắng các mục cũ khi nó
 
 - **Poster và banner (PR1):** `posterRatio` (`4:5` | `1:1`, mặc định `4:5`), admin chọn ở bước cắt ảnh. Cắt **ở trình duyệt trước khi tải lên**: tài khoản Cloudinary bật Strict transformations (ADR-020), URL không mang được toạ độ cắt tuỳ ý. Muốn cắt lại thì chọn lại ảnh gốc. Ảnh tải lên bo góc chữ nhật (`rounded-2xl`, ảnh nhỏ `rounded-xl`); `ArchFrame`/`rounded-arch-*` chỉ cho trang trí landing. Thẻ web giữ khung 4:5, poster 1:1 hiện trọn ảnh trên nền mờ của chính nó. Hero và khối nổi bật dùng `banner` hoặc banner mặc định (`public/images/placeholders/event-banner-default.webp`, ảnh tạm, thiết kế có thể thay), **không dùng poster làm hero**; poster hiện ở cột bên đúng tỉ lệ. Ảnh chia sẻ: banner → poster → mặc định. Danh sách `/events` của admin hiện ảnh thu nhỏ poster.
 
+- **Xem trước và trang sửa (PR2):** `/events/[id]/preview` của admin là Route Handler: `program-service` kiểm `program:read` khi cấp token 10 phút, rồi chuyển hướng `302` sang `web` `/xem-truoc/chuong-trinh/[token]?su-kien=<id>`, mở ở tab mới; mỗi lần bấm một token mới. Bỏ trang iframe; mọi trang web đều chặn nhúng. Trang xem trước dùng đúng `EventDetail`, có thanh nổi (trạng thái, Làm mới, Thu gọn), nút đặt vé chỉ báo đang xem trước, `noindex`, `no-store`; token hết hạn hiện màn hướng dẫn Làm mới. Còn thay đổi chưa lưu thì hỏi "Lưu rồi xem" / "Xem bản đã lưu". Trang sửa có thanh trên cố định (tên, trạng thái, khối chưa lưu, Xem trước, Xuất bản; **không** có "Gửi duyệt" vì BR-17), menu mục có ✓/⚠ từ `readiness` (thêm ⚠ khi thiếu poster), cảnh báo khi rời trang. Từng khối vẫn lưu riêng.
+
 ## 0. Trước khi code
 
 1. Đọc `CLAUDE.md`, `docs/01`–`04`.

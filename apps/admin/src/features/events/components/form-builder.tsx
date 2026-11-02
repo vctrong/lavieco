@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type DragEvent } from "react";
+import { useEffect, useState, type DragEvent } from "react";
 import { FiArrowDown, FiArrowUp, FiLock, FiMenu, FiPlus, FiTrash2, FiX } from "react-icons/fi";
 
 import {
@@ -18,6 +18,7 @@ import {
 import { Button, CheckboxField, cn, FormAlert, SelectField, TextField } from "@lavieco/ui";
 
 import { updateEventForm } from "../actions/events";
+import type { EditorBlockProps } from "../hooks/use-editor-blocks";
 import { TEXT } from "../constants/text";
 import { fieldErrorsOf } from "../schemas";
 import { EditorSection } from "./editor-section";
@@ -273,7 +274,12 @@ function QuestionCard({
  * buttons (keyboard). The four booker fields are fixed; safety confirmation only
  * appears when the event has safety notes.
  */
-export function FormBuilder({ event, canWrite }: { event: EventView; canWrite: boolean }) {
+export function FormBuilder({
+  event,
+  canWrite,
+  onDirtyChange,
+  registerSaver,
+}: { event: EventView; canWrite: boolean } & EditorBlockProps) {
   const t = TEXT.vi;
   const router = useRouter();
   const [questions, setQuestions] = useState<FormQuestion[]>(() =>
@@ -284,6 +290,10 @@ export function FormBuilder({ event, canWrite }: { event: EventView; canWrite: b
   const [busy, setBusy] = useState(false);
   const [dragFrom, setDragFrom] = useState<number | null>(null);
   const disabled = busy || !canWrite;
+
+  useEffect(() => {
+    registerSaver?.("form", save);
+  });
 
   const lockedIds = new Set(event.hasRegistrations ? event.form.questions.map((q) => q.id) : []);
   const lockedOptionIds = new Set(
@@ -303,32 +313,35 @@ export function FormBuilder({ event, canWrite }: { event: EventView; canWrite: b
   const update = (next: FormQuestion[]) => {
     setQuestions(next);
     setAlert(null);
+    onDirtyChange?.("form", true);
   };
 
-  const save = async () => {
-    if (busy || !canWrite) return;
+  async function save(): Promise<boolean> {
+    if (busy || !canWrite) return false;
     const input = { revision: event.revision, questions };
     const parsed = eventFormUpdateRequestSchema.safeParse(input);
     if (!parsed.success) {
       setErrors(fieldErrorsOf(parsed.error));
       setAlert({ tone: "error", message: t.errors.invalid });
-      return;
+      return false;
     }
     setErrors({});
     setBusy(true);
     const result = await callAction(() => updateEventForm(event.id, input));
     setBusy(false);
     if (result.status === "ok") {
+      onDirtyChange?.("form", false);
       setAlert({ tone: "success", message: t.editor.saved });
       router.refresh();
-      return;
+      return true;
     }
     if (result.status === "invalid") setErrors(result.fieldErrors);
     setAlert({
       tone: "error",
       message: result.status === "error" ? failureText(result) : t.errors.invalid,
     });
-  };
+    return false;
+  }
 
   const addQuestion = () =>
     update([

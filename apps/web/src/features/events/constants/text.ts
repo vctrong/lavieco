@@ -183,7 +183,15 @@ export const TEXT = {
       upcoming: "Xem chương trình sắp tới",
     },
     preview: {
-      banner: "Bản xem trước · chỉ đội LAVIECO thấy trang này",
+      banner: "BẢN XEM TRƯỚC",
+      notPublic: "Chưa công khai",
+      refresh: "Làm mới",
+      collapse: "Thu gọn",
+      expand: "Mở thanh xem trước",
+      buyDisabled: "Đang ở chế độ xem trước nên không đặt vé được.",
+      expiredTitle: "Bản xem trước đã hết hạn",
+      expiredBody:
+        "Mỗi đường dẫn xem trước chỉ dùng được 10 phút. Bấm Làm mới để lấy đường dẫn mới, hoặc bấm Xem trước trong trang quản trị.",
       status: {
         draft: "Nháp",
         published: "Đang mở",
