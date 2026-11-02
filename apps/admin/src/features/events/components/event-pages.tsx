@@ -46,11 +46,13 @@ export function EditEventPage({
   event,
   types,
   vouchersSection,
+  surveysSection,
 }: {
   staff: StaffProfile;
   event: EventView;
   types: EventType[];
   vouchersSection?: ReactNode;
+  surveysSection?: ReactNode;
 }) {
   const t = TEXT.vi;
   return (
@@ -69,6 +71,7 @@ export function EditEventPage({
         canWrite={can(staff, "program:write")}
         canApprove={can(staff, "impact:approve")}
         vouchersSection={vouchersSection}
+        surveysSection={surveysSection}
       />
     </div>
   );

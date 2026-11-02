@@ -10,9 +10,11 @@ import { editorNavItems } from "../utils/editor-sections";
 export function EditorSideNav({
   event,
   withVouchers = false,
+  withSurveys = false,
 }: {
   event: EventView;
   withVouchers?: boolean;
+  withSurveys?: boolean;
 }) {
   const t = TEXT.vi.editorBar;
   return (
@@ -45,6 +47,16 @@ export function EditorSideNav({
               className="flex items-center rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist"
             >
               {t.navVouchers}
+            </a>
+          </li>
+        ) : null}
+        {withSurveys ? (
+          <li className="shrink-0">
+            <a
+              href="#khao-sat-feedback"
+              className="flex items-center rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist"
+            >
+              {t.navSurveys}
             </a>
           </li>
         ) : null}

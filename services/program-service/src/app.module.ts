@@ -23,6 +23,7 @@ import { CheckinModule } from "./modules/checkin";
 import { OrdersModule } from "./modules/orders";
 import { PaymentsModule, payosGatewayProvider } from "./modules/payments";
 import { RegistrationsModule } from "./modules/registrations";
+import { SurveysModule } from "./modules/surveys";
 import { ProgramOutboxModule } from "./modules/outbox";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
@@ -88,6 +89,7 @@ export class AppModule {
         PaymentsModule.forRoot(orders),
         CheckinModule.forRoot(orders),
         RegistrationsModule.forRoot(events, orders),
+        SurveysModule.forRoot(events, orders),
         ProgramOutboxModule.forRoot(events, overrides.revalidateFetch),
       ],
     };

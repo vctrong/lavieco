@@ -7,6 +7,7 @@ import {
   FiCheckCircle,
   FiCircle,
   FiMapPin,
+  FiMessageSquare,
   FiRotateCcw,
   FiSlash,
   FiUser,
@@ -88,6 +89,8 @@ export type TicketCardData = {
   combo: string | null;
   /** Absolute link to this ticket alone; null when it cannot be shared. */
   shareUrl: string | null;
+  /** The event is over and has an open feedback survey: this ticket's own link to it. */
+  feedbackHref?: string | null;
 };
 
 type TicketCardProps = {
@@ -154,6 +157,15 @@ export function TicketCard({ ticket, index, total, event, bookerName }: TicketCa
             </div>
           ) : null}
         </dl>
+        {ticket.feedbackHref ? (
+          <Link
+            href={ticket.feedbackHref}
+            className="mt-5 inline-flex items-center gap-2 rounded-full bg-emerald-brand px-5 py-2.5 text-sm font-bold text-charcoal print:hidden"
+          >
+            <FiMessageSquare aria-hidden="true" size={15} />
+            {t.feedback}
+          </Link>
+        ) : null}
         {ticket.shareUrl ? <ShareTicket url={ticket.shareUrl} title={event.title} /> : null}
       </div>
 

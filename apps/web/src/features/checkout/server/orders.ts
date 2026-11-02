@@ -42,6 +42,19 @@ export async function getOrder(token: string): Promise<OrderView | null> {
   }
 }
 
+/**
+ * The event's open feedback survey once it is over, for "Gửi cảm nhận" on ticket pages.
+ * Never worth failing a ticket page for.
+ */
+export async function getFeedbackSlug(eventSlug: string, endAt: string): Promise<string | null> {
+  if (Date.parse(endAt) > Date.now()) return null;
+  try {
+    return (await programClient().getFeedbackSurvey(eventSlug, await requestId())).slug;
+  } catch {
+    return null;
+  }
+}
+
 /** Public codes for "Chọn ưu đãi"; the checkout works without them. */
 export async function getCheckoutVouchers(slug: string): Promise<PublicVoucher[]> {
   try {

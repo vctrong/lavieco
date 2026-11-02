@@ -22,6 +22,9 @@ export const CHECKOUT_ROUTES = {
   payment: (token: string) => `/chuong-trinh/thanh-toan/${token}`,
   ticket: (token: string) => `/ve/${token}`,
   sharedTicket: (token: string) => `/ve/v/${token}`,
+  /** A ticket's own survey link: its share token proves it, one answer per ticket. */
+  feedback: (slug: string, ticketToken: string) =>
+    `/khao-sat/${slug}?t=${encodeURIComponent(ticketToken)}`,
   lookup: "/tra-cuu-ve",
   orderStatusApi: (token: string) => `/api/orders/${token}`,
 } as const;

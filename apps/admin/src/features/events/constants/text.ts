@@ -330,6 +330,7 @@ export const TEXT = {
         form: "Form đăng ký",
       },
       navVouchers: "Mã giảm giá",
+      navSurveys: "Khảo sát feedback",
       navOk: "Đã ổn",
       navAttention: "Cần xem lại",
       leaveTitle: "Rời trang khi chưa lưu?",

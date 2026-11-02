@@ -77,6 +77,15 @@ export const ERROR_CATALOG = {
   "voucher.code_taken": { status: 409, title: "Another voucher already uses this code" },
   "voucher.locked": { status: 409, title: "Voucher change not allowed once it has been used" },
 
+  "survey.answers_invalid": { status: 422, title: "These answers do not fit the survey" },
+  "survey.consent_required": { status: 422, title: "Consent is required for this survey" },
+  "survey.link_invalid": { status: 422, title: "This survey link is not valid" },
+  "survey.closed": { status: 409, title: "This survey no longer takes answers" },
+  "survey.already_answered": { status: 409, title: "This survey was already answered" },
+  "survey.slug_taken": { status: 409, title: "Another survey already uses this address" },
+  "survey.locked": { status: 409, title: "Survey change not allowed once people answered" },
+  "survey.no_questions": { status: 422, title: "A survey needs at least one question" },
+
   "order.registration_closed": { status: 409, title: "Event does not take registrations now" },
   "order.sold_out": { status: 409, title: "Not enough seats left for this order" },
   "order.items_invalid": { status: 422, title: "Ticket selection is not allowed" },
