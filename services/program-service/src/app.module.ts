@@ -19,6 +19,7 @@ import type { ProgramEnv } from "./config/env";
 import { EventTypesModule } from "./modules/event-types";
 import { EventsModule, type MediaAttachments } from "./modules/events";
 import { ProgramAuditModule, type AuditSink } from "./modules/audit";
+import { CampaignsModule } from "./modules/campaigns";
 import { CheckinModule } from "./modules/checkin";
 import { OrdersModule } from "./modules/orders";
 import { PaymentsModule, payosGatewayProvider } from "./modules/payments";
@@ -43,9 +44,12 @@ export type AppOverrides = {
   auditSink?: AuditSink;
   /** Off in tests that drive the seat-hold expiry themselves. */
   runOrderExpiry?: boolean;
+  /** Off in tests that drive the campaign queue themselves. */
+  runCampaignWorker?: boolean;
 };
 
 const ORDER_EXPIRY_INTERVAL_MS = 60_000;
+const CAMPAIGN_INTERVAL_MS = 60_000;
 
 @Module({})
 export class AppModule {
@@ -57,6 +61,7 @@ export class AppModule {
       gateway: overrides.paymentGateway ?? payosGatewayProvider,
       expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
     });
+    const surveys = SurveysModule.forRoot(events, orders);
     return {
       module: AppModule,
       imports: [
@@ -89,7 +94,11 @@ export class AppModule {
         PaymentsModule.forRoot(orders),
         CheckinModule.forRoot(orders),
         RegistrationsModule.forRoot(events, orders),
-        SurveysModule.forRoot(events, orders),
+        surveys,
+        CampaignsModule.forRoot(events, orders, surveys, {
+          run: overrides.runCampaignWorker ?? true,
+          intervalMs: CAMPAIGN_INTERVAL_MS,
+        }),
         ProgramOutboxModule.forRoot(events, overrides.revalidateFetch),
       ],
     };

@@ -98,6 +98,7 @@ export async function deliver(route: MailRoute, message: EmailMessage): Promise<
     text: message.text,
     html: message.html,
     attachments: message.attachments,
+    ...(message.headers ? { headers: message.headers } : {}),
   });
   return { provider: route.provider, messageId: info.messageId ?? "" };
 }

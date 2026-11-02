@@ -6,6 +6,8 @@ import {
   EVENT_FORMATS,
   EVENT_KINDS,
   EVENT_POSTER_RATIOS,
+  EVENT_POST_AUDIENCES,
+  EVENT_POST_MODES,
   EVENT_STATUSES,
   QUESTION_TYPES,
 } from "@lavieco/shared/events";
@@ -113,6 +115,15 @@ export const eventSchema = new Schema(
     posterRatio: { type: String, enum: EVENT_POSTER_RATIOS, default: "4:5" },
     /** Shared limit in people; null = none. The counters only move with orders. */
     capacity: { type: Number, default: null },
+    /** "Sau sự kiện" (ADR-0026). */
+    postEvent: {
+      enabled: { type: Boolean, default: false },
+      delayHours: { type: Number, default: 24 },
+      audience: { type: String, enum: EVENT_POST_AUDIENCES, default: "checked_in" },
+      surveyId: { type: String, default: null },
+      mode: { type: String, enum: EVENT_POST_MODES, default: "draft" },
+    },
+    postEventCampaignId: { type: String, default: null },
     seatsSold: { type: Number, required: true, default: 0 },
     seatsHeld: { type: Number, required: true, default: 0 },
     /** Banner, 21:9. */

@@ -34,6 +34,8 @@ export type EmailMessage = {
   html?: string;
   /** Inline images referenced from the HTML as `cid:<cid>` (ticket QR codes later). */
   attachments?: { filename: string; content: Buffer; contentType: string; cid?: string }[];
+  /** Extra headers, such as `List-Unsubscribe` on bulk email. */
+  headers?: Record<string, string>;
 };
 
 /** Which route carried an email (ADR-0023): Brevo first, the SMTP_* route as fallback. */

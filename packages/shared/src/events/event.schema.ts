@@ -16,6 +16,7 @@ import {
   publishWarningSchema,
 } from "./enums";
 import { eventFormSchema } from "./event-form.schema";
+import { eventPostEventSchema } from "./campaign.schema";
 import { EVENT_LIMITS } from "./limits";
 import { ticketTypeSchema } from "./ticket-type.schema";
 
@@ -127,6 +128,14 @@ const detailsShape = {
    * no shared limit. Each ticket type still has its own `quantity`.
    */
   capacity: z.number().int().min(1).max(EVENT_LIMITS.quantityMax).nullable().default(null),
+  /** "Sau sự kiện": a thank-you campaign once it has ended (ADR-0026). */
+  postEvent: eventPostEventSchema.default({
+    enabled: false,
+    delayHours: 24,
+    audience: "checked_in",
+    surveyId: null,
+    mode: "draft",
+  }),
   /** Poster, cropped client-side. Uploaded beforehand through content-service; attached on save. */
   cover: mediaImageInputSchema.nullable().default(null),
   posterRatio: eventPosterRatioSchema.default("4:5"),
@@ -259,6 +268,7 @@ export const eventSchema = z.object({
   cancellation: eventCancellationSchema.nullable(),
   form: eventFormSchema,
   ticketTypes: z.array(ticketTypeSchema),
+  postEvent: eventPostEventSchema,
   capacity: z.number().int().nullable(),
   /** People with a seat sold or held, across every ticket type. */
   seatsTaken: z.number().int(),

@@ -12,6 +12,9 @@ import {
   eventUpdateRequestSchema,
   type EventType,
   type EventView,
+  EVENT_POST_AUDIENCES,
+  EVENT_POST_MODES,
+  type EventPostEvent,
 } from "@lavieco/shared/events";
 import {
   Button,
@@ -507,6 +510,86 @@ export function DetailsForm({
           />
         </div>
       </EditorSection>
+
+      {values.kind === "standard" ? (
+        <section
+          id="sau-su-kien"
+          aria-labelledby="sau-su-kien-title"
+          className="scroll-mt-24 rounded-3xl border border-hairline bg-white p-5 shadow-ambient md:p-7"
+        >
+          <h2 id="sau-su-kien-title" className="font-display text-xl text-deep-blue">
+            {t.editorBar.postEvent.title}
+          </h2>
+          <p className="mb-5 mt-1 text-[12.5px] text-charcoal/60">{t.editorBar.postEvent.hint}</p>
+          <CheckboxField
+            label={t.editorBar.postEvent.enabled}
+            checked={values.postEvent.enabled}
+            disabled={disabled}
+            onChange={(e) => set("postEvent", { ...values.postEvent, enabled: e.target.checked })}
+          />
+          {values.postEvent.enabled ? (
+            <div className="mt-5 grid gap-5 md:grid-cols-2">
+              <TextField
+                tone="light"
+                inputMode="numeric"
+                label={t.editorBar.postEvent.delayHours}
+                value={String(values.postEvent.delayHours)}
+                error={errors["postEvent.delayHours"]}
+                disabled={disabled}
+                onChange={(e) =>
+                  set("postEvent", {
+                    ...values.postEvent,
+                    delayHours: Number(e.target.value.replace(/[^0-9]/g, "")),
+                  })
+                }
+              />
+              <SelectField
+                tone="light"
+                label={t.editorBar.postEvent.audience}
+                value={values.postEvent.audience}
+                disabled={disabled}
+                options={EVENT_POST_AUDIENCES.map((value) => ({
+                  value,
+                  label: t.editorBar.postEvent.audiences[value],
+                }))}
+                onChange={(e) =>
+                  set("postEvent", {
+                    ...values.postEvent,
+                    audience: e.target.value as EventPostEvent["audience"],
+                  })
+                }
+              />
+              <TextField
+                tone="light"
+                label={t.editorBar.postEvent.surveyId}
+                value={values.postEvent.surveyId ?? ""}
+                error={errors["postEvent.surveyId"]}
+                disabled={disabled}
+                onChange={(e) =>
+                  set("postEvent", { ...values.postEvent, surveyId: e.target.value.trim() || null })
+                }
+              />
+              <SelectField
+                tone="light"
+                label={t.editorBar.postEvent.mode}
+                hint={t.editorBar.postEvent.sendNote}
+                value={values.postEvent.mode}
+                disabled={disabled}
+                options={EVENT_POST_MODES.map((value) => ({
+                  value,
+                  label: t.editorBar.postEvent.modes[value],
+                }))}
+                onChange={(e) =>
+                  set("postEvent", {
+                    ...values.postEvent,
+                    mode: e.target.value as EventPostEvent["mode"],
+                  })
+                }
+              />
+            </div>
+          ) : null}
+        </section>
+      ) : null}
 
       <EditorSection id="hoi-dap" index={9} title={t.editor.sections.faq}>
         <RepeatableRows

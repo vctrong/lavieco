@@ -16,6 +16,7 @@ export const TEXT = {
       events: "Chương trình",
       vouchers: "Ưu đãi",
       surveys: "Khảo sát",
+      campaigns: "Email",
       orders: "Đơn hàng & payOS",
       checkin: "Quét check-in",
       handbook: "Cẩm nang",

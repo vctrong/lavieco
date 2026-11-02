@@ -120,6 +120,14 @@ function toSharedFields(doc: Partial<EventDoc> & { _id: Types.ObjectId }) {
     cover: toImageOrNull(doc.cover),
     posterRatio: doc.posterRatio ?? "4:5",
     capacity: doc.capacity ?? null,
+    postEvent: {
+      enabled: doc.postEvent?.enabled ?? false,
+      delayHours: doc.postEvent?.delayHours ?? 24,
+      audience: doc.postEvent?.audience ?? "checked_in",
+      surveyId: doc.postEvent?.surveyId ?? null,
+      mode: doc.postEvent?.mode ?? "draft",
+    },
+    postEventCampaignId: doc.postEventCampaignId ?? null,
     seatsSold: doc.seatsSold ?? 0,
     seatsHeld: doc.seatsHeld ?? 0,
     banner: toImageOrNull(doc.banner),
@@ -322,6 +330,34 @@ export class MongoEventRepository implements EventRepository {
       },
       tx,
     );
+  }
+
+  async listPostEventDue(now: Date) {
+    const docs = await this.model
+      .find({
+        "postEvent.enabled": true,
+        postEventCampaignId: null,
+        discarded: false,
+        status: { $in: ["published", "closed", "ended"] },
+        kind: "standard",
+        endAt: { $lte: now },
+      })
+      .limit(50)
+      .lean<EventDoc[]>()
+      .exec();
+    return docs
+      .map(toRecord)
+      .filter(
+        (event) => event.endAt.getTime() + event.postEvent.delayHours * 3_600_000 <= now.getTime(),
+      );
+  }
+
+  async markPostEventCampaign(id: string, campaignId: string) {
+    const result = await this.model.updateOne(
+      { _id: new Types.ObjectId(id), postEventCampaignId: null },
+      { $set: { postEventCampaignId: campaignId } },
+    );
+    return result.modifiedCount === 1;
   }
 
   async takeSeats(id: string, people: number, into: "held" | "sold", tx: TxContext) {

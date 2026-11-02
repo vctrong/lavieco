@@ -1,0 +1,105 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`campaign emails > 'announcement' stays the same 1`] = `
+{
+  "headers": {
+    "List-Unsubscribe": "<http://localhost:3000/api/huy-nhan/fake-unsubscribe-token>",
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  },
+  "subject": "Thông báo về Workshop làm chậu cây từ bột vỏ sò",
+  "text": "Thông báo về Workshop làm chậu cây từ bột vỏ sò
+
+Xin chào Nguyễn Thị Khách,
+
+Cảm ơn bạn đã đến với Workshop làm chậu cây từ bột vỏ sò ngày 08/11/2026.
+
+Hẹn gặp bạn ở những chương trình tới.
+
+Xem vé: http://localhost:3000/ve/fake-signed-token
+
+Huỷ nhận: http://localhost:3000/huy-nhan/fake-unsubscribe-token
+
+--
+LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật
+localhost:3000 · lavieco@gmail.com · Hotline/Zalo 0336 922 235
+Bạn nhận email này vì đã đặt vé hoặc tham gia "Workshop làm chậu cây từ bột vỏ sò" của LAVIECO.",
+}
+`;
+
+exports[`campaign emails > 'feedback-one-ticket' stays the same 1`] = `
+{
+  "headers": {
+    "List-Unsubscribe": "<http://localhost:3000/api/huy-nhan/fake-unsubscribe-token>",
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  },
+  "subject": "Cảm ơn bạn đã tham gia Workshop làm chậu cây từ bột vỏ sò",
+  "text": "Cảm ơn bạn đã tham gia Workshop làm chậu cây từ bột vỏ sò
+
+Xin chào Nguyễn Thị Khách,
+
+Cảm ơn bạn đã đến với Workshop làm chậu cây từ bột vỏ sò ngày 08/11/2026.
+
+Hẹn gặp bạn ở những chương trình tới.
+
+Gửi cảm nhận: http://localhost:3000/khao-sat/cam-nhan?t=fake-ticket-1
+
+Huỷ nhận: http://localhost:3000/huy-nhan/fake-unsubscribe-token
+
+--
+LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật
+localhost:3000 · lavieco@gmail.com · Hotline/Zalo 0336 922 235
+Bạn nhận email này vì đã đặt vé hoặc tham gia "Workshop làm chậu cây từ bột vỏ sò" của LAVIECO.",
+}
+`;
+
+exports[`campaign emails > 'feedback-two-tickets' stays the same 1`] = `
+{
+  "headers": {
+    "List-Unsubscribe": "<http://localhost:3000/api/huy-nhan/fake-unsubscribe-token>",
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  },
+  "subject": "Cảm ơn bạn đã tham gia Workshop làm chậu cây từ bột vỏ sò",
+  "text": "Cảm ơn bạn đã tham gia Workshop làm chậu cây từ bột vỏ sò
+
+Xin chào Nguyễn Thị Khách,
+
+Cảm ơn bạn đã đến với Workshop làm chậu cây từ bột vỏ sò ngày 08/11/2026.
+
+Hẹn gặp bạn ở những chương trình tới.
+
+Mỗi vé có một link riêng, hãy chuyển cho người đi cùng:
+Vé 1: http://localhost:3000/khao-sat/cam-nhan?t=fake-ticket-1
+Vé 2: http://localhost:3000/khao-sat/cam-nhan?t=fake-ticket-2
+
+Huỷ nhận: http://localhost:3000/huy-nhan/fake-unsubscribe-token
+
+--
+LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật
+localhost:3000 · lavieco@gmail.com · Hotline/Zalo 0336 922 235
+Bạn nhận email này vì đã đặt vé hoặc tham gia "Workshop làm chậu cây từ bột vỏ sò" của LAVIECO.",
+}
+`;
+
+exports[`campaign emails > 'thank-you' stays the same 1`] = `
+{
+  "headers": {
+    "List-Unsubscribe": "<http://localhost:3000/api/huy-nhan/fake-unsubscribe-token>",
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  },
+  "subject": "Cảm ơn bạn đã tham gia Workshop làm chậu cây từ bột vỏ sò",
+  "text": "Cảm ơn bạn đã tham gia Workshop làm chậu cây từ bột vỏ sò
+
+Xin chào Nguyễn Thị Khách,
+
+Cảm ơn bạn đã đến với Workshop làm chậu cây từ bột vỏ sò ngày 08/11/2026.
+
+Hẹn gặp bạn ở những chương trình tới.
+
+Huỷ nhận: http://localhost:3000/huy-nhan/fake-unsubscribe-token
+
+--
+LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật
+localhost:3000 · lavieco@gmail.com · Hotline/Zalo 0336 922 235
+Bạn nhận email này vì đã đặt vé hoặc tham gia "Workshop làm chậu cây từ bột vỏ sò" của LAVIECO.",
+}
+`;

@@ -229,6 +229,18 @@ export class MongoOrderRepository implements OrderRepository {
     return docs.map(toRecord);
   }
 
+  async listPaid(period: { from: Date | null; to: Date | null }) {
+    const filter: FilterQuery<OrderDoc> = { status: "paid" };
+    if (period.from || period.to) {
+      filter.createdAt = {
+        ...(period.from ? { $gte: period.from } : {}),
+        ...(period.to ? { $lte: period.to } : {}),
+      };
+    }
+    const docs = await this.model.find(filter).sort({ createdAt: 1 }).lean<OrderDoc[]>().exec();
+    return docs.map(toRecord);
+  }
+
   countPaidBy(emailNormalized: string, userId: string | null) {
     const who: FilterQuery<OrderDoc>[] = [{ "buyer.emailNormalized": emailNormalized }];
     if (userId) who.push({ userId });

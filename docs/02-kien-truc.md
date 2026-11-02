@@ -540,6 +540,7 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `voucher:write` (mã ưu đãi, kể cả allowlist email) | ✓ | — | ✓ | — |
 | `survey:read` (khảo sát, kết quả, xuất có step-up) | ✓ | — | ✓ | ✓ |
 | `survey:write` (soạn, mở, đóng khảo sát) | ✓ | — | ✓ | — |
+| `campaign:send` (email hàng loạt: tệp người nhận, gửi có step-up) | ✓ | — | ✓ | — |
 | `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
 | `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |
 | `impact:approve` (công bố số liệu tác động, vd. số người tham gia nhập tay của sự kiện lưu trữ, BR-09) | ✓ | — | — | — |
@@ -853,3 +854,6 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 | v0.4 | 17/10/2026 | Phân hệ Chương trình vào GĐ1: 6 thành phần, `program-service` (ADR-014), payOS (ADR-015), Member + Google + OTP (ADR-016), service token theo bên gọi (ADR-018), 6 permission mới, AQ5 chốt, AR2/AR5 | V.C. Trọng |
 | v0.5 | 18/10/2026 | Phase 2: luồng làm mới cache service → `web/api/revalidate` (HMAC, qua outbox); chính sách nhúng trang, ngoại lệ xem trước sự kiện cho origin `admin`; `program` trong vùng mạng riêng | V.C. Trọng |
 | v0.6 | 18/10/2026 | Phase 2b: §8.2 ảnh tải lên bằng Cloudinary (ADR-020) thay object storage S3/MinIO, không lưu ảnh QR, bản chụp ánh xạ QR chờ chọn nơi lưu; §8.3, §6.4; §12.1 tách dev khỏi database production; quyền tải ảnh chương trình/avatar; AQ4 chấp nhận ảnh ngoài nước ở GĐ1 | V.C. Trọng |
+## Phụ lục: luồng gửi email hàng loạt (ADR-0026)
+
+Admin soạn và gửi → `program-service` chốt danh sách vào `campaign_recipients` → scheduler mỗi phút lấy từng người bằng cập nhật nguyên tử, giữ một suất ở `campaign_daily_usage`, gửi qua `EmailSender` chung (Brevo, rồi Gmail dự phòng). Hết hạn mức ngày thì dừng tới hôm sau. OTP và email vé không đi qua hàng đợi này.

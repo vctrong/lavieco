@@ -19,7 +19,15 @@ export type ProgramAuditAction =
   | "survey.create"
   | "survey.update"
   | "survey.status"
-  | "survey.export";
+  | "survey.export"
+  | "campaign.create"
+  | "campaign.update"
+  | "campaign.test"
+  | "campaign.send"
+  | "campaign.pause"
+  | "campaign.resume"
+  | "campaign.cancel"
+  | "campaign.retry";
 
 export type AuditEntry = {
   action: ProgramAuditAction;

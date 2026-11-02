@@ -38,6 +38,13 @@ function content(overrides: Partial<EventContent> = {}): EventContent {
     faq: [],
     posterRatio: "4:5",
     capacity: null,
+    postEvent: {
+      enabled: false,
+      delayHours: 24,
+      audience: "checked_in",
+      surveyId: null,
+      mode: "draft",
+    },
     ...overrides,
   };
 }
@@ -230,6 +237,7 @@ describe("duplicate", () => {
     ...content(),
     seatsSold: 0,
     seatsHeld: 0,
+    postEventCampaignId: null,
     id: "64b7f0c2a1b2c3d4e5f60720",
     kind: "standard",
     slug: "workshop-vo-so",

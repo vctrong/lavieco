@@ -1,3 +1,5 @@
+import { z } from "zod";
+
 import {
   checkinResponseSchema,
   checkinStatsSchema,
@@ -5,6 +7,11 @@ import {
   orderDetailSchema,
   orderListSchema,
   orderViewSchema,
+  audiencePreviewSchema,
+  campaignListSchema,
+  campaignRecipientListSchema,
+  campaignRenderedSchema,
+  campaignSchema,
   eventFeedbackLinkSchema,
   publicSurveySchema,
   publicVoucherListSchema,
@@ -23,7 +30,15 @@ import {
   type OrderCreateRequest,
   type OrderListQuery,
   type OrderRefundRequest,
+  type AudiencePreviewRequest,
+  type CampaignCreateRequest,
+  type CampaignListQuery,
+  type CampaignRecipientListQuery,
+  type CampaignSendRequest,
+  type CampaignTestRequest,
+  type CampaignUpdateRequest,
   type PublicSurveyQuery,
+  type UnsubscribeRequest,
   type SurveyCreateRequest,
   type SurveyListQuery,
   type SurveyStatusRequest,
@@ -73,6 +88,8 @@ export type ProgramClientOptions = Omit<HttpClientOptions, "audience">;
 type QueryValue = string | number | boolean | undefined;
 
 /** `?a=1&b=x` from the defined values only. */
+const unsubscribeCheckSchema = z.object({ valid: z.boolean() });
+
 function queryString(params: Record<string, QueryValue>): string {
   const search = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
@@ -356,6 +373,22 @@ export function createProgramClient(options: ProgramClientOptions) {
         schema: eventFeedbackLinkSchema,
         requestId,
       }),
+    checkUnsubscribe: (token: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/email-unsubscribes/${segment(token)}`,
+        auth: service,
+        schema: unsubscribeCheckSchema,
+        requestId,
+      }),
+    unsubscribe: (body: UnsubscribeRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/email-unsubscribes`,
+        auth: service,
+        body,
+        requestId,
+      }),
     getSharedTicket: (token: string, requestId?: string) =>
       http.call({
         method: "GET",
@@ -578,6 +611,117 @@ export function createProgramClient(options: ProgramClientOptions) {
         auth: user(accessToken),
         headers: { [STEP_UP_HEADER]: options.stepUpToken },
         timeoutMs: 30_000,
+        requestId,
+      }),
+    listCampaigns: (accessToken: string, query: Partial<CampaignListQuery>, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/campaigns${queryString(query)}`,
+        auth: user(accessToken),
+        schema: campaignListSchema,
+        requestId,
+      }),
+    getCampaign: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/campaigns/${segment(id)}`,
+        auth: user(accessToken),
+        schema: campaignSchema,
+        requestId,
+      }),
+    createCampaign: (accessToken: string, body: CampaignCreateRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/campaigns`,
+        auth: user(accessToken),
+        body,
+        schema: campaignSchema,
+        requestId,
+      }),
+    updateCampaign: (
+      accessToken: string,
+      id: string,
+      body: CampaignUpdateRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "PATCH",
+        path: `${V1}/campaigns/${segment(id)}`,
+        auth: user(accessToken),
+        body,
+        schema: campaignSchema,
+        requestId,
+      }),
+    previewAudience: (accessToken: string, body: AudiencePreviewRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/campaigns/audience-preview`,
+        auth: user(accessToken),
+        body,
+        schema: audiencePreviewSchema,
+        requestId,
+      }),
+    renderCampaign: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/campaigns/${segment(id)}/rendered`,
+        auth: user(accessToken),
+        schema: campaignRenderedSchema,
+        requestId,
+      }),
+    testCampaign: (
+      accessToken: string,
+      id: string,
+      body: CampaignTestRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/campaigns/${segment(id)}/test`,
+        auth: user(accessToken),
+        body,
+        requestId,
+      }),
+    sendCampaign: (
+      accessToken: string,
+      id: string,
+      body: CampaignSendRequest,
+      stepUpToken: string,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/campaigns/${segment(id)}/send`,
+        auth: user(accessToken),
+        headers: { [STEP_UP_HEADER]: stepUpToken },
+        body,
+        schema: campaignSchema,
+        requestId,
+      }),
+    moveCampaign: (
+      accessToken: string,
+      id: string,
+      action: "pause" | "resume" | "cancel" | "retry-failed",
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/campaigns/${segment(id)}/${action}`,
+        auth: user(accessToken),
+        schema: campaignSchema,
+        requestId,
+      }),
+    listCampaignRecipients: (
+      accessToken: string,
+      id: string,
+      query: Partial<CampaignRecipientListQuery>,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/campaigns/${segment(id)}/recipients${queryString(query)}`,
+        auth: user(accessToken),
+        schema: campaignRecipientListSchema,
         requestId,
       }),
     reissueTicketQr: (

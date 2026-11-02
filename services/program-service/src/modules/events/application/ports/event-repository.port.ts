@@ -119,6 +119,10 @@ export interface EventRepository {
    * public page whether registration is open. Never mapped to a public DTO as is.
    */
   findPublicFullBySlug(slug: string, tx?: TxContext): Promise<EventRecord | null>;
+  /** Over for at least their delay, with "Sau sự kiện" on and no campaign yet. */
+  listPostEventDue(now: Date): Promise<EventRecord[]>;
+  /** Claims the campaign of an event; false when another instance already did. */
+  markPostEventCampaign(id: string, campaignId: string): Promise<boolean>;
   /** Any event, discarded included (orders keep pointing at their event). */
   findByIds(ids: string[]): Promise<EventRecord[]>;
 }

@@ -75,6 +75,8 @@ export interface OrderRepository {
   listExpired(now: Date, limit: number): Promise<string[]>;
   /** Paid or refunded orders of one booker, newest first (`/tra-cuu-ve`). */
   listByEmail(emailNormalized: string, limit: number): Promise<OrderRecord[]>;
+  /** Paid orders in a period, for "mọi khách đã mua". */
+  listPaid(period: { from: Date | null; to: Date | null }): Promise<OrderRecord[]>;
   /** Orders actually paid for (free ones do not count) by this member or this email. */
   countPaidBy(emailNormalized: string, userId: string | null): Promise<number>;
   /** Paid orders that used this voucher (refunded ones are not revenue). */

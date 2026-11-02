@@ -206,6 +206,7 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Check-in tại cửa | — | — | — | — | ✓ | — | ✓ | — |
 | Quản lý mã ưu đãi | — | — | — | — | ✓ | — | ✓ | — |
 | Soạn, mở, đóng khảo sát | — | — | — | — | ✓ | — | ✓ | — |
+| Gửi email hàng loạt | — | — | — | — | ✓ | — | ✓ | — |
 | Huỷ chương trình (nhập lại 2FA, ghi nhật ký) | — | — | — | — | ✓ | — | ✓ | — |
 | Duyệt số người tham gia của sự kiện lưu trữ (BR-09) | — | — | — | — | ✓ | — | — | — |
 | Yêu cầu/đơn quà tặng | — | — | — | — | ✓ | — | ✓ | đọc |
@@ -303,6 +304,7 @@ flowchart LR
 | UC-30 | Xem chương trình, đăng ký và mua vé (xác thực email bằng OTP) | Guest, Member | M4 | 1 |
 | UC-31 | Nhận vé QR qua email; xem lại vé (link ký số, tra cứu bằng email + OTP, Vé của tôi) | Guest, Member | M4 | 1 |
 | UC-37 | Khảo sát: admin soạn khảo sát độc lập hoặc feedback sự kiện, mở/đóng, xem kết quả, xuất Excel/CSV. Người tham gia trả lời qua link hoặc QR; feedback sự kiện mở qua link riêng từng vé, mỗi vé một lần. | BR-06, BR-08 |
+| UC-38 | Email hàng loạt: admin chọn tệp người nhận, soạn thư, gửi ngay hoặc hẹn giờ; tự tạo thư cảm ơn và mời feedback sau sự kiện (mặc định chờ duyệt). Người nhận huỷ nhận được bằng một chạm. | BR-19 |
 | UC-36 | Mã ưu đãi: admin tạo mã theo sự kiện hoặc toàn app (điều kiện đơn, đối tượng, giới hạn lượt); khách nhập hoặc chọn mã ở checkout. Mã công khai hiện trên trang sự kiện kèm số lượt còn lại và đếm ngược. | BR-18 |
 | UC-32 | Tạo, xem trước, xuất bản, nhân bản sự kiện; loại vé; form đăng ký | Admin | M4 | 1 |
 | UC-33 | Người đăng ký, xuất Excel; đơn hàng, đối soát, hoàn tiền/huỷ vé | Admin | M4 | 1 |
@@ -590,6 +592,7 @@ Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định b�
 | **BR-16** | Mỗi vé có **mã QR riêng, ngẫu nhiên**, chỉ check-in được **một lần**. | Chống dùng lại vé |
 | **BR-17** | Sự kiện do người có quyền tự xuất bản, không cần người duyệt thứ hai (khác BR-05). Chỉ gỡ xuất bản khi chưa có người đăng ký. Form đã có người trả lời chỉ được thêm hoặc ẩn câu hỏi. | Không làm mất dữ liệu người đăng ký |
 | **BR-18** | Mỗi đơn dùng **một** mã ưu đãi, không cộng dồn; tiền giảm tính ở server trên tạm tính và không vượt tạm tính; không vượt tổng lượt và lượt mỗi khách; lượt dùng đi theo đơn (giữ → đã dùng, hoặc trả lại khi đơn hết hạn/huỷ); **hoàn tiền không trả lại lượt dùng**. Từ chối mã luôn bằng một thông báo chung. |
+| **BR-19** | Email hàng loạt phải tôn trọng huỷ nhận và có hạn mức riêng, không được làm ảnh hưởng email OTP và email vé. Gửi cần xác thực lại, gõ lại số người nhận và được ghi nhật ký. |
 
 ## 8. Thực thể khái niệm & vòng đời
 

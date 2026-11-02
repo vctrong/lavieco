@@ -86,6 +86,13 @@ export const ERROR_CATALOG = {
   "survey.locked": { status: 409, title: "Survey change not allowed once people answered" },
   "survey.no_questions": { status: 422, title: "A survey needs at least one question" },
 
+  "campaign.invalid_state": { status: 409, title: "Not possible in this campaign's state" },
+  "campaign.empty": { status: 422, title: "This audience has nobody to send to" },
+  "campaign.count_mismatch": {
+    status: 409,
+    title: "The typed number of recipients does not match the list",
+  },
+
   "order.registration_closed": { status: 409, title: "Event does not take registrations now" },
   "order.sold_out": { status: 409, title: "Not enough seats left for this order" },
   "order.items_invalid": { status: 422, title: "Ticket selection is not allowed" },

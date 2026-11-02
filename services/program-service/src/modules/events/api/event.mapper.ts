@@ -84,6 +84,7 @@ export function toEventDto(snapshot: EventSnapshot): EventView {
     banner: event.banner,
     gallery: event.gallery,
     capacity: event.capacity,
+    postEvent: event.postEvent,
     seatsTaken: event.seatsSold + event.seatsHeld,
     attendance: {
       count: event.attendance.count,

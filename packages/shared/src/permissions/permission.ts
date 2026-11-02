@@ -32,6 +32,8 @@ export const PERMISSIONS = [
   /** Surveys and their responses (which may hold personal data). */
   "survey:read",
   "survey:write",
+  /** Bulk email: audiences hold personal data, and it reaches people outside. */
+  "campaign:send",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];
