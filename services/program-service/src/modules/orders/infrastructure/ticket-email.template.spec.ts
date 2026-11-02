@@ -80,7 +80,7 @@ describe("ticketEmail", () => {
     const mail = ticketEmail(input);
     expect(mail.html).toContain("Combo 2 người · suất 1 · vé 2/2");
     for (const ticket of input.tickets) {
-      expect(mail.html).toContain(input.ticketShareUrl(ticket));
+      expect(mail.html).toContain(`href="${input.ticketShareUrl(ticket)}"`);
     }
     expect(mail.text).toContain(input.ticketShareUrl(input.tickets[0]!));
   });

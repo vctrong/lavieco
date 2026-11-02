@@ -26,6 +26,12 @@ export const programEnvSchema = baseServiceEnvSchema.extend(mailEnvSchema.shape)
    */
   TICKET_LINK_SECRET: base64Key(32),
   /**
+   * Bulk email budget (ADR-0026): emails per Vietnam day, and per minute. Brevo's 300 a
+   * day are shared with OTP and ticket emails, so a campaign must leave them room.
+   */
+  CAMPAIGN_DAILY_LIMIT: z.coerce.number().int().min(1).default(150),
+  CAMPAIGN_RATE_PER_MINUTE: z.coerce.number().int().min(1).default(10),
+  /**
    * payOS payment channel (Kênh thanh toán in my.payos.vn). All three or none: without
    * them paid events refuse bookings, free events still work. The checksum key verifies
    * webhooks and never leaves this service (ADR-0015).

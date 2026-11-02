@@ -1053,6 +1053,50 @@
                     "minimum": 1,
                     "maximum": 100000
                   },
+                  "postEvent": {
+                    "default": {
+                      "enabled": false,
+                      "delayHours": 24,
+                      "audience": "checked_in",
+                      "surveyId": null,
+                      "mode": "draft"
+                    },
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "default": false,
+                        "type": "boolean"
+                      },
+                      "delayHours": {
+                        "default": 24,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 720
+                      },
+                      "audience": {
+                        "default": "checked_in",
+                        "type": "string",
+                        "enum": [
+                          "checked_in",
+                          "all_buyers"
+                        ]
+                      },
+                      "surveyId": {
+                        "default": null,
+                        "nullable": true,
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{24}$"
+                      },
+                      "mode": {
+                        "default": "draft",
+                        "type": "string",
+                        "enum": [
+                          "draft",
+                          "send"
+                        ]
+                      }
+                    }
+                  },
                   "cover": {
                     "default": null,
                     "nullable": true,
@@ -1789,6 +1833,51 @@
                         "additionalProperties": false
                       }
                     },
+                    "postEvent": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "delayHours": {
+                          "default": 24,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "audience": {
+                          "default": "checked_in",
+                          "type": "string",
+                          "enum": [
+                            "checked_in",
+                            "all_buyers"
+                          ]
+                        },
+                        "surveyId": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "mode": {
+                          "default": "draft",
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "send"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "delayHours",
+                        "audience",
+                        "surveyId",
+                        "mode"
+                      ],
+                      "additionalProperties": false
+                    },
                     "capacity": {
                       "nullable": true,
                       "type": "integer",
@@ -1935,6 +2024,7 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "postEvent",
                     "capacity",
                     "seatsTaken",
                     "pricing",
@@ -2615,6 +2705,51 @@
                         "additionalProperties": false
                       }
                     },
+                    "postEvent": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "delayHours": {
+                          "default": 24,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "audience": {
+                          "default": "checked_in",
+                          "type": "string",
+                          "enum": [
+                            "checked_in",
+                            "all_buyers"
+                          ]
+                        },
+                        "surveyId": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "mode": {
+                          "default": "draft",
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "send"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "delayHours",
+                        "audience",
+                        "surveyId",
+                        "mode"
+                      ],
+                      "additionalProperties": false
+                    },
                     "capacity": {
                       "nullable": true,
                       "type": "integer",
@@ -2761,6 +2896,7 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "postEvent",
                     "capacity",
                     "seatsTaken",
                     "pricing",
@@ -3075,6 +3211,50 @@
                     "type": "integer",
                     "minimum": 1,
                     "maximum": 100000
+                  },
+                  "postEvent": {
+                    "default": {
+                      "enabled": false,
+                      "delayHours": 24,
+                      "audience": "checked_in",
+                      "surveyId": null,
+                      "mode": "draft"
+                    },
+                    "type": "object",
+                    "properties": {
+                      "enabled": {
+                        "default": false,
+                        "type": "boolean"
+                      },
+                      "delayHours": {
+                        "default": 24,
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 720
+                      },
+                      "audience": {
+                        "default": "checked_in",
+                        "type": "string",
+                        "enum": [
+                          "checked_in",
+                          "all_buyers"
+                        ]
+                      },
+                      "surveyId": {
+                        "default": null,
+                        "nullable": true,
+                        "type": "string",
+                        "pattern": "^[0-9a-f]{24}$"
+                      },
+                      "mode": {
+                        "default": "draft",
+                        "type": "string",
+                        "enum": [
+                          "draft",
+                          "send"
+                        ]
+                      }
+                    }
                   },
                   "cover": {
                     "default": null,
@@ -3810,6 +3990,51 @@
                         "additionalProperties": false
                       }
                     },
+                    "postEvent": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "delayHours": {
+                          "default": 24,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "audience": {
+                          "default": "checked_in",
+                          "type": "string",
+                          "enum": [
+                            "checked_in",
+                            "all_buyers"
+                          ]
+                        },
+                        "surveyId": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "mode": {
+                          "default": "draft",
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "send"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "delayHours",
+                        "audience",
+                        "surveyId",
+                        "mode"
+                      ],
+                      "additionalProperties": false
+                    },
                     "capacity": {
                       "nullable": true,
                       "type": "integer",
@@ -3956,6 +4181,7 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "postEvent",
                     "capacity",
                     "seatsTaken",
                     "pricing",
@@ -4728,6 +4954,51 @@
                         "additionalProperties": false
                       }
                     },
+                    "postEvent": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "delayHours": {
+                          "default": 24,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "audience": {
+                          "default": "checked_in",
+                          "type": "string",
+                          "enum": [
+                            "checked_in",
+                            "all_buyers"
+                          ]
+                        },
+                        "surveyId": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "mode": {
+                          "default": "draft",
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "send"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "delayHours",
+                        "audience",
+                        "surveyId",
+                        "mode"
+                      ],
+                      "additionalProperties": false
+                    },
                     "capacity": {
                       "nullable": true,
                       "type": "integer",
@@ -4874,6 +5145,7 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "postEvent",
                     "capacity",
                     "seatsTaken",
                     "pricing",
@@ -5585,6 +5857,51 @@
                         "additionalProperties": false
                       }
                     },
+                    "postEvent": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "delayHours": {
+                          "default": 24,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "audience": {
+                          "default": "checked_in",
+                          "type": "string",
+                          "enum": [
+                            "checked_in",
+                            "all_buyers"
+                          ]
+                        },
+                        "surveyId": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "mode": {
+                          "default": "draft",
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "send"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "delayHours",
+                        "audience",
+                        "surveyId",
+                        "mode"
+                      ],
+                      "additionalProperties": false
+                    },
                     "capacity": {
                       "nullable": true,
                       "type": "integer",
@@ -5731,6 +6048,7 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "postEvent",
                     "capacity",
                     "seatsTaken",
                     "pricing",
@@ -6431,6 +6749,51 @@
                         "additionalProperties": false
                       }
                     },
+                    "postEvent": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "delayHours": {
+                          "default": 24,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "audience": {
+                          "default": "checked_in",
+                          "type": "string",
+                          "enum": [
+                            "checked_in",
+                            "all_buyers"
+                          ]
+                        },
+                        "surveyId": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "mode": {
+                          "default": "draft",
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "send"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "delayHours",
+                        "audience",
+                        "surveyId",
+                        "mode"
+                      ],
+                      "additionalProperties": false
+                    },
                     "capacity": {
                       "nullable": true,
                       "type": "integer",
@@ -6577,6 +6940,7 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "postEvent",
                     "capacity",
                     "seatsTaken",
                     "pricing",
@@ -7257,6 +7621,51 @@
                         "additionalProperties": false
                       }
                     },
+                    "postEvent": {
+                      "type": "object",
+                      "properties": {
+                        "enabled": {
+                          "default": false,
+                          "type": "boolean"
+                        },
+                        "delayHours": {
+                          "default": 24,
+                          "type": "integer",
+                          "minimum": 0,
+                          "maximum": 720
+                        },
+                        "audience": {
+                          "default": "checked_in",
+                          "type": "string",
+                          "enum": [
+                            "checked_in",
+                            "all_buyers"
+                          ]
+                        },
+                        "surveyId": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "mode": {
+                          "default": "draft",
+                          "type": "string",
+                          "enum": [
+                            "draft",
+                            "send"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "enabled",
+                        "delayHours",
+                        "audience",
+                        "surveyId",
+                        "mode"
+                      ],
+                      "additionalProperties": false
+                    },
                     "capacity": {
                       "nullable": true,
                       "type": "integer",
@@ -7403,6 +7812,7 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "postEvent",
                     "capacity",
                     "seatsTaken",
                     "pricing",
@@ -17533,6 +17943,4192 @@
         "summary": "The open feedback survey of an event, for its ticket pages",
         "tags": [
           "surveys"
+        ]
+      }
+    },
+    "/internal/v1/campaigns": {
+      "get": {
+        "operationId": "CampaignsAdminController_list",
+        "parameters": [
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "draft",
+                "scheduled",
+                "sending",
+                "paused",
+                "done",
+                "cancelled"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "thank_you",
+                              "feedback_invite",
+                              "announcement",
+                              "custom"
+                            ]
+                          },
+                          "audience": {
+                            "oneOf": [
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "event"
+                                    ]
+                                  },
+                                  "eventId": {
+                                    "type": "string",
+                                    "pattern": "^[0-9a-f]{24}$"
+                                  },
+                                  "checkin": {
+                                    "default": "all",
+                                    "type": "string",
+                                    "enum": [
+                                      "all",
+                                      "checked_in",
+                                      "not_checked_in"
+                                    ]
+                                  },
+                                  "ticketTypeIds": {
+                                    "default": [],
+                                    "maxItems": 50,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "string",
+                                      "pattern": "^[0-9a-f]{24}$"
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "eventId",
+                                  "checkin",
+                                  "ticketTypeIds"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "past_buyers"
+                                    ]
+                                  },
+                                  "from": {
+                                    "default": null,
+                                    "nullable": true,
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  "to": {
+                                    "default": null,
+                                    "nullable": true,
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                                  },
+                                  "minOrders": {
+                                    "default": 1,
+                                    "type": "integer",
+                                    "minimum": 1,
+                                    "maximum": 1000
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "from",
+                                  "to",
+                                  "minOrders"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "survey_respondents"
+                                    ]
+                                  },
+                                  "surveyId": {
+                                    "type": "string",
+                                    "pattern": "^[0-9a-f]{24}$"
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "surveyId"
+                                ],
+                                "additionalProperties": false
+                              },
+                              {
+                                "type": "object",
+                                "properties": {
+                                  "type": {
+                                    "type": "string",
+                                    "enum": [
+                                      "manual"
+                                    ]
+                                  },
+                                  "entries": {
+                                    "minItems": 1,
+                                    "maxItems": 2000,
+                                    "type": "array",
+                                    "items": {
+                                      "type": "object",
+                                      "properties": {
+                                        "email": {
+                                          "type": "string",
+                                          "maxLength": 254,
+                                          "format": "email",
+                                          "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                        },
+                                        "name": {
+                                          "default": "",
+                                          "type": "string",
+                                          "maxLength": 120
+                                        }
+                                      },
+                                      "required": [
+                                        "email",
+                                        "name"
+                                      ],
+                                      "additionalProperties": false
+                                    }
+                                  }
+                                },
+                                "required": [
+                                  "type",
+                                  "entries"
+                                ],
+                                "additionalProperties": false
+                              }
+                            ]
+                          },
+                          "subject": {
+                            "type": "string"
+                          },
+                          "preheader": {
+                            "type": "string"
+                          },
+                          "body": {
+                            "type": "string"
+                          },
+                          "cta": {
+                            "nullable": true,
+                            "type": "object",
+                            "properties": {
+                              "label": {
+                                "type": "string",
+                                "minLength": 1,
+                                "maxLength": 60
+                              },
+                              "link": {
+                                "type": "string",
+                                "enum": [
+                                  "url",
+                                  "ticket",
+                                  "survey"
+                                ]
+                              },
+                              "url": {
+                                "default": null,
+                                "nullable": true,
+                                "type": "string",
+                                "maxLength": 500,
+                                "format": "uri"
+                              }
+                            },
+                            "required": [
+                              "label",
+                              "link",
+                              "url"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "eventId": {
+                            "nullable": true,
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "surveyId": {
+                            "nullable": true,
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "scheduledAt": {
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "draft",
+                              "scheduled",
+                              "sending",
+                              "paused",
+                              "done",
+                              "cancelled"
+                            ]
+                          },
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "manual",
+                              "post_event"
+                            ]
+                          },
+                          "counters": {
+                            "type": "object",
+                            "properties": {
+                              "total": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "sent": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "failed": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "skipped": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              }
+                            },
+                            "required": [
+                              "total",
+                              "sent",
+                              "failed",
+                              "skipped"
+                            ],
+                            "additionalProperties": false
+                          },
+                          "estimatedDays": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "revision": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "updatedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name",
+                          "type",
+                          "audience",
+                          "subject",
+                          "preheader",
+                          "body",
+                          "cta",
+                          "eventId",
+                          "surveyId",
+                          "scheduledAt",
+                          "status",
+                          "source",
+                          "counters",
+                          "estimatedDays",
+                          "revision",
+                          "createdAt",
+                          "updatedAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "nextCursor": {
+                      "nullable": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Campaigns, newest first",
+        "tags": [
+          "campaigns"
+        ]
+      },
+      "post": {
+        "operationId": "CampaignsAdminController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "thank_you",
+                      "feedback_invite",
+                      "announcement",
+                      "custom"
+                    ]
+                  },
+                  "audience": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "checkin": {
+                            "default": "all",
+                            "type": "string",
+                            "enum": [
+                              "all",
+                              "checked_in",
+                              "not_checked_in"
+                            ]
+                          },
+                          "ticketTypeIds": {
+                            "default": [],
+                            "maxItems": 50,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "eventId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "past_buyers"
+                            ]
+                          },
+                          "from": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "to": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "minOrders": {
+                            "default": 1,
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "survey_respondents"
+                            ]
+                          },
+                          "surveyId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "surveyId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "manual"
+                            ]
+                          },
+                          "entries": {
+                            "minItems": 1,
+                            "maxItems": 2000,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "maxLength": 254,
+                                  "format": "email",
+                                  "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                },
+                                "name": {
+                                  "default": "",
+                                  "type": "string",
+                                  "maxLength": 120
+                                }
+                              },
+                              "required": [
+                                "email"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "entries"
+                        ]
+                      }
+                    ]
+                  },
+                  "subject": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "preheader": {
+                    "default": "",
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 10000
+                  },
+                  "cta": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60
+                      },
+                      "link": {
+                        "type": "string",
+                        "enum": [
+                          "url",
+                          "ticket",
+                          "survey"
+                        ]
+                      },
+                      "url": {
+                        "default": null,
+                        "nullable": true,
+                        "type": "string",
+                        "maxLength": 500,
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "link"
+                    ]
+                  },
+                  "eventId": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{24}$"
+                  },
+                  "surveyId": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{24}$"
+                  }
+                },
+                "required": [
+                  "name",
+                  "type",
+                  "audience",
+                  "subject",
+                  "body"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a draft campaign",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/audience-preview": {
+      "post": {
+        "operationId": "CampaignsAdminController_preview",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "audience": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "checkin": {
+                            "default": "all",
+                            "type": "string",
+                            "enum": [
+                              "all",
+                              "checked_in",
+                              "not_checked_in"
+                            ]
+                          },
+                          "ticketTypeIds": {
+                            "default": [],
+                            "maxItems": 50,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "eventId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "past_buyers"
+                            ]
+                          },
+                          "from": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "to": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "minOrders": {
+                            "default": 1,
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "survey_respondents"
+                            ]
+                          },
+                          "surveyId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "surveyId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "manual"
+                            ]
+                          },
+                          "entries": {
+                            "minItems": 1,
+                            "maxItems": 2000,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "maxLength": 254,
+                                  "format": "email",
+                                  "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                },
+                                "name": {
+                                  "default": "",
+                                  "type": "string",
+                                  "maxLength": 120
+                                }
+                              },
+                              "required": [
+                                "email"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "entries"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "required": [
+                  "audience"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "suppressed": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "duplicates": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "samples": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "email": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "email",
+                          "name"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "count",
+                    "suppressed",
+                    "duplicates",
+                    "samples",
+                    "estimatedDays"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "How many people an audience reaches, deduplicated, with examples",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}": {
+      "get": {
+        "operationId": "CampaignsAdminController_get",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "One campaign, with its counters",
+        "tags": [
+          "campaigns"
+        ]
+      },
+      "patch": {
+        "operationId": "CampaignsAdminController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "type": {
+                    "type": "string",
+                    "enum": [
+                      "thank_you",
+                      "feedback_invite",
+                      "announcement",
+                      "custom"
+                    ]
+                  },
+                  "audience": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "event"
+                            ]
+                          },
+                          "eventId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "checkin": {
+                            "default": "all",
+                            "type": "string",
+                            "enum": [
+                              "all",
+                              "checked_in",
+                              "not_checked_in"
+                            ]
+                          },
+                          "ticketTypeIds": {
+                            "default": [],
+                            "maxItems": 50,
+                            "type": "array",
+                            "items": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "eventId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "past_buyers"
+                            ]
+                          },
+                          "from": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "to": {
+                            "default": null,
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "minOrders": {
+                            "default": 1,
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 1000
+                          }
+                        },
+                        "required": [
+                          "type"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "survey_respondents"
+                            ]
+                          },
+                          "surveyId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "surveyId"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "type": {
+                            "type": "string",
+                            "enum": [
+                              "manual"
+                            ]
+                          },
+                          "entries": {
+                            "minItems": 1,
+                            "maxItems": 2000,
+                            "type": "array",
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "email": {
+                                  "type": "string",
+                                  "maxLength": 254,
+                                  "format": "email",
+                                  "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                },
+                                "name": {
+                                  "default": "",
+                                  "type": "string",
+                                  "maxLength": 120
+                                }
+                              },
+                              "required": [
+                                "email"
+                              ]
+                            }
+                          }
+                        },
+                        "required": [
+                          "type",
+                          "entries"
+                        ]
+                      }
+                    ]
+                  },
+                  "subject": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 150
+                  },
+                  "preheader": {
+                    "default": "",
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "body": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 10000
+                  },
+                  "cta": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "object",
+                    "properties": {
+                      "label": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 60
+                      },
+                      "link": {
+                        "type": "string",
+                        "enum": [
+                          "url",
+                          "ticket",
+                          "survey"
+                        ]
+                      },
+                      "url": {
+                        "default": null,
+                        "nullable": true,
+                        "type": "string",
+                        "maxLength": 500,
+                        "format": "uri"
+                      }
+                    },
+                    "required": [
+                      "label",
+                      "link"
+                    ]
+                  },
+                  "eventId": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{24}$"
+                  },
+                  "surveyId": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "string",
+                    "pattern": "^[0-9a-f]{24}$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "name",
+                  "type",
+                  "audience",
+                  "subject",
+                  "body",
+                  "revision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Edit a draft",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/rendered": {
+      "get": {
+        "operationId": "CampaignsAdminController_rendered",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "subject": {
+                      "type": "string"
+                    },
+                    "html": {
+                      "type": "string"
+                    },
+                    "text": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "subject",
+                    "html",
+                    "text"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "The email as it will look, with example links",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/test": {
+      "post": {
+        "operationId": "CampaignsAdminController_test",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": {
+                    "type": "string",
+                    "maxLength": 254,
+                    "format": "email",
+                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                  }
+                },
+                "required": [
+                  "email"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send a test copy to one address; counts against nothing",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/send": {
+      "post": {
+        "operationId": "CampaignsAdminController_send",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "x-step-up-token",
+            "in": "header",
+            "description": "Step-up token (ADR-0021)",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "confirmCount": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  },
+                  "scheduledAt": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "string",
+                    "format": "date-time",
+                    "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                  },
+                  "revision": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 9007199254740991
+                  }
+                },
+                "required": [
+                  "confirmCount",
+                  "revision"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send now or schedule; step-up and the typed recipient count",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/pause": {
+      "post": {
+        "operationId": "CampaignsAdminController_pause",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Stop taking from the queue; what was sent stays sent",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/resume": {
+      "post": {
+        "operationId": "CampaignsAdminController_resume",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Carry on from where it stopped",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/cancel": {
+      "post": {
+        "operationId": "CampaignsAdminController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cancel; nothing more goes out",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/retry-failed": {
+      "post": {
+        "operationId": "CampaignsAdminController_retry",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string",
+                      "enum": [
+                        "thank_you",
+                        "feedback_invite",
+                        "announcement",
+                        "custom"
+                      ]
+                    },
+                    "audience": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "event"
+                              ]
+                            },
+                            "eventId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "checkin": {
+                              "default": "all",
+                              "type": "string",
+                              "enum": [
+                                "all",
+                                "checked_in",
+                                "not_checked_in"
+                              ]
+                            },
+                            "ticketTypeIds": {
+                              "default": [],
+                              "maxItems": 50,
+                              "type": "array",
+                              "items": {
+                                "type": "string",
+                                "pattern": "^[0-9a-f]{24}$"
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "eventId",
+                            "checkin",
+                            "ticketTypeIds"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "past_buyers"
+                              ]
+                            },
+                            "from": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "to": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "format": "date-time",
+                              "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                            },
+                            "minOrders": {
+                              "default": 1,
+                              "type": "integer",
+                              "minimum": 1,
+                              "maximum": 1000
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "from",
+                            "to",
+                            "minOrders"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "survey_respondents"
+                              ]
+                            },
+                            "surveyId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "surveyId"
+                          ],
+                          "additionalProperties": false
+                        },
+                        {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "enum": [
+                                "manual"
+                              ]
+                            },
+                            "entries": {
+                              "minItems": 1,
+                              "maxItems": 2000,
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "email": {
+                                    "type": "string",
+                                    "maxLength": 254,
+                                    "format": "email",
+                                    "pattern": "^(?:[A-Za-z0-9_'+\\-]+\\.)*[A-Za-z0-9_'+\\-]*[A-Za-z0-9_+-]@(?:[A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
+                                  },
+                                  "name": {
+                                    "default": "",
+                                    "type": "string",
+                                    "maxLength": 120
+                                  }
+                                },
+                                "required": [
+                                  "email",
+                                  "name"
+                                ],
+                                "additionalProperties": false
+                              }
+                            }
+                          },
+                          "required": [
+                            "type",
+                            "entries"
+                          ],
+                          "additionalProperties": false
+                        }
+                      ]
+                    },
+                    "subject": {
+                      "type": "string"
+                    },
+                    "preheader": {
+                      "type": "string"
+                    },
+                    "body": {
+                      "type": "string"
+                    },
+                    "cta": {
+                      "nullable": true,
+                      "type": "object",
+                      "properties": {
+                        "label": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 60
+                        },
+                        "link": {
+                          "type": "string",
+                          "enum": [
+                            "url",
+                            "ticket",
+                            "survey"
+                          ]
+                        },
+                        "url": {
+                          "default": null,
+                          "nullable": true,
+                          "type": "string",
+                          "maxLength": 500,
+                          "format": "uri"
+                        }
+                      },
+                      "required": [
+                        "label",
+                        "link",
+                        "url"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "eventId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "surveyId": {
+                      "nullable": true,
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "scheduledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "draft",
+                        "scheduled",
+                        "sending",
+                        "paused",
+                        "done",
+                        "cancelled"
+                      ]
+                    },
+                    "source": {
+                      "type": "string",
+                      "enum": [
+                        "manual",
+                        "post_event"
+                      ]
+                    },
+                    "counters": {
+                      "type": "object",
+                      "properties": {
+                        "total": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "sent": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "failed": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "skipped": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "total",
+                        "sent",
+                        "failed",
+                        "skipped"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "estimatedDays": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "updatedAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "name",
+                    "type",
+                    "audience",
+                    "subject",
+                    "preheader",
+                    "body",
+                    "cta",
+                    "eventId",
+                    "surveyId",
+                    "scheduledAt",
+                    "status",
+                    "source",
+                    "counters",
+                    "estimatedDays",
+                    "revision",
+                    "createdAt",
+                    "updatedAt"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Queue the failed emails again",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/campaigns/{id}/recipients": {
+      "get": {
+        "operationId": "CampaignsAdminController_recipients",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "cursor",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 512
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": 20,
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 100
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "queued",
+                "sending",
+                "sent",
+                "failed",
+                "skipped"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "email": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "queued",
+                              "sending",
+                              "sent",
+                              "failed",
+                              "skipped"
+                            ]
+                          },
+                          "error": {
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "sentAt": {
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "email",
+                          "name",
+                          "status",
+                          "error",
+                          "sentAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "nextCursor": {
+                      "nullable": true,
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "items",
+                    "nextCursor"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Who it goes to and how each email went",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/email-unsubscribes/{token}": {
+      "get": {
+        "operationId": "CampaignsPublicController_check",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "valid": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "valid"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Whether an unsubscribe link is ours; changes nothing",
+        "tags": [
+          "campaigns"
+        ]
+      }
+    },
+    "/internal/v1/email-unsubscribes": {
+      "post": {
+        "operationId": "CampaignsPublicController_unsubscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "token": {
+                    "type": "string",
+                    "minLength": 20,
+                    "maxLength": 200,
+                    "pattern": "^[A-Za-z0-9_.-]+$"
+                  }
+                },
+                "required": [
+                  "token"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Unsubscribe the person behind a signed link",
+        "tags": [
+          "campaigns"
         ]
       }
     },

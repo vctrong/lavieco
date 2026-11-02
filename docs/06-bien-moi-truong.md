@@ -187,6 +187,8 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `GOOGLE_CLIENT_ID` | Tuỳ chọn | Không | Đăng nhập Google (member) | Google Cloud Console → Credentials | Cùng giá trị với `web` | `123-gia.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Tuỳ chọn | **Có** | Client secret Google, **chỉ ở identity** | Google Cloud Console → Credentials → OAuth client → Client secret | Dev/prod hai client | `GOCSPX-gia` |
 | `GOOGLE_REDIRECT_URI` | Tuỳ chọn | Không | Redirect URI duy nhất được chấp nhận | Tự đặt, khớp `web` và Google Console | | `http://localhost:3000/api/auth/google/callback` |
+| `CAMPAIGN_DAILY_LIMIT` | Tuỳ chọn (mặc định `150`) | Không | Số email chiến dịch tối đa mỗi ngày theo giờ Việt Nam (ADR-0026). Brevo cho 300/ngày, dùng chung với OTP và email vé nên phải chừa phần cho chúng | Tự đặt | Prod: `150` | `150` |
+| `CAMPAIGN_RATE_PER_MINUTE` | Tuỳ chọn (mặc định `10`) | Không | Số email chiến dịch tối đa mỗi phút | Tự đặt | Prod: `10` | `10` |
 | `MAIL_PROVIDER` | Tuỳ chọn (mặc định `smtp`) | Không | Kiểu gửi email; chỉ có `smtp` (Brevo và Gmail đều qua SMTP, ADR-0023) | Tự đặt | | `smtp` |
 | `SMTP_HOST` | Bắt buộc | Không | Máy chủ SMTP gửi OTP, link mời, email member | Dev: Mailpit `127.0.0.1`; gửi thật: mục "Gửi email thật (SMTP)" | Prod: `smtp.gmail.com`, đường dự phòng sau Brevo (ADR-0023) | `127.0.0.1` |
 | `SMTP_PORT` | Bắt buộc | Không | Cổng SMTP | Mailpit `1025`; Gmail/nhà cung cấp `587` (hoặc `465`) | Prod thường `587` | `1025` |
@@ -292,6 +294,7 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 18/10/2026 | Hạ tầng deploy chuyển sang VPS amd64: mẫu env dời về `infra/env/prod/`; thêm `ACME_EMAIL`, `NODE_OPTIONS`/`GOMEMLIMIT` trong compose; xoá `LAVIECO_ENV_DIR`, `LAVIECO_CERT_DIR`, `COMPOSE_PROFILES`, `MONGO_INITDB_ROOT_*` (bỏ profile `mongo`), secrets `DEPLOY_*` (chưa có bước SSH deploy) | Đổi hạ tầng (không đổi biến của ứng dụng) | `chore/deploy-oracle` |
 | 20/10/2026 | `admin`: `ADMIN_APP_URL` | Thêm (gốc URL chuyển hướng); `web` dùng `NEXT_PUBLIC_SITE_URL` cho chuyển hướng | `fix/redirect-base-url` |
 | 20/10/2026 | `identity-service`, `program-service`: `BREVO_SMTP_HOST`, `BREVO_SMTP_PORT`, `BREVO_SMTP_USER`, `BREVO_SMTP_KEY`, `BREVO_COOLDOWN_MINUTES`, `MAIL_FROM_FALLBACK`, `MAIL_REPLY_TO` | Thêm (Brevo làm đường chính, Gmail `SMTP_*` làm dự phòng, ADR-0023); `MAIL_FROM` thành người gửi của đường Brevo; `mail:test` thêm `--provider` | `feat/mail-brevo-fallback` |
+| 02/11/2026 | `program-service`: `CAMPAIGN_DAILY_LIMIT`, `CAMPAIGN_RATE_PER_MINUTE` | Thêm (email hàng loạt, ADR-0026) | `feat/email-campaigns` |
 | 02/11/2026 | `web`: `ADMIN_APP_URL`; `admin`: `WEB_APP_URL` | Đổi ý nghĩa: không còn nhúng iframe, dùng cho chuyển hướng xem trước và nút Làm mới | `feat/event-preview-tab` |
 | 25/10/2026 | `web`: `LAVIAGENT_AI_PROVIDER`, `LAVIAGENT_DEMO_MODE`, `GEMINI_API_KEY`, `GEMINI_MODEL` | Thêm (LaviAgent demo, ADR-0024, `docs/07`) | `feat/web-laviagent-demo` |
 | 25/10/2026 | `web`: `GEMINI_MODEL` | Đổi mặc định `gemini-2.5-flash` → `gemini-3.8-flash` (bản 2.5 trả 404 cho người dùng mới) | `feat/web-laviagent-demo` |

@@ -70,7 +70,10 @@ export class FakeMediaAttachments implements MediaAttachments {
 /** Captures outgoing email instead of sending it. */
 export class FakeEmailSender implements EmailSender {
   readonly sent: EmailMessage[] = [];
+  /** Addresses whose delivery fails, to exercise retries. */
+  readonly failing = new Set<string>();
   async send(message: EmailMessage): Promise<EmailDelivery> {
+    if (this.failing.has(message.to)) throw new Error("fake delivery failure");
     this.sent.push(message);
     return { provider: "gmail", messageId: `<fake-${this.sent.length}@lavieco.test>` };
   }
@@ -227,6 +230,7 @@ export async function createTestApp(
         mediaAttachments: media,
         paymentGateway: { provide: PAYMENT_GATEWAY, useValue: payments },
         runOrderExpiry: false,
+        runCampaignWorker: false,
         auditSink: { send: async () => undefined },
         ...overrides,
         emailSender: emails,

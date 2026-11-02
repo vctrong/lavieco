@@ -232,7 +232,8 @@ function SurveyFields({
   const set = (id: string, value: DraftAnswer) => {
     setAnswers((current) => ({ ...current, [id]: value }));
     setErrors((current) => {
-      const { [id]: _gone, ...rest } = current;
+      const rest = { ...current };
+      delete rest[id];
       return rest;
     });
   };

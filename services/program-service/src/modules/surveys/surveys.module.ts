@@ -91,6 +91,7 @@ export class SurveysModule {
           ],
         },
       ],
+      exports: [SURVEY_REPOSITORY, SURVEY_RESPONSE_REPOSITORY],
     };
   }
 }

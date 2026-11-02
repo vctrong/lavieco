@@ -3,6 +3,7 @@ import type {
   EventFormat,
   EventImage,
   EventKind,
+  EventPostEvent,
   EventPosterRatio,
   EventView,
 } from "@lavieco/shared/events";
@@ -42,6 +43,7 @@ export type DetailsValues = {
   /** Digits only, "" = not stated. */
   minAge: string;
   capacity: string;
+  postEvent: EventPostEvent;
   benefits: BenefitValue[];
   forChildren: boolean;
   speakers: SpeakerValue[];
@@ -75,6 +77,13 @@ export function emptyDetails(typeId: string): DetailsValues {
     cancellationRules: [],
     minAge: "",
     capacity: "",
+    postEvent: {
+      enabled: false,
+      delayHours: 24,
+      audience: "checked_in",
+      surveyId: null,
+      mode: "draft",
+    },
     benefits: [],
     forChildren: false,
     speakers: [],
@@ -108,6 +117,7 @@ export function detailsOf(event: EventView): DetailsValues {
     cancellationRules: event.cancellationRules.map((rule) => ({ ...rule })),
     minAge: event.minAge === null ? "" : String(event.minAge),
     capacity: event.capacity === null ? "" : String(event.capacity),
+    postEvent: { ...event.postEvent },
     benefits: event.benefits.map((benefit) => ({ ...benefit })),
     forChildren: event.forChildren,
     speakers: event.speakers.map((speaker) => ({
@@ -176,6 +186,7 @@ export function toDetailsRequest(values: DetailsValues) {
     cancellationRules: values.cancellationRules,
     minAge: optionalInt(values.minAge),
     capacity: optionalInt(values.capacity),
+    postEvent: values.postEvent,
     benefits: values.benefits,
     forChildren: values.forChildren,
     // Only the media id and alt: program-service takes the file details from content-service.

@@ -10,7 +10,14 @@ export const STAFF_COOKIES = {
  * Admin sections that have pages (`app/(dashboard)/<section>`), the only places a
  * sign-in may return to besides "/". A test keeps this list in sync with the folders.
  */
-export const RETURN_SECTIONS = ["/events", "/orders", "/vouchers", "/surveys", "/checkin"] as const;
+export const RETURN_SECTIONS = [
+  "/events",
+  "/orders",
+  "/vouchers",
+  "/surveys",
+  "/campaigns",
+  "/checkin",
+] as const;
 
 /** Base for parsing a relative path; never used as a destination. */
 const PARSE_BASE = "http://admin.invalid";

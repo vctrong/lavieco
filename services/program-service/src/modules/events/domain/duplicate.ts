@@ -42,6 +42,7 @@ export function duplicateOf(
       faq: source.faq,
       posterRatio: source.posterRatio,
       capacity: source.capacity,
+      postEvent: source.postEvent,
     },
     form: { questions: source.form.questions.map((question) => ({ ...question })) },
     ticketTypes: ticketTypes.map((ticketType) => ({

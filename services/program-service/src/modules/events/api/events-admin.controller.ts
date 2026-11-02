@@ -11,7 +11,8 @@ import {
   currentRequestId,
   type StaffPrincipal,
 } from "@lavieco/service-kit";
-import { objectIdSchema } from "@lavieco/shared";
+import { DomainError, objectIdSchema } from "@lavieco/shared";
+import { can } from "@lavieco/shared/permissions";
 import {
   eventAttendanceApproveRequestSchema,
   eventCreateRequestSchema,
@@ -46,6 +47,16 @@ import { toEventDto, toEventListItemDto, toTicketTypeDto } from "./event.mapper"
 const idPipe = new ZodValidationPipe(objectIdSchema);
 const actorOf = (principal: StaffPrincipal) => ({ userId: principal.userId });
 
+/** "Gửi luôn" goes out with nobody to confirm: it takes the right to send campaigns. */
+function assertMaySetAutoSend(
+  body: Pick<EventCreateRequest, "postEvent">,
+  principal: StaffPrincipal,
+) {
+  if (body.postEvent.enabled && body.postEvent.mode === "send") {
+    if (!can(principal, "campaign:send")) throw new DomainError("common.forbidden");
+  }
+}
+
 /** Admin screens `/events` (UC-32), called by `admin` with the staff access token. */
 @ApiTags("events")
 @Controller("internal/v1/events")
@@ -76,6 +87,7 @@ export class EventsAdminController {
     @ZodBody(eventCreateRequestSchema) body: EventCreateRequest,
     @CurrentPrincipal() principal: StaffPrincipal,
   ) {
+    assertMaySetAutoSend(body, principal);
     return toEventDto(await this.events.create(body, actorOf(principal)));
   }
 
@@ -96,6 +108,7 @@ export class EventsAdminController {
     @ZodBody(eventUpdateRequestSchema) body: EventUpdateRequest,
     @CurrentPrincipal() principal: StaffPrincipal,
   ) {
+    assertMaySetAutoSend(body, principal);
     return toEventDto(await this.events.updateDetails(id, body, actorOf(principal)));
   }
 

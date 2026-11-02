@@ -2,6 +2,7 @@ import type { EventRecord } from "../../modules/events";
 import type { OrderRecord } from "../../modules/orders/domain/order";
 import type { TicketRecord } from "../../modules/orders/domain/ticket";
 import type { EventCancelledEmailInput } from "../../modules/orders/infrastructure/event-cancelled-email.template";
+import type { CampaignEmailInput } from "../../modules/campaigns/infrastructure/campaign-email";
 import type { TicketEmailInput } from "../../modules/orders/infrastructure/ticket-email.template";
 
 /**
@@ -39,6 +40,14 @@ export function fakeEvent(overrides: Partial<EventRecord> = {}): EventRecord {
     cover: null,
     posterRatio: "4:5",
     capacity: null,
+    postEvent: {
+      enabled: false,
+      delayHours: 24,
+      audience: "checked_in",
+      surveyId: null,
+      mode: "draft",
+    },
+    postEventCampaignId: null,
     seatsSold: 0,
     seatsHeld: 0,
     banner: null,
@@ -294,5 +303,58 @@ export function eventCancelledEmailCases(): { name: string; input: EventCancelle
   return [
     { name: "paid", input: { ...base, order: fakeOrder() } },
     { name: "free", input: { ...base, order: fakeOrder({ amount: 0 }) } },
+  ];
+}
+
+const CAMPAIGN_BODY =
+  "Xin chào {{ten}},\n\nCảm ơn bạn đã đến với {{chuong_trinh}} ngày {{ngay}}.\n\nHẹn gặp bạn ở những chương trình tới.";
+
+const campaignInput = (
+  overrides: Partial<CampaignEmailInput["campaign"]>,
+  surveys: string[] = [],
+): CampaignEmailInput => ({
+  campaign: {
+    subject: "Cảm ơn bạn đã tham gia {{chuong_trinh}}",
+    preheader: "Vài lời cảm ơn từ LAVIECO.",
+    body: CAMPAIGN_BODY,
+    cta: null,
+    type: "thank_you",
+    ...overrides,
+  },
+  name: "Nguyễn Thị Khách",
+  eventTitle: "Workshop làm chậu cây từ bột vỏ sò",
+  eventDate: "08/11/2026",
+  links: { ticketPage: `${WEB}/ve/fake-signed-token`, surveys },
+  unsubscribeUrl: `${WEB}/huy-nhan/fake-unsubscribe-token`,
+  webAppUrl: WEB,
+});
+
+/** Made-up campaign emails, for the snapshot test and `npm run mail:preview`. */
+export function campaignEmailCases() {
+  const survey = {
+    type: "feedback_invite" as const,
+    cta: { label: "Gửi cảm nhận", link: "survey" as const, url: null },
+  };
+  return [
+    { name: "thank-you", input: campaignInput({}) },
+    {
+      name: "feedback-one-ticket",
+      input: campaignInput(survey, [`${WEB}/khao-sat/cam-nhan?t=fake-ticket-1`]),
+    },
+    {
+      name: "feedback-two-tickets",
+      input: campaignInput(survey, [
+        `${WEB}/khao-sat/cam-nhan?t=fake-ticket-1`,
+        `${WEB}/khao-sat/cam-nhan?t=fake-ticket-2`,
+      ]),
+    },
+    {
+      name: "announcement",
+      input: campaignInput({
+        type: "announcement",
+        subject: "Thông báo về {{chuong_trinh}}",
+        cta: { label: "Xem vé", link: "ticket", url: null },
+      }),
+    },
   ];
 }

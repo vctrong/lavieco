@@ -9,6 +9,7 @@ import type {
   EventImage,
   EventKind,
   EventPosterRatio,
+  EventPostEvent,
   EventPricing,
   EventSpeaker,
   EventStatus,
@@ -41,6 +42,7 @@ export type EventContent = {
   faq: EventFaqItem[];
   posterRatio: EventPosterRatio;
   capacity: number | null;
+  postEvent: EventPostEvent;
 };
 
 /**
@@ -74,6 +76,8 @@ export type EventRecord = EventContent & {
   attendance: EventAttendance;
   cancellation: EventCancellation | null;
   form: EventForm;
+  /** The campaign "Sau sự kiện" created, so it only ever happens once. */
+  postEventCampaignId: string | null;
   /** People with a seat, every ticket type counted; moved with orders, never by an edit. */
   seatsSold: number;
   seatsHeld: number;
@@ -123,6 +127,7 @@ export function toEventContent(
     faq: details.faq,
     posterRatio: details.posterRatio,
     capacity: details.capacity,
+    postEvent: details.postEvent,
   };
 }
 

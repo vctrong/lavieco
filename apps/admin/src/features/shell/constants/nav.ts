@@ -24,6 +24,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { id: "events", href: "/events", permission: "program:read", available: true },
       { id: "vouchers", href: "/vouchers", permission: "voucher:write", available: true },
       { id: "surveys", href: "/surveys", permission: "survey:read", available: true },
+      { id: "campaigns", href: "/campaigns", permission: "campaign:send", available: true },
       { id: "orders", href: "/orders", permission: "order:read", available: true },
       { id: "checkin", href: "/checkin", permission: "checkin:perform", available: true },
     ],
