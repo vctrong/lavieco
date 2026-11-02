@@ -17,6 +17,7 @@ import { cn } from "@lavieco/ui";
 
 import { TEXT } from "../constants/text";
 import type { TicketState } from "../utils/ticket-state";
+import { ShareTicket } from "./share-ticket";
 
 export type ChipTone = "valid" | "used" | "attention" | "muted";
 
@@ -83,6 +84,10 @@ export type TicketCardData = {
   checkedInAt: string | null;
   /** QR data URL; null when the ticket is void (never drawn, not even in print). */
   qrImage: string | null;
+  /** "Combo 2 người · suất 1 · vé 2/2"; null for a plain ticket. */
+  combo: string | null;
+  /** Absolute link to this ticket alone; null when it cannot be shared. */
+  shareUrl: string | null;
 };
 
 type TicketCardProps = {
@@ -90,7 +95,8 @@ type TicketCardProps = {
   index: number;
   total: number;
   event: { title: string; schedule: string; place: string; online: boolean };
-  bookerName: string;
+  /** Null on a shared ticket: its page says nothing about who booked it (BR-13). */
+  bookerName: string | null;
 };
 
 /**
@@ -137,15 +143,18 @@ export function TicketCard({ ticket, index, total, event, bookerName }: TicketCa
             <Place aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-emerald-brand" />
             <dd>{event.place}</dd>
           </div>
-          <div className="flex items-start gap-3">
-            <dt className="sr-only">{t.bookedBy}</dt>
-            <FiUser aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-emerald-brand" />
-            <dd>
-              <span className="text-charcoal/60">{t.bookedBy}: </span>
-              <span className="font-semibold text-deep-blue">{bookerName}</span>
-            </dd>
-          </div>
+          {bookerName ? (
+            <div className="flex items-start gap-3">
+              <dt className="sr-only">{t.bookedBy}</dt>
+              <FiUser aria-hidden="true" size={16} className="mt-0.5 shrink-0 text-emerald-brand" />
+              <dd>
+                <span className="text-charcoal/60">{t.bookedBy}: </span>
+                <span className="font-semibold text-deep-blue">{bookerName}</span>
+              </dd>
+            </div>
+          ) : null}
         </dl>
+        {ticket.shareUrl ? <ShareTicket url={ticket.shareUrl} title={event.title} /> : null}
       </div>
 
       <div className="order-1 flex flex-col items-center gap-3 px-6 pb-4 pt-6 text-center md:order-3 md:w-80 md:border-l md:border-dashed md:border-deep-blue/20 md:py-7">
@@ -154,6 +163,7 @@ export function TicketCard({ ticket, index, total, event, bookerName }: TicketCa
           <StatusChip tone={STATE_TONES[ticket.state]}>{stateLabel}</StatusChip>
         </div>
         <p className="hidden font-semibold text-deep-blue md:block">{ticket.ticketTypeName}</p>
+        {ticket.combo ? <p className="text-[12.5px] text-charcoal/70">{ticket.combo}</p> : null}
         {ticket.qrImage === null ? (
           <div className="flex aspect-square w-full max-w-[280px] flex-col items-center justify-center gap-2 rounded-2xl border border-dashed border-hairline bg-soft-white text-[13px] text-charcoal/60 print:bg-white">
             <FiSlash aria-hidden="true" size={28} />

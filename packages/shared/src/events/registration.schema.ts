@@ -32,6 +32,9 @@ export const registrationRowSchema = z.object({
   ticketCode: z.string(),
   ticketTypeName: z.string(),
   ticketStatus: ticketStatusSchema,
+  seatsPerUnit: z.number().int(),
+  unitIndex: z.number().int(),
+  seatIndex: z.number().int(),
   checkedInAt: isoDateTimeSchema.nullable(),
   registeredAt: isoDateTimeSchema,
   /** `questionId` → answer as text (choices joined with ", "). */

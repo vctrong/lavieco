@@ -111,6 +111,10 @@ export class EventAdminService {
     assertOnlineLinkKept(current, toEventContent(input, []), sold);
     const before = imagesOf(current);
     const images = await resolveEventImages(this.media, id, before, imagesInputOf(input));
+    // Lowering it below what is taken would leave people with seats over the limit.
+    if (input.capacity !== null && input.capacity < current.seatsSold + current.seatsHeld) {
+      throw new DomainError("event.capacity_below_taken");
+    }
     const content = toEventContent(input, images.avatars);
     const attendance = nextAttendance(current.kind, current.attendance, input.attendanceCount);
     const updated = await this.unitOfWork.run(async (tx) => {

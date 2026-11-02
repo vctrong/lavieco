@@ -44,6 +44,9 @@ export const checkinResponseSchema = z.object({
       ticketTypeName: z.string(),
       buyerName: z.string(),
       checkedInAt: isoDateTimeSchema.nullable(),
+      seatsPerUnit: z.number().int(),
+      unitIndex: z.number().int(),
+      seatIndex: z.number().int(),
     })
     .nullable(),
   stats: z.object({ checkedIn: z.number().int(), total: z.number().int() }),

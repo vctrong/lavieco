@@ -207,9 +207,11 @@ describe("registrations and Excel export (step-up + audit)", () => {
     expect(String(sheet.getRow(2).getCell(2).value)).toBe(
       `'=HYPERLINK("http://evil.example","bam")`,
     );
-    expect(sheet.getRow(1).getCell(11).value).toBe("Bạn đến từ đâu?");
+    expect(sheet.getRow(1).getCell(14).value).toBe("Bạn đến từ đâu?");
     // A free order went through: "confirmed", not "paid".
-    expect(sheet.getRow(2).getCell(8).value).toBe("Đã xác nhận");
+    expect(sheet.getRow(2).getCell(11).value).toBe("Đã xác nhận");
+    expect(sheet.getRow(1).getCell(6).value).toBe("Số người mỗi suất");
+    expect(sheet.getRow(2).getCell(8).value).toBe("1/1");
 
     await drainOutbox(t);
     const event1 = audited.find(

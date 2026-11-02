@@ -16,6 +16,7 @@ import { newOrderCode } from "../domain/codes";
 import { HOLD_MS, NO_FLAGS, priceOrder, validateAnswers, type OrderRecord } from "../domain/order";
 import type { TicketRecord } from "../domain/ticket";
 import { CANCEL_PAYMENT_LINK_JOB, issueAndSend } from "./order-jobs";
+import { releaseSeats, takeSeats } from "./seats";
 import {
   VerificationUsedError,
   type OrderAnswerRepository,
@@ -25,7 +26,13 @@ import {
 import type { EmailProofVerifier, OrderLinks, PaymentGateway } from "./ports/order-services.port";
 
 /** An order with what its holder's page shows. */
-export type OrderBundle = { order: OrderRecord; event: EventRecord; tickets: TicketRecord[] };
+export type OrderBundle = {
+  order: OrderRecord;
+  event: EventRecord;
+  tickets: TicketRecord[];
+  /** Ticket id → token of its share link. */
+  shareTokens: ReadonlyMap<string, string>;
+};
 
 export type CheckoutConfig = {
   /** Origin of `web`: payOS return/cancel URLs point at the payment page there. */
@@ -91,16 +98,14 @@ export class CheckoutService {
 
     try {
       await this.unitOfWork.run(async (tx) => {
-        // BR-14: conditional $inc per ticket type; the transaction undoes earlier ones.
-        for (const item of priced.items) {
-          const taken = await this.ticketTypes.take(
-            item.ticketTypeId,
-            item.quantity,
-            free ? "sold" : "held",
-            tx,
-          );
-          if (!taken) throw new DomainError("order.sold_out");
-        }
+        // BR-14: conditional $inc per ticket type and on the event's shared capacity.
+        const taken = await takeSeats(
+          { ticketTypes: this.ticketTypes, events: this.events },
+          { eventId: event.id, items: priced.items },
+          free ? "sold" : "held",
+          tx,
+        );
+        if (!taken) throw new DomainError("order.sold_out");
         const order = await this.orders.insert(
           {
             id: orderId,
@@ -194,9 +199,7 @@ export class CheckoutService {
 
   /** Seats back and payOS link cancelled; shared with the expiry job. */
   async releaseHeld(order: OrderRecord, tx: TxContext) {
-    for (const item of order.items) {
-      await this.ticketTypes.release(item.ticketTypeId, item.quantity, "held", tx);
-    }
+    await releaseSeats({ ticketTypes: this.ticketTypes, events: this.events }, order, "held", tx);
     if (order.payment) {
       await this.outbox.enqueue(tx, {
         type: CANCEL_PAYMENT_LINK_JOB,
@@ -216,7 +219,22 @@ export class CheckoutService {
     // A refunded order keeps listing its (void) tickets on the ticket page.
     const hasTickets = order.status === "paid" || order.status === "refunded";
     const tickets = hasTickets ? await this.tickets.listByOrder(order.id) : [];
-    return { order, event, tickets };
+    const shareTokens = new Map(
+      tickets.map((ticket) => [ticket.id, this.links.signTicket(ticket)]),
+    );
+    return { order, event, tickets, shareTokens };
+  }
+
+  /** One ticket behind its share link (`/ve/v/[token]`), or 404. Nothing about the booker. */
+  async getSharedTicket(token: string): Promise<{ ticket: TicketRecord; event: EventRecord }> {
+    const ticketId = this.links.ticketIdOf(token);
+    const ticket = ticketId ? await this.tickets.findById(ticketId) : null;
+    if (!ticket || !this.links.verifyTicket(token, ticket)) {
+      throw new DomainError("common.not_found");
+    }
+    const [event] = await this.events.findByIds([ticket.eventId]);
+    if (!event) throw new DomainError("common.not_found");
+    return { ticket, event };
   }
 
   signLink(orderId: string): string {

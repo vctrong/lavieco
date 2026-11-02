@@ -13,6 +13,7 @@ export type TicketInput = {
   price?: number;
   quantity?: number | null;
   maxPerOrder?: number;
+  seatsPerUnit?: number;
 };
 
 /** A published event with the given ticket types (and optional form), ready to book. */

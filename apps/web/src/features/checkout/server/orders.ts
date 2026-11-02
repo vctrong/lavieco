@@ -2,7 +2,7 @@ import "server-only";
 
 import { isServiceProblem } from "@lavieco/api-clients";
 import { normalizeEmail } from "@lavieco/shared";
-import type { OrderView, PublicEventDetail } from "@lavieco/shared/events";
+import type { OrderView, PublicEventDetail, SharedTicketView } from "@lavieco/shared/events";
 
 import { requestId } from "@/lib/request-meta";
 import { identityClient, programClient } from "@/lib/services";
@@ -31,6 +31,17 @@ export async function getOrder(token: string): Promise<OrderView | null> {
   if (!orderTokenSchema.safeParse(token).success) return null;
   try {
     return await programClient().getOrderByLink(token, await requestId());
+  } catch (error) {
+    if (notFound(error)) return null;
+    throw error;
+  }
+}
+
+/** One shared ticket, or `null` when the link is not ours or its QR was reissued. */
+export async function getSharedTicket(token: string): Promise<SharedTicketView | null> {
+  if (!orderTokenSchema.safeParse(token).success) return null;
+  try {
+    return await programClient().getSharedTicket(token, await requestId());
   } catch (error) {
     if (notFound(error)) return null;
     throw error;

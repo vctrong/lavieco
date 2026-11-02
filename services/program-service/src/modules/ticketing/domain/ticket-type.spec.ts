@@ -7,7 +7,9 @@ import {
   hasRegistrations,
   priceRangeOf,
   pricingOf,
+  seatsLeftOf,
   seatsOf,
+  unitsLeftOf,
   type TicketTypeChanges,
   type TicketTypeRecord,
 } from "./ticket-type";
@@ -23,6 +25,7 @@ function ticket(overrides: Partial<TicketTypeRecord> = {}): TicketTypeRecord {
     saleStartAt: null,
     saleEndAt: null,
     maxPerOrder: 4,
+    seatsPerUnit: 1,
     sortOrder: 0,
     hidden: false,
     sold: 0,
@@ -40,6 +43,7 @@ const changesOf = (record: TicketTypeRecord): TicketTypeChanges => ({
   saleStartAt: record.saleStartAt,
   saleEndAt: record.saleEndAt,
   maxPerOrder: record.maxPerOrder,
+  seatsPerUnit: record.seatsPerUnit,
   sortOrder: record.sortOrder,
   hidden: record.hidden,
 });
@@ -70,6 +74,44 @@ describe("pricingOf", () => {
       priceFrom: 90_000,
     });
     expect(pricingOf([])).toEqual({ isFree: false, priceFrom: null });
+  });
+});
+
+describe("combos and the shared capacity", () => {
+  const combo = (overrides: Partial<TicketTypeRecord> = {}) =>
+    ticket({ seatsPerUnit: 2, quantity: 10, ...overrides });
+
+  it("counts people, not units", () => {
+    expect(seatsLeftOf(combo({ sold: 8 }))).toBe(4);
+    expect(availabilityOf([combo({ sold: 8 })]).seatsLeft).toBe(4);
+    expect(seatsOf([combo({ sold: 3 }), ticket({ quantity: 5, sold: 1 })])).toEqual({
+      sold: 7,
+      capacity: 25,
+    });
+  });
+
+  it("caps every type by what the event still has", () => {
+    const event = { capacity: 10, seatsSold: 7, seatsHeld: 0 };
+    expect(unitsLeftOf(combo(), event)).toBe(1);
+    expect(unitsLeftOf(ticket({ quantity: null }), event)).toBe(3);
+    expect(seatsOf([combo()], event).capacity).toBe(10);
+  });
+
+  it("is sold out when no type fits, even with a seat left", () => {
+    const lastSeat = { capacity: 10, seatsSold: 9, seatsHeld: 0 };
+    expect(availabilityOf([combo()], lastSeat).soldOut).toBe(true);
+    expect(availabilityOf([combo(), ticket({ quantity: 5 })], lastSeat).soldOut).toBe(false);
+  });
+
+  it("freezes the people per unit once seats are taken", () => {
+    const current = combo({ sold: 1 });
+    expect(() =>
+      assertTicketTypeChangeAllowed(current, { ...changesOf(current), seatsPerUnit: 3 }),
+    ).toThrow("ticket_type.locked");
+    const unsold = combo();
+    expect(() =>
+      assertTicketTypeChangeAllowed(unsold, { ...changesOf(unsold), seatsPerUnit: 3 }),
+    ).not.toThrow();
   });
 });
 

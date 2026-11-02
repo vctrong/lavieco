@@ -33,7 +33,10 @@ export class SmtpTicketMailer implements TicketMailer {
     private readonly webAppUrl: string,
   ) {}
 
-  async sendTickets(orderId: string, options: { resend?: boolean } = {}): Promise<void> {
+  async sendTickets(
+    orderId: string,
+    options: { resend?: boolean; reissued?: boolean } = {},
+  ): Promise<void> {
     const order = await this.orders.findById(orderId);
     // Refunded (or never paid) by the time the job runs: nothing to send.
     if (!order || order.status !== "paid") return;
@@ -49,8 +52,10 @@ export class SmtpTicketMailer implements TicketMailer {
       event,
       tickets,
       ticketPageUrl,
+      ticketShareUrl: (ticket) => `${this.webAppUrl}/ve/v/${this.links.signTicket(ticket)}`,
       webAppUrl: this.webAppUrl,
       resend: options.resend === true,
+      reissued: options.reissued === true,
     });
     const qrImages = await Promise.all(
       tickets.map(async (ticket) =>

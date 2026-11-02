@@ -9,6 +9,9 @@ const event = {
   status: "published" as const,
   format: "offline" as const,
   hasOnlineLink: false,
+  capacity: null,
+  seatsSold: 0,
+  seatsHeld: 0,
   startAt: new Date("2026-11-01T02:00:00Z"),
   endAt: new Date("2026-11-01T05:00:00Z"),
 };
@@ -22,6 +25,7 @@ const ticket = (overrides: Partial<TicketTypeRecord> = {}): TicketTypeRecord => 
   saleStartAt: null,
   saleEndAt: null,
   maxPerOrder: 4,
+  seatsPerUnit: 1,
   sortOrder: 0,
   hidden: false,
   sold: 0,

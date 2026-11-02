@@ -14,7 +14,7 @@ import { eventVenueSchema } from "./event.schema";
  */
 export const ORDER_LIMITS = {
   holdMinutes: 15,
-  /** Whole order, whatever the ticket types (each type also has its own maxPerOrder). */
+  /** Whole order in PEOPLE, whatever the ticket types (each type has its own maxPerOrder). */
   ticketsPerOrderMax: 20,
   itemsMax: 10,
   noteMax: 1_000,
@@ -115,6 +115,16 @@ export const orderCreateRequestSchema = z.object({
 });
 export type OrderCreateRequest = z.infer<typeof orderCreateRequestSchema>;
 
+/**
+ * Where a ticket sits in its order line: `seatsPerUnit` 1 is a plain ticket, more is a
+ * combo ("Combo 2 người · suất 1 · vé 2/2"). Both indexes start at 1.
+ */
+const ticketSeatShape = {
+  seatsPerUnit: z.number().int(),
+  unitIndex: z.number().int(),
+  seatIndex: z.number().int(),
+};
+
 /** Signed link to one order (`/ve/[token]`, payment page, cancel). Opaque to callers. */
 export const orderAccessTokenSchema = z
   .string()
@@ -139,6 +149,7 @@ export const orderItemViewSchema = z.object({
   name: z.string(),
   unitPrice: z.number().int(),
   quantity: z.number().int(),
+  seatsPerUnit: z.number().int(),
 });
 export type OrderItemView = z.infer<typeof orderItemViewSchema>;
 
@@ -152,8 +163,35 @@ export const ticketViewSchema = z.object({
   status: ticketStatusSchema,
   qrToken: z.string().nullable(),
   checkedInAt: isoDateTimeSchema.nullable(),
+  ...ticketSeatShape,
+  /** Opens `/ve/v/[token]`, this ticket alone; null on a void ticket. */
+  shareToken: z.string().nullable(),
 });
 export type TicketView = z.infer<typeof ticketViewSchema>;
+
+/**
+ * `/ve/v/[token]`: one ticket for whoever it was shared with. The QR and the event,
+ * and on purpose nothing about the booker or the order (BR-13).
+ */
+export const sharedTicketViewSchema = z.object({
+  code: z.string(),
+  ticketTypeName: z.string(),
+  status: ticketStatusSchema,
+  qrToken: z.string().nullable(),
+  checkedInAt: isoDateTimeSchema.nullable(),
+  ...ticketSeatShape,
+  event: z.object({
+    slug: z.string(),
+    title: z.string(),
+    format: eventFormatSchema,
+    startAt: isoDateTimeSchema,
+    endAt: isoDateTimeSchema,
+    venue: eventVenueSchema.nullable(),
+    onlineUrl: z.string().nullable(),
+    safetyNotes: z.string(),
+  }),
+});
+export type SharedTicketView = z.infer<typeof sharedTicketViewSchema>;
 
 /**
  * What the holder of an order link sees (payment page, `/ve/[token]`). Anyone with the
@@ -290,10 +328,12 @@ export const orderDetailSchema = orderListItemSchema.extend({
   consentVersion: z.string(),
   tickets: z.array(
     z.object({
+      id: objectIdSchema,
       code: z.string(),
       ticketTypeName: z.string(),
       status: ticketStatusSchema,
       checkedInAt: isoDateTimeSchema.nullable(),
+      ...ticketSeatShape,
     }),
   ),
   answers: z.array(
@@ -304,6 +344,13 @@ export const orderDetailSchema = orderListItemSchema.extend({
   revision: z.number().int(),
 });
 export type OrderDetail = z.infer<typeof orderDetailSchema>;
+
+/** "Cấp lại QR" of one ticket: the old QR and its share link stop working at once. */
+export const ticketReissueRequestSchema = z.object({
+  /** Email the booker the tickets again, the new QR included. */
+  notifyBuyer: z.boolean().default(false),
+});
+export type TicketReissueRequest = z.infer<typeof ticketReissueRequestSchema>;
 
 /** "Đánh dấu đã hoàn tiền": status only, tickets void, seats back (BR-15). Step-up. */
 export const orderRefundRequestSchema = z.object({

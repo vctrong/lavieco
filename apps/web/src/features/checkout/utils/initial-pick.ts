@@ -1,3 +1,4 @@
+import { maxUnitsOf } from "@lavieco/shared/events";
 import type { PublicTicketType } from "@lavieco/shared/events";
 
 /** `?ve=<ticketTypeId>&sl=<n>` as sent by the ticket box of the event page. */
@@ -16,7 +17,7 @@ export function initialQuantities(
   const ticket = ticketTypes.find((type) => type.id === pick.ve);
   const quantity = Number(pick.sl);
   if (ticket && !ticket.availability.soldOut && Number.isInteger(quantity) && quantity >= 1) {
-    const max = Math.min(ticket.maxPerOrder, ticket.availability.seatsLeft ?? ticket.maxPerOrder);
+    const max = maxUnitsOf(ticket);
     return { [ticket.id]: Math.min(quantity, max) };
   }
   const open = ticketTypes.filter((type) => !type.availability.soldOut);

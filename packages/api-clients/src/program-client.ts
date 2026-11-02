@@ -5,6 +5,7 @@ import {
   orderDetailSchema,
   orderListSchema,
   orderViewSchema,
+  sharedTicketViewSchema,
   payosWebhookResponseSchema,
   registrationListSchema,
   ticketLookupResponseSchema,
@@ -12,6 +13,7 @@ import {
   type OrderCreateRequest,
   type OrderListQuery,
   type OrderRefundRequest,
+  type TicketReissueRequest,
   type RegistrationListQuery,
   eventCancelImpactSchema,
   eventListSchema,
@@ -292,6 +294,14 @@ export function createProgramClient(options: ProgramClientOptions) {
         schema: orderViewSchema,
         requestId,
       }),
+    getSharedTicket: (token: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/ticket-links/${segment(token)}`,
+        auth: service,
+        schema: sharedTicketViewSchema,
+        requestId,
+      }),
     cancelOrderByLink: (token: string, requestId?: string) =>
       http.call({
         method: "POST",
@@ -355,6 +365,20 @@ export function createProgramClient(options: ProgramClientOptions) {
         auth: user(accessToken),
         schema: orderDetailSchema,
         timeoutMs: 20_000,
+        requestId,
+      }),
+    reissueTicketQr: (
+      accessToken: string,
+      ticketId: string,
+      body: TicketReissueRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/orders/tickets/${segment(ticketId)}/reissue-qr`,
+        auth: user(accessToken),
+        body,
+        schema: orderDetailSchema,
         requestId,
       }),
     resendTickets: (accessToken: string, id: string, requestId?: string) =>

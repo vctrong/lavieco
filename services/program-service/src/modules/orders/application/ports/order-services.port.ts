@@ -60,12 +60,20 @@ export interface OrderLinks {
   sign(orderId: string): string;
   /** The order id, or null for anything not signed by us. */
   verify(token: string): string | null;
+  /**
+   * Link to one ticket (`/ve/v/[token]`), signed over its current QR token, so "Cấp lại
+   * QR" also kills a link shared by mistake.
+   */
+  signTicket(ticket: { id: string; qrToken: string }): string;
+  /** The ticket id a token claims; only `verifyTicket` proves it. */
+  ticketIdOf(token: string): string | null;
+  verifyTicket(token: string, ticket: { id: string; qrToken: string }): boolean;
 }
 
 /** Sends the ticket email of a paid order (QR codes embedded, docs/05 §5.3). */
 export interface TicketMailer {
-  /** `resend`: sent again by the team, the email says so. */
-  sendTickets(orderId: string, options?: { resend?: boolean }): Promise<void>;
+  /** `resend`: sent again by the team; `reissued`: a QR changed. The email says so. */
+  sendTickets(orderId: string, options?: { resend?: boolean; reissued?: boolean }): Promise<void>;
   /** The event of this paid order was cancelled: reason, and what happens to the money. */
   sendEventCancelled(orderId: string): Promise<void>;
 }

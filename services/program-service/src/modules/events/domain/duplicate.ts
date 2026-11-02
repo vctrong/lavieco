@@ -41,6 +41,7 @@ export function duplicateOf(
       agenda: source.agenda,
       faq: source.faq,
       posterRatio: source.posterRatio,
+      capacity: source.capacity,
     },
     form: { questions: source.form.questions.map((question) => ({ ...question })) },
     ticketTypes: ticketTypes.map((ticketType) => ({
@@ -48,6 +49,7 @@ export function duplicateOf(
       description: ticketType.description,
       price: ticketType.price,
       quantity: ticketType.quantity,
+      seatsPerUnit: ticketType.seatsPerUnit,
       saleStartAt: ticketType.saleStartAt,
       saleEndAt: ticketType.saleEndAt,
       maxPerOrder: ticketType.maxPerOrder,

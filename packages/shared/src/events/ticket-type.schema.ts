@@ -14,6 +14,8 @@ export const ticketTypeInputSchema = z
     saleStartAt: isoDateTimeSchema.nullable().default(null),
     saleEndAt: isoDateTimeSchema.nullable().default(null),
     maxPerOrder: z.number().int().min(1).max(EVENT_LIMITS.maxPerOrderMax),
+    /** People per unit ("Combo 2 người" = 2). `price`, `quantity`, `maxPerOrder` count units. */
+    seatsPerUnit: z.number().int().min(1).max(EVENT_LIMITS.seatsPerUnitMax).default(1),
     sortOrder: z.number().int().min(0).max(999).default(0),
     hidden: z.boolean().default(false),
   })
@@ -46,6 +48,7 @@ export const ticketTypeSchema = z.object({
   saleStartAt: isoDateTimeSchema.nullable(),
   saleEndAt: isoDateTimeSchema.nullable(),
   maxPerOrder: z.number().int(),
+  seatsPerUnit: z.number().int(),
   sortOrder: z.number().int(),
   hidden: z.boolean(),
   sold: z.number().int(),

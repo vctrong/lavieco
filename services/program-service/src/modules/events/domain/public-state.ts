@@ -23,7 +23,7 @@ export function publicStateOf(
   if (event.status === "closed") return "closed";
   switch (registrationBlocker(event, visibleTicketTypes, now)) {
     case null:
-      return availabilityOf(visibleTicketTypes).seatsLeft === null ? "open" : "few_left";
+      return availabilityOf(visibleTicketTypes, event).seatsLeft === null ? "open" : "few_left";
     case "sold_out":
       return "sold_out";
     case "sale_not_started":

@@ -21,9 +21,13 @@ export const CHECKOUT_ROUTES = {
   checkout: (slug: string) => `/chuong-trinh/${slug}/dang-ky`,
   payment: (token: string) => `/chuong-trinh/thanh-toan/${token}`,
   ticket: (token: string) => `/ve/${token}`,
+  sharedTicket: (token: string) => `/ve/v/${token}`,
   lookup: "/tra-cuu-ve",
   orderStatusApi: (token: string) => `/api/orders/${token}`,
 } as const;
+
+/** Zalo on the web: its button copies the ticket link and opens this to paste it. */
+export const ZALO_WEB_URL = "https://chat.zalo.me/";
 
 /** Signed order link as minted by program-service (`<orderId>.<mac>`). */
 export const ORDER_TOKEN_PATTERN = /^[0-9a-f]{24}\.[A-Za-z0-9_-]{43}$/;

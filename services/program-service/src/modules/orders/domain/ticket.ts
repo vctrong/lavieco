@@ -10,6 +10,10 @@ export type TicketRecord = {
   eventId: string;
   ticketTypeId: string;
   ticketTypeName: string;
+  /** People per unit of the line; with the indexes (from 1): "suất 1 · vé 2/2". */
+  seatsPerUnit: number;
+  unitIndex: number;
+  seatIndex: number;
   status: TicketStatus;
   checkedInAt: Date | null;
   checkedInBy: string | null;
@@ -18,5 +22,13 @@ export type TicketRecord = {
 
 export type NewTicket = Pick<
   TicketRecord,
-  "code" | "qrToken" | "orderId" | "eventId" | "ticketTypeId" | "ticketTypeName"
+  | "code"
+  | "qrToken"
+  | "orderId"
+  | "eventId"
+  | "ticketTypeId"
+  | "ticketTypeName"
+  | "seatsPerUnit"
+  | "unitIndex"
+  | "seatIndex"
 >;

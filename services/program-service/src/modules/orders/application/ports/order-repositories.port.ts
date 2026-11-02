@@ -98,6 +98,9 @@ export interface TicketRepository {
   listByOrders(orderIds: string[]): Promise<Map<string, TicketRecord[]>>;
   /** Voids every valid or used ticket of an order (refund). Returns how many changed. */
   voidByOrder(orderId: string, at: Date, tx: TxContext): Promise<number>;
+  findById(id: string): Promise<TicketRecord | null>;
+  /** New QR for a ticket still valid; the old token stops existing. Null when it is not valid. */
+  replaceQrToken(id: string, qrToken: string, tx: TxContext): Promise<TicketRecord | null>;
   findByQrToken(qrToken: string): Promise<TicketRecord | null>;
   findByCode(code: string): Promise<TicketRecord | null>;
   /** BR-16: `valid → used` for this event only, atomically; null when it was not valid. */

@@ -28,6 +28,18 @@ export async function reconcileOrder(orderId: unknown): Promise<ActionResult<Ord
   );
 }
 
+/** "Cấp lại QR": the old QR and share link of this ticket stop working (audited). */
+export async function reissueTicketQr(
+  ticketId: unknown,
+  notifyBuyer: unknown,
+): Promise<ActionResult<OrderDetail>> {
+  const id = idSchema.safeParse(ticketId);
+  if (!id.success) return { status: "error", reason: "not_found" };
+  return callStaff("orders.reissue_qr", ({ program }, token, requestId) =>
+    program.reissueTicketQr(token, id.data, { notifyBuyer: notifyBuyer === true }, requestId),
+  );
+}
+
 /** "Gửi lại vé": queues the ticket email again (paid orders only). */
 export async function resendTickets(orderId: unknown): Promise<ActionResult> {
   const id = idSchema.safeParse(orderId);

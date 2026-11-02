@@ -227,6 +227,7 @@ async function seedEvent(db: mongo.Db, seed: DevEvent, typeId: Id, now: Date) {
         saleStartAt: ticketType.saleStartAt ? at(now, ticketType.saleStartAt) : null,
         saleEndAt: ticketType.saleEndAt ? at(now, ticketType.saleEndAt) : null,
         maxPerOrder: ticketType.maxPerOrder,
+        seatsPerUnit: 1,
         sortOrder: (index + 1) * 10,
         hidden: ticketType.hidden ?? false,
         sold: counters.get(ticketType.key)!.sold,

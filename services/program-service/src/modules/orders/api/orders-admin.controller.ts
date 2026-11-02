@@ -19,8 +19,10 @@ import {
   orderListQuerySchema,
   orderListSchema,
   orderRefundRequestSchema,
+  ticketReissueRequestSchema,
   type OrderListQuery,
   type OrderRefundRequest,
+  type TicketReissueRequest,
 } from "@lavieco/shared/events";
 import { STEP_UP_HEADER } from "@lavieco/shared/identity";
 
@@ -75,6 +77,24 @@ export class OrdersAdminController {
   @ApiZodResponse(204)
   async resend(@Param("id", idPipe) id: string) {
     await this.orders.resendTickets(id);
+  }
+
+  @Post("tickets/:ticketId/reissue-qr")
+  @HttpCode(200)
+  @RequirePermission("order:refund")
+  @ApiOperation({ summary: "Cấp lại QR: the old QR and share link of this ticket stop working" })
+  @ApiZodResponse(200, orderDetailSchema)
+  async reissueQr(
+    @Param("ticketId", idPipe) ticketId: string,
+    @ZodBody(ticketReissueRequestSchema) body: TicketReissueRequest,
+    @CurrentPrincipal() staff: StaffPrincipal,
+  ) {
+    const detail = await this.orders.reissueQr(ticketId, body, {
+      userId: staff.userId,
+      roles: staff.roles,
+      requestId: currentRequestId() ?? null,
+    });
+    return toOrderDetailDto(detail);
   }
 
   @Post(":id/refund")

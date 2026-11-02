@@ -111,6 +111,10 @@ export const eventSchema = new Schema(
     /** Poster, at `posterRatio`. */
     cover: { type: imageSchema, default: null },
     posterRatio: { type: String, enum: EVENT_POSTER_RATIOS, default: "4:5" },
+    /** Shared limit in people; null = none. The counters only move with orders. */
+    capacity: { type: Number, default: null },
+    seatsSold: { type: Number, required: true, default: 0 },
+    seatsHeld: { type: Number, required: true, default: 0 },
     /** Banner, 21:9. */
     banner: { type: imageSchema, default: null },
     /** ≤ MEDIA_LIMITS.eventGalleryMax (12), enforced by the shared contract. */

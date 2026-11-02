@@ -119,6 +119,9 @@ function toSharedFields(doc: Partial<EventDoc> & { _id: Types.ObjectId }) {
     faq: doc.faq ?? [],
     cover: toImageOrNull(doc.cover),
     posterRatio: doc.posterRatio ?? "4:5",
+    capacity: doc.capacity ?? null,
+    seatsSold: doc.seatsSold ?? 0,
+    seatsHeld: doc.seatsHeld ?? 0,
     banner: toImageOrNull(doc.banner),
     gallery: (doc.gallery ?? []).map(toImage),
     attendance: {
@@ -192,6 +195,8 @@ export class MongoEventRepository implements EventRepository {
             cover: images.cover,
             banner: images.banner,
             gallery: images.gallery,
+            seatsSold: 0,
+            seatsHeld: 0,
             attendance: input.attendance,
             cancellation: null,
             form: input.form,
@@ -316,6 +321,37 @@ export class MongoEventRepository implements EventRepository {
         updatedBy: actor,
       },
       tx,
+    );
+  }
+
+  async takeSeats(id: string, people: number, into: "held" | "sold", tx: TxContext) {
+    const result = await this.model.updateOne(
+      {
+        _id: new Types.ObjectId(id),
+        $or: [
+          { capacity: null },
+          { $expr: { $lte: [{ $add: ["$seatsSold", "$seatsHeld", people] }, "$capacity"] } },
+        ],
+      },
+      { $inc: { [into === "held" ? "seatsHeld" : "seatsSold"]: people } },
+      { session: sessionOf(tx) },
+    );
+    return result.modifiedCount === 1;
+  }
+
+  async convertHeldSeats(id: string, people: number, tx: TxContext) {
+    await this.model.updateOne(
+      { _id: new Types.ObjectId(id) },
+      { $inc: { seatsHeld: -people, seatsSold: people } },
+      { session: sessionOf(tx) },
+    );
+  }
+
+  async releaseSeats(id: string, people: number, from: "held" | "sold", tx: TxContext) {
+    await this.model.updateOne(
+      { _id: new Types.ObjectId(id) },
+      { $inc: { [from === "held" ? "seatsHeld" : "seatsSold"]: -people } },
+      { session: sessionOf(tx) },
     );
   }
 

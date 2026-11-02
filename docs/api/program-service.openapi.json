@@ -1046,6 +1046,13 @@
                       ]
                     }
                   },
+                  "capacity": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100000
+                  },
                   "cover": {
                     "default": null,
                     "nullable": true,
@@ -1733,6 +1740,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -1767,6 +1779,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -1775,6 +1788,17 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatsTaken": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "pricing": {
                       "type": "object",
@@ -1911,6 +1935,8 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "capacity",
+                    "seatsTaken",
                     "pricing",
                     "hasRegistrations",
                     "readiness",
@@ -2540,6 +2566,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -2574,6 +2605,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -2582,6 +2614,17 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatsTaken": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "pricing": {
                       "type": "object",
@@ -2718,6 +2761,8 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "capacity",
+                    "seatsTaken",
                     "pricing",
                     "hasRegistrations",
                     "readiness",
@@ -3023,6 +3068,13 @@
                         "answer"
                       ]
                     }
+                  },
+                  "capacity": {
+                    "default": null,
+                    "nullable": true,
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 100000
                   },
                   "cover": {
                     "default": null,
@@ -3709,6 +3761,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -3743,6 +3800,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -3751,6 +3809,17 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatsTaken": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "pricing": {
                       "type": "object",
@@ -3887,6 +3956,8 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "capacity",
+                    "seatsTaken",
                     "pricing",
                     "hasRegistrations",
                     "readiness",
@@ -4608,6 +4679,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -4642,6 +4718,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -4650,6 +4727,17 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatsTaken": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "pricing": {
                       "type": "object",
@@ -4786,6 +4874,8 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "capacity",
+                    "seatsTaken",
                     "pricing",
                     "hasRegistrations",
                     "readiness",
@@ -5446,6 +5536,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -5480,6 +5575,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -5488,6 +5584,17 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatsTaken": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "pricing": {
                       "type": "object",
@@ -5624,6 +5731,8 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "capacity",
+                    "seatsTaken",
                     "pricing",
                     "hasRegistrations",
                     "readiness",
@@ -6273,6 +6382,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -6307,6 +6421,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -6315,6 +6430,17 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatsTaken": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "pricing": {
                       "type": "object",
@@ -6451,6 +6577,8 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "capacity",
+                    "seatsTaken",
                     "pricing",
                     "hasRegistrations",
                     "readiness",
@@ -7080,6 +7208,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -7114,6 +7247,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -7122,6 +7256,17 @@
                         ],
                         "additionalProperties": false
                       }
+                    },
+                    "capacity": {
+                      "nullable": true,
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatsTaken": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
                     },
                     "pricing": {
                       "type": "object",
@@ -7258,6 +7403,8 @@
                     "cancellation",
                     "form",
                     "ticketTypes",
+                    "capacity",
+                    "seatsTaken",
                     "pricing",
                     "hasRegistrations",
                     "readiness",
@@ -7453,6 +7600,11 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "sortOrder": {
                             "type": "integer",
                             "minimum": -9007199254740991,
@@ -7487,6 +7639,7 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
                           "sortOrder",
                           "hidden",
                           "sold",
@@ -7575,6 +7728,12 @@
                     "minimum": 1,
                     "maximum": 20
                   },
+                  "seatsPerUnit": {
+                    "default": 1,
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  },
                   "sortOrder": {
                     "default": 0,
                     "type": "integer",
@@ -7646,6 +7805,11 @@
                       "minimum": -9007199254740991,
                       "maximum": 9007199254740991
                     },
+                    "seatsPerUnit": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "sortOrder": {
                       "type": "integer",
                       "minimum": -9007199254740991,
@@ -7680,6 +7844,7 @@
                     "saleStartAt",
                     "saleEndAt",
                     "maxPerOrder",
+                    "seatsPerUnit",
                     "sortOrder",
                     "hidden",
                     "sold",
@@ -7771,6 +7936,12 @@
                     "minimum": 1,
                     "maximum": 20
                   },
+                  "seatsPerUnit": {
+                    "default": 1,
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 10
+                  },
                   "sortOrder": {
                     "default": 0,
                     "type": "integer",
@@ -7848,6 +8019,11 @@
                       "minimum": -9007199254740991,
                       "maximum": 9007199254740991
                     },
+                    "seatsPerUnit": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
                     "sortOrder": {
                       "type": "integer",
                       "minimum": -9007199254740991,
@@ -7882,6 +8058,7 @@
                     "saleStartAt",
                     "saleEndAt",
                     "maxPerOrder",
+                    "seatsPerUnit",
                     "sortOrder",
                     "hidden",
                     "sold",
@@ -8862,6 +9039,17 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitsLeft": {
+                            "nullable": true,
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "availability": {
                             "type": "object",
                             "properties": {
@@ -8890,6 +9078,8 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
+                          "unitsLeft",
                           "availability"
                         ],
                         "additionalProperties": false
@@ -9605,6 +9795,17 @@
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitsLeft": {
+                            "nullable": true,
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "availability": {
                             "type": "object",
                             "properties": {
@@ -9633,6 +9834,8 @@
                           "saleStartAt",
                           "saleEndAt",
                           "maxPerOrder",
+                          "seatsPerUnit",
+                          "unitsLeft",
                           "availability"
                         ],
                         "additionalProperties": false
@@ -10121,13 +10324,19 @@
                                 "type": "integer",
                                 "minimum": -9007199254740991,
                                 "maximum": 9007199254740991
+                              },
+                              "seatsPerUnit": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
                               }
                             },
                             "required": [
                               "ticketTypeId",
                               "name",
                               "unitPrice",
-                              "quantity"
+                              "quantity",
+                              "seatsPerUnit"
                             ],
                             "additionalProperties": false
                           }
@@ -10200,6 +10409,25 @@
                                 "type": "string",
                                 "format": "date-time",
                                 "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                              },
+                              "seatsPerUnit": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "unitIndex": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "seatIndex": {
+                                "type": "integer",
+                                "minimum": -9007199254740991,
+                                "maximum": 9007199254740991
+                              },
+                              "shareToken": {
+                                "nullable": true,
+                                "type": "string"
                               }
                             },
                             "required": [
@@ -10207,7 +10435,11 @@
                               "ticketTypeName",
                               "status",
                               "qrToken",
-                              "checkedInAt"
+                              "checkedInAt",
+                              "seatsPerUnit",
+                              "unitIndex",
+                              "seatIndex",
+                              "shareToken"
                             ],
                             "additionalProperties": false
                           }
@@ -10642,13 +10874,19 @@
                             "type": "integer",
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
                           "ticketTypeId",
                           "name",
                           "unitPrice",
-                          "quantity"
+                          "quantity",
+                          "seatsPerUnit"
                         ],
                         "additionalProperties": false
                       }
@@ -10721,6 +10959,25 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "shareToken": {
+                            "nullable": true,
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -10728,7 +10985,11 @@
                           "ticketTypeName",
                           "status",
                           "qrToken",
-                          "checkedInAt"
+                          "checkedInAt",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex",
+                          "shareToken"
                         ],
                         "additionalProperties": false
                       }
@@ -10935,13 +11196,19 @@
                             "type": "integer",
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
                           "ticketTypeId",
                           "name",
                           "unitPrice",
-                          "quantity"
+                          "quantity",
+                          "seatsPerUnit"
                         ],
                         "additionalProperties": false
                       }
@@ -11014,6 +11281,25 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "shareToken": {
+                            "nullable": true,
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -11021,7 +11307,11 @@
                           "ticketTypeName",
                           "status",
                           "qrToken",
-                          "checkedInAt"
+                          "checkedInAt",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex",
+                          "shareToken"
                         ],
                         "additionalProperties": false
                       }
@@ -11228,13 +11518,19 @@
                             "type": "integer",
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
                           "ticketTypeId",
                           "name",
                           "unitPrice",
-                          "quantity"
+                          "quantity",
+                          "seatsPerUnit"
                         ],
                         "additionalProperties": false
                       }
@@ -11307,6 +11603,25 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "shareToken": {
+                            "nullable": true,
+                            "type": "string"
                           }
                         },
                         "required": [
@@ -11314,7 +11629,11 @@
                           "ticketTypeName",
                           "status",
                           "qrToken",
-                          "checkedInAt"
+                          "checkedInAt",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex",
+                          "shareToken"
                         ],
                         "additionalProperties": false
                       }
@@ -11348,6 +11667,170 @@
           }
         ],
         "summary": "Back from payOS with the order still pending: ask payOS (throttled, display only)",
+        "tags": [
+          "orders"
+        ]
+      }
+    },
+    "/internal/v1/ticket-links/{token}": {
+      "get": {
+        "operationId": "OrdersPublicController_sharedTicket",
+        "parameters": [
+          {
+            "name": "token",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string"
+                    },
+                    "ticketTypeName": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "valid",
+                        "used",
+                        "void"
+                      ]
+                    },
+                    "qrToken": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "checkedInAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "seatsPerUnit": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "unitIndex": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "seatIndex": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "slug": {
+                          "type": "string"
+                        },
+                        "title": {
+                          "type": "string"
+                        },
+                        "format": {
+                          "type": "string",
+                          "enum": [
+                            "offline",
+                            "online"
+                          ]
+                        },
+                        "startAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "endAt": {
+                          "type": "string",
+                          "format": "date-time",
+                          "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "venue": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "name": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 160
+                            },
+                            "address": {
+                              "type": "string",
+                              "minLength": 1,
+                              "maxLength": 300
+                            },
+                            "mapUrl": {
+                              "default": null,
+                              "nullable": true,
+                              "type": "string",
+                              "maxLength": 500,
+                              "format": "uri"
+                            }
+                          },
+                          "required": [
+                            "name",
+                            "address",
+                            "mapUrl"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "onlineUrl": {
+                          "nullable": true,
+                          "type": "string"
+                        },
+                        "safetyNotes": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "slug",
+                        "title",
+                        "format",
+                        "startAt",
+                        "endAt",
+                        "venue",
+                        "onlineUrl",
+                        "safetyNotes"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "ticketTypeName",
+                    "status",
+                    "qrToken",
+                    "checkedInAt",
+                    "seatsPerUnit",
+                    "unitIndex",
+                    "seatIndex",
+                    "event"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "One shared ticket: its QR and the event, nothing about the booker",
         "tags": [
           "orders"
         ]
@@ -11611,13 +12094,19 @@
                             "type": "integer",
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
                           "ticketTypeId",
                           "name",
                           "unitPrice",
-                          "quantity"
+                          "quantity",
+                          "seatsPerUnit"
                         ],
                         "additionalProperties": false
                       }
@@ -11653,6 +12142,10 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
                           "code": {
                             "type": "string"
                           },
@@ -11672,13 +12165,32 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
+                          "id",
                           "code",
                           "ticketTypeName",
                           "status",
-                          "checkedInAt"
+                          "checkedInAt",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex"
                         ],
                         "additionalProperties": false
                       }
@@ -11963,13 +12475,19 @@
                             "type": "integer",
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
                           "ticketTypeId",
                           "name",
                           "unitPrice",
-                          "quantity"
+                          "quantity",
+                          "seatsPerUnit"
                         ],
                         "additionalProperties": false
                       }
@@ -12005,6 +12523,10 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
                           "code": {
                             "type": "string"
                           },
@@ -12024,13 +12546,32 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
+                          "id",
                           "code",
                           "ticketTypeName",
                           "status",
-                          "checkedInAt"
+                          "checkedInAt",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex"
                         ],
                         "additionalProperties": false
                       }
@@ -12200,6 +12741,403 @@
           }
         ],
         "summary": "Gửi lại vé: email the tickets of a paid order again",
+        "tags": [
+          "orders-admin"
+        ]
+      }
+    },
+    "/internal/v1/orders/tickets/{ticketId}/reissue-qr": {
+      "post": {
+        "operationId": "OrdersAdminController_reissueQr",
+        "parameters": [
+          {
+            "name": "ticketId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notifyBuyer": {
+                    "default": false,
+                    "type": "boolean"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "pattern": "^[0-9a-f]{24}$"
+                    },
+                    "orderCode": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "event": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[0-9a-f]{24}$"
+                        },
+                        "title": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "title"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "buyer": {
+                      "type": "object",
+                      "properties": {
+                        "fullName": {
+                          "type": "string"
+                        },
+                        "email": {
+                          "type": "string"
+                        },
+                        "phone": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "fullName",
+                        "email",
+                        "phone"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "amount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "paid",
+                        "expired",
+                        "cancelled",
+                        "refunded"
+                      ]
+                    },
+                    "ticketCount": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "flags": {
+                      "type": "object",
+                      "properties": {
+                        "refundRequired": {
+                          "type": "boolean"
+                        },
+                        "amountMismatch": {
+                          "type": "boolean"
+                        },
+                        "latePayment": {
+                          "type": "boolean"
+                        }
+                      },
+                      "required": [
+                        "refundRequired",
+                        "amountMismatch",
+                        "latePayment"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "paidAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "ticketTypeId": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "unitPrice": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "quantity": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "ticketTypeId",
+                          "name",
+                          "unitPrice",
+                          "quantity",
+                          "seatsPerUnit"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "expiresAt": {
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "cancelledAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "refundedAt": {
+                      "nullable": true,
+                      "type": "string",
+                      "format": "date-time",
+                      "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                    },
+                    "refundNote": {
+                      "type": "string"
+                    },
+                    "note": {
+                      "type": "string"
+                    },
+                    "consentVersion": {
+                      "type": "string"
+                    },
+                    "tickets": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
+                          "code": {
+                            "type": "string"
+                          },
+                          "ticketTypeName": {
+                            "type": "string"
+                          },
+                          "status": {
+                            "type": "string",
+                            "enum": [
+                              "valid",
+                              "used",
+                              "void"
+                            ]
+                          },
+                          "checkedInAt": {
+                            "nullable": true,
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "code",
+                          "ticketTypeName",
+                          "status",
+                          "checkedInAt",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "answers": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "questionId": {
+                            "type": "string",
+                            "format": "uuid",
+                            "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                          },
+                          "label": {
+                            "type": "string"
+                          },
+                          "hidden": {
+                            "type": "boolean"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "questionId",
+                          "label",
+                          "hidden",
+                          "value"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "payments": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "source": {
+                            "type": "string",
+                            "enum": [
+                              "webhook",
+                              "reconcile"
+                            ]
+                          },
+                          "amount": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "reference": {
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "transactionAt": {
+                            "nullable": true,
+                            "type": "string"
+                          },
+                          "outcome": {
+                            "type": "string",
+                            "enum": [
+                              "paid",
+                              "duplicate",
+                              "amount_mismatch",
+                              "refund_required",
+                              "unknown_order"
+                            ]
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "source",
+                          "amount",
+                          "reference",
+                          "transactionAt",
+                          "outcome",
+                          "createdAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    },
+                    "payos": {
+                      "type": "object",
+                      "properties": {
+                        "paymentLinkId": {
+                          "nullable": true,
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "paymentLinkId"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "revision": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "orderCode",
+                    "event",
+                    "buyer",
+                    "amount",
+                    "status",
+                    "ticketCount",
+                    "flags",
+                    "createdAt",
+                    "paidAt",
+                    "items",
+                    "expiresAt",
+                    "cancelledAt",
+                    "refundedAt",
+                    "refundNote",
+                    "note",
+                    "consentVersion",
+                    "tickets",
+                    "answers",
+                    "payments",
+                    "payos",
+                    "revision"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Cấp lại QR: the old QR and share link of this ticket stop working",
         "tags": [
           "orders-admin"
         ]
@@ -12379,13 +13317,19 @@
                             "type": "integer",
                             "minimum": -9007199254740991,
                             "maximum": 9007199254740991
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
                           "ticketTypeId",
                           "name",
                           "unitPrice",
-                          "quantity"
+                          "quantity",
+                          "seatsPerUnit"
                         ],
                         "additionalProperties": false
                       }
@@ -12421,6 +13365,10 @@
                       "items": {
                         "type": "object",
                         "properties": {
+                          "id": {
+                            "type": "string",
+                            "pattern": "^[0-9a-f]{24}$"
+                          },
                           "code": {
                             "type": "string"
                           },
@@ -12440,13 +13388,32 @@
                             "type": "string",
                             "format": "date-time",
                             "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
                           }
                         },
                         "required": [
+                          "id",
                           "code",
                           "ticketTypeName",
                           "status",
-                          "checkedInAt"
+                          "checkedInAt",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex"
                         ],
                         "additionalProperties": false
                       }
@@ -12906,13 +13873,31 @@
                           "type": "string",
                           "format": "date-time",
                           "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                        },
+                        "seatsPerUnit": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "unitIndex": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "seatIndex": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
                         }
                       },
                       "required": [
                         "code",
                         "ticketTypeName",
                         "buyerName",
-                        "checkedInAt"
+                        "checkedInAt",
+                        "seatsPerUnit",
+                        "unitIndex",
+                        "seatIndex"
                       ],
                       "additionalProperties": false
                     },
@@ -13134,6 +14119,21 @@
                               "void"
                             ]
                           },
+                          "seatsPerUnit": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "unitIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
+                          "seatIndex": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          },
                           "checkedInAt": {
                             "nullable": true,
                             "type": "string",
@@ -13161,6 +14161,9 @@
                           "ticketCode",
                           "ticketTypeName",
                           "ticketStatus",
+                          "seatsPerUnit",
+                          "unitIndex",
+                          "seatIndex",
                           "checkedInAt",
                           "registeredAt",
                           "answers"

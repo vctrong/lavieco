@@ -35,6 +35,7 @@ export class OrderJobHandlers implements OnModuleInit {
     this.worker.register(SEND_TICKETS_JOB, async (payload) => {
       await this.mailer.sendTickets(String(payload.orderId), {
         resend: payload.resend === true,
+        reissued: payload.reissued === true,
       });
     });
     this.worker.register(SEND_EVENT_CANCELLED_JOB, async (payload) => {

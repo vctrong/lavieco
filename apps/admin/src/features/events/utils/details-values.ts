@@ -41,6 +41,7 @@ export type DetailsValues = {
   cancellationRules: { condition: string; result: string }[];
   /** Digits only, "" = not stated. */
   minAge: string;
+  capacity: string;
   benefits: BenefitValue[];
   forChildren: boolean;
   speakers: SpeakerValue[];
@@ -73,6 +74,7 @@ export function emptyDetails(typeId: string): DetailsValues {
     cancellationPolicy: "",
     cancellationRules: [],
     minAge: "",
+    capacity: "",
     benefits: [],
     forChildren: false,
     speakers: [],
@@ -105,6 +107,7 @@ export function detailsOf(event: EventView): DetailsValues {
     cancellationPolicy: event.cancellationPolicy,
     cancellationRules: event.cancellationRules.map((rule) => ({ ...rule })),
     minAge: event.minAge === null ? "" : String(event.minAge),
+    capacity: event.capacity === null ? "" : String(event.capacity),
     benefits: event.benefits.map((benefit) => ({ ...benefit })),
     forChildren: event.forChildren,
     speakers: event.speakers.map((speaker) => ({
@@ -172,6 +175,7 @@ export function toDetailsRequest(values: DetailsValues) {
     cancellationPolicy: values.cancellationPolicy,
     cancellationRules: values.cancellationRules,
     minAge: optionalInt(values.minAge),
+    capacity: optionalInt(values.capacity),
     benefits: values.benefits,
     forChildren: values.forChildren,
     // Only the media id and alt: program-service takes the file details from content-service.

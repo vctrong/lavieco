@@ -117,6 +117,9 @@ export const TEXT = {
         descriptionHint: "Cách đoạn bằng một dòng trống.",
         cover: "Ảnh poster",
         banner: "Ảnh banner (21:9)",
+        capacity: "Sức chứa chung (số người)",
+        capacityHint:
+          "Để trống nếu không giới hạn chung. Mọi loại vé cùng trừ vào đây theo số người.",
         minAge: "Độ tuổi phù hợp (từ)",
         minAgeHint: "Để trống nếu không giới hạn.",
         speakerBio: "Giới thiệu ngắn",
@@ -191,6 +194,9 @@ export const TEXT = {
       quantity: "Số lượng",
       quantityHint: "Trống = không giới hạn",
       maxPerOrder: "Tối đa mỗi đơn",
+      seatsPerUnit: "Số người mỗi suất",
+      seatsPerUnitHint: "1 suất = N người, phát N vé và N mã QR. Giá và số lượng tính theo suất.",
+      combo: (people: number) => `Combo ${people} người`,
       saleStartAt: "Mở bán từ",
       saleEndAt: "Đến",
       hidden: "Ẩn khỏi website",
@@ -371,6 +377,7 @@ export const TEXT = {
       type_name_taken: "Đã có loại chương trình cùng tên.",
       online_url_locked:
         "Chương trình trực tuyến đã bán vé: chỉ được đổi sang link khác, không được xoá link hay chuyển sang trực tiếp.",
+      capacity_below_taken: "Sức chứa chung không được thấp hơn số người đã giữ chỗ hoặc đã mua.",
       media_unavailable: "Một ảnh đã hết hạn hoặc không còn dùng được. Gỡ ảnh đó, tải lại rồi lưu.",
       step_up_required: "Cần nhập mã xác thực 2 lớp để huỷ chương trình.",
       code_invalid: "Mã xác thực không đúng hoặc đã hết hạn.",

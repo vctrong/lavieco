@@ -38,6 +38,9 @@ export function fakeEvent(overrides: Partial<EventRecord> = {}): EventRecord {
     faq: [],
     cover: null,
     posterRatio: "4:5",
+    capacity: null,
+    seatsSold: 0,
+    seatsHeld: 0,
     banner: null,
     gallery: [],
     attendance: { count: null, approvedAt: null, approvedBy: null },
@@ -70,7 +73,15 @@ export function fakeOrder(overrides: Partial<OrderRecord> = {}): OrderRecord {
       phoneNormalized: "+84901234567",
       isGuardian: false,
     },
-    items: [{ ticketTypeId: "t1", name: "Vé tiêu chuẩn", unitPrice: 150_000, quantity: 1 }],
+    items: [
+      {
+        ticketTypeId: "t1",
+        name: "Vé tiêu chuẩn",
+        unitPrice: 150_000,
+        quantity: 1,
+        seatsPerUnit: 1,
+      },
+    ],
     amount: 150_000,
     status: "paid",
     seatState: "sold",
@@ -108,6 +119,9 @@ export function fakeTickets(names: readonly string[]): TicketRecord[] {
       eventId: "64b7f0c2a1b2c3d4e5f60720",
       ticketTypeId: `t${index}`,
       ticketTypeName,
+      seatsPerUnit: 1,
+      unitIndex: 1,
+      seatIndex: 1,
       status: "valid",
       checkedInAt: null,
       checkedInBy: null,
@@ -129,6 +143,7 @@ const input = (
   event,
   tickets,
   ticketPageUrl: `${WEB}/ve/fake-signed-token`,
+  ticketShareUrl: (ticket) => `${WEB}/ve/v/fake-share-${ticket.code}`,
   webAppUrl: WEB,
   ...extra,
 });
@@ -137,12 +152,14 @@ const input = (
 export function ticketEmailCases(): { name: string; input: TicketEmailInput }[] {
   const many = fakeTickets(["Vé người lớn", "Vé người lớn", "Vé trẻ em"]);
   const manyItems = [
-    { ticketTypeId: "t0", name: "Vé người lớn", unitPrice: 150_000, quantity: 2 },
-    { ticketTypeId: "t2", name: "Vé trẻ em", unitPrice: 80_000, quantity: 1 },
+    { ticketTypeId: "t0", name: "Vé người lớn", unitPrice: 150_000, quantity: 2, seatsPerUnit: 1 },
+    { ticketTypeId: "t2", name: "Vé trẻ em", unitPrice: 80_000, quantity: 1, seatsPerUnit: 1 },
   ];
   const free = {
     amount: 0,
-    items: [{ ticketTypeId: "t0", name: "Vé miễn phí", unitPrice: 0, quantity: 1 }],
+    items: [
+      { ticketTypeId: "t0", name: "Vé miễn phí", unitPrice: 0, quantity: 1, seatsPerUnit: 1 },
+    ],
   };
   const online = fakeEvent({
     title: "Talkshow: nghệ thuật từ phế liệu",
@@ -188,6 +205,35 @@ export function ticketEmailCases(): { name: string; input: TicketEmailInput }[] 
       ),
     },
     {
+      name: "reissued-qr",
+      input: input(fakeOrder({ items: manyItems, amount: 380_000 }), fakeEvent(), many, {
+        reissued: true,
+      }),
+    },
+    {
+      name: "combo-two-people",
+      input: input(
+        fakeOrder({
+          items: [
+            {
+              ticketTypeId: "t0",
+              name: "Combo 2 người",
+              unitPrice: 180_000,
+              quantity: 1,
+              seatsPerUnit: 2,
+            },
+          ],
+          amount: 180_000,
+        }),
+        fakeEvent(),
+        fakeTickets(["Combo 2 người", "Combo 2 người"]).map((ticket, index) => ({
+          ...ticket,
+          seatsPerUnit: 2,
+          seatIndex: index + 1,
+        })),
+      ),
+    },
+    {
       name: "resend-paid-offline-many",
       input: input(fakeOrder({ items: manyItems, amount: 380_000 }), fakeEvent(), many, {
         resend: true,
@@ -197,7 +243,15 @@ export function ticketEmailCases(): { name: string; input: TicketEmailInput }[] 
       name: "multi-day-twenty-tickets",
       input: input(
         fakeOrder({
-          items: [{ ticketTypeId: "t0", name: "Vé tiêu chuẩn", unitPrice: 150_000, quantity: 20 }],
+          items: [
+            {
+              ticketTypeId: "t0",
+              name: "Vé tiêu chuẩn",
+              unitPrice: 150_000,
+              quantity: 20,
+              seatsPerUnit: 1,
+            },
+          ],
           amount: 3_000_000,
         }),
         fakeEvent({

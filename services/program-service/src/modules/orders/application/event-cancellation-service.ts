@@ -13,6 +13,7 @@ import type { TicketTypeRepository } from "../../ticketing";
 import type { OrderRecord } from "../domain/order";
 import type { StaffActor } from "./order-admin-service";
 import { CANCEL_PAYMENT_LINK_JOB, SEND_EVENT_CANCELLED_JOB } from "./order-jobs";
+import { releaseSeats } from "./seats";
 import type { OrderRepository, TicketRepository } from "./ports/order-repositories.port";
 
 /**
@@ -114,9 +115,7 @@ export class EventCancellationService {
       tx,
     );
     if (!cancelled) throw new DomainError("common.conflict");
-    for (const item of order.items) {
-      await this.ticketTypes.release(item.ticketTypeId, item.quantity, "held", tx);
-    }
+    await releaseSeats({ ticketTypes: this.ticketTypes, events: this.events }, order, "held", tx);
     if (order.payment) {
       await this.outbox.enqueue(tx, {
         type: CANCEL_PAYMENT_LINK_JOB,

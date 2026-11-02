@@ -6,7 +6,14 @@ import type {
   TicketType,
 } from "@lavieco/shared/events";
 
-import { availabilityOf, priceRangeOf, seatsOf, type TicketTypeRecord } from "../../ticketing";
+import {
+  availabilityOf,
+  priceRangeOf,
+  seatsOf,
+  unitsLeftOf,
+  type EventSeatCounters,
+  type TicketTypeRecord,
+} from "../../ticketing";
 import type { EventSnapshot } from "../application/event-snapshot";
 import type {
   PublicEventBundle,
@@ -16,8 +23,19 @@ import type { EventRecord } from "../domain/event";
 
 const iso = (date: Date | null) => (date ? date.toISOString() : null);
 
+/**
+ * Only when few seats remain (or none): the exact counters stay private otherwise, and
+ * the checkout's atomic update has the last word anyway.
+ */
+function publicUnitsLeft(ticketType: TicketTypeRecord, event: EventSeatCounters) {
+  const { soldOut, seatsLeft } = availabilityOf([ticketType], event);
+  if (soldOut) return 0;
+  return seatsLeft === null ? null : unitsLeftOf(ticketType, event);
+}
+
 export function toTicketTypeDto(record: TicketTypeRecord): TicketType {
   return {
+    seatsPerUnit: record.seatsPerUnit,
     id: record.id,
     eventId: record.eventId,
     name: record.name,
@@ -65,6 +83,8 @@ export function toEventDto(snapshot: EventSnapshot): EventView {
     posterRatio: event.posterRatio,
     banner: event.banner,
     gallery: event.gallery,
+    capacity: event.capacity,
+    seatsTaken: event.seatsSold + event.seatsHeld,
     attendance: {
       count: event.attendance.count,
       approvedAt: iso(event.attendance.approvedAt),
@@ -105,7 +125,7 @@ export function toEventListItemDto(
     cover: event.cover,
     posterRatio: event.posterRatio,
     pricing: event.pricing,
-    seats: seatsOf(ticketTypes),
+    seats: seatsOf(ticketTypes, event),
     updatedAt: event.updatedAt.toISOString(),
   };
 }
@@ -137,7 +157,7 @@ export function toPublicCardDto({
     banner: event.banner,
     pricing: event.pricing,
     price: priceRangeOf(ticketTypes),
-    availability: availabilityOf(ticketTypes),
+    availability: availabilityOf(ticketTypes, event),
   };
 }
 
@@ -182,7 +202,9 @@ export function toPublicDetailDto(bundle: PublicEventDetailBundle): PublicEventD
       saleStartAt: iso(ticketType.saleStartAt),
       saleEndAt: iso(ticketType.saleEndAt),
       maxPerOrder: ticketType.maxPerOrder,
-      availability: availabilityOf([ticketType]),
+      seatsPerUnit: ticketType.seatsPerUnit,
+      unitsLeft: publicUnitsLeft(ticketType, event),
+      availability: availabilityOf([ticketType], event),
     })),
     registration: {
       open: registration.blocker === null,

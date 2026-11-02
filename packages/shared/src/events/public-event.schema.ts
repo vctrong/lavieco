@@ -21,7 +21,7 @@ import {
   eventSpeakerSchema,
 } from "./event.schema";
 import { publicEventTypeSchema } from "./event-type.schema";
-import { registrationBlockerSchema } from "./order.schema";
+import { ORDER_LIMITS, registrationBlockerSchema } from "./order.schema";
 
 /**
  * Seat information shown publicly: `seatsLeft` is only given when few seats remain
@@ -74,9 +74,21 @@ export const publicTicketTypeSchema = z.object({
   saleStartAt: isoDateTimeSchema.nullable(),
   saleEndAt: isoDateTimeSchema.nullable(),
   maxPerOrder: z.number().int(),
+  /** People per unit; `price` is per unit, `availability` counts people. */
+  seatsPerUnit: z.number().int(),
+  /** Units left, event capacity included, given only when few remain; null otherwise. */
+  unitsLeft: z.number().int().nullable(),
   availability: publicAvailabilitySchema,
 });
 export type PublicTicketType = z.infer<typeof publicTicketTypeSchema>;
+
+/** Most units one order can pick: the type's limit, the people cap, what is left. */
+export function maxUnitsOf(
+  ticket: Pick<PublicTicketType, "maxPerOrder" | "seatsPerUnit" | "unitsLeft">,
+): number {
+  const byPeople = Math.floor(ORDER_LIMITS.ticketsPerOrderMax / ticket.seatsPerUnit);
+  return Math.min(ticket.maxPerOrder, byPeople, ticket.unitsLeft ?? ticket.maxPerOrder);
+}
 
 /** A visible custom question as the checkout renders it (hidden ones never leave the service). */
 export const publicFormQuestionSchema = z.object({

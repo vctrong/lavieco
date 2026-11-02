@@ -8,6 +8,7 @@ import { can } from "@lavieco/shared/permissions";
 import { TEXT } from "../constants/text";
 import { formatDateTime, formatVnd } from "../utils/format";
 import { OrderActions } from "./order-actions";
+import { ReissueQr } from "./reissue-qr";
 import { OrderStatusBadge } from "./order-status-badge";
 import { PageHeader } from "./page-header";
 
@@ -94,11 +95,21 @@ export function OrderDetailPage({ order, staff }: { order: OrderDetail; staff: S
                         {ticket.code}
                       </span>
                       <span className="ml-2 text-charcoal/65">{ticket.ticketTypeName}</span>
+                      {ticket.seatsPerUnit > 1 ? (
+                        <span className="ml-2 text-[12px] text-charcoal/60">
+                          {t.detail.combo(ticket.seatsPerUnit, ticket.unitIndex, ticket.seatIndex)}
+                        </span>
+                      ) : null}
                     </span>
-                    <span className="text-[12.5px] text-charcoal/70">
+                    <span className="flex items-center gap-3 text-[12.5px] text-charcoal/70">
                       {ticket.checkedInAt
                         ? t.detail.checkedInAt(formatDateTime(ticket.checkedInAt))
                         : t.ticketStatus[ticket.status]}
+                      {can(staff, "order:refund") &&
+                      order.status === "paid" &&
+                      ticket.status === "valid" ? (
+                        <ReissueQr ticketId={ticket.id} code={ticket.code} />
+                      ) : null}
                     </span>
                   </li>
                 ))}

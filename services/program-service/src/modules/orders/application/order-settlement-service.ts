@@ -6,6 +6,7 @@ import { REVALIDATE_EVENT_JOB, type EventRepository } from "../../events";
 import type { TicketTypeRepository } from "../../ticketing";
 import { planSettlement, type OrderRecord } from "../domain/order";
 import { issueAndSend } from "./order-jobs";
+import { convertHeldSeats, takeSeats } from "./seats";
 import type {
   OrderRepository,
   PaymentEventRepository,
@@ -135,11 +136,10 @@ export class OrderSettlementService {
           tx,
         );
         if (!paid) throw new SettlementRace();
-        for (const item of paid.items) {
-          if (!(await this.ticketTypes.convertHeld(item.ticketTypeId, item.quantity, tx))) {
-            // Counters out of step with the order: never paper over it silently.
-            throw new DomainError("common.conflict", "held seats missing for a paid order");
-          }
+        const stores = { ticketTypes: this.ticketTypes, events: this.events };
+        if (!(await convertHeldSeats(stores, paid, tx))) {
+          // Counters out of step with the order: never paper over it silently.
+          throw new DomainError("common.conflict", "held seats missing for a paid order");
         }
         await this.issue(paid, tx);
         await this.record(payment, "paid", tx);
@@ -172,17 +172,12 @@ export class OrderSettlementService {
     now: Date,
     tx: TxContext,
   ): Promise<PaymentOutcome> {
-    const taken: OrderRecord["items"] = [];
-    for (const item of order.items) {
-      if (!(await this.ticketTypes.take(item.ticketTypeId, item.quantity, "sold", tx))) break;
-      taken.push(item);
-    }
-    const allTaken = taken.length === order.items.length;
-    if (!allTaken) {
-      for (const item of taken) {
-        await this.ticketTypes.release(item.ticketTypeId, item.quantity, "sold", tx);
-      }
-    }
+    const allTaken = await takeSeats(
+      { ticketTypes: this.ticketTypes, events: this.events },
+      order,
+      "sold",
+      tx,
+    );
     const paid = await this.orders.transition(
       order.id,
       { statuses: ["expired", "cancelled"], seatState: "released" },

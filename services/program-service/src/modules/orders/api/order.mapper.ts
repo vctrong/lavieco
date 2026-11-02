@@ -2,6 +2,7 @@ import type {
   OrderDetail,
   OrderListItem,
   OrderView,
+  SharedTicketView,
   TicketLookupResponse,
 } from "@lavieco/shared/events";
 
@@ -9,7 +10,8 @@ import type { EventRecord } from "../../events";
 import type { OrderBundle } from "../application/checkout-service";
 import type { AdminOrderDetail } from "../application/order-admin-service";
 import { maskEmail, maskPhone } from "../domain/masking";
-import { answerText, type OrderRecord } from "../domain/order";
+import { answerText, peopleOf, type OrderRecord } from "../domain/order";
+import type { TicketRecord } from "../domain/ticket";
 
 const iso = (date: Date | null) => (date ? date.toISOString() : null);
 
@@ -19,7 +21,7 @@ const iso = (date: Date | null) => (date ? date.toISOString() : null);
  * is pending, the online link and safety notes only once it is paid. A refunded order
  * still lists its tickets, void and without `qrToken`, so no QR can be drawn for them.
  */
-export function toOrderView({ order, event, tickets }: OrderBundle): OrderView {
+export function toOrderView({ order, event, tickets, shareTokens }: OrderBundle): OrderView {
   const paid = order.status === "paid";
   const refunded = order.status === "refunded";
   const shown = paid
@@ -68,8 +70,47 @@ export function toOrderView({ order, event, tickets }: OrderBundle): OrderView {
       status: ticket.status,
       qrToken: paid && ticket.status !== "void" ? ticket.qrToken : null,
       checkedInAt: iso(ticket.checkedInAt),
+      seatsPerUnit: ticket.seatsPerUnit,
+      unitIndex: ticket.unitIndex,
+      seatIndex: ticket.seatIndex,
+      shareToken: paid && ticket.status !== "void" ? (shareTokens.get(ticket.id) ?? null) : null,
     })),
     refundRequired: order.flags.refundRequired,
+  };
+}
+
+/**
+ * What a shared link shows, built field by field: a QR while the ticket can still be
+ * used, the event, nothing about who booked it (BR-13). Tickets of a void order never
+ * reach here with a QR: voiding happens on the ticket itself.
+ */
+export function toSharedTicketView({
+  ticket,
+  event,
+}: {
+  ticket: TicketRecord;
+  event: EventRecord;
+}): SharedTicketView {
+  const live = ticket.status !== "void";
+  return {
+    code: ticket.code,
+    ticketTypeName: ticket.ticketTypeName,
+    status: ticket.status,
+    qrToken: live ? ticket.qrToken : null,
+    checkedInAt: iso(ticket.checkedInAt),
+    seatsPerUnit: ticket.seatsPerUnit,
+    unitIndex: ticket.unitIndex,
+    seatIndex: ticket.seatIndex,
+    event: {
+      slug: event.slug,
+      title: event.title,
+      format: event.format,
+      startAt: event.startAt.toISOString(),
+      endAt: event.endAt.toISOString(),
+      venue: event.venue,
+      onlineUrl: live && event.format === "online" ? event.onlineUrl : null,
+      safetyNotes: live ? event.safetyNotes : "",
+    },
   };
 }
 
@@ -82,7 +123,7 @@ export function toLookupDto(
       orderCode: order.orderCode,
       status: order.status,
       amount: order.amount,
-      ticketCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+      ticketCount: peopleOf(order.items),
       event: { title: event.title, startAt: event.startAt.toISOString() },
     })),
   };
@@ -101,7 +142,7 @@ export function toOrderListItemDto(order: OrderRecord, event: EventRecord | null
     },
     amount: order.amount,
     status: order.status,
-    ticketCount: order.items.reduce((sum, item) => sum + item.quantity, 0),
+    ticketCount: peopleOf(order.items),
     flags: { ...order.flags },
     createdAt: order.createdAt.toISOString(),
     paidAt: iso(order.paidAt),
@@ -121,10 +162,14 @@ export function toOrderDetailDto(detail: AdminOrderDetail): OrderDetail {
     note: order.note,
     consentVersion: order.consent.version,
     tickets: tickets.map((ticket) => ({
+      id: ticket.id,
       code: ticket.code,
       ticketTypeName: ticket.ticketTypeName,
       status: ticket.status,
       checkedInAt: iso(ticket.checkedInAt),
+      seatsPerUnit: ticket.seatsPerUnit,
+      unitIndex: ticket.unitIndex,
+      seatIndex: ticket.seatIndex,
     })),
     answers: answers.map((answer) => {
       const question = questions.get(answer.questionId);

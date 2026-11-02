@@ -58,6 +58,10 @@ export const ERROR_CATALOG = {
     title: "Only never-published drafts can be discarded",
   },
 
+  "event.capacity_below_taken": {
+    status: 409,
+    title: "Capacity cannot be lower than the seats already taken",
+  },
   "ticket_type.locked": {
     status: 409,
     title: "Ticket type change not allowed once seats are taken",

@@ -25,6 +25,7 @@ function toRecord(doc: TicketTypeDoc): TicketTypeRecord {
     saleStartAt: doc.saleStartAt ?? null,
     saleEndAt: doc.saleEndAt ?? null,
     maxPerOrder: doc.maxPerOrder,
+    seatsPerUnit: doc.seatsPerUnit ?? 1,
     sortOrder: doc.sortOrder ?? 0,
     hidden: doc.hidden ?? false,
     sold: doc.sold ?? 0,

@@ -18,6 +18,8 @@ export type TicketTypeRecord = {
   saleStartAt: Date | null;
   saleEndAt: Date | null;
   maxPerOrder: number;
+  /** People per unit. `quantity`, `sold`, `held` and `price` count units. */
+  seatsPerUnit: number;
   sortOrder: number;
   hidden: boolean;
   sold: number;
@@ -39,6 +41,7 @@ export function toTicketTypeChanges(input: TicketTypeInput): TicketTypeChanges {
     saleStartAt: input.saleStartAt ? new Date(input.saleStartAt) : null,
     saleEndAt: input.saleEndAt ? new Date(input.saleEndAt) : null,
     maxPerOrder: input.maxPerOrder,
+    seatsPerUnit: input.seatsPerUnit,
     sortOrder: input.sortOrder,
     hidden: input.hidden,
   };
@@ -52,7 +55,7 @@ export function hasRegistrations(ticketTypes: readonly TicketTypeRecord[]): bool
 }
 
 /**
- * Once seats are taken, the price is frozen and the quantity cannot drop below what
+ * Once seats are taken, the price and the people per unit are frozen and the quantity cannot drop below what
  * is taken; a ticket type is hidden rather than removed.
  */
 export function assertTicketTypeChangeAllowed(
@@ -61,6 +64,9 @@ export function assertTicketTypeChangeAllowed(
 ): void {
   const used = taken(current);
   if (used > 0 && next.price !== current.price) throw new DomainError("ticket_type.locked");
+  if (used > 0 && next.seatsPerUnit !== current.seatsPerUnit) {
+    throw new DomainError("ticket_type.locked");
+  }
   if (next.quantity !== null && next.quantity < used) throw new DomainError("ticket_type.locked");
 }
 
@@ -80,10 +86,38 @@ export function isOnSale(ticketType: TicketTypeRecord, now: Date): boolean {
   return true;
 }
 
-/** Seats still available, `null` for an unlimited type. */
-export function seatsLeftOf(ticketType: TicketTypeRecord): number | null {
-  if (ticketType.quantity === null) return null;
-  return Math.max(0, ticketType.quantity - taken(ticketType));
+/** The event's shared limit, in people; `capacity` null = none. */
+export type EventSeatCounters = { capacity: number | null; seatsSold: number; seatsHeld: number };
+export const NO_SHARED_CAPACITY: EventSeatCounters = { capacity: null, seatsSold: 0, seatsHeld: 0 };
+
+const smallest = (a: number | null, b: number | null) =>
+  a === null ? b : b === null ? a : Math.min(a, b);
+
+/** People the event can still take; `null` without a shared capacity. */
+export function eventSeatsLeft(event: EventSeatCounters): number | null {
+  if (event.capacity === null) return null;
+  return Math.max(0, event.capacity - event.seatsSold - event.seatsHeld);
+}
+
+/** Units that can still be bought, limited by the type AND the event; `null` = no limit. */
+export function unitsLeftOf(
+  ticketType: TicketTypeRecord,
+  event: EventSeatCounters = NO_SHARED_CAPACITY,
+): number | null {
+  const own =
+    ticketType.quantity === null ? null : Math.max(0, ticketType.quantity - taken(ticketType));
+  const shared = eventSeatsLeft(event);
+  const byEvent = shared === null ? null : Math.floor(shared / ticketType.seatsPerUnit);
+  return smallest(own, byEvent);
+}
+
+/** People this type can still seat, `null` = no limit. */
+export function seatsLeftOf(
+  ticketType: TicketTypeRecord,
+  event: EventSeatCounters = NO_SHARED_CAPACITY,
+): number | null {
+  const units = unitsLeftOf(ticketType, event);
+  return units === null ? null : units * ticketType.seatsPerUnit;
 }
 
 /**
@@ -121,30 +155,48 @@ export function isFewSeats(remaining: number, capacity: number): boolean {
  * Public seat information: nothing for unlimited quantities, "X left" only when few
  * seats remain (`isFewSeats`), and sold out at 0 (raw counters stay private).
  */
-export function availabilityOf(ticketTypes: readonly TicketTypeRecord[]): PublicAvailability {
+export function availabilityOf(
+  ticketTypes: readonly TicketTypeRecord[],
+  event: EventSeatCounters = NO_SHARED_CAPACITY,
+): PublicAvailability {
   const shown = visible(ticketTypes);
-  if (shown.length === 0 || shown.some((ticketType) => ticketType.quantity === null)) {
-    return { soldOut: false, seatsLeft: null };
-  }
-  const remaining = shown.reduce(
-    (sum, ticketType) => sum + Math.max(0, (ticketType.quantity ?? 0) - taken(ticketType)),
-    0,
-  );
-  const capacity = shown.reduce((sum, ticketType) => sum + (ticketType.quantity ?? 0), 0);
-  return {
-    soldOut: remaining === 0,
-    seatsLeft: isFewSeats(remaining, capacity) ? remaining : null,
-  };
+  if (shown.length === 0) return { soldOut: false, seatsLeft: null };
+  const unlimited = shown.some((ticketType) => ticketType.quantity === null);
+  const ownLeft = unlimited
+    ? null
+    : shown.reduce(
+        (sum, ticketType) =>
+          sum +
+          Math.max(0, (ticketType.quantity ?? 0) - taken(ticketType)) * ticketType.seatsPerUnit,
+        0,
+      );
+  const remaining = smallest(ownLeft, eventSeatsLeft(event));
+  // A last seat is no use to a 2-person combo: sold out means no type can still be bought.
+  const soldOut = shown.every((ticketType) => unitsLeftOf(ticketType, event) === 0);
+  if (remaining === null) return { soldOut, seatsLeft: null };
+  const capacity = smallest(capacityOf(shown), event.capacity) ?? 0;
+  return { soldOut, seatsLeft: isFewSeats(remaining, capacity) ? remaining : null };
 }
 
-/** Admin list column: seats sold over capacity (`null` capacity = unlimited). */
-export function seatsOf(ticketTypes: readonly TicketTypeRecord[]) {
+/** People all these types seat together; `null` when one of them is unlimited. */
+function capacityOf(ticketTypes: readonly TicketTypeRecord[]): number | null {
+  if (ticketTypes.some((ticketType) => ticketType.quantity === null)) return null;
+  return ticketTypes.reduce(
+    (sum, ticketType) => sum + (ticketType.quantity ?? 0) * ticketType.seatsPerUnit,
+    0,
+  );
+}
+
+/** Admin list column: people sold over capacity (`null` capacity = unlimited). */
+export function seatsOf(
+  ticketTypes: readonly TicketTypeRecord[],
+  event: EventSeatCounters = NO_SHARED_CAPACITY,
+) {
   const shown = visible(ticketTypes);
-  const sold = shown.reduce((sum, ticketType) => sum + ticketType.sold, 0);
-  const capacity = shown.some((ticketType) => ticketType.quantity === null)
-    ? null
-    : shown.length === 0
-      ? null
-      : shown.reduce((sum, ticketType) => sum + (ticketType.quantity ?? 0), 0);
-  return { sold, capacity };
+  const sold = shown.reduce(
+    (sum, ticketType) => sum + ticketType.sold * ticketType.seatsPerUnit,
+    0,
+  );
+  const own = shown.length === 0 ? null : capacityOf(shown);
+  return { sold, capacity: smallest(own, event.capacity) };
 }
