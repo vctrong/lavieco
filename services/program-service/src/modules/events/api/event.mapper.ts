@@ -62,6 +62,7 @@ export function toEventDto(snapshot: EventSnapshot): EventView {
     agenda: event.agenda,
     faq: event.faq,
     cover: event.cover,
+    posterRatio: event.posterRatio,
     banner: event.banner,
     gallery: event.gallery,
     attendance: {
@@ -102,6 +103,7 @@ export function toEventListItemDto(
     endAt: event.endAt.toISOString(),
     venueName: event.venue?.name ?? null,
     cover: event.cover,
+    posterRatio: event.posterRatio,
     pricing: event.pricing,
     seats: seatsOf(ticketTypes),
     updatedAt: event.updatedAt.toISOString(),
@@ -131,6 +133,7 @@ export function toPublicCardDto({
     venue: event.venue ? { name: event.venue.name, address: event.venue.address } : null,
     summary: event.summary,
     cover: event.cover,
+    posterRatio: event.posterRatio,
     banner: event.banner,
     pricing: event.pricing,
     price: priceRangeOf(ticketTypes),

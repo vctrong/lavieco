@@ -272,6 +272,8 @@ export function DetailsForm({ event, types, canWrite, onDirtyChange }: DetailsFo
             onChange={(banner) => set("banner", banner)}
           />
           <CoverField
+            posterRatio={values.posterRatio}
+            onPosterRatioChange={(ratio) => set("posterRatio", ratio)}
             value={values.cover}
             saved={values.cover !== null && savedIds.has(values.cover.mediaId)}
             disabled={disabled}

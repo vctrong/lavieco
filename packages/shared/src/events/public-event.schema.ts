@@ -5,6 +5,7 @@ import { cursorPageSchema } from "../common/pagination";
 import {
   eventFormatSchema,
   eventKindSchema,
+  eventPosterRatioSchema,
   eventStatusSchema,
   publicEventStateSchema,
   questionTypeSchema,
@@ -54,8 +55,9 @@ export const publicEventCardSchema = z.object({
   endAt: isoDateTimeSchema,
   venue: z.object({ name: z.string(), address: z.string() }).nullable(),
   summary: z.string(),
-  /** Poster, 4:5. */
+  /** Poster, shown at `posterRatio`. */
   cover: eventImageSchema.nullable(),
+  posterRatio: eventPosterRatioSchema,
   /** Wide banner, 21:9. */
   banner: eventImageSchema.nullable(),
   pricing: eventPricingSchema,

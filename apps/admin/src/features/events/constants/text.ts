@@ -84,7 +84,7 @@ export const TEXT = {
         timeHint: "Giờ Việt Nam. Hình thức trực tuyến/tại xưởng là trường riêng.",
         images: "Hình ảnh",
         imagesHint:
-          "Banner 21:9 cho đầu trang và chia sẻ mạng xã hội; poster 4:5 cho thẻ trong danh sách.",
+          "Banner 21:9 cho đầu trang và chia sẻ mạng xã hội; poster 4:5 hoặc 1:1 cho thẻ trong danh sách.",
         people: "Người hướng dẫn",
         peopleHint:
           "Ảnh chân dung là dữ liệu cá nhân: chỉ tải lên khi người đó đã đồng ý. Không có ảnh, website hiện chữ cái đầu.",
@@ -115,7 +115,7 @@ export const TEXT = {
         summary: "Tóm tắt (hiện trên thẻ)",
         description: "Mô tả",
         descriptionHint: "Cách đoạn bằng một dòng trống.",
-        cover: "Ảnh poster (4:5)",
+        cover: "Ảnh poster",
         banner: "Ảnh banner (21:9)",
         minAge: "Độ tuổi phù hợp (từ)",
         minAgeHint: "Để trống nếu không giới hạn.",
@@ -356,7 +356,20 @@ export const TEXT = {
       coverHint:
         "JPG, PNG hoặc WebP, tối đa 8 MB. Thông tin vị trí (EXIF/GPS) được xoá trước khi lưu.",
       coverEmpty: "Chưa có ảnh poster. Website sẽ dùng ảnh minh hoạ mặc định.",
-      bannerEmpty: "Chưa có ảnh banner. Đầu trang sẽ dùng ảnh poster hoặc minh hoạ mặc định.",
+      bannerEmpty: "Chưa có ảnh banner. Đầu trang sẽ dùng banner mặc định của LAVIECO.",
+      posterHint: (ratio: string) =>
+        `Poster tỉ lệ ${ratio}. Muốn cắt lại hoặc đổi tỉ lệ, bấm Đổi ảnh và chọn lại ảnh gốc.`,
+      crop: {
+        title: "Cắt ảnh poster",
+        intro: "Kéo ảnh để chọn phần hiển thị, dùng thanh trượt để phóng to.",
+        ratio: "Tỉ lệ poster",
+        ratios: { "4:5": "Dọc 4:5", "1:1": "Vuông 1:1" },
+        zoom: "Phóng to",
+        area: "Vùng cắt. Dùng phím mũi tên để di chuyển ảnh.",
+        confirm: "Cắt và tải lên",
+        cancel: "Huỷ",
+        failed: "Không xử lý được ảnh này trên trình duyệt. Vui lòng chọn ảnh khác.",
+      },
       avatarEmpty: "Chưa có ảnh. Chỉ tải lên khi người này đã đồng ý.",
       gallery: "Thư viện ảnh",
       galleryHint: "Tối đa 12 ảnh. Ảnh hiện trên trang chương trình theo thứ tự dưới đây.",

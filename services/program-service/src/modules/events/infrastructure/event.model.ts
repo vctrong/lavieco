@@ -5,6 +5,7 @@ import {
   BENEFIT_ICONS,
   EVENT_FORMATS,
   EVENT_KINDS,
+  EVENT_POSTER_RATIOS,
   EVENT_STATUSES,
   QUESTION_TYPES,
 } from "@lavieco/shared/events";
@@ -107,8 +108,9 @@ export const eventSchema = new Schema(
       default: [],
     },
     faq: { type: [{ question: String, answer: String, _id: false }], default: [] },
-    /** Poster, 4:5. */
+    /** Poster, at `posterRatio`. */
     cover: { type: imageSchema, default: null },
+    posterRatio: { type: String, enum: EVENT_POSTER_RATIOS, default: "4:5" },
     /** Banner, 21:9. */
     banner: { type: imageSchema, default: null },
     /** ≤ MEDIA_LIMITS.eventGalleryMax (12), enforced by the shared contract. */

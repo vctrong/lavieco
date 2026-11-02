@@ -13,7 +13,7 @@ export const cardPrice = (event: Pick<PublicEventCard, "price">) =>
   priceText(event.price, { free: TEXT.vi.card.free, from: TEXT.vi.card.priceFrom });
 
 /**
- * One programme in the calendar: poster 4:5 with the date tile and the state badge,
+ * One programme in the calendar: a 4:5 frame (keeps the grid even) holding the poster, with the date tile and the state badge,
  * then type, title, time, place and price. The whole card is one link (the title).
  */
 export function EventCard({ event }: { event: PublicEventCard }) {
@@ -27,6 +27,7 @@ export function EventCard({ event }: { event: PublicEventCard }) {
         <EventImage
           title={event.title}
           image={event.cover}
+          fit={event.posterRatio === "1:1" ? "contain" : "cover"}
           sizes="(min-width: 1024px) 26vw, (min-width: 640px) 44vw, 92vw"
           className="aspect-[4/5] w-full rounded-2xl"
         />

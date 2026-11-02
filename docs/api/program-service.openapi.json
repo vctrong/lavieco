@@ -632,6 +632,13 @@
                             ],
                             "additionalProperties": false
                           },
+                          "posterRatio": {
+                            "type": "string",
+                            "enum": [
+                              "4:5",
+                              "1:1"
+                            ]
+                          },
                           "pricing": {
                             "type": "object",
                             "properties": {
@@ -690,6 +697,7 @@
                           "endAt",
                           "venueName",
                           "cover",
+                          "posterRatio",
                           "pricing",
                           "seats",
                           "updatedAt"
@@ -1056,6 +1064,14 @@
                     "required": [
                       "mediaId",
                       "alt"
+                    ]
+                  },
+                  "posterRatio": {
+                    "default": "4:5",
+                    "type": "string",
+                    "enum": [
+                      "4:5",
+                      "1:1"
                     ]
                   },
                   "banner": {
@@ -1458,6 +1474,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -1881,6 +1904,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "gallery",
                     "attendance",
@@ -2257,6 +2281,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -2680,6 +2711,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "gallery",
                     "attendance",
@@ -3010,6 +3042,14 @@
                     "required": [
                       "mediaId",
                       "alt"
+                    ]
+                  },
+                  "posterRatio": {
+                    "default": "4:5",
+                    "type": "string",
+                    "enum": [
+                      "4:5",
+                      "1:1"
                     ]
                   },
                   "banner": {
@@ -3410,6 +3450,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -3833,6 +3880,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "gallery",
                     "attendance",
@@ -4301,6 +4349,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -4724,6 +4779,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "gallery",
                     "attendance",
@@ -5131,6 +5187,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -5554,6 +5617,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "gallery",
                     "attendance",
@@ -5950,6 +6014,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -6373,6 +6444,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "gallery",
                     "attendance",
@@ -6749,6 +6821,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -7172,6 +7251,7 @@
                     "agenda",
                     "faq",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "gallery",
                     "attendance",
@@ -8061,6 +8141,13 @@
                             ],
                             "additionalProperties": false
                           },
+                          "posterRatio": {
+                            "type": "string",
+                            "enum": [
+                              "4:5",
+                              "1:1"
+                            ]
+                          },
                           "banner": {
                             "nullable": true,
                             "type": "object",
@@ -8170,6 +8257,7 @@
                           "venue",
                           "summary",
                           "cover",
+                          "posterRatio",
                           "banner",
                           "pricing",
                           "price",
@@ -8382,6 +8470,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -8910,6 +9005,7 @@
                     "venue",
                     "summary",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "pricing",
                     "price",
@@ -9117,6 +9213,13 @@
                       ],
                       "additionalProperties": false
                     },
+                    "posterRatio": {
+                      "type": "string",
+                      "enum": [
+                        "4:5",
+                        "1:1"
+                      ]
+                    },
                     "banner": {
                       "nullable": true,
                       "type": "object",
@@ -9645,6 +9748,7 @@
                     "venue",
                     "summary",
                     "cover",
+                    "posterRatio",
                     "banner",
                     "pricing",
                     "price",

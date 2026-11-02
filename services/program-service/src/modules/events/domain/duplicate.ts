@@ -40,6 +40,7 @@ export function duplicateOf(
       speakers: source.speakers.map((speaker) => ({ ...speaker, avatar: null })),
       agenda: source.agenda,
       faq: source.faq,
+      posterRatio: source.posterRatio,
     },
     form: { questions: source.form.questions.map((question) => ({ ...question })) },
     ticketTypes: ticketTypes.map((ticketType) => ({

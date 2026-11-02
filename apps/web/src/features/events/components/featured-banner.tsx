@@ -11,8 +11,8 @@ import { EventImage } from "./event-image";
 import { StateBadge } from "./state-badge";
 
 /**
- * The soonest programme people can still book, on its 21:9 banner (4:5 poster crop on
- * phones). Text sits on a Charcoal veil so Soft White stays readable on any photo.
+ * The soonest programme people can still book, on its banner (or the default one; a
+ * poster is never stretched into a hero). Text sits on a Charcoal veil so Soft White stays readable on any photo.
  */
 export function FeaturedBanner({ event }: { event: PublicEventCard }) {
   const t = TEXT.vi;
@@ -22,7 +22,8 @@ export function FeaturedBanner({ event }: { event: PublicEventCard }) {
     <article className="relative overflow-hidden rounded-[2rem] bg-charcoal shadow-gallery">
       <EventImage
         title={event.title}
-        image={event.banner ?? event.cover}
+        image={event.banner}
+        fallback="banner"
         sizes="(min-width: 1280px) 1200px, 100vw"
         preload
         className="aspect-[4/5] w-full sm:aspect-[16/9] lg:aspect-[21/9]"

@@ -36,6 +36,7 @@ function content(overrides: Partial<EventContent> = {}): EventContent {
     speakers: [],
     agenda: [],
     faq: [],
+    posterRatio: "4:5",
     ...overrides,
   };
 }

@@ -3,16 +3,24 @@ import { mediaDeliveryUrl } from "@lavieco/shared/media";
 
 import type { JsonLdObject } from "@/shared/components/json-ld";
 
+import { DEFAULT_EVENT_BANNER } from "../constants/config";
+import { TEXT } from "../constants/text";
+
 /** Width of the share image: one of the allowed named transformations (ADR-0020). */
 const SHARE_IMAGE_WIDTH = 1280;
 
-/** The banner (else the poster) as an absolute URL for Open Graph and JSON-LD. */
+/**
+ * Share image for Open Graph and JSON-LD: the banner, else the poster, else the default
+ * banner. The default is a site path; Next resolves it against `metadataBase`.
+ */
 export function shareImageOf(
-  event: Pick<PublicEventDetail, "banner" | "cover">,
+  event: Pick<PublicEventDetail, "banner" | "cover" | "title">,
   cloudName: string,
-): { url: string; width: number; height: number; alt: string } | null {
+): { url: string; width: number; height: number; alt: string } {
   const image = event.banner ?? event.cover;
-  if (!image || !cloudName) return null;
+  if (!image || !cloudName) {
+    return { ...DEFAULT_EVENT_BANNER, alt: TEXT.vi.coverAlt(event.title) };
+  }
   const width = Math.min(SHARE_IMAGE_WIDTH, image.width);
   return {
     url: mediaDeliveryUrl({ cloudName, publicId: image.publicId, width: SHARE_IMAGE_WIDTH }),

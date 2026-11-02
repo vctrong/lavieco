@@ -43,6 +43,11 @@ export const CHOICE_QUESTION_TYPES: readonly QuestionType[] = [
   "dropdown",
 ];
 
+/** Shape of the poster (`cover`), chosen when it is cropped; cards keep a 4:5 frame. */
+export const EVENT_POSTER_RATIOS = ["4:5", "1:1"] as const;
+export const eventPosterRatioSchema = z.enum(EVENT_POSTER_RATIOS);
+export type EventPosterRatio = z.infer<typeof eventPosterRatioSchema>;
+
 /**
  * Fields every registration form has, rendered by the checkout and never stored as
  * questions. `safety_acknowledgement` is only shown when the event has safety notes.

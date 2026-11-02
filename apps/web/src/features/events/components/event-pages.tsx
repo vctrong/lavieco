@@ -33,7 +33,11 @@ export async function EventDetailPage({ slug }: { slug: string }) {
           pageUrl,
           organizer: TEXT.vi.meta.organizer,
           siteUrl: publicEnv.siteUrl,
-          imageUrl: shareImageOf(event, publicEnv.cloudinaryCloudName)?.url ?? null,
+          // JSON-LD has no metadataBase: the default banner's site path must become absolute.
+          imageUrl: new URL(
+            shareImageOf(event, publicEnv.cloudinaryCloudName).url,
+            publicEnv.siteUrl,
+          ).toString(),
         })}
       />
       <EventDetail

@@ -118,6 +118,7 @@ function toSharedFields(doc: Partial<EventDoc> & { _id: Types.ObjectId }) {
     })),
     faq: doc.faq ?? [],
     cover: toImageOrNull(doc.cover),
+    posterRatio: doc.posterRatio ?? "4:5",
     banner: toImageOrNull(doc.banner),
     gallery: (doc.gallery ?? []).map(toImage),
     attendance: {
