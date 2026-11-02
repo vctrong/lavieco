@@ -9,6 +9,7 @@ import {
   orderCreateRequestSchema,
   orderCreateResponseSchema,
   orderViewSchema,
+  sharedTicketViewSchema,
   ticketLookupRequestSchema,
   ticketLookupResponseSchema,
   type OrderCreateRequest,
@@ -23,7 +24,7 @@ import {
   EVENT_ATTENDANCE_SERVICE,
   ORDER_SETTLEMENT_SERVICE,
 } from "../orders.tokens";
-import { toLookupDto, toOrderView } from "./order.mapper";
+import { toLookupDto, toOrderView, toSharedTicketView } from "./order.mapper";
 
 const tokenPipe = new ZodValidationPipe(orderAccessTokenSchema);
 
@@ -91,6 +92,14 @@ export class OrdersPublicController {
     const { order } = await this.checkout.getByToken(token);
     await this.settlement.reconcile(order.id, { publicCall: true });
     return toOrderView(await this.checkout.load(order.id));
+  }
+
+  @Get("ticket-links/:token")
+  @AllowServices("web")
+  @ApiOperation({ summary: "One shared ticket: its QR and the event, nothing about the booker" })
+  @ApiZodResponse(200, sharedTicketViewSchema)
+  async sharedTicket(@Param("token", tokenPipe) token: string) {
+    return toSharedTicketView(await this.checkout.getSharedTicket(token));
   }
 
   @Post("ticket-lookups")

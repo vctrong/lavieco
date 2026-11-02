@@ -9,6 +9,9 @@ const event = {
   status: "published" as const,
   format: "offline" as const,
   hasOnlineLink: false,
+  capacity: null,
+  seatsSold: 0,
+  seatsHeld: 0,
   startAt: new Date("2026-11-01T02:00:00Z"),
 };
 const ticket = (overrides: Partial<TicketTypeRecord> = {}): TicketTypeRecord => ({
@@ -21,12 +24,26 @@ const ticket = (overrides: Partial<TicketTypeRecord> = {}): TicketTypeRecord => 
   saleStartAt: null,
   saleEndAt: null,
   maxPerOrder: 4,
+  seatsPerUnit: 1,
   sortOrder: 0,
   hidden: false,
   sold: 0,
   held: 0,
   revision: 1,
   ...overrides,
+});
+
+describe("registrationBlocker with a shared capacity", () => {
+  const now = new Date("2026-10-20T00:00:00Z");
+  it("is sold out when the event is full, whatever the ticket types have left", () => {
+    const full = { ...event, capacity: 10, seatsSold: 8, seatsHeld: 2 };
+    expect(registrationBlocker(full, [ticket()], now)).toBe("sold_out");
+    expect(registrationBlocker({ ...full, seatsHeld: 1 }, [ticket()], now)).toBeNull();
+  });
+  it("is sold out when only a combo is left and it no longer fits", () => {
+    const lastSeat = { ...event, capacity: 10, seatsSold: 9, seatsHeld: 0 };
+    expect(registrationBlocker(lastSeat, [ticket({ seatsPerUnit: 2 })], now)).toBe("sold_out");
+  });
 });
 
 describe("registrationBlocker", () => {

@@ -44,6 +44,7 @@ function toRecord(doc: OrderDoc): OrderRecord {
       name: item.name,
       unitPrice: item.unitPrice,
       quantity: item.quantity,
+      seatsPerUnit: item.seatsPerUnit ?? 1,
     })),
     amount: doc.amount,
     status: doc.status,

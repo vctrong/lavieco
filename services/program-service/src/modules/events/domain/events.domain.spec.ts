@@ -37,6 +37,7 @@ function content(overrides: Partial<EventContent> = {}): EventContent {
     agenda: [],
     faq: [],
     posterRatio: "4:5",
+    capacity: null,
     ...overrides,
   };
 }
@@ -227,6 +228,8 @@ describe("form rules after registrations (BR-17)", () => {
 describe("duplicate", () => {
   const source: EventRecord = {
     ...content(),
+    seatsSold: 0,
+    seatsHeld: 0,
     id: "64b7f0c2a1b2c3d4e5f60720",
     kind: "standard",
     slug: "workshop-vo-so",
@@ -256,6 +259,7 @@ describe("duplicate", () => {
     saleStartAt: null,
     saleEndAt: null,
     maxPerOrder: 4,
+    seatsPerUnit: 1,
     sortOrder: 0,
     hidden: false,
     sold: 18,

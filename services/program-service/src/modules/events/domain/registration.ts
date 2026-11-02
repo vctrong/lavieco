@@ -1,13 +1,16 @@
 import type { FormQuestion, RegistrationBlocker } from "@lavieco/shared/events";
 
-import { isOnSale, seatsLeftOf, visible, type TicketTypeRecord } from "../../ticketing";
+import { isOnSale, unitsLeftOf, visible, type TicketTypeRecord } from "../../ticketing";
 import type { EventRecord } from "./event";
 
 /**
  * Only whether the online link is set matters here, never the link itself: public
  * queries do not even read it (S3), they carry `hasOnlineLink` instead.
  */
-export type BookableEvent = Pick<EventRecord, "kind" | "status" | "format" | "startAt"> & {
+export type BookableEvent = Pick<
+  EventRecord,
+  "kind" | "status" | "format" | "startAt" | "capacity" | "seatsSold" | "seatsHeld"
+> & {
   hasOnlineLink: boolean;
 };
 
@@ -17,6 +20,9 @@ export const bookableOf = (event: EventRecord): BookableEvent => ({
   status: event.status,
   format: event.format,
   startAt: event.startAt,
+  capacity: event.capacity,
+  seatsSold: event.seatsSold,
+  seatsHeld: event.seatsHeld,
   hasOnlineLink: event.onlineUrl !== null && event.onlineUrl !== "",
 });
 
@@ -43,7 +49,7 @@ export function registrationBlocker(
     );
     return later ? "sale_not_started" : "sale_ended";
   }
-  if (onSale.every((ticketType) => seatsLeftOf(ticketType) === 0)) return "sold_out";
+  if (onSale.every((ticketType) => unitsLeftOf(ticketType, event) === 0)) return "sold_out";
   return null;
 }
 

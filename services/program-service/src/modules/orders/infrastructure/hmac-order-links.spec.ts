@@ -6,6 +6,26 @@ import { HmacOrderLinks } from "./hmac-order-links";
 
 const orderId = "6650a1b2c3d4e5f6a7b8c9d0";
 
+describe("ticket links", () => {
+  const links = new HmacOrderLinks(Buffer.from("test-secret-test-secret-test-secret"));
+  const ticket = { id: "a".repeat(24), qrToken: "qr-one" };
+
+  it("verifies a ticket's own link and reads its id", () => {
+    const token = links.signTicket(ticket);
+    expect(links.ticketIdOf(token)).toBe(ticket.id);
+    expect(links.verifyTicket(token, ticket)).toBe(true);
+  });
+
+  it("stops working once the QR is reissued", () => {
+    const token = links.signTicket(ticket);
+    expect(links.verifyTicket(token, { ...ticket, qrToken: "qr-two" })).toBe(false);
+  });
+
+  it("is not interchangeable with an order link", () => {
+    expect(links.verify(links.signTicket(ticket))).toBeNull();
+  });
+});
+
 describe("HmacOrderLinks", () => {
   const links = new HmacOrderLinks(randomBytes(32));
 

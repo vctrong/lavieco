@@ -32,6 +32,9 @@ export class CheckinService {
       ticketTypeName: current.ticketTypeName,
       buyerName: order.buyer.fullName,
       checkedInAt: current.checkedInAt ? current.checkedInAt.toISOString() : null,
+      seatsPerUnit: current.seatsPerUnit,
+      unitIndex: current.unitIndex,
+      seatIndex: current.seatIndex,
     });
     if (ticket.status === "void") return { result: "invalid", ticket: null, stats: await stats() };
     if (ticket.status === "used") {

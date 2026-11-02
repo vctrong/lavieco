@@ -26,6 +26,8 @@ export const EVENT_LIMITS = {
   optionsMax: 20,
   ticketTypesMax: 10,
   maxPerOrderMax: 20,
+  /** A combo: one unit bought = this many people, one ticket and QR each. */
+  seatsPerUnitMax: 10,
   /** 100 million VND: anything above is a typo, not a workshop ticket. */
   priceMax: 100_000_000,
   quantityMax: 100_000,

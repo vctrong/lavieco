@@ -97,6 +97,14 @@ export interface EventRepository {
   ): Promise<EventRecord | null>;
   /** Derived field: does not bump `revision`, so open admin forms stay valid. */
   setPricing(id: string, pricing: EventPricing, tx?: TxContext): Promise<void>;
+
+  /**
+   * The shared capacity, in people, moved with the ticket type counters in one order
+   * transaction (BR-14). `takeSeats` adds only if it still fits; false when it does not.
+   */
+  takeSeats(id: string, people: number, into: "held" | "sold", tx: TxContext): Promise<boolean>;
+  convertHeldSeats(id: string, people: number, tx: TxContext): Promise<void>;
+  releaseSeats(id: string, people: number, from: "held" | "sold", tx: TxContext): Promise<void>;
   discard(id: string, revision: number, actor: Actor, tx?: TxContext): Promise<boolean>;
   listAdmin(query: EventListQuery): Promise<Page<EventRecord> & { counts: EventStatusCounts }>;
   /** `now` splits upcoming from past by end time; `total` counts every page. */

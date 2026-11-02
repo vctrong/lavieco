@@ -12,6 +12,8 @@ const ticket = (id: string, overrides: Partial<PublicTicketType> = {}): PublicTi
   saleStartAt: null,
   saleEndAt: null,
   maxPerOrder: 4,
+  seatsPerUnit: 1,
+  unitsLeft: null,
   availability: { soldOut: false, seatsLeft: null },
   ...overrides,
 });
@@ -24,10 +26,13 @@ describe("initialQuantities", () => {
     expect(initialQuantities([ticket(A), ticket(B)], { ve: B, sl: "3" })).toEqual({ [B]: 3 });
     expect(initialQuantities([ticket(A)], { ve: A, sl: "9" })).toEqual({ [A]: 4 });
     expect(
-      initialQuantities([ticket(A, { availability: { soldOut: false, seatsLeft: 2 } })], {
-        ve: A,
-        sl: "4",
-      }),
+      initialQuantities(
+        [ticket(A, { unitsLeft: 2, availability: { soldOut: false, seatsLeft: 2 } })],
+        {
+          ve: A,
+          sl: "4",
+        },
+      ),
     ).toEqual({ [A]: 2 });
   });
 

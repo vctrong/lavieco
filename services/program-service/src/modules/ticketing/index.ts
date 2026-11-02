@@ -5,7 +5,11 @@ export {
 export {
   assertCanAddTicketType,
   assertTicketTypeChangeAllowed,
+  NO_SHARED_CAPACITY,
   availabilityOf,
+  eventSeatsLeft,
+  unitsLeftOf,
+  type EventSeatCounters,
   hasRegistrations,
   isFewSeats,
   isOnSale,

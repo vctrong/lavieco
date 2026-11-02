@@ -5,11 +5,12 @@ import { FiAlertCircle, FiAlertTriangle, FiExternalLink, FiInfo } from "react-ic
 
 import { Button, cn } from "@lavieco/ui";
 
+import { publicEnv } from "@/lib/env.public";
 import { turnstileSiteKey } from "@/lib/turnstile";
 
 import { CHECKOUT_ROUTES } from "../constants/config";
 import { TEXT } from "../constants/text";
-import { getCheckoutEvent, getOrder, verifiedMember } from "../server/orders";
+import { getCheckoutEvent, getOrder, getSharedTicket, verifiedMember } from "../server/orders";
 import { qrDataUrl } from "../server/qr";
 import { formatDateTime, formatSchedule } from "../utils/format";
 import { initialQuantities, type CheckoutPick } from "../utils/initial-pick";
@@ -81,6 +82,12 @@ export async function PaymentPage({
   );
 }
 
+/** "Combo 2 người · suất 1 · vé 2/2" for a combo; null for a plain ticket. */
+const comboOf = (ticket: { seatsPerUnit: number; unitIndex: number; seatIndex: number }) =>
+  ticket.seatsPerUnit > 1
+    ? TEXT.vi.ticket.combo(ticket.seatsPerUnit, ticket.unitIndex, ticket.seatIndex)
+    : null;
+
 /**
  * `/ve/[token]`: the tickets of an order, each as a pass with its QR (rendered here, never
  * stored) and its state. Void tickets (refunded order) come without `qrToken`, so no QR
@@ -98,6 +105,10 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
       state: ticketState(ticket, order.status),
       checkedInAt: ticket.checkedInAt ? formatDateTime(ticket.checkedInAt) : null,
       qrImage: ticket.qrToken ? await qrDataUrl(ticket.qrToken, 560) : null,
+      combo: comboOf(ticket),
+      shareUrl: ticket.shareToken
+        ? new URL(CHECKOUT_ROUTES.sharedTicket(ticket.shareToken), publicEnv.siteUrl).toString()
+        : null,
     })),
   );
   const online = order.event.format === "online";
@@ -224,6 +235,86 @@ export async function TicketPage({ token, justBooked }: { token: string; justBoo
         <div className="print:hidden">
           <OrderSummary order={order} />
         </div>
+      </div>
+    </CheckoutShell>
+  );
+}
+
+/**
+ * `/ve/v/[token]`: one ticket for the person it was shared with. Nothing about the
+ * booker exists in this response (BR-13). A link whose QR was reissued no longer opens.
+ */
+export async function SharedTicketPage({ token }: { token: string }) {
+  const t = TEXT.vi.ticket;
+  const shared = await getSharedTicket(token);
+  if (!shared) {
+    return (
+      <CheckoutShell eyebrow={t.shared.eyebrow} title={t.shared.goneTitle} step={null}>
+        <p className="max-w-xl rounded-3xl bg-mint-mist p-5 text-[14px] text-deep-blue">
+          {t.shared.gone}
+        </p>
+      </CheckoutShell>
+    );
+  }
+  const online = shared.event.format === "online";
+  const event = {
+    title: shared.event.title,
+    schedule: formatSchedule(shared.event.startAt, shared.event.endAt),
+    place: online
+      ? t.online
+      : shared.event.venue
+        ? `${shared.event.venue.name}, ${shared.event.venue.address}`
+        : "",
+    online,
+  };
+  const state =
+    shared.status === "valid" ? "valid" : shared.status === "used" ? "used" : "cancelled";
+  return (
+    <CheckoutShell eyebrow={t.shared.eyebrow} title={shared.event.title} step={null}>
+      <div className="max-w-3xl space-y-6">
+        <p className="rounded-3xl bg-mint-mist p-5 text-[14px] text-deep-blue print:hidden">
+          {t.shared.note}
+        </p>
+        <TicketCard
+          ticket={{
+            code: shared.code,
+            ticketTypeName: shared.ticketTypeName,
+            state,
+            checkedInAt: shared.checkedInAt ? formatDateTime(shared.checkedInAt) : null,
+            qrImage: shared.qrToken ? await qrDataUrl(shared.qrToken, 560) : null,
+            combo: comboOf(shared),
+            shareUrl: null,
+          }}
+          index={1}
+          total={1}
+          event={event}
+          bookerName={null}
+        />
+        {shared.event.onlineUrl ? (
+          <p className="flex flex-wrap items-center gap-2 rounded-3xl border border-hairline bg-white p-5 text-[14px]">
+            <span className="font-semibold text-deep-blue">{t.onlineLink}:</span>
+            <a
+              href={shared.event.onlineUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1 break-all text-deep-blue underline underline-offset-4"
+            >
+              {shared.event.onlineUrl}
+              <FiExternalLink aria-hidden="true" size={13} />
+            </a>
+          </p>
+        ) : null}
+        {shared.event.safetyNotes ? (
+          <section className="rounded-3xl border border-canary bg-canary/20 p-5 print:hidden">
+            <h2 className="flex items-center gap-2 font-display text-lg text-deep-blue">
+              <FiAlertTriangle aria-hidden="true" size={17} />
+              {t.safetyTitle}
+            </h2>
+            <p className="mt-2 whitespace-pre-line text-[14px] leading-relaxed text-charcoal/85">
+              {shared.event.safetyNotes}
+            </p>
+          </section>
+        ) : null}
       </div>
     </CheckoutShell>
   );

@@ -79,6 +79,16 @@ export const TEXT = {
           "payOS báo số tiền khác số tiền của đơn. Chưa phát hành vé. Kiểm tra với payOS.",
         latePayment: "Thanh toán tới sau khi hết giữ chỗ, hệ thống đã giữ lại chỗ được.",
       },
+      combo: (people: number, unit: number, seat: number) =>
+        `Combo ${people} người · suất ${unit} · vé ${seat}/${people}`,
+      reissue: {
+        button: "Cấp lại QR",
+        title: (code: string) => `Cấp lại QR cho vé ${code}?`,
+        body: "Mã QR cũ và link chia sẻ cũ của vé này sẽ ngừng hoạt động ngay. Dùng khi vé bị chia nhầm hoặc lộ mã.",
+        notify: "Gửi lại email vé cho người đặt",
+        confirm: "Cấp lại QR",
+        cancel: "Huỷ",
+      },
       actions: {
         reconcile: "Kiểm tra lại thanh toán",
         reconciled: "Đã đối soát với payOS.",

@@ -27,6 +27,7 @@ type TicketValues = {
   price: string;
   quantity: string;
   maxPerOrder: string;
+  seatsPerUnit: string;
   saleStartLocal: string;
   saleEndLocal: string;
   hidden: boolean;
@@ -42,6 +43,7 @@ function valuesOf(ticket: TicketType | null, sortOrder: number): TicketValues {
     price: ticket ? String(ticket.price) : "",
     quantity: ticket?.quantity == null ? "" : String(ticket.quantity),
     maxPerOrder: ticket ? String(ticket.maxPerOrder) : "4",
+    seatsPerUnit: ticket ? String(ticket.seatsPerUnit) : "1",
     saleStartLocal: isoToVietnamLocal(ticket?.saleStartAt ?? null),
     saleEndLocal: isoToVietnamLocal(ticket?.saleEndAt ?? null),
     hidden: ticket?.hidden ?? false,
@@ -56,6 +58,7 @@ function toRequest(values: TicketValues) {
     price: toInt(values.price),
     quantity: values.quantity.trim() === "" ? null : toInt(values.quantity),
     maxPerOrder: toInt(values.maxPerOrder),
+    seatsPerUnit: toInt(values.seatsPerUnit),
     saleStartAt: values.saleStartLocal ? vietnamLocalToIso(values.saleStartLocal) : null,
     saleEndAt: values.saleEndLocal ? vietnamLocalToIso(values.saleEndLocal) : null,
     sortOrder: values.sortOrder,
@@ -189,6 +192,16 @@ function TicketForm({
         />
         <TextField
           tone="light"
+          inputMode="numeric"
+          label={t.tickets.seatsPerUnit}
+          hint={t.tickets.seatsPerUnitHint}
+          value={values.seatsPerUnit}
+          onChange={(e) => set("seatsPerUnit", e.target.value)}
+          error={errors.seatsPerUnit}
+          disabled={locked}
+        />
+        <TextField
+          tone="light"
           type="datetime-local"
           label={t.tickets.saleStartAt}
           value={values.saleStartLocal}
@@ -245,6 +258,7 @@ function TicketSummary({
         </p>
         <p className="mt-0.5 text-[12.5px] text-charcoal/65">
           {ticket.price === 0 ? t.free : formatVnd(ticket.price)} ·{" "}
+          {ticket.seatsPerUnit > 1 ? `${t.tickets.combo(ticket.seatsPerUnit)} · ` : null}
           {ticket.quantity === null ? t.list.unlimited : t.tickets.seats(ticket.quantity)} ·{" "}
           {t.tickets.sold(ticket.sold, ticket.held)}
         </p>

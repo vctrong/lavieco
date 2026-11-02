@@ -40,6 +40,7 @@ export type EventContent = {
   agenda: EventAgendaItem[];
   faq: EventFaqItem[];
   posterRatio: EventPosterRatio;
+  capacity: number | null;
 };
 
 /**
@@ -73,6 +74,9 @@ export type EventRecord = EventContent & {
   attendance: EventAttendance;
   cancellation: EventCancellation | null;
   form: EventForm;
+  /** People with a seat, every ticket type counted; moved with orders, never by an edit. */
+  seatsSold: number;
+  seatsHeld: number;
   /** Derived from ticket types, stored for the public "free" filter. */
   pricing: EventPricing;
   publishedAt: Date | null;
@@ -118,6 +122,7 @@ export function toEventContent(
     agenda: details.agenda,
     faq: details.faq,
     posterRatio: details.posterRatio,
+    capacity: details.capacity,
   };
 }
 

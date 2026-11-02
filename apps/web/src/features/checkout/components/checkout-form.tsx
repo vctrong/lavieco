@@ -5,6 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "rea
 import { FiEdit2, FiLock, FiMail, FiMinus, FiPlus } from "react-icons/fi";
 
 import { ORDER_LIMITS, type PublicEventDetail } from "@lavieco/shared/events";
+import { maxUnitsOf } from "@lavieco/shared/events";
 import {
   BusyLabel,
   Button,
@@ -383,16 +384,18 @@ export function CheckoutForm({
           >
             {event.ticketTypes.map((ticket) => {
               const quantity = quantities[ticket.id] ?? 0;
-              const max = ticket.availability.seatsLeft
-                ? Math.min(ticket.maxPerOrder, ticket.availability.seatsLeft)
-                : ticket.maxPerOrder;
+              const max = maxUnitsOf(ticket);
               const soldOut = ticket.availability.soldOut;
               return (
                 <li key={ticket.id} className="flex items-center justify-between gap-4 px-1 py-4">
                   <div className="min-w-0">
                     <p className="font-semibold text-deep-blue">{ticket.name}</p>
                     <p className="text-[13px] text-charcoal/65">
-                      {ticket.price === 0 ? t.checkout.free : formatVnd(ticket.price)} ·{" "}
+                      {ticket.price === 0 ? t.checkout.free : formatVnd(ticket.price)}
+                      {ticket.seatsPerUnit > 1
+                        ? ` · ${t.checkout.combo(ticket.seatsPerUnit)}`
+                        : ""}{" "}
+                      ·{" "}
                       {soldOut
                         ? t.checkout.soldOut
                         : ticket.availability.seatsLeft

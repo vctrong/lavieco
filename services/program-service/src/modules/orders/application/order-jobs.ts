@@ -14,7 +14,8 @@ export const CANCEL_PAYMENT_LINK_JOB = "payment.cancel_link";
 export const SEND_EVENT_CANCELLED_JOB = "order.send_event_cancelled";
 
 /**
- * One ticket per seat, each with its own random QR token (BR-16). Codes are random:
+ * One ticket per person (a combo unit gives several), each with its own random QR token
+ * (BR-16). Codes are random:
  * they are checked against existing ones before the insert, because a duplicate key
  * would abort the whole transaction.
  */
@@ -24,10 +25,15 @@ export async function issueTickets(
   tx: TxContext,
 ): Promise<TicketRecord[]> {
   const seats = order.items.flatMap((item) =>
-    Array.from({ length: item.quantity }, () => ({
-      ticketTypeId: item.ticketTypeId,
-      ticketTypeName: item.name,
-    })),
+    Array.from({ length: item.quantity }, (_unit, unit) =>
+      Array.from({ length: item.seatsPerUnit }, (_seat, seat) => ({
+        ticketTypeId: item.ticketTypeId,
+        ticketTypeName: item.name,
+        seatsPerUnit: item.seatsPerUnit,
+        unitIndex: unit + 1,
+        seatIndex: seat + 1,
+      })),
+    ).flat(),
   );
   const codes = seats.map(() => newTicketCode());
   for (let attempt = 0; attempt < 5; attempt += 1) {

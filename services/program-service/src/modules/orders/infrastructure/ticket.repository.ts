@@ -32,6 +32,9 @@ function toTicket(doc: TicketDoc): TicketRecord {
     eventId: doc.eventId.toHexString(),
     ticketTypeId: doc.ticketTypeId.toHexString(),
     ticketTypeName: doc.ticketTypeName,
+    seatsPerUnit: doc.seatsPerUnit ?? 1,
+    unitIndex: doc.unitIndex ?? 1,
+    seatIndex: doc.seatIndex ?? 1,
     status: doc.status,
     checkedInAt: doc.checkedInAt ?? null,
     checkedInBy: doc.checkedInBy ?? null,
@@ -100,6 +103,24 @@ export class MongoTicketRepository implements TicketRepository {
       )
       .exec();
     return result.modifiedCount;
+  }
+
+  async findById(id: string) {
+    if (!Types.ObjectId.isValid(id)) return null;
+    const doc = await this.model.findById(id).lean<TicketDoc>().exec();
+    return doc ? toTicket(doc) : null;
+  }
+
+  async replaceQrToken(id: string, qrToken: string, tx: TxContext) {
+    const doc = await this.model
+      .findOneAndUpdate(
+        { _id: oid(id), status: "valid" },
+        { $set: { qrToken } },
+        { new: true, session: sessionOf(tx) },
+      )
+      .lean<TicketDoc>()
+      .exec();
+    return doc ? toTicket(doc) : null;
   }
 
   async findByQrToken(qrToken: string) {

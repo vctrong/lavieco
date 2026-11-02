@@ -61,8 +61,25 @@ describe("ticketEmail", () => {
     expect(ticketEmail(cases[1]!.input).html).not.toContain("/dang-ky");
   });
 
+  it("says when a QR was reissued, not that the codes are unchanged", () => {
+    const mail = ticketEmail(cases.find((item) => item.name === "reissued-qr")!.input);
+    expect(mail.subject).toContain("Mã QR mới");
+    expect(mail.text).toContain("đã cấp lại mã QR");
+    expect(mail.text).not.toContain("không thay đổi");
+  });
+
+  it("labels combo tickets and links each ticket for sharing", () => {
+    const { input } = cases.find((item) => item.name === "combo-two-people")!;
+    const mail = ticketEmail(input);
+    expect(mail.html).toContain("Combo 2 người · suất 1 · vé 2/2");
+    for (const ticket of input.tickets) {
+      expect(mail.html).toContain(input.ticketShareUrl(ticket));
+    }
+    expect(mail.text).toContain(input.ticketShareUrl(input.tickets[0]!));
+  });
+
   it("says when the tickets are sent again", () => {
-    const mail = ticketEmail(cases[5]!.input);
+    const mail = ticketEmail(cases[7]!.input);
     expect(mail.subject).toBe("Gửi lại vé: Workshop làm chậu cây từ bột vỏ sò");
     expect(mail.text).toContain("Vé và mã QR không thay đổi");
   });
@@ -72,7 +89,7 @@ describe("ticketEmail", () => {
       Array.from({ length: ORDER_LIMITS.ticketsPerOrderMax }, () => "Vé tiêu chuẩn có tên khá dài"),
     );
     const mail = ticketEmail({
-      ...cases[6]!.input,
+      ...cases[8]!.input,
       tickets,
       event: fakeEvent({ safetyNotes: "x".repeat(2000), title: "t".repeat(200) }),
     });

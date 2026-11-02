@@ -20,6 +20,7 @@ const ticketType = (overrides: Partial<TicketTypeRecord> = {}): TicketTypeRecord
   saleStartAt: null,
   saleEndAt: null,
   maxPerOrder: 4,
+  seatsPerUnit: 1,
   sortOrder: 0,
   hidden: false,
   sold: 0,
@@ -37,6 +38,7 @@ describe("priceOrder", () => {
       name: "Vé tiêu chuẩn",
       unitPrice: 150_000,
       quantity: 2,
+      seatsPerUnit: 1,
     });
   });
 
@@ -61,6 +63,27 @@ describe("priceOrder", () => {
     );
     const lines = types.map((type) => ({ ticketTypeId: type.id, quantity: 4 }));
     expect(() => priceOrder(types, lines, now)).toThrow("order.items_invalid");
+  });
+});
+
+describe("priceOrder with combos", () => {
+  const now = new Date("2026-10-20T00:00:00Z");
+  const combo = ticketType({ seatsPerUnit: 2, price: 180_000, maxPerOrder: 10 });
+  const line = (quantity: number) => [{ ticketTypeId: combo.id, quantity }];
+
+  it("prices per unit and counts people", () => {
+    const priced = priceOrder([combo], line(3), now);
+    expect(priced.amount).toBe(540_000);
+    expect(priced.ticketCount).toBe(6);
+    expect(priced.items[0]?.seatsPerUnit).toBe(2);
+  });
+
+  it("applies the 20-ticket cap to people", () => {
+    expect(priceOrder([combo], line(10), now).ticketCount).toBe(20);
+    const big = ticketType({ seatsPerUnit: 3, maxPerOrder: 10 });
+    expect(() => priceOrder([big], [{ ticketTypeId: big.id, quantity: 7 }], now)).toThrow(
+      "order.items_invalid",
+    );
   });
 });
 

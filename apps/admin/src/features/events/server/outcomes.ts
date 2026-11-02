@@ -25,6 +25,7 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, EventFailure>> = {
   "event.past_event_restricted": "past_event_restricted",
   "event.discard_not_allowed": "discard_not_allowed",
   "ticket_type.locked": "ticket_locked",
+  "event.capacity_below_taken": "capacity_below_taken",
   "ticket_type.limit_reached": "ticket_limit",
   "event_type.name_taken": "type_name_taken",
   "media.unavailable": "media_unavailable",

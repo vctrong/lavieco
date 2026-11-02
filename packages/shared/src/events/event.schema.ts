@@ -122,6 +122,11 @@ const detailsShape = {
   speakers: z.array(eventSpeakerInputSchema).max(EVENT_LIMITS.speakersMax).default([]),
   agenda: z.array(eventAgendaItemSchema).max(EVENT_LIMITS.agendaMax).default([]),
   faq: z.array(eventFaqItemSchema).max(EVENT_LIMITS.faqMax).default([]),
+  /**
+   * Most people the whole event takes, every ticket type counted by its people; null =
+   * no shared limit. Each ticket type still has its own `quantity`.
+   */
+  capacity: z.number().int().min(1).max(EVENT_LIMITS.quantityMax).nullable().default(null),
   /** Poster, cropped client-side. Uploaded beforehand through content-service; attached on save. */
   cover: mediaImageInputSchema.nullable().default(null),
   posterRatio: eventPosterRatioSchema.default("4:5"),
@@ -254,6 +259,9 @@ export const eventSchema = z.object({
   cancellation: eventCancellationSchema.nullable(),
   form: eventFormSchema,
   ticketTypes: z.array(ticketTypeSchema),
+  capacity: z.number().int().nullable(),
+  /** People with a seat sold or held, across every ticket type. */
+  seatsTaken: z.number().int(),
   pricing: eventPricingSchema,
   /** True once any seat is sold or held: unpublishing and form edits are restricted. */
   hasRegistrations: z.boolean(),
@@ -282,7 +290,7 @@ export const eventListItemSchema = z.object({
   cover: eventImageSchema.nullable(),
   posterRatio: eventPosterRatioSchema,
   pricing: eventPricingSchema,
-  /** `capacity` null = unlimited (or no ticket type yet). */
+  /** In people. `capacity` null = unlimited (or no ticket type yet). */
   seats: z.object({ sold: z.number().int(), capacity: z.number().int().nullable() }),
   updatedAt: isoDateTimeSchema,
 });

@@ -34,6 +34,8 @@ const EVENT: Pick<PublicEventDetail, "slug" | "ticketTypes" | "registration"> = 
       saleStartAt: null,
       saleEndAt: null,
       maxPerOrder: 2,
+      seatsPerUnit: 1,
+      unitsLeft: null,
       availability: { soldOut: false, seatsLeft: null },
     },
   ],

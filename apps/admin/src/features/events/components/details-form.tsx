@@ -267,6 +267,19 @@ export function DetailsForm({
             error={errors.minAge}
             disabled={disabled}
           />
+          {values.kind === "standard" ? (
+            <TextField
+              tone="light"
+              inputMode="numeric"
+              label={t.editor.fields.capacity}
+              hint={t.editor.fields.capacityHint}
+              value={values.capacity}
+              maxLength={6}
+              onChange={(e) => set("capacity", e.target.value)}
+              error={errors.capacity}
+              disabled={disabled}
+            />
+          ) : null}
         </div>
       </EditorSection>
 

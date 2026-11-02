@@ -1,6 +1,10 @@
 import type { OutboxPort, UnitOfWork } from "@lavieco/service-kit/ports";
 import { DomainError } from "@lavieco/shared";
-import type { OrderListQuery, OrderRefundRequest } from "@lavieco/shared/events";
+import type {
+  OrderListQuery,
+  OrderRefundRequest,
+  TicketReissueRequest,
+} from "@lavieco/shared/events";
 import type { Role } from "@lavieco/shared/permissions";
 
 import type { AuditTrail } from "../../audit";
@@ -9,7 +13,9 @@ import type { TicketTypeRepository } from "../../ticketing";
 import { assertRefundable, type OrderAnswer, type OrderRecord } from "../domain/order";
 import type { TicketRecord } from "../domain/ticket";
 import type { OrderSettlementService } from "./order-settlement-service";
+import { newQrToken } from "../domain/codes";
 import { SEND_TICKETS_JOB } from "./order-jobs";
+import { releaseSeats } from "./seats";
 import type {
   OrderAnswerRepository,
   OrderRepository,
@@ -86,6 +92,45 @@ export class OrderAdminService {
     );
   }
 
+  /**
+   * "Cấp lại QR" when a ticket was shared by mistake: a new random token (BR-16), so the
+   * old QR and the ticket's share link stop working. A used or void ticket has nothing
+   * to protect. Audited; ids and the ticket code only, never the booker.
+   */
+  async reissueQr(
+    ticketId: string,
+    input: TicketReissueRequest,
+    actor: StaffActor,
+    now = new Date(),
+  ): Promise<AdminOrderDetail> {
+    const ticket = await this.tickets.findById(ticketId);
+    if (!ticket) throw new DomainError("common.not_found");
+    const order = await this.orders.findById(ticket.orderId);
+    if (!order || order.status !== "paid") throw new DomainError("order.invalid_state");
+    await this.unitOfWork.run(async (tx) => {
+      const changed = await this.tickets.replaceQrToken(ticket.id, newQrToken(), tx);
+      if (!changed) throw new DomainError("order.invalid_state");
+      await this.audit.record(
+        tx,
+        {
+          action: "ticket.reissue_qr",
+          actor: { userId: actor.userId, roles: actor.roles },
+          target: { type: "ticket", id: ticket.id },
+          requestId: actor.requestId,
+          meta: { orderCode: order.orderCode, code: ticket.code, notifyBuyer: input.notifyBuyer },
+        },
+        now,
+      );
+      if (input.notifyBuyer) {
+        await this.outbox.enqueue(tx, {
+          type: SEND_TICKETS_JOB,
+          payload: { orderId: order.id, reissued: true },
+        });
+      }
+    });
+    return this.detail(order.id);
+  }
+
   /** Step-up is checked by the controller before this runs (ADR-0021). */
   async markRefunded(
     orderId: string,
@@ -107,9 +152,12 @@ export class OrderAdminService {
       await this.tickets.voidByOrder(orderId, now, tx);
       // A late payment that found no seat (refund required) holds none to give back.
       if (current.seatState === "sold") {
-        for (const item of current.items) {
-          await this.ticketTypes.release(item.ticketTypeId, item.quantity, "sold", tx);
-        }
+        await releaseSeats(
+          { ticketTypes: this.ticketTypes, events: this.events },
+          current,
+          "sold",
+          tx,
+        );
       }
       await this.audit.record(
         tx,

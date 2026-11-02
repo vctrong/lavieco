@@ -18,6 +18,7 @@ import type {
   PublicTicketType,
   RegistrationBlocker,
 } from "@lavieco/shared/events";
+import { maxUnitsOf } from "@lavieco/shared/events";
 import { cn } from "@lavieco/ui";
 
 import { SIGN_IN_PATH, TICKET_LOOKUP_PATH, checkoutPath, eventPath } from "../constants/config";
@@ -48,9 +49,8 @@ function blockedLabel(state: PublicEventState, blocker: RegistrationBlocker | nu
   return blocker ? t.blockers[blocker] : t.blocked.closed;
 }
 
-/** At most this many seats can be picked: the per-order cap, and the seats left if known. */
-const maxOf = (ticket: PublicTicketType) =>
-  Math.max(1, Math.min(ticket.maxPerOrder, ticket.availability.seatsLeft ?? ticket.maxPerOrder));
+/** At most this many units can be picked, never below one so the stepper stays sane. */
+const maxOf = (ticket: PublicTicketType) => Math.max(1, maxUnitsOf(ticket));
 
 /**
  * The ONE ticket box of the event page (sticky on large screens, a bar at the bottom
@@ -185,6 +185,16 @@ export function TicketCard(props: TicketCardProps) {
                           {ticket.price === 0 ? t.free : formatVnd(ticket.price)}
                         </span>
                       </span>
+                      {ticket.seatsPerUnit > 1 ? (
+                        <span className="mt-0.5 block text-body-sm font-medium text-emerald-ink">
+                          {t.combo(
+                            ticket.seatsPerUnit,
+                            ticket.price === 0
+                              ? t.free
+                              : formatVnd(Math.round(ticket.price / ticket.seatsPerUnit)),
+                          )}
+                        </span>
+                      ) : null}
                       {ticket.description ? (
                         <span className="mt-0.5 block text-body-sm text-charcoal/70">
                           {ticket.description}
@@ -195,7 +205,10 @@ export function TicketCard(props: TicketCardProps) {
                           ? t.soldOutType
                           : ticket.availability.seatsLeft
                             ? TEXT.vi.card.seatsLeft(ticket.availability.seatsLeft)
-                            : window || t.perOrder(ticket.maxPerOrder)}
+                            : window ||
+                              (ticket.seatsPerUnit > 1
+                                ? t.perUnit(ticket.maxPerOrder)
+                                : t.perOrder(ticket.maxPerOrder))}
                       </span>
                     </span>
                   </label>
@@ -241,7 +254,9 @@ export function TicketCard(props: TicketCardProps) {
         ) : null}
         {canBook && selected ? (
           <p className="mt-1 text-right text-meta text-charcoal/60">
-            {t.perOrder(selected.maxPerOrder)}
+            {selected.seatsPerUnit > 1
+              ? `${t.perUnit(selected.maxPerOrder)} · ${t.people(count * selected.seatsPerUnit)}`
+              : t.perOrder(selected.maxPerOrder)}
           </p>
         ) : null}
 

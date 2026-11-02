@@ -25,6 +25,27 @@ export class HmacOrderLinks implements OrderLinks {
     return given.length === expected.length && timingSafeEqual(given, expected) ? orderId : null;
   }
 
+  signTicket(ticket: { id: string; qrToken: string }): string {
+    return `${ticket.id}.${this.ticketMac(ticket)}`;
+  }
+
+  ticketIdOf(token: string): string | null {
+    const [ticketId, mac, extra] = token.split(".");
+    return ticketId && mac && extra === undefined && ORDER_ID.test(ticketId) ? ticketId : null;
+  }
+
+  verifyTicket(token: string, ticket: { id: string; qrToken: string }): boolean {
+    const expected = Buffer.from(this.signTicket(ticket));
+    const given = Buffer.from(token);
+    return given.length === expected.length && timingSafeEqual(given, expected);
+  }
+
+  private ticketMac(ticket: { id: string; qrToken: string }): string {
+    return createHmac("sha256", this.secret)
+      .update(`ticket:${ticket.id}:${ticket.qrToken}`)
+      .digest("base64url");
+  }
+
   private mac(orderId: string): string {
     return createHmac("sha256", this.secret).update(`order:${orderId}`).digest("base64url");
   }

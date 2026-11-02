@@ -7,16 +7,22 @@ import {
   orderCreateResponseSchema,
   orderViewSchema,
   publicEventDetailSchema,
+  sharedTicketViewSchema,
   ticketLookupResponseSchema,
 } from "@lavieco/shared/events";
+
+import type { AuditEventIngestRequest } from "@lavieco/shared/identity";
 
 import { BUYER, book, publishedEvent } from "../support/fixtures";
 import { bearer, createTestApp, drainOutbox, type TestApp } from "../support/test-app";
 
 let t: TestApp;
+const audited: AuditEventIngestRequest[] = [];
 
 beforeAll(async () => {
-  t = await createTestApp(inject("mongoUri"));
+  t = await createTestApp(inject("mongoUri"), {
+    auditSink: { send: async (event) => void audited.push(event) },
+  });
 });
 
 afterAll(async () => {
@@ -40,6 +46,146 @@ async function view(token: string) {
     .expect(200);
   return orderViewSchema.parse(res.body);
 }
+
+describe("combos, shared capacity, shared tickets (PR3 'done when')", () => {
+  it("one combo for 2: two QRs, two independent check-ins, capacity down by 2", async () => {
+    const { event, ticketTypeIds } = await publishedEvent(t, {
+      tickets: [{ quantity: 5, seatsPerUnit: 2, maxPerOrder: 2 }],
+      details: { capacity: 10 },
+    });
+    const res = await book(t, {
+      slug: event.slug,
+      items: [{ ticketTypeId: ticketTypeIds[0]!, quantity: 1 }],
+      buyer: { ...BUYER, email: "combo@example.test" },
+    });
+    expect(res.status).toBe(201);
+    const { order } = orderCreateResponseSchema.parse(res.body);
+    expect(order.tickets).toHaveLength(2);
+    expect(order.tickets.map((ticket) => [ticket.unitIndex, ticket.seatIndex])).toEqual([
+      [1, 1],
+      [1, 2],
+    ]);
+    expect(order.tickets[0]!.qrToken).not.toBe(order.tickets[1]!.qrToken);
+    const stored = await t.db.collection("events").findOne({ slug: event.slug });
+    expect(stored).toMatchObject({ capacity: 10, seatsSold: 2, seatsHeld: 0 });
+    expect(await seats(ticketTypeIds[0]!)).toEqual({ sold: 1, held: 0 });
+
+    const staff = bearer(await t.staffToken(["coordinator"]));
+    for (const ticket of order.tickets) {
+      const scan = await t
+        .http()
+        .post("/internal/v1/checkins")
+        .set("authorization", staff)
+        .send({ eventId: event.id, qrToken: ticket.qrToken })
+        .expect(200);
+      expect(scan.body.result).toBe("valid");
+      expect(scan.body.ticket.seatsPerUnit).toBe(2);
+    }
+  });
+
+  it("shares the capacity across ticket types and never oversells it at the same time", async () => {
+    const { event, ticketTypeIds } = await publishedEvent(t, {
+      tickets: [
+        { quantity: 10, seatsPerUnit: 2, maxPerOrder: 2 },
+        { quantity: 10, maxPerOrder: 4 },
+      ],
+      details: { capacity: 3 },
+    });
+    const attempts = await Promise.all(
+      [
+        { email: "a@example.test", ticketTypeId: ticketTypeIds[0]!, quantity: 1 },
+        { email: "b@example.test", ticketTypeId: ticketTypeIds[0]!, quantity: 1 },
+        { email: "c@example.test", ticketTypeId: ticketTypeIds[1]!, quantity: 3 },
+      ].map(({ email, ticketTypeId, quantity }) =>
+        book(t, {
+          slug: event.slug,
+          items: [{ ticketTypeId, quantity }],
+          buyer: { ...BUYER, email },
+        }),
+      ),
+    );
+    const won = attempts.filter((res) => res.status === 201);
+    expect(won).toHaveLength(1);
+    const refused = attempts.filter((res) => res.status === 409);
+    expect(refused).toHaveLength(2);
+    for (const res of refused) expect(res.body.code).toBe("order.sold_out");
+    const stored = await t.db.collection("events").findOne({ slug: event.slug });
+    expect(stored!.seatsSold).toBeLessThanOrEqual(3);
+  });
+
+  it("shows one QR and no booker data behind a share link; reissue kills it", async () => {
+    const sharer = { ...BUYER, email: "chia.se@example.test" };
+    const { event, ticketTypeIds } = await publishedEvent(t);
+    const res = await book(t, {
+      slug: event.slug,
+      items: [{ ticketTypeId: ticketTypeIds[0]!, quantity: 2 }],
+      buyer: sharer,
+    });
+    const { order, accessToken } = orderCreateResponseSchema.parse(res.body);
+    const shareToken = order.tickets[0]!.shareToken!;
+
+    const shared = await t
+      .http()
+      .get(`/internal/v1/ticket-links/${shareToken}`)
+      .set("authorization", await web())
+      .expect(200);
+    const parsed = sharedTicketViewSchema.parse(shared.body);
+    expect(parsed.qrToken).toBe(order.tickets[0]!.qrToken);
+    const body = JSON.stringify(shared.body);
+    for (const value of [sharer.email, sharer.fullName, sharer.phone, order.tickets[1]!.code]) {
+      expect(body).not.toContain(value);
+    }
+
+    const stored = await t.db.collection("tickets").findOne({ code: order.tickets[0]!.code });
+    const staff = bearer(await t.staffToken(["coordinator"]));
+    await t
+      .http()
+      .post(`/internal/v1/orders/tickets/${stored!._id.toHexString()}/reissue-qr`)
+      .set("authorization", staff)
+      .send({ notifyBuyer: true })
+      .expect(200);
+
+    await t
+      .http()
+      .get(`/internal/v1/ticket-links/${shareToken}`)
+      .set("authorization", await web())
+      .expect(404);
+    const scan = await t
+      .http()
+      .post("/internal/v1/checkins")
+      .set("authorization", staff)
+      .send({ eventId: event.id, qrToken: order.tickets[0]!.qrToken })
+      .expect(200);
+    expect(scan.body.result).toBe("invalid");
+    const fresh = await view(accessToken);
+    expect(fresh.tickets[0]!.qrToken).not.toBe(order.tickets[0]!.qrToken);
+    await drainOutbox(t);
+    const audit = audited.find(
+      (entry) =>
+        entry.action === "ticket.reissue_qr" && entry.target?.id === stored!._id.toHexString(),
+    );
+    expect(audit).toBeDefined();
+    expect(JSON.stringify(audit)).not.toContain(sharer.email);
+    expect(t.emails.to(sharer.email).at(-1)?.subject).toContain("Mã QR mới");
+  });
+
+  it("refuses a reissue without order:refund", async () => {
+    const { event, ticketTypeIds } = await publishedEvent(t);
+    const res = await book(t, {
+      slug: event.slug,
+      items: [{ ticketTypeId: ticketTypeIds[0]!, quantity: 1 }],
+      buyer: { ...BUYER, email: "khong.quyen@example.test" },
+    });
+    const { order } = orderCreateResponseSchema.parse(res.body);
+    const stored = await t.db.collection("tickets").findOne({ code: order.tickets[0]!.code });
+    await t
+      .http()
+      .post(`/internal/v1/orders/tickets/${stored!._id.toHexString()}/reissue-qr`)
+      .set("authorization", bearer(await t.staffToken(["content_editor"])))
+      .send({ notifyBuyer: false })
+      .expect(403);
+  });
+});
 
 describe("free registration (Phase 3 'done when')", () => {
   it("guest → proof → paid order of 0 đ → one QR ticket per seat → email", async () => {

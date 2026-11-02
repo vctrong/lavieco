@@ -51,12 +51,22 @@ export function formatSchedule(start: Date, end: Date): string {
 export const qrCid = (ticket: Pick<TicketRecord, "code">) => `qr-${ticket.code}@lavieco`;
 
 const KEEP_SAFE =
-  "Không cần in vé: mở email này hoặc trang vé tại cửa. Mỗi mã QR chỉ check-in được một lần, đừng chia sẻ cho người khác.";
+  "Không cần in vé: mở email này hoặc trang vé tại cửa. Mỗi mã QR chỉ check-in được một lần. Đi cùng ai thì chuyển cho người đó link của đúng một vé, link không có thông tin của bạn.";
+
+/** "Combo 2 người · suất 1 · vé 2/2" for a combo; null for a plain ticket. */
+export function comboLabel(ticket: Pick<TicketRecord, "seatsPerUnit" | "unitIndex" | "seatIndex">) {
+  if (ticket.seatsPerUnit <= 1) return null;
+  return `Combo ${ticket.seatsPerUnit} người · suất ${ticket.unitIndex} · vé ${ticket.seatIndex}/${ticket.seatsPerUnit}`;
+}
 
 /** One ticket: type, position, QR on white (scannable even when the client darkens the email), code. */
-function ticketBlock(ticket: TicketRecord, index: number, total: number) {
+function ticketBlock(ticket: TicketRecord, index: number, total: number, shareUrl: string) {
   const code = escapeHtml(ticket.code);
-  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.white}" style="margin:0 0 16px;background:${C.white};border:1px solid ${C.hairline};border-radius:16px;border-collapse:separate"><tr><td style="padding:14px 20px;border-bottom:1px dashed ${C.hairline};font-family:${F.body};font-size:15px;line-height:22px;font-weight:bold;color:${C.deepBlue}">${escapeHtml(ticket.ticketTypeName)}</td><td align="right" style="padding:14px 20px;border-bottom:1px dashed ${C.hairline};font-family:${F.body};font-size:12px;color:${C.muted};white-space:nowrap">Vé ${index + 1}/${total}</td></tr><tr><td colspan="2" align="center" style="padding:20px"><img src="cid:${qrCid(ticket)}" width="200" height="200" alt="Mã QR vé ${code}" style="display:block;border:0;width:200px;height:200px"><p style="margin:12px 0 2px;font-family:${F.mono};font-size:20px;line-height:26px;font-weight:bold;letter-spacing:3px;color:${C.deepBlue}">${code}</p><p style="margin:0;font-family:${F.body};font-size:12px;line-height:18px;color:${C.muted}">Mỗi mã chỉ check-in được một lần</p></td></tr></table>`;
+  const combo = comboLabel(ticket);
+  const comboHtml = combo
+    ? `<p style="margin:0 0 12px;font-family:${F.body};font-size:12px;line-height:18px;color:${C.muted}">${escapeHtml(combo)}</p>`
+    : "";
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="${C.white}" style="margin:0 0 16px;background:${C.white};border:1px solid ${C.hairline};border-radius:16px;border-collapse:separate"><tr><td style="padding:14px 20px;border-bottom:1px dashed ${C.hairline};font-family:${F.body};font-size:15px;line-height:22px;font-weight:bold;color:${C.deepBlue}">${escapeHtml(ticket.ticketTypeName)}</td><td align="right" style="padding:14px 20px;border-bottom:1px dashed ${C.hairline};font-family:${F.body};font-size:12px;color:${C.muted};white-space:nowrap">Vé ${index + 1}/${total}</td></tr><tr><td colspan="2" align="center" style="padding:20px">${comboHtml}<img src="cid:${qrCid(ticket)}" width="200" height="200" alt="Mã QR vé ${code}" style="display:block;border:0;width:200px;height:200px"><p style="margin:12px 0 2px;font-family:${F.mono};font-size:20px;line-height:26px;font-weight:bold;letter-spacing:3px;color:${C.deepBlue}">${code}</p><p style="margin:0;font-family:${F.body};font-size:12px;line-height:18px;color:${C.muted}">Mỗi mã chỉ check-in được một lần</p><p style="margin:8px 0 0;font-family:${F.body};font-size:13px;line-height:18px">${emailLink(shareUrl, "Chia sẻ vé này")}</p></td></tr></table>`;
 }
 
 export type TicketEmailInput = {
@@ -64,9 +74,13 @@ export type TicketEmailInput = {
   event: EventRecord;
   tickets: TicketRecord[];
   ticketPageUrl: string;
+  /** `/ve/v/[token]` of one ticket: its QR and the event, no booker data. */
+  ticketShareUrl: (ticket: TicketRecord) => string;
   webAppUrl: string;
   /** Sent again by the team ("Gửi lại vé"): same tickets, one more line. */
   resend?: boolean;
+  /** "Cấp lại QR": a QR changed, so the earlier email no longer works for that ticket. */
+  reissued?: boolean;
 };
 
 /**
@@ -77,12 +91,25 @@ export type TicketEmailInput = {
  * only, never attendee names (BR-13). TODO(phase-6): `.ics` attachment.
  */
 export function ticketEmail(input: TicketEmailInput) {
-  const { order, event, tickets, ticketPageUrl, webAppUrl, resend = false } = input;
+  const {
+    order,
+    event,
+    tickets,
+    ticketPageUrl,
+    ticketShareUrl,
+    webAppUrl,
+    resend = false,
+    reissued = false,
+  } = input;
   const schedule = formatSchedule(event.startAt, event.endAt);
   const free = order.amount === 0;
   const status = free ? "Đã xác nhận" : "Đã thanh toán";
   const total = free ? "Miễn phí" : MONEY.format(order.amount);
-  const lines = order.items.map((item) => `${item.quantity} × ${item.name}`);
+  const lines = order.items.map((item) =>
+    item.seatsPerUnit > 1
+      ? `${item.quantity} × ${item.name} (${item.quantity * item.seatsPerUnit} người)`
+      : `${item.quantity} × ${item.name}`,
+  );
   const online = event.format === "online";
   const place = online
     ? (event.onlineUrl ?? "Trực tuyến")
@@ -93,9 +120,11 @@ export function ticketEmail(input: TicketEmailInput) {
   const signUpUrl = new URL("/dang-ky", webAppUrl).toString();
   const safetyNotes = event.safetyNotes.trim();
   const greeting = `Xin chào ${order.buyer.fullName},`;
-  const intro = resend
-    ? `LAVIECO gửi lại vé "${event.title}" theo yêu cầu. Vé và mã QR không thay đổi.`
-    : `Cảm ơn bạn đã đăng ký "${event.title}". Mỗi vé dưới đây có một mã QR riêng để check-in tại cửa.`;
+  const intro = reissued
+    ? `LAVIECO đã cấp lại mã QR cho vé "${event.title}". Hãy dùng các mã trong email này; mã cũ đã được cấp lại không còn check-in được.`
+    : resend
+      ? `LAVIECO gửi lại vé "${event.title}" theo yêu cầu. Vé và mã QR không thay đổi.`
+      : `Cảm ơn bạn đã đăng ký "${event.title}". Mỗi vé dưới đây có một mã QR riêng để check-in tại cửa.`;
 
   const placeHtml =
     online && event.onlineUrl ? emailLink(event.onlineUrl, event.onlineUrl) : escapeHtml(place);
@@ -113,7 +142,9 @@ export function ticketEmail(input: TicketEmailInput) {
     ),
     emailButton("Xem vé trực tuyến", ticketPageUrl),
     emailSubheading(`Vé của bạn (${tickets.length})`),
-    tickets.map((ticket, index) => ticketBlock(ticket, index, tickets.length)).join(""),
+    tickets
+      .map((ticket, index) => ticketBlock(ticket, index, tickets.length, ticketShareUrl(ticket)))
+      .join(""),
     safetyNotes
       ? emailPanel(
           emailSubheading("Lưu ý an toàn") + emailParagraph(multiline(safetyNotes)),
@@ -148,7 +179,7 @@ export function ticketEmail(input: TicketEmailInput) {
     "",
     ...tickets.map(
       (ticket, index) =>
-        `Vé ${index + 1}/${tickets.length} · ${ticket.ticketTypeName}: ${ticket.code}`,
+        `Vé ${index + 1}/${tickets.length} · ${ticket.ticketTypeName}: ${ticket.code} · Chia sẻ: ${ticketShareUrl(ticket)}`,
     ),
     ...(safetyNotes ? ["", "Lưu ý an toàn:", safetyNotes] : []),
     "",
@@ -162,10 +193,18 @@ export function ticketEmail(input: TicketEmailInput) {
   ];
 
   return renderEmail({
-    subject: resend ? `Gửi lại vé: ${event.title}` : `Vé của bạn: ${event.title}`,
+    subject: reissued
+      ? `Mã QR mới: ${event.title}`
+      : resend
+        ? `Gửi lại vé: ${event.title}`
+        : `Vé của bạn: ${event.title}`,
     preheader: `${tickets.length} vé · ${SHORT_DATE.format(event.startAt)} · Mã đơn ${order.orderCode}`,
     eyebrow: status,
-    heading: resend ? "Gửi lại vé của bạn" : "Vé của bạn đã sẵn sàng",
+    heading: reissued
+      ? "Mã QR của bạn đã được cấp lại"
+      : resend
+        ? "Gửi lại vé của bạn"
+        : "Vé của bạn đã sẵn sàng",
     bodyHtml,
     textLines,
     reason: `Bạn nhận email này vì đã đặt vé "${event.title}" trên website LAVIECO bằng địa chỉ email này.`,

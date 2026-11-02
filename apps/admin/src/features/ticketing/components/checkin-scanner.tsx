@@ -211,6 +211,15 @@ export function CheckinScanner({
                 {result.ticket.ticketTypeName} ·{" "}
                 <span className="tracking-wider">{result.ticket.code}</span>
               </p>
+              {result.ticket.seatsPerUnit > 1 ? (
+                <p className="text-[13.5px]">
+                  {TEXT.vi.detail.combo(
+                    result.ticket.seatsPerUnit,
+                    result.ticket.unitIndex,
+                    result.ticket.seatIndex,
+                  )}
+                </p>
+              ) : null}
               {result.result === "already_used" && result.ticket.checkedInAt ? (
                 <p className="mt-1 font-semibold">
                   {t.usedAt(formatTime(result.ticket.checkedInAt))}

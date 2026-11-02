@@ -18,6 +18,7 @@ export const ticketTypeSchema = new Schema(
     saleStartAt: { type: Date, default: null },
     saleEndAt: { type: Date, default: null },
     maxPerOrder: { type: Number, required: true },
+    seatsPerUnit: { type: Number, required: true, default: 1, min: 1 },
     sortOrder: { type: Number, default: 0 },
     hidden: { type: Boolean, default: false },
     sold: { type: Number, required: true, default: 0 },

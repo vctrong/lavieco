@@ -20,8 +20,14 @@ export type OrderItem = {
   ticketTypeId: string;
   name: string;
   unitPrice: number;
+  /** Units bought; each seats `seatsPerUnit` people, with one ticket per person. */
   quantity: number;
+  seatsPerUnit: number;
 };
+
+/** People an order line seats: what the event capacity and the tickets count. */
+export const peopleOf = (items: readonly Pick<OrderItem, "quantity" | "seatsPerUnit">[]) =>
+  items.reduce((sum, item) => sum + item.quantity * item.seatsPerUnit, 0);
 
 /**
  * The booker only (BR-13). Personal data, kept apart from the financial fields so the
@@ -94,7 +100,7 @@ export const NO_FLAGS: OrderFlags = {
 /**
  * Prices the selection from the ticket types as stored, never from the client
  * (docs/05 §7). Hidden, unknown or off-sale types, a quantity above the type's
- * `maxPerOrder` and more than 20 tickets in total are refused.
+ * `maxPerOrder` and more than 20 people in total are refused.
  */
 export function priceOrder(
   ticketTypes: readonly TicketTypeRecord[],
@@ -115,9 +121,10 @@ export function priceOrder(
       name: ticketType.name,
       unitPrice: ticketType.price,
       quantity: line.quantity,
+      seatsPerUnit: ticketType.seatsPerUnit,
     };
   });
-  const ticketCount = items.reduce((sum, item) => sum + item.quantity, 0);
+  const ticketCount = peopleOf(items);
   if (items.length === 0 || ticketCount > ORDER_LIMITS.ticketsPerOrderMax) {
     throw new DomainError("order.items_invalid", "too many tickets in one order");
   }
