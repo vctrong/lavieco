@@ -2,6 +2,9 @@
 
 export const LAVIAGENT_HREF = "/laviagent";
 
+/** The landing section's glimpse of a scan (public/images/landing). Alt text is in text.ts. */
+export const INTRO_IMAGE = "/images/landing/scan-rac-laviagent.webp";
+
 /** `?hoi-thoai=<id>`: reopen a conversation (from history, or back from an idea page). */
 export const CONVERSATION_PARAM = "hoi-thoai";
 /** `?y-tuong=<id>`: start a conversation about an idea (idea page opened directly). */

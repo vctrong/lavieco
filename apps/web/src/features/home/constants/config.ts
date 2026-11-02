@@ -21,6 +21,34 @@ export const ROUTES = {
  */
 export const MARQUEE_REPEAT = 2;
 
+/** Landing photos (public/images/landing, webp). Alt text lives in constants/text.ts. */
+export const HERO_ARCH_IMAGES = {
+  main: "/images/landing/trien-lam-showcase.webp",
+  deep: "/images/landing/mau-san-pham-tu-vo-so-nguyen.webp",
+  raw: "/images/landing/vo-so-nguyen-ban.webp",
+} as const;
+
+/** Hero fan-out: pointer parallax ceiling, and how long it stays open on touch screens. */
+export const HERO_FAN = { parallaxMaxPx: 6, touchHoldMs: 1800 } as const;
+
+/** In stage order: 01 → 04. */
+export const JOURNEY_STAGE_IMAGES = [
+  "/images/landing/thu-gom-vo-tho.webp",
+  "/images/landing/lam-sach-khu-mui.webp",
+  "/images/landing/tao-tac-thu-cong.webp",
+  "/images/landing/ke-chuyen-qr.webp",
+] as const;
+
+/**
+ * In card order. `illustrative` marks staged images, which carry a visible note: this
+ * section is proof of the real objects, so a staged photo must not pass as one (BR-01).
+ */
+export const COLLECTION_CARD_IMAGES = [
+  { src: "/images/landing/mau-day-chuyen-vo-so.webp", illustrative: false },
+  { src: "/images/landing/mau-gom-vo-so.webp", illustrative: true },
+  { src: "/images/landing/qua-tang-xanh.webp", illustrative: true },
+] as const;
+
 /**
  * Per-stage look of "Từ vỏ đến tác phẩm": card heights rise like a tide
  * (88% → 100% of `--journey-h`, which follows the viewport height so the section fits one
@@ -88,25 +116,22 @@ export const PROGRAM_LEVEL_STYLES = [
   },
 ] as const;
 
-/** Collection cards: arch heights, tilt of the story card behind, and visuals. */
+/** Collection cards: heights, tilt of the story card behind, and image heights. */
 export const COLLECTION_CARD_STYLES = [
   {
-    arch: "h-[420px] border-hairline shadow-lg hover:shadow-xl",
-    visual: "h-[260px] to-emerald-brand/25",
-    story: "-right-3 -top-4 w-44 rotate-[6deg] group-hover:rotate-[12deg]",
-    rings: [50, 90, 130, 170],
+    card: "min-h-[420px] border-hairline shadow-lg hover:shadow-xl",
+    visual: "h-[260px]",
+    story: "-right-3 -top-20 w-44 rotate-[6deg] group-hover:rotate-[12deg]",
   },
   {
-    arch: "h-[500px] border-2 border-emerald-brand/40 shadow-xl hover:shadow-2xl",
-    visual: "h-[340px] to-emerald-brand/30",
-    story: "-left-3 -top-6 w-48 rotate-[-7deg] group-hover:rotate-[-12deg]",
-    rings: [40, 80, 120],
+    card: "min-h-[500px] border-2 border-emerald-brand/40 shadow-xl hover:shadow-2xl",
+    visual: "h-[340px]",
+    story: "-left-3 -top-20 w-48 rotate-[-7deg] group-hover:rotate-[-12deg]",
   },
   {
-    arch: "h-[460px] border-hairline shadow-lg hover:shadow-xl",
-    visual: "h-[300px] to-deep-blue/20",
-    story: "-right-3 -top-5 w-52 rotate-[5deg] group-hover:rotate-[10deg]",
-    rings: [60, 100, 140],
+    card: "min-h-[460px] border-hairline shadow-lg hover:shadow-xl",
+    visual: "h-[300px]",
+    story: "-right-3 -top-20 w-52 rotate-[5deg] group-hover:rotate-[10deg]",
   },
 ] as const;
 

@@ -6,7 +6,7 @@ import { Button, Container, Eyebrow } from "@lavieco/ui";
 
 import { LaviAgentMascot } from "@/shared/components/illustrations/laviagent-mascot";
 
-import { LAVIAGENT_HREF } from "../constants/config";
+import { INTRO_IMAGE, LAVIAGENT_HREF } from "../constants/config";
 import { TEXT } from "../constants/text";
 import type { Material } from "../types";
 import { StepsStrip } from "./steps-strip";
@@ -54,15 +54,11 @@ export function LaviAgentIntroSection({ materials }: { materials: Material[] }) 
             <div className="relative mx-auto w-full max-w-sm">
               <div className="relative aspect-[4/5] overflow-hidden rounded-t-[9rem] rounded-b-[1.5rem] border border-hairline-light bg-soft-white/5">
                 <Image
-                  src={first.sample.image}
-                  alt={first.sample.alt}
+                  src={INTRO_IMAGE}
+                  alt={t.intro.imageAlt}
                   fill
                   sizes="(min-width: 1024px) 384px, 80vw"
                   className="object-cover"
-                />
-                <span
-                  aria-hidden="true"
-                  className="absolute inset-x-0 top-1/3 h-0.5 bg-emerald-brand shadow-neon-emerald"
                 />
               </div>
               <div className="absolute -bottom-6 -left-4 flex max-w-[16rem] items-start gap-2.5 rounded-3xl rounded-bl-md bg-soft-white p-3 text-sm text-deep-blue shadow-phone sm:-left-10">
