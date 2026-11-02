@@ -50,6 +50,19 @@ export const orderSchema = new Schema(
       ],
       required: true,
     },
+    subtotal: { type: Number, required: true, min: 0 },
+    /** Snapshot of the code used; `amount` = `subtotal` − `discount.amount`. */
+    discount: {
+      type: new Schema(
+        {
+          voucherId: { type: String, required: true },
+          code: { type: String, required: true },
+          amount: { type: Number, required: true, min: 0 },
+        },
+        { _id: false },
+      ),
+      default: null,
+    },
     amount: { type: Number, required: true, min: 0 },
     status: { type: String, enum: ORDER_STATUSES, required: true },
     seatState: { type: String, enum: ["held", "sold", "released"], required: true },

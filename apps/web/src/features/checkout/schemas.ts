@@ -54,6 +54,8 @@ export const checkoutDraftSchema = z.object({
   dataConsent: z.literal(true, { error: v.consent }),
   safetyAcknowledged: z.boolean(),
   isGuardian: z.boolean(),
+  /** Only one, re-checked and priced by program-service (BR-18). */
+  voucherCode: z.string().trim().toUpperCase().max(30).optional(),
   /** Honeypot: humans leave it empty. */
   website: z.string().max(200).optional(),
   turnstileToken: z.string().max(4096).optional(),

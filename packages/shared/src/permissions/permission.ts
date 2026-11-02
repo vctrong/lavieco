@@ -27,6 +27,8 @@ export const PERMISSIONS = [
   "checkin:perform",
   /** Publish an impact figure such as a typed attendance count (BR-09). */
   "impact:approve",
+  /** Create, edit and pause vouchers; their allowlists hold personal data. */
+  "voucher:write",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];

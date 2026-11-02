@@ -7,7 +7,13 @@ import { TEXT } from "../constants/text";
 import { editorNavItems } from "../utils/editor-sections";
 
 /** Anchor menu of the editor: a row on small screens, a sticky column on large ones. */
-export function EditorSideNav({ event }: { event: EventView }) {
+export function EditorSideNav({
+  event,
+  withVouchers = false,
+}: {
+  event: EventView;
+  withVouchers?: boolean;
+}) {
   const t = TEXT.vi.editorBar;
   return (
     <nav aria-label={t.navLabel} className="lg:sticky lg:top-24 lg:self-start">
@@ -32,6 +38,16 @@ export function EditorSideNav({ event }: { event: EventView }) {
             </li>
           );
         })}
+        {withVouchers ? (
+          <li className="shrink-0">
+            <a
+              href="#ma-giam-gia"
+              className="flex items-center rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist"
+            >
+              {t.navVouchers}
+            </a>
+          </li>
+        ) : null}
       </ul>
     </nav>
   );

@@ -9,11 +9,15 @@ import {
   orderCreateRequestSchema,
   orderCreateResponseSchema,
   orderViewSchema,
+  publicVoucherListSchema,
   sharedTicketViewSchema,
+  voucherCheckRequestSchema,
+  voucherCheckResponseSchema,
   ticketLookupRequestSchema,
   ticketLookupResponseSchema,
   type OrderCreateRequest,
   type TicketLookupRequest,
+  type VoucherCheckRequest,
 } from "@lavieco/shared/events";
 
 import { CheckoutService } from "../application/checkout-service";
@@ -24,7 +28,7 @@ import {
   EVENT_ATTENDANCE_SERVICE,
   ORDER_SETTLEMENT_SERVICE,
 } from "../orders.tokens";
-import { toLookupDto, toOrderView, toSharedTicketView } from "./order.mapper";
+import { toLookupDto, toOrderView, toPublicVoucher, toSharedTicketView } from "./order.mapper";
 
 const tokenPipe = new ZodValidationPipe(orderAccessTokenSchema);
 
@@ -100,6 +104,25 @@ export class OrdersPublicController {
   @ApiZodResponse(200, sharedTicketViewSchema)
   async sharedTicket(@Param("token", tokenPipe) token: string) {
     return toSharedTicketView(await this.checkout.getSharedTicket(token));
+  }
+
+  @Post("voucher-checks")
+  @HttpCode(200)
+  @AllowServices("web")
+  @ApiOperation({
+    summary: "What a code would give this order (display only); rate limited, generic refusal",
+  })
+  @ApiZodResponse(200, voucherCheckResponseSchema)
+  checkVoucher(@ZodBody(voucherCheckRequestSchema) body: VoucherCheckRequest) {
+    return this.checkout.checkVoucher(body);
+  }
+
+  @Get("published-events/:slug/vouchers")
+  @AllowServices("web")
+  @ApiOperation({ summary: "Public vouchers that can apply to this event, with uses left" })
+  @ApiZodResponse(200, publicVoucherListSchema)
+  async vouchersOf(@Param("slug", new ZodValidationPipe(eventSlugSchema)) slug: string) {
+    return { items: (await this.checkout.publicVouchers(slug)).map(toPublicVoucher) };
   }
 
   @Post("ticket-lookups")

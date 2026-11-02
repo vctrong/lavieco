@@ -1,0 +1,2 @@
+export const VOUCHER_ADMIN_SERVICE = Symbol("VOUCHER_ADMIN_SERVICE");
+export const VOUCHER_LEDGER = Symbol("VOUCHER_LEDGER");

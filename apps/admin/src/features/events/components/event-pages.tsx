@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { FiArrowLeft } from "react-icons/fi";
 
 import type { EventType, EventView } from "@lavieco/shared/events";
@@ -44,10 +45,12 @@ export function EditEventPage({
   staff,
   event,
   types,
+  vouchersSection,
 }: {
   staff: StaffProfile;
   event: EventView;
   types: EventType[];
+  vouchersSection?: ReactNode;
 }) {
   const t = TEXT.vi;
   return (
@@ -65,6 +68,7 @@ export function EditEventPage({
         types={types}
         canWrite={can(staff, "program:write")}
         canApprove={can(staff, "impact:approve")}
+        vouchersSection={vouchersSection}
       />
     </div>
   );

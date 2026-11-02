@@ -75,6 +75,12 @@ export interface OrderRepository {
   listExpired(now: Date, limit: number): Promise<string[]>;
   /** Paid or refunded orders of one booker, newest first (`/tra-cuu-ve`). */
   listByEmail(emailNormalized: string, limit: number): Promise<OrderRecord[]>;
+  /** Orders actually paid for (free ones do not count) by this member or this email. */
+  countPaidBy(emailNormalized: string, userId: string | null): Promise<number>;
+  /** Paid orders that used this voucher (refunded ones are not revenue). */
+  voucherStats(
+    voucherId: string,
+  ): Promise<{ paidOrders: number; totalDiscount: number; revenue: number }>;
   /** Pending and paid orders of one event, oldest first (cancelling the event). */
   listOpenByEvent(eventId: string, tx?: TxContext): Promise<OrderRecord[]>;
   listAdmin(query: OrderListQuery): Promise<Page<OrderRecord>>;

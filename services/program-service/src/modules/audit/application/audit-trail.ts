@@ -12,7 +12,10 @@ export type ProgramAuditAction =
   | "order.refund"
   | "event.cancel"
   | "event.attendance_approve"
-  | "ticket.reissue_qr";
+  | "ticket.reissue_qr"
+  | "voucher.create"
+  | "voucher.update"
+  | "voucher.status";
 
 export type AuditEntry = {
   action: ProgramAuditAction;

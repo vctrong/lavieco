@@ -9,6 +9,7 @@ import { autofill, mimicBrowserFormData } from "@/shared/testing/dom";
 
 const startCheckout = vi.fn();
 
+vi.mock("../actions/voucher", () => ({ checkVoucher: vi.fn() }));
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), refresh: vi.fn() }),
   unstable_isUnrecognizedActionError: () => false,
@@ -60,6 +61,7 @@ beforeEach(async () => {
     root.render(
       <CheckoutForm
         event={EVENT}
+        vouchers={[]}
         member={null}
         turnstileSiteKey={null}
         initialQuantities={{ [TICKET_ID]: 1 }}

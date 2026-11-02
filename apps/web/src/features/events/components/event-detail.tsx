@@ -10,7 +10,7 @@ import {
   FiVideo,
 } from "react-icons/fi";
 
-import type { PublicEventCard, PublicEventDetail } from "@lavieco/shared/events";
+import type { PublicEventCard, PublicEventDetail, PublicVoucher } from "@lavieco/shared/events";
 import { Container, cn } from "@lavieco/ui";
 
 import { EVENTS_PATH, HANDBOOK_PATH, calendarPath } from "../constants/config";
@@ -23,6 +23,7 @@ import { RelatedEvents } from "./related-events";
 import { SectionTabs } from "./section-tabs";
 import { StateBadge } from "./state-badge";
 import { TicketCard } from "./ticket-card";
+import { VoucherStrip } from "./voucher-strip";
 
 const t = TEXT.vi.detail;
 
@@ -149,6 +150,8 @@ export type EventDetailProps = {
   related?: PublicEventCard[];
   signedIn?: boolean;
   pageUrl: string;
+  /** Public codes with uses left; none on a preview. */
+  vouchers?: PublicVoucher[];
 };
 
 /**
@@ -164,6 +167,7 @@ export function EventDetail({
   related = [],
   signedIn = false,
   pageUrl,
+  vouchers = [],
 }: EventDetailProps) {
   const sections = sectionsOf(event);
   const ended = event.state === "ended";
@@ -213,6 +217,7 @@ export function EventDetail({
                 attendeeCount={attendeeCount}
               />
             ) : null}
+            {booking && vouchers.length > 0 ? <VoucherStrip vouchers={vouchers} /> : null}
             {booking ? (
               <TicketCard
                 slug={event.slug}

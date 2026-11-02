@@ -57,6 +57,8 @@ export class RegistrationsController {
         orderId: order.id,
         orderCode: order.orderCode,
         orderStatus: order.status,
+        voucherCode: order.discount?.code ?? null,
+        discountAmount: order.discount?.amount ?? 0,
         orderAmount: order.amount,
         buyer: {
           fullName: order.buyer.fullName,

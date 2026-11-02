@@ -20,6 +20,7 @@ import {
   orderListSchema,
   orderRefundRequestSchema,
   ticketReissueRequestSchema,
+  voucherStatsSchema,
   type OrderListQuery,
   type OrderRefundRequest,
   type TicketReissueRequest,
@@ -77,6 +78,14 @@ export class OrdersAdminController {
   @ApiZodResponse(204)
   async resend(@Param("id", idPipe) id: string) {
     await this.orders.resendTickets(id);
+  }
+
+  @Get("voucher-stats/:voucherId")
+  @RequirePermission("voucher:write")
+  @ApiOperation({ summary: "Paid orders that used a voucher: count, discount given, revenue" })
+  @ApiZodResponse(200, voucherStatsSchema)
+  voucherStats(@Param("voucherId", idPipe) voucherId: string) {
+    return this.orders.voucherStats(voucherId);
   }
 
   @Post("tickets/:ticketId/reissue-qr")

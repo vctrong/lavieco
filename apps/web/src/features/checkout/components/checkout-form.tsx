@@ -5,7 +5,7 @@ import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "rea
 import { FiEdit2, FiLock, FiMail, FiMinus, FiPlus } from "react-icons/fi";
 
 import { ORDER_LIMITS, type PublicEventDetail } from "@lavieco/shared/events";
-import { maxUnitsOf } from "@lavieco/shared/events";
+import { maxUnitsOf, type PublicVoucher, type VoucherCheckResponse } from "@lavieco/shared/events";
 import {
   BusyLabel,
   Button,
@@ -36,9 +36,12 @@ import { validateCheckoutDraft, type CheckoutDraft, type CheckoutDraftInput } fr
 import type { CheckoutError } from "../types";
 import { formatVnd } from "../utils/format";
 import { failureOf, fieldOfFailure } from "./messages";
+import { VoucherField } from "./voucher-field";
 
 type CheckoutFormProps = {
   event: Pick<PublicEventDetail, "slug" | "ticketTypes" | "registration">;
+  /** Public codes of this event, for "Chọn ưu đãi". */
+  vouchers: PublicVoucher[];
   member: { email: string; displayName: string } | null;
   turnstileSiteKey: string | null;
   /** Starting quantities (the choice made on the event page, see `initialQuantities`). */
@@ -58,6 +61,7 @@ const fieldId = (key: string) => `ck-${key}`;
  */
 export function CheckoutForm({
   event,
+  vouchers,
   member,
   turnstileSiteKey,
   initialQuantities,
@@ -109,7 +113,11 @@ export function CheckoutForm({
         .map((ticket) => ({ ticket, quantity: quantities[ticket.id]! })),
     [event.ticketTypes, quantities],
   );
-  const total = lines.reduce((sum, line) => sum + line.ticket.price * line.quantity, 0);
+  const subtotal = lines.reduce((sum, line) => sum + line.ticket.price * line.quantity, 0);
+  const [voucher, setVoucher] = useState<VoucherCheckResponse | null>(null);
+  // A discount is only true for the selection it was priced on.
+  const applied = voucher?.subtotal === subtotal ? voucher : null;
+  const total = applied ? applied.amount : subtotal;
 
   const input: CheckoutDraftInput = {
     eventSlug: event.slug,
@@ -124,6 +132,7 @@ export function CheckoutForm({
     dataConsent: consents.data,
     safetyAcknowledged: consents.safety,
     isGuardian: consents.guardian,
+    ...(applied ? { voucherCode: applied.code } : {}),
   };
   const checked = validateCheckoutDraft(input, rules);
 
@@ -263,6 +272,29 @@ export function CheckoutForm({
       ) : (
         <p className="text-[13px] text-charcoal/60">{t.errors.noTickets}</p>
       )}
+      {subtotal > 0 ? (
+        <VoucherField
+          eventSlug={event.slug}
+          items={input.items}
+          email={buyer.email}
+          available={vouchers}
+          applied={applied}
+          onChange={setVoucher}
+          disabled={step !== "form"}
+        />
+      ) : null}
+      {applied ? (
+        <dl className="space-y-1 text-[13.5px] text-charcoal/80">
+          <div className="flex justify-between gap-3">
+            <dt>{t.voucher.subtotal}</dt>
+            <dd>{formatVnd(applied.subtotal)}</dd>
+          </div>
+          <div className="flex justify-between gap-3 font-medium text-emerald-ink">
+            <dt>{t.voucher.discount(applied.code)}</dt>
+            <dd>−{formatVnd(applied.discount)}</dd>
+          </div>
+        </dl>
+      ) : null}
       <div className="flex items-end justify-between gap-3 rounded-2xl bg-mint-mist px-4 py-3">
         <span className="text-[12px] font-semibold uppercase tracking-museum text-deep-blue/70">
           {t.checkout.total}

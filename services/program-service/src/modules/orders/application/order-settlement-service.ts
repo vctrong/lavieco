@@ -4,6 +4,7 @@ import type { PaymentOutcome } from "@lavieco/shared/events";
 
 import { REVALIDATE_EVENT_JOB, type EventRepository } from "../../events";
 import type { TicketTypeRepository } from "../../ticketing";
+import type { VoucherLedger } from "../../vouchers";
 import { planSettlement, type OrderRecord } from "../domain/order";
 import { issueAndSend } from "./order-jobs";
 import { convertHeldSeats, takeSeats } from "./seats";
@@ -48,6 +49,7 @@ export class OrderSettlementService {
     private readonly gateway: PaymentGateway,
     private readonly unitOfWork: UnitOfWork,
     private readonly outbox: OutboxPort,
+    private readonly vouchers: VoucherLedger,
   ) {}
 
   async settle(payment: ConfirmedPayment, now = new Date()): Promise<PaymentOutcome> {
@@ -141,6 +143,7 @@ export class OrderSettlementService {
           // Counters out of step with the order: never paper over it silently.
           throw new DomainError("common.conflict", "held seats missing for a paid order");
         }
+        await this.vouchers.redeem(paid.id, now, tx);
         await this.issue(paid, tx);
         await this.record(payment, "paid", tx);
         return "paid";
@@ -187,7 +190,10 @@ export class OrderSettlementService {
       tx,
     );
     if (!paid) throw new SettlementRace();
-    if (allTaken) await this.issue(paid, tx);
+    if (allTaken) {
+      await this.vouchers.redeemLate(paid.id, now, tx);
+      await this.issue(paid, tx);
+    }
     const outcome = allTaken ? "paid" : "refund_required";
     await this.record(payment, outcome, tx);
     return outcome;

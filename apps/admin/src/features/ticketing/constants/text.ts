@@ -79,6 +79,8 @@ export const TEXT = {
           "payOS báo số tiền khác số tiền của đơn. Chưa phát hành vé. Kiểm tra với payOS.",
         latePayment: "Thanh toán tới sau khi hết giữ chỗ, hệ thống đã giữ lại chỗ được.",
       },
+      subtotal: "Tạm tính",
+      voucher: (code: string) => `Giảm giá (${code})`,
       combo: (people: number, unit: number, seat: number) =>
         `Combo ${people} người · suất ${unit} · vé ${seat}/${people}`,
       reissue: {

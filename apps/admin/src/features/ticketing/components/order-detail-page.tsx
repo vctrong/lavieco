@@ -198,6 +198,18 @@ export function OrderDetailPage({ order, staff }: { order: OrderDetail; staff: S
                 </li>
               ))}
             </ul>
+            {order.voucherCode ? (
+              <dl className="mt-3 space-y-1 border-t border-hairline pt-3 text-[13.5px]">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-charcoal/80">{t.detail.subtotal}</dt>
+                  <dd className="text-deep-blue">{formatVnd(order.subtotal)}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-charcoal/80">{t.detail.voucher(order.voucherCode)}</dt>
+                  <dd className="text-deep-blue">−{formatVnd(order.discountAmount)}</dd>
+                </div>
+              </dl>
+            ) : null}
             <p className="mt-3 border-t border-hairline pt-3 text-right font-display text-xl text-deep-blue">
               {order.amount === 0 ? t.free : formatVnd(order.amount)}
             </p>

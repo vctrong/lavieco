@@ -55,6 +55,18 @@ export function OrderSummary({ order }: { order: OrderView }) {
           </li>
         ))}
       </ul>
+      {order.discount ? (
+        <dl className="space-y-1 text-[13.5px] text-charcoal/80">
+          <div className="flex justify-between gap-3">
+            <dt>{t.voucher.subtotal}</dt>
+            <dd>{formatVnd(order.subtotal)}</dd>
+          </div>
+          <div className="flex justify-between gap-3 font-medium text-emerald-ink">
+            <dt>{t.voucher.discount(order.discount.code)}</dt>
+            <dd>−{formatVnd(order.discount.amount)}</dd>
+          </div>
+        </dl>
+      ) : null}
       <div className="flex items-end justify-between gap-3 rounded-2xl bg-mint-mist px-4 py-3">
         <span className="text-[12px] font-semibold uppercase tracking-museum text-deep-blue/70">
           {t.checkout.total}

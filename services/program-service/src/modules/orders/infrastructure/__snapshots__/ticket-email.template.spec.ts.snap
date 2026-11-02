@@ -629,3 +629,71 @@ LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật
 localhost:3000 · lavieco@gmail.com · Hotline/Zalo 0336 922 235
 Bạn nhận email này vì đã đặt vé "Workshop làm chậu cây từ bột vỏ sò" trên website LAVIECO bằng địa chỉ email này."
 `;
+
+exports[`ticketEmail > 'with-voucher' renders a safe email (snapshot) > html 1`] = `
+"<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<title>Vé của bạn: Workshop làm chậu cây từ bột vỏ sò</title>
+<style>@media (max-width:620px){.lv-pad{padding-left:20px!important;padding-right:20px!important}.lv-h1{font-size:24px!important;line-height:32px!important}}</style>
+</head>
+<body style="margin:0;padding:0;background:#F8FAF6">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#F8FAF6;font-size:1px;line-height:1px">1 vé · 08/11/2026 · Mã đơn 2611428&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;&#847;&zwnj;&nbsp;</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#F8FAF6" style="background:#F8FAF6"><tr><td align="center" style="padding:24px 12px">
+<table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:600px;background:#FFFFFF;border:1px solid #DFE3EA;border-radius:16px;border-collapse:separate;overflow:hidden">
+<tr><td align="center" bgcolor="#FFFFFF" style="padding:28px 32px 18px;background:#FFFFFF"><a href="http://localhost:3000" style="text-decoration:none"><img src="cid:logo@lavieco" width="180" height="34" alt="LAVIECO" style="display:block;border:0;width:180px;height:34px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:24px;color:#20345F"></a><p style="margin:10px 0 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#55606A">Giáo dục sáng tạo xanh, thông qua nghệ thuật</p></td></tr>
+<tr><td height="3" bgcolor="#E7DD6A" style="height:3px;background:#E7DD6A;font-size:0;line-height:0">&nbsp;</td></tr>
+<tr><td class="lv-pad" style="padding:32px 40px 16px">
+<p style="margin:0 0 12px"><span style="display:inline-block;padding:4px 12px;border:1px solid #10B183;border-radius:999px;background:#EAF8F3;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;font-weight:bold;letter-spacing:1px;color:#20345F">Đã thanh toán</span></p><h1 class="lv-h1" style="margin:0 0 16px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:28px;line-height:36px;font-weight:normal;color:#20345F">Vé của bạn đã sẵn sàng</h1>
+<p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;">Xin chào Nguyễn Thị Khách,<br>Cảm ơn bạn đã đăng ký &#34;Workshop làm chậu cây từ bột vỏ sò&#34;. Mỗi vé dưới đây có một mã QR riêng để check-in tại cửa.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;border-collapse:separate;border-radius:16px;background:#EAF8F3;border:1px solid #EAF8F3"><tr><td style="padding:20px 24px"><p style="margin:0 0 8px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:19px;line-height:26px;color:#20345F">Workshop làm chậu cây từ bột vỏ sò</p><table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td valign="top" width="84" style="padding:6px 12px 6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;font-weight:bold;color:#20345F;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap">Thời gian</td><td valign="top" style="padding:6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;word-break:break-word;overflow-wrap:anywhere">Chủ Nhật, 08/11/2026 · 14:00–17:00</td></tr><tr><td valign="top" width="84" style="padding:6px 12px 6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;font-weight:bold;color:#20345F;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap">Địa điểm</td><td valign="top" style="padding:6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;word-break:break-word;overflow-wrap:anywhere">Xưởng thử nghiệm, Ninh Kiều, Cần Thơ</td></tr><tr><td valign="top" width="84" style="padding:6px 12px 6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;font-weight:bold;color:#20345F;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap">Vé</td><td valign="top" style="padding:6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;word-break:break-word;overflow-wrap:anywhere">1 × Vé tiêu chuẩn</td></tr><tr><td valign="top" width="84" style="padding:6px 12px 6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;font-weight:bold;color:#20345F;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap">Tạm tính</td><td valign="top" style="padding:6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;word-break:break-word;overflow-wrap:anywhere">300.000 ₫</td></tr><tr><td valign="top" width="84" style="padding:6px 12px 6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;font-weight:bold;color:#20345F;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap">Giảm giá (GIAM2NGUOI)</td><td valign="top" style="padding:6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;word-break:break-word;overflow-wrap:anywhere">−30.000 ₫</td></tr><tr><td valign="top" width="84" style="padding:6px 12px 6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;font-weight:bold;color:#20345F;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap">Tổng</td><td valign="top" style="padding:6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;word-break:break-word;overflow-wrap:anywhere">270.000 ₫</td></tr><tr><td valign="top" width="84" style="padding:6px 12px 6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:20px;font-weight:bold;color:#20345F;text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap">Mã đơn</td><td valign="top" style="padding:6px 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;word-break:break-word;overflow-wrap:anywhere">2611428</td></tr></table></td></tr></table>
+<table role="presentation" cellpadding="0" cellspacing="0" border="0" align="center" style="margin:8px auto 24px"><tr><td align="center" bgcolor="#10B183" style="border-radius:999px;background:#10B183"><a href="http://localhost:3000/ve/fake-signed-token" style="display:inline-block;padding:14px 32px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:20px;font-weight:bold;color:#20345F;text-decoration:none;border-radius:999px">Xem vé trực tuyến</a></td></tr></table>
+<p style="margin:0 0 8px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:19px;line-height:26px;color:#20345F">Vé của bạn (1)</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#FFFFFF" style="margin:0 0 16px;background:#FFFFFF;border:1px solid #DFE3EA;border-radius:16px;border-collapse:separate"><tr><td style="padding:14px 20px;border-bottom:1px dashed #DFE3EA;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:22px;font-weight:bold;color:#20345F">Vé tiêu chuẩn</td><td align="right" style="padding:14px 20px;border-bottom:1px dashed #DFE3EA;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;color:#55606A;white-space:nowrap">Vé 1/1</td></tr><tr><td colspan="2" align="center" style="padding:20px"><img src="cid:qr-LVC-3ES4FT@lavieco" width="200" height="200" alt="Mã QR vé LVC-3ES4FT" style="display:block;border:0;width:200px;height:200px"><p style="margin:12px 0 2px;font-family:Consolas,'Courier New',monospace;font-size:20px;line-height:26px;font-weight:bold;letter-spacing:3px;color:#20345F">LVC-3ES4FT</p><p style="margin:0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:12px;line-height:18px;color:#55606A">Mỗi mã chỉ check-in được một lần</p><p style="margin:8px 0 0;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:13px;line-height:18px"><a href="Chia sẻ vé này" style="color:#20345F;font-weight:bold;text-decoration:underline">http://localhost:3000/ve/v/fake-share-LVC-3ES4FT</a></p></td></tr></table>
+
+<p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;font-size:13px;line-height:20px;color:#55606A;">Không cần in vé: mở email này hoặc trang vé tại cửa. Mỗi mã QR chỉ check-in được một lần. Đi cùng ai thì chuyển cho người đó link của đúng một vé, link không có thông tin của bạn.</p>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:0 0 24px;border-collapse:separate;border-radius:16px;background:#FFFFFF;border:1px solid #DFE3EA"><tr><td style="padding:20px 24px"><p style="margin:0 0 8px;font-family:Fraunces,'Times New Roman',Times,serif;font-size:19px;line-height:26px;color:#20345F">Lưu vé vào tài khoản LAVIECO</p><p style="margin:0 0 16px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:15px;line-height:24px;color:#1E2A32;">Tạo tài khoản bằng chính email này để xem lại mọi vé ở mục "Vé của tôi" mà không cần tìm lại email.</p><table role="presentation" cellpadding="0" cellspacing="0" border="0" style="margin:4px 0 0"><tr><td style="border:1px solid #20345F;border-radius:999px"><a href="http://localhost:3000/dang-ky" style="display:inline-block;padding:10px 22px;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:14px;line-height:18px;font-weight:bold;color:#20345F;text-decoration:none">Tạo tài khoản</a></td></tr></table></td></tr></table>
+</td></tr>
+<tr><td class="lv-pad" bgcolor="#20345F" style="padding:24px 40px;background:#20345F;font-family:'Be Vietnam Pro',Arial,Helvetica,sans-serif;font-size:13px;line-height:21px;color:#FFFFFF">
+<p style="margin:0 0 8px;font-weight:bold">LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật</p>
+<p style="margin:0 0 12px"><a href="http://localhost:3000" style="color:#FFFFFF;text-decoration:underline">localhost:3000</a> · <a href="mailto:lavieco@gmail.com" style="color:#FFFFFF;text-decoration:underline">lavieco@gmail.com</a> · Hotline/Zalo 0336 922 235</p>
+<p style="margin:0;font-size:12px;line-height:19px;color:#EAF8F3">Bạn nhận email này vì đã đặt vé &#34;Workshop làm chậu cây từ bột vỏ sò&#34; trên website LAVIECO bằng địa chỉ email này.</p>
+</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>"
+`;
+
+exports[`ticketEmail > 'with-voucher' renders a safe email (snapshot) > text 1`] = `
+"Vé của bạn đã sẵn sàng
+
+Xin chào Nguyễn Thị Khách,
+Cảm ơn bạn đã đăng ký "Workshop làm chậu cây từ bột vỏ sò". Mỗi vé dưới đây có một mã QR riêng để check-in tại cửa.
+
+Workshop làm chậu cây từ bột vỏ sò
+Thời gian: Chủ Nhật, 08/11/2026 · 14:00–17:00
+Địa điểm: Xưởng thử nghiệm, Ninh Kiều, Cần Thơ
+Vé: 1 × Vé tiêu chuẩn
+Tạm tính: 300.000 ₫
+Giảm giá (GIAM2NGUOI): -30.000 ₫
+Tổng: 270.000 ₫
+Mã đơn: 2611428 · Đã thanh toán
+
+Xem vé và mã QR: http://localhost:3000/ve/fake-signed-token
+
+Vé 1/1 · Vé tiêu chuẩn: LVC-3ES4FT · Chia sẻ: http://localhost:3000/ve/v/fake-share-LVC-3ES4FT
+
+Không cần in vé: mở email này hoặc trang vé tại cửa. Mỗi mã QR chỉ check-in được một lần. Đi cùng ai thì chuyển cho người đó link của đúng một vé, link không có thông tin của bạn.
+
+Tạo tài khoản bằng chính email này để xem lại mọi vé ở mục "Vé của tôi": http://localhost:3000/dang-ky
+
+--
+LAVIECO · Giáo dục sáng tạo xanh, thông qua nghệ thuật
+localhost:3000 · lavieco@gmail.com · Hotline/Zalo 0336 922 235
+Bạn nhận email này vì đã đặt vé "Workshop làm chậu cây từ bột vỏ sò" trên website LAVIECO bằng địa chỉ email này."
+`;

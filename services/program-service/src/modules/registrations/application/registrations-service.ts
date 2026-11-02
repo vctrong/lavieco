@@ -125,6 +125,8 @@ export class RegistrationsService {
         "Trạng thái thanh toán",
         "Check-in",
         "Thời gian đăng ký",
+        "Mã ưu đãi",
+        "Giảm giá",
         ...columns.map((column) => (column.hidden ? `${column.label} (đã ẩn)` : column.label)),
       ],
       rows: rows.map((row, index) =>
@@ -144,6 +146,8 @@ export class RegistrationsService {
             ? `${TICKET_STATUS_TEXT.used} ${DATE_TIME.format(row.ticket.checkedInAt)}`
             : TICKET_STATUS_TEXT[row.ticket.status],
           DATE_TIME.format(row.order.createdAt),
+          row.order.discount?.code ?? "",
+          String(row.order.discount?.amount ?? 0),
           ...columns.map((column) => row.answers[column.questionId] ?? ""),
         ].map(safeCell),
       ),

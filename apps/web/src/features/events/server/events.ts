@@ -11,6 +11,7 @@ import {
   type PublicEventList,
   type PublicEventListQuery,
   type PublicEventType,
+  type PublicVoucher,
 } from "@lavieco/shared/events";
 
 import { programClient, webLogger } from "@/lib/services";
@@ -130,6 +131,18 @@ export async function listRelated(slug: string): Promise<PublicEventCard[]> {
 }
 
 /** Preview of any status behind a 10-minute token (D2). Never cached. */
+/**
+ * Public codes with uses left. Never cached (the count moves with every order) and never
+ * worth failing the event page for: no strip when the service does not answer.
+ */
+export async function listPublicVouchers(slug: string): Promise<PublicVoucher[]> {
+  try {
+    return (await programClient().listPublicVouchers(slug)).items;
+  } catch {
+    return [];
+  }
+}
+
 export async function getPreview(token: string): Promise<PublicEventDetail | null> {
   if (!/^[A-Za-z0-9_-]{32,64}$/.test(token)) return null;
   try {

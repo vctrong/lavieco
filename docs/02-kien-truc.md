@@ -537,6 +537,7 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `program:write` (tạo/sửa/xuất bản sự kiện, loại chương trình) | ✓ | — | ✓ | — |
 | `order:read` (đơn vé, đối soát, danh sách người đăng ký có PII) | ✓ | — | ✓ | ✓ |
 | `order:refund` (hoàn tiền, huỷ vé) | ✓ | — | ✓ | — |
+| `voucher:write` (mã ưu đãi, kể cả allowlist email) | ✓ | — | ✓ | — |
 | `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
 | `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |
 | `impact:approve` (công bố số liệu tác động, vd. số người tham gia nhập tay của sự kiện lưu trữ, BR-09) | ✓ | — | — | — |

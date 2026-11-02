@@ -162,6 +162,11 @@ export function OrdersListPage({ filters, page, events, refundCount }: OrdersLis
                   <td className="max-w-56 px-5 py-4 text-charcoal/80">{order.event.title}</td>
                   <td className="px-5 py-4 font-semibold text-deep-blue">
                     {order.amount === 0 ? t.free : formatVnd(order.amount)}
+                    {order.voucherCode ? (
+                      <span className="block text-[11.5px] font-normal text-charcoal/60">
+                        {t.detail.voucher(order.voucherCode)}: −{formatVnd(order.discountAmount)}
+                      </span>
+                    ) : null}
                   </td>
                   <td className="space-y-1 px-5 py-4">
                     <OrderStatusBadge status={orderDisplayStatus(order)} />

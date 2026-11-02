@@ -45,6 +45,7 @@ async function placeOrder(
         safetyAcknowledged: draft.safetyAcknowledged,
         isGuardian: draft.isGuardian,
         verificationToken,
+        ...(draft.voucherCode ? { voucherCode: draft.voucherCode } : {}),
       },
       id,
     );

@@ -300,6 +300,7 @@ flowchart LR
 | UC-29 | Xem nhật ký hoạt động, xử lý yêu cầu xóa dữ liệu cá nhân | Admin | M10 | 2 |
 | UC-30 | Xem chương trình, đăng ký và mua vé (xác thực email bằng OTP) | Guest, Member | M4 | 1 |
 | UC-31 | Nhận vé QR qua email; xem lại vé (link ký số, tra cứu bằng email + OTP, Vé của tôi) | Guest, Member | M4 | 1 |
+| UC-36 | Mã ưu đãi: admin tạo mã theo sự kiện hoặc toàn app (điều kiện đơn, đối tượng, giới hạn lượt); khách nhập hoặc chọn mã ở checkout. Mã công khai hiện trên trang sự kiện kèm số lượt còn lại và đếm ngược. | BR-18 |
 | UC-32 | Tạo, xem trước, xuất bản, nhân bản sự kiện; loại vé; form đăng ký | Admin | M4 | 1 |
 | UC-33 | Người đăng ký, xuất Excel; đơn hàng, đối soát, hoàn tiền/huỷ vé | Admin | M4 | 1 |
 | UC-34 | Check-in tại cửa bằng quét QR | Admin | M4 | 1 |
@@ -585,6 +586,7 @@ Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định b�
 | **BR-15** | Thanh toán chỉ được xác nhận dựa trên **webhook có chữ ký hợp lệ** hoặc **kết quả truy vấn API payOS phía server**; tham số trên `returnUrl` không bao giờ được dùng để xác nhận. Hoàn tiền làm thủ công, hệ thống chỉ cập nhật trạng thái (vé huỷ, trả chỗ; có step-up và audit). | An toàn tiền |
 | **BR-16** | Mỗi vé có **mã QR riêng, ngẫu nhiên**, chỉ check-in được **một lần**. | Chống dùng lại vé |
 | **BR-17** | Sự kiện do người có quyền tự xuất bản, không cần người duyệt thứ hai (khác BR-05). Chỉ gỡ xuất bản khi chưa có người đăng ký. Form đã có người trả lời chỉ được thêm hoặc ẩn câu hỏi. | Không làm mất dữ liệu người đăng ký |
+| **BR-18** | Mỗi đơn dùng **một** mã ưu đãi, không cộng dồn; tiền giảm tính ở server trên tạm tính và không vượt tạm tính; không vượt tổng lượt và lượt mỗi khách; lượt dùng đi theo đơn (giữ → đã dùng, hoặc trả lại khi đơn hết hạn/huỷ); **hoàn tiền không trả lại lượt dùng**. Từ chối mã luôn bằng một thông báo chung. |
 
 ## 8. Thực thể khái niệm & vòng đời
 

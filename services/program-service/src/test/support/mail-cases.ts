@@ -82,6 +82,8 @@ export function fakeOrder(overrides: Partial<OrderRecord> = {}): OrderRecord {
         seatsPerUnit: 1,
       },
     ],
+    subtotal: 150_000,
+    discount: null,
     amount: 150_000,
     status: "paid",
     seatState: "sold",
@@ -202,6 +204,18 @@ export function ticketEmailCases(): { name: string; input: TicketEmailInput }[] 
         fakeOrder(free),
         fakeEvent({ safetyNotes: SAFETY }),
         fakeTickets(["Vé miễn phí"]),
+      ),
+    },
+    {
+      name: "with-voucher",
+      input: input(
+        fakeOrder({
+          subtotal: 300_000,
+          discount: { voucherId: "64b7f0c2a1b2c3d4e5f60740", code: "GIAM2NGUOI", amount: 30_000 },
+          amount: 270_000,
+        }),
+        fakeEvent(),
+        fakeTickets(["Vé tiêu chuẩn"]),
       ),
     },
     {

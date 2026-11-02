@@ -185,6 +185,20 @@ export const TEXT = {
       attendees: "Người tham gia",
       upcoming: "Xem chương trình sắp tới",
     },
+    vouchers: {
+      title: "Ưu đãi đang có",
+      copy: "Sao chép",
+      copied: "Đã sao chép",
+      offerPercent: (value: number, cap: string | null) =>
+        cap ? `Giảm ${value}%, tối đa ${cap}` : `Giảm ${value}%`,
+      offerFixed: (amount: string) => `Giảm ${amount}`,
+      minSeats: (count: number) => `từ ${count} người`,
+      remaining: (count: number) => `Còn ${count} lượt`,
+      daysLeft: (count: number) => `Còn ${count} ngày`,
+      hoursLeft: (count: number) => `Còn ${count} giờ`,
+      minutesLeft: (count: number) => `Còn ${count} phút`,
+      ended: "Vừa hết hạn",
+    },
     preview: {
       banner: "BẢN XEM TRƯỚC",
       notPublic: "Chưa công khai",

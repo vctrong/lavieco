@@ -46,6 +46,14 @@ function toRecord(doc: OrderDoc): OrderRecord {
       quantity: item.quantity,
       seatsPerUnit: item.seatsPerUnit ?? 1,
     })),
+    subtotal: doc.subtotal ?? doc.amount,
+    discount: doc.discount?.voucherId
+      ? {
+          voucherId: String(doc.discount.voucherId),
+          code: doc.discount.code,
+          amount: doc.discount.amount,
+        }
+      : null,
     amount: doc.amount,
     status: doc.status,
     seatState: doc.seatState,
@@ -219,6 +227,33 @@ export class MongoOrderRepository implements OrderRepository {
       .lean<OrderDoc[]>()
       .exec();
     return docs.map(toRecord);
+  }
+
+  countPaidBy(emailNormalized: string, userId: string | null) {
+    const who: FilterQuery<OrderDoc>[] = [{ "buyer.emailNormalized": emailNormalized }];
+    if (userId) who.push({ userId });
+    return this.model.countDocuments({ status: "paid", amount: { $gt: 0 }, $or: who }).exec();
+  }
+
+  async voucherStats(voucherId: string) {
+    const [row] = await this.model
+      .aggregate<{ paidOrders: number; totalDiscount: number; revenue: number }>([
+        { $match: { "discount.voucherId": voucherId, status: "paid" } },
+        {
+          $group: {
+            _id: null,
+            paidOrders: { $sum: 1 },
+            totalDiscount: { $sum: "$discount.amount" },
+            revenue: { $sum: "$amount" },
+          },
+        },
+      ])
+      .exec();
+    return {
+      paidOrders: row?.paidOrders ?? 0,
+      totalDiscount: row?.totalDiscount ?? 0,
+      revenue: row?.revenue ?? 0,
+    };
   }
 
   async listAdmin(query: OrderListQuery) {

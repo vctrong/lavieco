@@ -57,6 +57,15 @@ export type PaymentLink = {
   expiresAt: Date;
 };
 
+export type OrderDiscount = { voucherId: string; code: string; amount: number };
+
+/**
+ * Smallest amount sent to payOS. TODO(payos-min-amount): not stated in the SDK or in the
+ * docs we could read, so this is the amount in payOS's own examples; confirm against the
+ * sandbox. Below it a discounted order is refused rather than failing at the provider.
+ */
+export const PAYMENT_MIN_AMOUNT = 2_000;
+
 export type OrderRecord = {
   id: string;
   orderCode: number;
@@ -67,6 +76,10 @@ export type OrderRecord = {
   verificationId: string;
   buyer: OrderBuyer;
   items: OrderItem[];
+  /** Before any discount; `amount` is what the buyer pays. */
+  subtotal: number;
+  /** Snapshot of the code used: later edits of the voucher never change an order. */
+  discount: OrderDiscount | null;
   amount: number;
   status: OrderStatus;
   seatState: SeatState;

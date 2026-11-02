@@ -44,6 +44,7 @@ import {
 } from "./application/ports/order-services.port";
 import { DisabledPaymentGateway } from "./infrastructure/disabled-payment-gateway";
 import { JwksEmailProofVerifier } from "./infrastructure/email-proof-verifier";
+import { VOUCHER_LEDGER, VouchersModule, type VoucherLedger } from "../vouchers";
 import { HmacOrderLinks } from "./infrastructure/hmac-order-links";
 import { OrderJobHandlers } from "./infrastructure/order-job-handlers";
 import {
@@ -88,7 +89,7 @@ export class OrdersModule {
     };
     return {
       module: OrdersModule,
-      imports: [orderPersistence, options.events, TicketingModule],
+      imports: [orderPersistence, options.events, TicketingModule, VouchersModule],
       controllers: [OrdersPublicController, OrdersAdminController, EventCancellationController],
       providers: [
         gateway,
@@ -141,6 +142,7 @@ export class OrdersModule {
             unitOfWork: UnitOfWork,
             outbox: OutboxPort,
             env: ProgramEnv,
+            vouchers: VoucherLedger,
           ) =>
             new CheckoutService(
               events,
@@ -154,6 +156,7 @@ export class OrdersModule {
               unitOfWork,
               outbox,
               { webAppUrl: env.WEB_APP_URL },
+              vouchers,
             ),
           inject: [
             EVENT_REPOSITORY,
@@ -167,6 +170,7 @@ export class OrdersModule {
             UNIT_OF_WORK,
             OUTBOX_PORT,
             SERVICE_CONFIG,
+            VOUCHER_LEDGER,
           ],
         },
         {
@@ -189,6 +193,7 @@ export class OrdersModule {
             gateway: PaymentGateway,
             unitOfWork: UnitOfWork,
             outbox: OutboxPort,
+            vouchers: VoucherLedger,
           ) =>
             new OrderSettlementService(
               orders,
@@ -199,6 +204,7 @@ export class OrdersModule {
               gateway,
               unitOfWork,
               outbox,
+              vouchers,
             ),
           inject: [
             ORDER_REPOSITORY,
@@ -209,6 +215,7 @@ export class OrdersModule {
             PAYMENT_GATEWAY,
             UNIT_OF_WORK,
             OUTBOX_PORT,
+            VOUCHER_LEDGER,
           ],
         },
         {
@@ -260,6 +267,7 @@ export class OrdersModule {
             audit: AuditTrail,
             unitOfWork: UnitOfWork,
             outbox: OutboxPort,
+            vouchers: VoucherLedger,
           ) =>
             new EventCancellationService(
               events,
@@ -269,6 +277,7 @@ export class OrdersModule {
               audit,
               unitOfWork,
               outbox,
+              vouchers,
             ),
           inject: [
             EVENT_REPOSITORY,
@@ -278,6 +287,7 @@ export class OrdersModule {
             AUDIT_TRAIL,
             UNIT_OF_WORK,
             OUTBOX_PORT,
+            VOUCHER_LEDGER,
           ],
         },
         {

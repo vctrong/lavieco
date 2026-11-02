@@ -2,7 +2,12 @@ import "server-only";
 
 import { isServiceProblem } from "@lavieco/api-clients";
 import { normalizeEmail } from "@lavieco/shared";
-import type { OrderView, PublicEventDetail, SharedTicketView } from "@lavieco/shared/events";
+import type {
+  OrderView,
+  PublicEventDetail,
+  PublicVoucher,
+  SharedTicketView,
+} from "@lavieco/shared/events";
 
 import { requestId } from "@/lib/request-meta";
 import { identityClient, programClient } from "@/lib/services";
@@ -34,6 +39,15 @@ export async function getOrder(token: string): Promise<OrderView | null> {
   } catch (error) {
     if (notFound(error)) return null;
     throw error;
+  }
+}
+
+/** Public codes for "Chọn ưu đãi"; the checkout works without them. */
+export async function getCheckoutVouchers(slug: string): Promise<PublicVoucher[]> {
+  try {
+    return (await programClient().listPublicVouchers(slug, await requestId())).items;
+  } catch {
+    return [];
   }
 }
 
