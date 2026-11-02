@@ -37,6 +37,7 @@ export function fakeEvent(overrides: Partial<EventRecord> = {}): EventRecord {
     agenda: [],
     faq: [],
     cover: null,
+    posterRatio: "4:5",
     banner: null,
     gallery: [],
     attendance: { count: null, approvedAt: null, approvedBy: null },

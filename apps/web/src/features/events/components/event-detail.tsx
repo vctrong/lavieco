@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 
 import type { PublicEventCard, PublicEventDetail } from "@lavieco/shared/events";
-import { Container } from "@lavieco/ui";
+import { Container, cn } from "@lavieco/ui";
 
 import { EVENTS_PATH, HANDBOOK_PATH, calendarPath } from "../constants/config";
 import { TEXT } from "../constants/text";
@@ -37,7 +37,8 @@ function Hero({ event }: { event: PublicEventDetail }) {
     <header className="relative overflow-hidden rounded-[2rem] bg-charcoal">
       <EventImage
         title={event.title}
-        image={event.banner ?? event.cover}
+        image={event.banner}
+        fallback="banner"
         sizes="(min-width: 1280px) 1200px, 100vw"
         preload
         className="aspect-[4/5] w-full sm:aspect-[16/9] lg:aspect-[21/9]"
@@ -193,6 +194,17 @@ export function EventDetail({
             ) : null}
           </div>
           <aside className="space-y-6 lg:sticky lg:top-24 lg:self-start">
+            {event.cover ? (
+              <EventImage
+                title={event.title}
+                image={event.cover}
+                sizes="(min-width: 1024px) 368px, 92vw"
+                className={cn(
+                  "w-full rounded-2xl",
+                  event.posterRatio === "1:1" ? "aspect-square" : "aspect-[4/5]",
+                )}
+              />
+            ) : null}
             {cancelled ? <CancelledCard cancellation={event.cancellation} /> : null}
             {ended ? (
               <SummaryCard

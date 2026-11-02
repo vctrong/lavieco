@@ -1,9 +1,10 @@
 "use client";
 
-import { useId, useRef, type ChangeEvent, type ReactNode } from "react";
+import { useId, useRef, useState, type ChangeEvent, type ReactNode } from "react";
 import { FiArrowDown, FiArrowUp, FiImage, FiPlus, FiTrash2, FiUpload } from "react-icons/fi";
 
-import { MEDIA_ACCEPT, MEDIA_LIMITS } from "@lavieco/shared/media";
+import type { EventPosterRatio } from "@lavieco/shared/events";
+import { MEDIA_ACCEPT, MEDIA_LIMITS, checkImageFile } from "@lavieco/shared/media";
 import { Button, TextField, cn } from "@lavieco/ui";
 
 import { MediaImage } from "@/shared/components/media-image";
@@ -11,6 +12,7 @@ import { MediaImage } from "@/shared/components/media-image";
 import { TEXT } from "../constants/text";
 import { useImageUpload } from "../hooks/use-image-upload";
 import type { EventImageValue } from "../utils/details-values";
+import { ImageCropDialog } from "./image-crop-dialog";
 
 const t = TEXT.vi.images;
 
@@ -99,7 +101,7 @@ function UploadStatus({ busy, error }: { busy: boolean; error: string | null }) 
 
 /** Preview frame of a single image, at the ratio the website shows it. */
 const FRAMES = {
-  poster: "aspect-[4/5] w-24 rounded-arch-sm",
+  poster: "aspect-[4/5] w-24 rounded-2xl",
   banner: "aspect-[21/9] w-48 rounded-xl",
   avatar: "size-16 rounded-full",
 } as const;
@@ -114,6 +116,9 @@ type CoverFieldProps = {
   label?: string;
   emptyText?: string;
   frame?: keyof typeof FRAMES;
+  /** Poster only: asks for a ratio and a crop before uploading. */
+  posterRatio?: EventPosterRatio;
+  onPosterRatioChange?: (ratio: EventPosterRatio) => void;
 };
 
 /**
@@ -130,12 +135,30 @@ export function CoverField({
   label = TEXT.vi.editor.fields.cover,
   emptyText = t.coverEmpty,
   frame = "poster",
+  posterRatio,
+  onPosterRatioChange,
 }: CoverFieldProps) {
-  const { upload, busy, error: uploadError } = useImageUpload("event_cover");
+  const { upload, busy, error: uploadError, reject } = useImageUpload("event_cover");
   const labelId = useId();
-  const pick = async (file: File) => {
+  const [toCrop, setToCrop] = useState<File | null>(null);
+  const send = async (file: File) => {
     const uploaded = await upload(file, value?.alt ?? "");
     if (uploaded) onChange(uploaded);
+    return uploaded !== null;
+  };
+  const pick = async (file: File) => {
+    if (!onPosterRatioChange) {
+      await send(file);
+      return;
+    }
+    // The same check as the upload: a HEIC photo cannot even be drawn for cropping.
+    const issue = checkImageFile(file, "event_cover");
+    if (issue) reject(issue);
+    else setToCrop(file);
+  };
+  const cropped = async (file: File, ratio: EventPosterRatio) => {
+    setToCrop(null);
+    if (await send(file)) onPosterRatioChange?.(ratio);
   };
   return (
     <div role="group" aria-labelledby={labelId}>
@@ -146,11 +169,19 @@ export function CoverField({
         {label}
       </p>
       <div className="flex flex-col gap-4 rounded-2xl border border-dashed border-deep-blue/20 bg-soft-white p-4 sm:flex-row">
-        <Thumbnail image={value} className={FRAMES[frame]} />
+        <Thumbnail
+          image={value}
+          className={posterRatio === "1:1" ? "aspect-square w-24 rounded-2xl" : FRAMES[frame]}
+        />
         <div className="min-w-0 flex-1 space-y-3">
           <p className="text-[12.5px] leading-relaxed text-charcoal/65">
             {value ? t.coverHint : emptyText}
           </p>
+          {value && posterRatio ? (
+            <p className="text-[12.5px] leading-relaxed text-charcoal/65">
+              {t.posterHint(posterRatio)}
+            </p>
+          ) : null}
           {value ? (
             <TextField
               tone="light"
@@ -189,6 +220,14 @@ export function CoverField({
           <UploadStatus busy={busy} error={uploadError} />
         </div>
       </div>
+      {toCrop ? (
+        <ImageCropDialog
+          file={toCrop}
+          initialRatio={posterRatio ?? "4:5"}
+          onCancel={() => setToCrop(null)}
+          onCropped={cropped}
+        />
+      ) : null}
     </div>
   );
 }
@@ -236,7 +275,7 @@ export function GalleryField({ items, savedIds, disabled, errors, onChange }: Ga
               key={item.mediaId}
               className="flex flex-col gap-3 rounded-2xl border border-hairline bg-white p-3 sm:flex-row sm:items-start"
             >
-              <Thumbnail image={item} className="h-20 w-20 rounded-arch-sm" />
+              <Thumbnail image={item} className="h-20 w-20 rounded-xl" />
               <div className="min-w-0 flex-1">
                 <TextField
                   tone="light"

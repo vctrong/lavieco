@@ -184,6 +184,7 @@ async function seedEvent(db: mongo.Db, seed: DevEvent, typeId: Id, now: Date) {
       faq: seed.faq ?? [],
       // No image: covers and banners are content-service media (ADR-0020), added in admin.
       cover: null,
+      posterRatio: "4:5",
       banner: null,
       gallery: [],
       attendance: seed.attendance

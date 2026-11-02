@@ -42,6 +42,14 @@ describe("eventCreateRequestSchema", () => {
     expect(eventCreateRequestSchema.safeParse({ ...base, slug: "Có Dấu" }).success).toBe(false);
   });
 
+  it("defaults the poster ratio to 4:5 and refuses any other shape", () => {
+    expect(eventCreateRequestSchema.parse(base).posterRatio).toBe("4:5");
+    expect(eventCreateRequestSchema.parse({ ...base, posterRatio: "1:1" }).posterRatio).toBe("1:1");
+    expect(eventCreateRequestSchema.safeParse({ ...base, posterRatio: "16:9" }).success).toBe(
+      false,
+    );
+  });
+
   it("takes cover and gallery as media ids with alt text (ADR-0020)", () => {
     const image = { mediaId: "64b7f0c2a1b2c3d4e5f60719", alt: "Bàn làm việc" };
     const parsed = eventCreateRequestSchema.parse({ ...base, cover: image, gallery: [] });

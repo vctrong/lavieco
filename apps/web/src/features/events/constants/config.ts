@@ -4,6 +4,16 @@ export const HANDBOOK_PATH = "/cam-nang";
 export const TICKET_LOOKUP_PATH = "/tra-cuu-ve";
 export const SIGN_IN_PATH = "/dang-nhap";
 
+/**
+ * Hero of an event without a banner, and the share image of last resort. A temporary
+ * brand pattern: the design team can replace the file (new name, per the asset rules).
+ */
+export const DEFAULT_EVENT_BANNER = {
+  url: "/images/placeholders/event-banner-default.webp",
+  width: 1920,
+  height: 823,
+} as const;
+
 export const eventPath = (slug: string) => `${EVENTS_PATH}/${slug}`;
 
 /** `.ics` of one event (Route Handler next to the page). */

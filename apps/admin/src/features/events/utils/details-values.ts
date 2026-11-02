@@ -3,6 +3,7 @@ import type {
   EventFormat,
   EventImage,
   EventKind,
+  EventPosterRatio,
   EventView,
 } from "@lavieco/shared/events";
 
@@ -46,6 +47,7 @@ export type DetailsValues = {
   agenda: { time: string; title: string; description: string }[];
   faq: { question: string; answer: string }[];
   cover: EventImageValue | null;
+  posterRatio: EventPosterRatio;
   banner: EventImageValue | null;
   gallery: EventImageValue[];
   /** Archive-only events; digits only, "" = not typed. */
@@ -77,6 +79,7 @@ export function emptyDetails(typeId: string): DetailsValues {
     agenda: [],
     faq: [],
     cover: null,
+    posterRatio: "4:5",
     banner: null,
     gallery: [],
     attendanceCount: "",
@@ -111,6 +114,7 @@ export function detailsOf(event: EventView): DetailsValues {
     agenda: event.agenda.map((item) => ({ ...item })),
     faq: event.faq.map((item) => ({ ...item })),
     cover: event.cover ? { ...event.cover } : null,
+    posterRatio: event.posterRatio,
     banner: event.banner ? { ...event.banner } : null,
     gallery: event.gallery.map((image) => ({ ...image })),
     attendanceCount: event.attendance.count === null ? "" : String(event.attendance.count),
@@ -175,6 +179,7 @@ export function toDetailsRequest(values: DetailsValues) {
     agenda: values.agenda,
     faq: values.faq,
     cover: imageRef(values.cover),
+    posterRatio: values.posterRatio,
     banner: imageRef(values.banner),
     gallery: values.gallery.map((image) => ({ mediaId: image.mediaId, alt: image.alt })),
     attendanceCount: values.kind === "past" ? optionalInt(values.attendanceCount) : null,

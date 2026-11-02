@@ -26,6 +26,8 @@ import {
 import { can } from "@lavieco/shared/permissions";
 import { Button, SelectField, TextField, cn } from "@lavieco/ui";
 
+import { MediaImage } from "@/shared/components/media-image";
+
 import { TEXT } from "../constants/text";
 import type { EventListFilters } from "../types";
 import { eventShortcuts } from "../utils/event-shortcuts";
@@ -198,10 +200,22 @@ function EventRow({
     <li className="grid gap-4 border-b border-hairline px-5 py-5 last:border-b-0 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,1.4fr)_minmax(0,1fr)_auto_auto] lg:items-center lg:gap-6">
       <div className="flex min-w-0 items-center gap-4">
         <div
-          aria-hidden="true"
-          className="flex h-16 w-14 shrink-0 items-center justify-center rounded-arch-sm bg-mint-mist text-deep-blue/40"
+          className={cn(
+            "relative flex w-14 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-mint-mist text-deep-blue/40",
+            event.posterRatio === "1:1" ? "aspect-square" : "aspect-[4/5]",
+          )}
         >
-          <FiImage size={18} />
+          {event.cover ? (
+            <MediaImage
+              publicId={event.cover.publicId}
+              alt={event.cover.alt}
+              fill
+              sizes="56px"
+              className="object-cover"
+            />
+          ) : (
+            <FiImage aria-hidden="true" size={18} />
+          )}
         </div>
         <div className="min-w-0">
           <div className="mb-1 flex flex-wrap items-center gap-2">

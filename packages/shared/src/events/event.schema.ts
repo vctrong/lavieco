@@ -7,6 +7,7 @@ import { mediaImageInputSchema, mediaImageSchema } from "../media/media.schema";
 import {
   EVENT_STATUSES,
   benefitIconSchema,
+  eventPosterRatioSchema,
   eventActionSchema,
   eventFormatSchema,
   eventKindSchema,
@@ -121,9 +122,10 @@ const detailsShape = {
   speakers: z.array(eventSpeakerInputSchema).max(EVENT_LIMITS.speakersMax).default([]),
   agenda: z.array(eventAgendaItemSchema).max(EVENT_LIMITS.agendaMax).default([]),
   faq: z.array(eventFaqItemSchema).max(EVENT_LIMITS.faqMax).default([]),
-  /** Poster, 4:5. Uploaded beforehand through content-service; attached on save. */
+  /** Poster, cropped client-side. Uploaded beforehand through content-service; attached on save. */
   cover: mediaImageInputSchema.nullable().default(null),
-  /** Wide banner, 21:9: event page hero, featured block and share image. */
+  posterRatio: eventPosterRatioSchema.default("4:5"),
+  /** Wide banner, 21:9: event page hero and featured block; the poster is never a hero. */
   banner: mediaImageInputSchema.nullable().default(null),
   gallery: galleryInputSchema.default([]),
   /**
@@ -245,6 +247,7 @@ export const eventSchema = z.object({
   agenda: z.array(eventAgendaItemSchema),
   faq: z.array(eventFaqItemSchema),
   cover: eventImageSchema.nullable(),
+  posterRatio: eventPosterRatioSchema,
   banner: eventImageSchema.nullable(),
   gallery: z.array(eventImageSchema),
   attendance: eventAttendanceSchema,
@@ -277,6 +280,7 @@ export const eventListItemSchema = z.object({
   endAt: isoDateTimeSchema,
   venueName: z.string().nullable(),
   cover: eventImageSchema.nullable(),
+  posterRatio: eventPosterRatioSchema,
   pricing: eventPricingSchema,
   /** `capacity` null = unlimited (or no ticket type yet). */
   seats: z.object({ sold: z.number().int(), capacity: z.number().int().nullable() }),

@@ -54,5 +54,9 @@ export function useImageUpload(purpose: EventImagePurpose) {
     }
   }
 
-  return { upload, busy, error, clearError: () => setError(null) };
+  /** Shows the refusal of a file checked before cropping, the way an upload would. */
+  const reject = (issue: NonNullable<ReturnType<typeof checkImageFile>>) =>
+    setError(messageOf(issue.code, issue.code === "format_refused" ? issue.format : undefined));
+
+  return { upload, busy, error, reject, clearError: () => setError(null) };
 }

@@ -1,5 +1,8 @@
 export { EVENT_CACHE_TAGS } from "./cache-tags";
 export {
+  EVENT_POSTER_RATIOS,
+  eventPosterRatioSchema,
+  type EventPosterRatio,
   BENEFIT_ICONS,
   CHOICE_QUESTION_TYPES,
   CONDITIONAL_REGISTRATION_FIELDS,

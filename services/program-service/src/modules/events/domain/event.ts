@@ -8,6 +8,7 @@ import type {
   EventFormat,
   EventImage,
   EventKind,
+  EventPosterRatio,
   EventPricing,
   EventSpeaker,
   EventStatus,
@@ -38,6 +39,7 @@ export type EventContent = {
   speakers: EventSpeaker[];
   agenda: EventAgendaItem[];
   faq: EventFaqItem[];
+  posterRatio: EventPosterRatio;
 };
 
 /**
@@ -115,6 +117,7 @@ export function toEventContent(
     })),
     agenda: details.agenda,
     faq: details.faq,
+    posterRatio: details.posterRatio,
   };
 }
 

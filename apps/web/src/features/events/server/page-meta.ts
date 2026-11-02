@@ -25,13 +25,13 @@ export async function eventMetadata(slug: string): Promise<Metadata> {
       title: event.title,
       description,
       url: eventPath(event.slug),
-      ...(image ? { images: [image] } : {}),
+      images: [image],
     },
     twitter: {
-      card: image ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: event.title,
       description,
-      ...(image ? { images: [image.url] } : {}),
+      images: [image.url],
     },
   };
 }
