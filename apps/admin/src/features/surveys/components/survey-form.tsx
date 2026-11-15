@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useState, type FormEvent, type ReactNode } from "react";
 import { FiArrowDown, FiArrowUp, FiPlus, FiTrash2 } from "react-icons/fi";
 
 import {
@@ -17,6 +17,8 @@ import {
 import {
   Button,
   CheckboxField,
+  DraftOfferBanner,
+  DraftStatusLine,
   FormAlert,
   SelectField,
   TextareaField,
@@ -24,6 +26,8 @@ import {
 } from "@lavieco/ui";
 
 import { callAction } from "@/shared/call-action";
+import { FORM_TEXT } from "@/shared/constants/form-text";
+import { useStaffDraft } from "@/shared/drafts";
 
 import { createSurvey, updateSurvey } from "../actions/surveys";
 import { TEXT } from "../constants/text";
@@ -176,11 +180,13 @@ export function SurveyForm({ survey, preset, events, canWrite }: SurveyFormProps
   const [alert, setAlert] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const disabled = busy || !canWrite;
 
   const set = <K extends keyof SurveyFormValues>(key: K, value: SurveyFormValues[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
     setSaved(false);
+    setDirty(true);
   };
   const setSetting = <K extends keyof SurveyFormValues["settings"]>(
     key: K,
@@ -199,6 +205,20 @@ export function SurveyForm({ survey, preset, events, canWrite }: SurveyFormProps
     set("questions", next);
   };
 
+  // Kept in this browser until the server accepts it (expired session, failed save,
+  // closed tab).
+  const draft = useStaffDraft<SurveyFormValues>({
+    form: "survey",
+    record: survey?.id ?? "new",
+    values,
+    dirty: dirty && canWrite,
+    revision: survey?.revision ?? null,
+    onRestore: useCallback((restored: SurveyFormValues) => {
+      setValues(restored);
+      setDirty(true);
+    }, []),
+  });
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setBusy(true);
@@ -210,6 +230,8 @@ export function SurveyForm({ survey, preset, events, canWrite }: SurveyFormProps
     );
     setBusy(false);
     if (result.status === "ok") {
+      setDirty(false);
+      draft.clear();
       if (survey) {
         setSaved(true);
         router.refresh();
@@ -231,6 +253,12 @@ export function SurveyForm({ survey, preset, events, canWrite }: SurveyFormProps
 
   return (
     <form onSubmit={submit} noValidate className="space-y-6">
+      <DraftOfferBanner
+        offer={canWrite ? draft.offer : null}
+        text={FORM_TEXT.vi.draft}
+        onRestore={draft.restore}
+        onDiscard={draft.discard}
+      />
       <Group title={f.basics}>
         <SelectField
           tone="light"
@@ -429,7 +457,9 @@ export function SurveyForm({ survey, preset, events, canWrite }: SurveyFormProps
         <p role="status" className="text-[13px] font-medium text-emerald-ink">
           {f.saved}
         </p>
-      ) : null}
+      ) : (
+        <DraftStatusLine status={draft.status} text={FORM_TEXT.vi.draft} />
+      )}
       {canWrite ? (
         <Button type="submit" disabled={busy}>
           {busy ? f.saving : f.save}

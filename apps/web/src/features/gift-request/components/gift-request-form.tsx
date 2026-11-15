@@ -12,6 +12,7 @@ import {
   TextField,
 } from "@lavieco/ui";
 
+import { DraftRestoredNote } from "@/shared/components/draft-restored-note";
 import { FailureAlert } from "@/shared/components/failure-alert";
 import { HoneypotField } from "@/shared/components/honeypot-field";
 import { FORM_TEXT } from "@/shared/constants/form-text";
@@ -34,12 +35,14 @@ const fieldId = (key: string) => `loi-nhan-${key}`;
 export function GiftRequestForm() {
   const t = TEXT.vi;
   const f = FORM_TEXT.vi;
-  const { status, failure, errors, invalidFields, formProps } = useLeadForm({
-    schema: giftRequestSchema,
-    submit: submitGiftRequest,
-    fieldOrder: FIELD_ORDER,
-    fieldId,
-  });
+  const { status, failure, errors, invalidFields, formProps, draftRestored, forgetDraft } =
+    useLeadForm({
+      draftForm: "gift-request",
+      schema: giftRequestSchema,
+      submit: submitGiftRequest,
+      fieldOrder: FIELD_ORDER,
+      fieldId,
+    });
   const busy = status === "submitting";
 
   if (status === "success") {
@@ -54,6 +57,7 @@ export function GiftRequestForm() {
     <form {...formProps} className="space-y-4">
       <HoneypotField />
       <RequiredNote tone="dark" text={f.requiredNote} />
+      <DraftRestoredNote shown={draftRestored} onForget={forgetDraft} tone="dark" />
       <TextField
         id={fieldId("name")}
         label={t.fields.name.label}

@@ -13,6 +13,7 @@ import {
   TextField,
 } from "@lavieco/ui";
 
+import { DraftRestoredNote } from "@/shared/components/draft-restored-note";
 import { FailureAlert } from "@/shared/components/failure-alert";
 import { HoneypotField } from "@/shared/components/honeypot-field";
 import { FORM_TEXT } from "@/shared/constants/form-text";
@@ -35,12 +36,14 @@ const fieldId = (key: string) => `hop-tac-${key}`;
 export function OrganizationLeadForm() {
   const t = TEXT.vi;
   const f = FORM_TEXT.vi;
-  const { status, failure, errors, invalidFields, formProps } = useLeadForm({
-    schema: organizationLeadSchema,
-    submit: submitOrganizationLead,
-    fieldOrder: FIELD_ORDER,
-    fieldId,
-  });
+  const { status, failure, errors, invalidFields, formProps, draftRestored, forgetDraft } =
+    useLeadForm({
+      draftForm: "organization-lead",
+      schema: organizationLeadSchema,
+      submit: submitOrganizationLead,
+      fieldOrder: FIELD_ORDER,
+      fieldId,
+    });
   const busy = status === "submitting";
 
   if (status === "success") {
@@ -55,6 +58,7 @@ export function OrganizationLeadForm() {
     <form {...formProps} className="space-y-4">
       <HoneypotField />
       <RequiredNote tone="dark" text={f.requiredNote} />
+      <DraftRestoredNote shown={draftRestored} onForget={forgetDraft} tone="dark" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <TextField
           id={fieldId("name")}

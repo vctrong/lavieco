@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEvent } from "react";
 import { FiEdit2, FiLock, FiMail, FiMinus, FiPlus } from "react-icons/fi";
 
 import { ORDER_LIMITS, type PublicEventDetail } from "@lavieco/shared/events";
@@ -28,6 +28,7 @@ import { TurnstileWidget } from "@/shared/components/turnstile-widget";
 import { FORM_TEXT } from "@/shared/constants/form-text";
 import { callAction } from "@/shared/call-action";
 import type { FormFailure } from "@/shared/form-failures";
+import { usePublicDraft } from "@/shared/drafts";
 import { useCountdown } from "@/shared/hooks/use-countdown";
 
 import { confirmCheckout, startCheckout } from "../actions/checkout";
@@ -57,7 +58,8 @@ const fieldId = (key: string) => `ck-${key}`;
 /**
  * Registration and ticket purchase (docs/05 §5.1–5.2): tickets → booker → questions
  * → consents → email code → seats held. Prices shown here are indicative: the service
- * recomputes them. Nothing is stored in the browser.
+ * recomputes them. The typed details (not the consents, not the code) are kept in this
+ * tab's sessionStorage until the order is placed, so a reload or a failure keeps them.
  */
 export function CheckoutForm({
   event,
@@ -81,6 +83,7 @@ export function CheckoutForm({
   });
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [note, setNote] = useState("");
+  const [initialBuyer] = useState(buyer);
   const [consents, setConsents] = useState({ data: false, safety: false, guardian: false });
   const [step, setStep] = useState<"form" | "code">("form");
   const [draft, setDraft] = useState<CheckoutDraft | null>(null);
@@ -105,6 +108,35 @@ export function CheckoutForm({
     stepTopRef.current?.scrollIntoView({ block: "start" });
     stepTopRef.current?.focus({ preventScroll: true });
   }, [step]);
+
+  const typedValues = useMemo(
+    () => ({ quantities, buyer, answers, note }),
+    [quantities, buyer, answers, note],
+  );
+  const draftStore = usePublicDraft<typeof typedValues>({
+    form: "checkout",
+    record: event.slug,
+    values: typedValues,
+    dirty:
+      step === "form" &&
+      (buyer.fullName !== initialBuyer.fullName ||
+        buyer.email !== initialBuyer.email ||
+        buyer.phone !== initialBuyer.phone ||
+        note !== "" ||
+        Object.keys(answers).length > 0),
+    onRestore: useCallback((saved: typeof typedValues) => {
+      setQuantities(saved.quantities);
+      setBuyer(saved.buyer);
+      setAnswers(saved.answers);
+      setNote(saved.note);
+    }, []),
+  });
+  const forgetDraft = () => {
+    draftStore.forget();
+    setBuyer(initialBuyer);
+    setAnswers({});
+    setNote("");
+  };
 
   const lines = useMemo(
     () =>
@@ -175,6 +207,7 @@ export function CheckoutForm({
     const result = await callAction(() => startCheckout(next));
     setTurnstileReset((count) => count + 1);
     if (result.status === "ok" && result.kind === "placed") {
+      draftStore.clear();
       router.push(result.redirectTo);
       return true;
     }
@@ -230,6 +263,7 @@ export function CheckoutForm({
       confirmCheckout({ draft, challengeId: pending.challengeId, code }),
     );
     if (result.status === "ok") {
+      draftStore.clear();
       router.push(result.redirectTo);
       return;
     }
@@ -395,6 +429,21 @@ export function CheckoutForm({
       <form onSubmit={handleSubmit} noValidate className="space-y-8">
         <HoneypotField />
         <RequiredNote text={f.requiredNote} />
+        {draftStore.restored ? (
+          <p
+            role="status"
+            className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl bg-mint-mist px-4 py-3 text-[13px] text-deep-blue"
+          >
+            <span>{f.draft.restored}</span>
+            <button
+              type="button"
+              onClick={forgetDraft}
+              className="min-h-11 font-medium text-emerald-ink underline underline-offset-4"
+            >
+              {f.draft.clear}
+            </button>
+          </p>
+        ) : null}
 
         <section
           aria-labelledby="chon-ve"

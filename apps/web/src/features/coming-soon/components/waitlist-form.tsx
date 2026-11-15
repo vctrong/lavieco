@@ -4,6 +4,7 @@ import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 
 import { BusyLabel, FieldError, FormErrorNote, RequiredNote, cn } from "@lavieco/ui";
 
+import { DraftRestoredNote } from "@/shared/components/draft-restored-note";
 import { FailureAlert } from "@/shared/components/failure-alert";
 import { HoneypotField } from "@/shared/components/honeypot-field";
 import { FORM_TEXT } from "@/shared/constants/form-text";
@@ -20,12 +21,14 @@ const fieldId = (key: string) => `danh-sach-cho-${key}`;
 export function WaitlistForm() {
   const t = TEXT.vi;
   const f = FORM_TEXT.vi;
-  const { status, failure, errors, invalidFields, formProps } = useLeadForm({
-    schema: waitlistSchema,
-    submit: submitWaitlist,
-    fieldOrder: FIELD_ORDER,
-    fieldId,
-  });
+  const { status, failure, errors, invalidFields, formProps, draftRestored, forgetDraft } =
+    useLeadForm({
+      draftForm: "waitlist",
+      schema: waitlistSchema,
+      submit: submitWaitlist,
+      fieldOrder: FIELD_ORDER,
+      fieldId,
+    });
   const errorId = (key: string) => `${fieldId(key)}-error`;
 
   const busy = status === "submitting";
@@ -36,6 +39,7 @@ export function WaitlistForm() {
     <form {...formProps} className="w-full max-w-md space-y-3">
       <HoneypotField />
       <RequiredNote text={f.requiredNote} />
+      <DraftRestoredNote shown={draftRestored} onForget={forgetDraft} tone="light" />
 
       <div>
         <div

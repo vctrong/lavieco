@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useState, type FormEvent, type ReactNode } from "react";
 
 import {
   VOUCHER_DISCOUNT_TYPES,
@@ -11,9 +11,19 @@ import {
   VOUCHER_VISIBILITIES,
   type VoucherView,
 } from "@lavieco/shared/events";
-import { Button, FormAlert, SelectField, TextareaField, TextField } from "@lavieco/ui";
+import {
+  Button,
+  DraftOfferBanner,
+  DraftStatusLine,
+  FormAlert,
+  SelectField,
+  TextareaField,
+  TextField,
+} from "@lavieco/ui";
 
 import { callAction } from "@/shared/call-action";
+import { FORM_TEXT } from "@/shared/constants/form-text";
+import { useStaffDraft } from "@/shared/drafts";
 
 import { createVoucher, updateVoucher } from "../actions/vouchers";
 import { TEXT } from "../constants/text";
@@ -52,11 +62,13 @@ export function VoucherForm({ voucher, presetEventId = null, events }: VoucherFo
   const [alert, setAlert] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const used = voucher !== null && voucher.used + voucher.held > 0;
 
   const set = <K extends keyof VoucherFormValues>(key: K, value: VoucherFormValues[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
     setSaved(false);
+    setDirty(true);
   };
   const text = (key: keyof VoucherFormValues) => ({
     value: String(values[key]),
@@ -64,6 +76,20 @@ export function VoucherForm({ voucher, presetEventId = null, events }: VoucherFo
       set(key, event.target.value as VoucherFormValues[typeof key]),
     error: errors[key],
     disabled: busy,
+  });
+
+  // Kept in this browser until the server accepts it (expired session, failed save,
+  // closed tab).
+  const draft = useStaffDraft<VoucherFormValues>({
+    form: "voucher",
+    record: voucher?.id ?? "new",
+    values,
+    dirty: dirty && true,
+    revision: voucher?.revision ?? null,
+    onRestore: useCallback((restored: VoucherFormValues) => {
+      setValues(restored);
+      setDirty(true);
+    }, []),
   });
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
@@ -79,6 +105,8 @@ export function VoucherForm({ voucher, presetEventId = null, events }: VoucherFo
     );
     setBusy(false);
     if (result.status === "ok") {
+      setDirty(false);
+      draft.clear();
       if (voucher) {
         setSaved(true);
         router.refresh();
@@ -100,6 +128,12 @@ export function VoucherForm({ voucher, presetEventId = null, events }: VoucherFo
 
   return (
     <form onSubmit={submit} noValidate className="space-y-6">
+      <DraftOfferBanner
+        offer={true ? draft.offer : null}
+        text={FORM_TEXT.vi.draft}
+        onRestore={draft.restore}
+        onDiscard={draft.discard}
+      />
       <Group title={t.form.identity}>
         <TextField
           tone="light"
@@ -245,7 +279,9 @@ export function VoucherForm({ voucher, presetEventId = null, events }: VoucherFo
         <p role="status" className="text-[13px] font-medium text-emerald-ink">
           {t.form.saved}
         </p>
-      ) : null}
+      ) : (
+        <DraftStatusLine status={draft.status} text={FORM_TEXT.vi.draft} />
+      )}
       <Button type="submit" disabled={busy}>
         {busy ? t.form.saving : t.form.save}
       </Button>
