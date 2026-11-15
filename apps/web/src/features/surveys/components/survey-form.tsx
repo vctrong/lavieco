@@ -5,7 +5,15 @@ import { useEffect, useMemo, useState, useSyncExternalStore, type FormEvent } fr
 import { FiCheckCircle, FiStar } from "react-icons/fi";
 
 import { SURVEY_LIMITS, type PublicSurvey, type SurveyQuestion } from "@lavieco/shared/events";
-import { CheckboxField, FormErrorNote, RequiredNote, TextField, cn, focusField } from "@lavieco/ui";
+import {
+  CheckboxField,
+  FormErrorNote,
+  RequiredNote,
+  TextField,
+  choiceControlClass,
+  cn,
+  focusField,
+} from "@lavieco/ui";
 
 import { callAction } from "@/shared/call-action";
 import { HoneypotField } from "@/shared/components/honeypot-field";
@@ -130,7 +138,7 @@ function QuestionInput({
               <input
                 type={many ? "checkbox" : "radio"}
                 name={id}
-                className="accent-emerald-brand"
+                className={choiceControlClass("light")}
                 checked={picked.includes(option.id)}
                 onChange={() => {
                   if (!many) return onChange(option.id);
@@ -395,6 +403,7 @@ function SurveyFields({
       {survey.consentRequired ? (
         <div id={fieldId("consent")} tabIndex={-1}>
           <CheckboxField
+            tone="light"
             label={survey.consentText || t.consentDefault}
             checked={consent}
             onChange={(event) => setConsent(event.target.checked)}

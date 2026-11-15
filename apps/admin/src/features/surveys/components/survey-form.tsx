@@ -153,6 +153,7 @@ function QuestionEditor({
         ) : null}
         {section ? null : (
           <CheckboxField
+            tone="light"
             label={f.required}
             checked={question.required}
             onChange={(event) => onChange({ ...question, required: event.target.checked })}
@@ -358,6 +359,7 @@ export function SurveyForm({ survey, preset, events, canWrite }: SurveyFormProps
       <Group title={f.settings}>
         <div className="md:col-span-2">
           <CheckboxField
+            tone="light"
             label={f.anonymous}
             checked={settings.anonymous}
             disabled={disabled}

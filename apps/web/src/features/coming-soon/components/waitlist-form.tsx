@@ -2,7 +2,14 @@
 
 import { FiAlertCircle, FiCheckCircle } from "react-icons/fi";
 
-import { BusyLabel, FieldError, FormErrorNote, RequiredNote, cn } from "@lavieco/ui";
+import {
+  BusyLabel,
+  FieldError,
+  FormErrorNote,
+  RequiredNote,
+  choiceControlClass,
+  cn,
+} from "@lavieco/ui";
 
 import { DraftRestoredNote } from "@/shared/components/draft-restored-note";
 import { FailureAlert } from "@/shared/components/failure-alert";
@@ -92,9 +99,12 @@ export function WaitlistForm() {
             disabled={busy || done}
             aria-invalid={errors.consent ? true : undefined}
             aria-describedby={errors.consent ? errorId("consent") : undefined}
-            className="mt-0.5 size-4 shrink-0 cursor-pointer accent-emerald-brand aria-[invalid=true]:outline-2 aria-[invalid=true]:outline-error"
+            className={choiceControlClass("light", "mt-0.5")}
           />
-          <label htmlFor={fieldId("consent")} className="text-xs leading-relaxed text-charcoal/75">
+          <label
+            htmlFor={fieldId("consent")}
+            className="cursor-pointer text-xs leading-relaxed text-charcoal/85"
+          >
             {t.form.consent}
             <span aria-hidden="true" className="ml-0.5 text-error">
               *

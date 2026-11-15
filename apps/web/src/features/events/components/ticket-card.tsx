@@ -19,7 +19,7 @@ import type {
   RegistrationBlocker,
 } from "@lavieco/shared/events";
 import { maxUnitsOf } from "@lavieco/shared/events";
-import { cn } from "@lavieco/ui";
+import { choiceControlClass, cn } from "@lavieco/ui";
 
 import { SIGN_IN_PATH, TICKET_LOOKUP_PATH, checkoutPath, eventPath } from "../constants/config";
 import { TEXT } from "../constants/text";
@@ -176,7 +176,7 @@ export function TicketCard(props: TicketCardProps) {
                         setSelectedId(ticket.id);
                         setQuantity(1);
                       }}
-                      className="mt-1 accent-emerald-brand"
+                      className={choiceControlClass("light", "mt-0.5")}
                     />
                     <span className="min-w-0 flex-1">
                       <span className="flex items-start justify-between gap-2">
