@@ -11,7 +11,7 @@ import { TEXT } from "../constants/text";
 import { markSignedOut, useViewer } from "../hooks/viewer-store";
 import { useDisclosure } from "../hooks/use-disclosure";
 import type { AccountLink, SignedInViewer } from "../types";
-import { MENU_PANEL_CLASS, MENU_ROW_CLASS } from "./styles";
+import { ICON_HIT_AREA_CLASS, MENU_PANEL_CLASS, MENU_ROW_CLASS } from "./styles";
 import { UserAvatar } from "./user-avatar";
 
 const t = TEXT.vi.account;
@@ -75,7 +75,10 @@ export function NeutralAccountLink() {
     <Link
       href={ACCOUNT_HREF}
       aria-label={t.neutralLabel}
-      className="flex size-8 items-center justify-center rounded-full border border-hairline bg-soft-white text-deep-blue transition-colors hover:border-emerald-brand"
+      className={cn(
+        "flex size-8 items-center justify-center rounded-full border border-hairline bg-soft-white text-deep-blue transition-colors hover:border-emerald-brand",
+        ICON_HIT_AREA_CLASS,
+      )}
     >
       <FiUser aria-hidden="true" size={15} />
     </Link>
@@ -231,7 +234,11 @@ export function AccountButton() {
       <Link
         href={SIGN_IN_HREF}
         aria-label={t.signIn}
-        className="flex size-8 items-center justify-center rounded-full bg-mint-mist text-emerald-brand ring-1 ring-emerald-brand/40 transition-colors hover:bg-emerald-brand hover:text-soft-white"
+        className={cn(
+          // Emerald Ink: plain Emerald on Mint Mist is under 3:1 for an icon.
+          "flex size-8 items-center justify-center rounded-full bg-mint-mist text-emerald-ink ring-1 ring-emerald-brand/40 transition-colors hover:bg-emerald-brand hover:text-charcoal",
+          ICON_HIT_AREA_CLASS,
+        )}
       >
         <FiUser aria-hidden="true" size={16} />
       </Link>

@@ -9,3 +9,9 @@ export const MENU_PANEL_CLASS =
 /** One row of the account menu. */
 export const MENU_ROW_CLASS =
   "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium text-charcoal/85 transition-colors hover:bg-mint-mist/50 hover:text-emerald-brand focus-visible:bg-mint-mist/50";
+
+/**
+ * The navbar's round 32px icon buttons keep their size in the compact bar, but their
+ * touch area grows to 44px with an invisible ring around them (WCAG 2.5.8, thumbs).
+ */
+export const ICON_HIT_AREA_CLASS = "relative after:absolute after:-inset-1.5 after:content-['']";

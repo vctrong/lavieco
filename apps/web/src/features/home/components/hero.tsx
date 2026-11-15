@@ -30,7 +30,7 @@ export function Hero() {
 
       <div className="relative z-10 flex flex-1 items-center pb-[clamp(0.75rem,2svh,2.5rem)] pt-dock-clearance">
         <Container>
-          <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-x-8 xl:gap-x-12">
+          <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-x-8 xl:gap-x-12">
             <div className="flex flex-col items-start gap-[clamp(0.625rem,2svh,1.75rem)] lg:col-span-7 xl:pr-8">
               <div className="flex flex-wrap items-center gap-3">
                 <div className="inline-flex items-center gap-2 rounded-full border border-hairline bg-soft-white px-3 py-1.5 shadow-sm">
@@ -93,8 +93,9 @@ export function Hero() {
                 {t.quote} {t.body}
               </p>
 
-              <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
-                <Button as={Link} href={`#${SECTION_IDS.journey}`}>
+              {/* Phones: stacked, the main action full width under the thumb. */}
+              <div className="flex w-full flex-col items-stretch gap-1 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center sm:gap-x-5 sm:gap-y-2">
+                <Button as={Link} href={`#${SECTION_IDS.journey}`} className="min-h-12">
                   <span>{t.primaryCta}</span>
                   <PearlDot size="sm" />
                   <FiArrowRight
@@ -103,7 +104,12 @@ export function Hero() {
                     className="transition-transform group-hover:translate-x-0.5"
                   />
                 </Button>
-                <Button as={Link} href={`#${SECTION_IDS.contact}`} variant="link">
+                <Button
+                  as={Link}
+                  href={`#${SECTION_IDS.contact}`}
+                  variant="link"
+                  className="text-sm"
+                >
                   <span>{t.secondaryCta}</span>
                   <FiArrowRight
                     aria-hidden="true"
