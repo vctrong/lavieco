@@ -95,7 +95,8 @@ export const TEXT = {
       conflict: "Ưu đãi vừa được người khác sửa. Tải lại trang rồi thử lại.",
       forbidden: "Bạn không có quyền quản lý ưu đãi.",
       not_found: "Không tìm thấy ưu đãi.",
-      session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang để đăng nhập lại.",
+      session_expired:
+        "Phiên đăng nhập đã hết hạn. Đừng tải lại trang: dữ liệu vẫn còn. Đăng nhập lại ở tab mới, rồi quay về đây bấm lưu.",
       unavailable: "Hệ thống đang bận. Thử lại sau ít phút.",
       stale_version: "Trang vừa được cập nhật. Tải lại trang rồi thử lại.",
       offline: "Mất kết nối mạng. Kiểm tra mạng rồi thử lại.",

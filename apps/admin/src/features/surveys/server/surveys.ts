@@ -12,6 +12,7 @@ import { serverEnv } from "@/lib/env";
 import { requestId } from "@/lib/request-meta";
 import { adminLogger, identityClient, programClient } from "@/lib/services";
 import { readStaffSession } from "@/lib/session";
+import { withStaffToken } from "@/lib/staff-token";
 
 import type { SurveyActionResult, SurveyFailure } from "../types";
 
@@ -95,9 +96,9 @@ export async function callSurveys<T>(
 ): Promise<SurveyActionResult<T>> {
   const id = await requestId();
   try {
-    const { accessToken } = await readStaffSession();
-    if (!accessToken) return { status: "error", reason: "session_expired" };
-    return { status: "ok", data: await run(accessToken, id) };
+    const call = await withStaffToken(id, (token) => run(token, id));
+    if (call.session === "expired") return { status: "error", reason: "session_expired" };
+    return { status: "ok", data: call.value };
   } catch (error) {
     if (isServiceProblem(error)) {
       const reason = FAILURE_BY_CODE[error.code];

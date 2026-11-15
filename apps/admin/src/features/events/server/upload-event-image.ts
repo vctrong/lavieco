@@ -12,6 +12,7 @@ import {
 import { requestId } from "@/lib/request-meta";
 import { adminLogger, contentClient } from "@/lib/services";
 import { readStaffSession } from "@/lib/session";
+import { withStaffToken } from "@/lib/staff-token";
 
 import type { UploadFailure, UploadResult } from "../types";
 
@@ -47,8 +48,9 @@ export async function handleEventImageUpload(request: Request): Promise<Response
  * check, then forwards with the staff token; content-service checks the real content.
  */
 export async function uploadEventImage(request: Request): Promise<UploadResult> {
-  const { accessToken } = await readStaffSession();
-  if (!accessToken) return fail("session_expired");
+  // Only a quick "signed in at all?" before reading the body; withStaffToken renews below.
+  const { accessToken, refreshToken } = await readStaffSession();
+  if (!accessToken && !refreshToken) return fail("session_expired");
   const declared = Number(request.headers.get("content-length") ?? "0");
   if (declared > MAX_REQUEST_BYTES) return fail("too_large");
 
@@ -65,13 +67,17 @@ export async function uploadEventImage(request: Request): Promise<UploadResult> 
   if (issue) return fail(issue.code, issue.code === "format_refused" ? issue.format : undefined);
 
   try {
-    const media: Media = await contentClient().uploadEventImage(
-      accessToken,
-      fields.data.purpose,
-      { bytes: file, filename: file.name || "image" },
-      await requestId(),
+    const id = await requestId();
+    const call = await withStaffToken<Media>(id, (token) =>
+      contentClient().uploadEventImage(
+        token,
+        fields.data.purpose,
+        { bytes: file, filename: file.name || "image" },
+        id,
+      ),
     );
-    return { status: "ok", media };
+    if (call.session === "expired") return fail("session_expired");
+    return { status: "ok", media: call.value };
   } catch (error) {
     if (isServiceProblem(error)) {
       const reason = FAILURE_BY_CODE[error.code];

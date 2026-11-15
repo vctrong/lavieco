@@ -11,6 +11,7 @@ import type {
 
 import { requestId } from "@/lib/request-meta";
 import { identityClient, programClient } from "@/lib/services";
+import { withMemberToken } from "@/lib/member-token";
 import { readMemberSession } from "@/lib/session";
 
 import { orderTokenSchema } from "../schemas";
@@ -97,16 +98,19 @@ export async function memberProofFor(
   email: string,
   requestIdValue?: string,
 ): Promise<string | null> {
-  const { accessToken } = await readMemberSession();
-  if (!accessToken) return null;
   try {
     const identity = identityClient();
     const id = requestIdValue ?? (await requestId());
-    const profile = await identity.getMemberProfile(accessToken, id);
-    if (!profile.emailVerifiedAt || normalizeEmail(profile.email) !== normalizeEmail(email)) {
-      return null;
-    }
-    return (await identity.memberEmailProof(accessToken, id)).verificationToken;
+    // Called from the checkout action, which may renew an access token that expired while
+    // the member was filling in the form; they would otherwise be sent through OTP again.
+    const call = await withMemberToken(id, async (accessToken) => {
+      const profile = await identity.getMemberProfile(accessToken, id);
+      if (!profile.emailVerifiedAt || normalizeEmail(profile.email) !== normalizeEmail(email)) {
+        return null;
+      }
+      return (await identity.memberEmailProof(accessToken, id)).verificationToken;
+    });
+    return call.session === "ok" ? call.value : null;
   } catch {
     return null;
   }

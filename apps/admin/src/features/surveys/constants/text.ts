@@ -135,7 +135,8 @@ export const TEXT = {
       conflict: "Khảo sát vừa được người khác sửa. Tải lại trang rồi thử lại.",
       forbidden: "Bạn không có quyền thực hiện thao tác này.",
       not_found: "Không tìm thấy khảo sát.",
-      session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang để đăng nhập lại.",
+      session_expired:
+        "Phiên đăng nhập đã hết hạn. Đừng tải lại trang: dữ liệu vẫn còn. Đăng nhập lại ở tab mới, rồi quay về đây bấm lưu.",
       code_invalid: "Mã xác thực không đúng hoặc đã hết hạn.",
       locked_account: "Tài khoản tạm khoá do nhập sai nhiều lần. Thử lại sau.",
       unavailable: "Hệ thống đang bận. Thử lại sau ít phút.",

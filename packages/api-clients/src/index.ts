@@ -24,6 +24,11 @@ export {
   type ProgramClientOptions,
 } from "./program-client";
 export {
+  createSessionRefresher,
+  type SessionRefresher,
+  type SessionRefresherOptions,
+} from "./session-refresh";
+export {
   SERVICE_TOKEN_TTL_SECONDS,
   createServiceTokenSigner,
   type ServiceTokenSigner,

@@ -4,7 +4,7 @@ import type { IdentityClient, ProgramClient } from "@lavieco/api-clients";
 
 import { requestId } from "@/lib/request-meta";
 import { identityClient, programClient } from "@/lib/services";
-import { readStaffSession } from "@/lib/session";
+import { withStaffToken } from "@/lib/staff-token";
 
 import type { ActionResult } from "../types";
 import { toFailure } from "./outcomes";
@@ -21,10 +21,10 @@ export async function callStaff<T>(
 ): Promise<ActionResult<T>> {
   const id = await requestId();
   try {
-    const { accessToken } = await readStaffSession();
-    if (!accessToken) return { status: "error", reason: "session_expired" };
     const clients = { program: programClient(), identity: identityClient() };
-    return { status: "ok", data: await run(clients, accessToken, id) };
+    const call = await withStaffToken(id, (token) => run(clients, token, id));
+    if (call.session === "expired") return { status: "error", reason: "session_expired" };
+    return { status: "ok", data: call.value };
   } catch (error) {
     return toFailure(error, context, id);
   }

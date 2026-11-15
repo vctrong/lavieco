@@ -7,7 +7,7 @@ import { voucherCodeSchema, type VoucherCheckResponse } from "@lavieco/shared/ev
 
 import { clientIp, requestId } from "@/lib/request-meta";
 import { identityClient, programClient } from "@/lib/services";
-import { readMemberSession } from "@/lib/session";
+import { withMemberToken } from "@/lib/member-token";
 
 export type VoucherCheckFailure = "invalid" | "too_low" | "rate_limited" | "unavailable";
 
@@ -31,10 +31,12 @@ const inputSchema = z.object({
 
 /** The signed-in member, for "thành viên" codes; a guest is simply not one. */
 async function memberId(id: string): Promise<string | undefined> {
-  const { accessToken } = await readMemberSession();
-  if (!accessToken) return undefined;
   try {
-    return (await identityClient().getMemberProfile(accessToken, id)).id;
+    const call = await withMemberToken(
+      id,
+      async (accessToken) => (await identityClient().getMemberProfile(accessToken, id)).id,
+    );
+    return call.session === "ok" ? call.value : undefined;
   } catch {
     return undefined;
   }
