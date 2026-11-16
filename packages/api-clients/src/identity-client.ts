@@ -1,5 +1,12 @@
 import {
   type AuditEventIngestRequest,
+  pushNotificationResponseSchema,
+  pushSettingsSchema,
+  pushTestResponseSchema,
+  type PushNotificationRequest,
+  type PushSubscriptionRequest,
+  type PushTopicsUpdateRequest,
+  type PushUnsubscribeRequest,
   invitationAcceptResponseSchema,
   invitationInspectResponseSchema,
   memberProfileSchema,
@@ -184,6 +191,63 @@ export function createIdentityClient(options: IdentityClientOptions) {
         path: `${V1}/sessions/revoke`,
         auth: service,
         body,
+        requestId,
+      }),
+
+    // --- staff alerts by Web Push (ADR-0027) ---
+    getPushSettings: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/staff/me/push`,
+        auth: user(accessToken),
+        schema: pushSettingsSchema,
+        requestId,
+      }),
+    updatePushTopics: (accessToken: string, body: PushTopicsUpdateRequest, requestId?: string) =>
+      http.call({
+        method: "PUT",
+        path: `${V1}/staff/me/push/topics`,
+        auth: user(accessToken),
+        body,
+        schema: pushSettingsSchema,
+        idempotent: true,
+        requestId,
+      }),
+    subscribePush: (accessToken: string, body: PushSubscriptionRequest, requestId?: string) =>
+      http.call({
+        method: "PUT",
+        path: `${V1}/staff/me/push/subscriptions`,
+        auth: user(accessToken),
+        body,
+        idempotent: true,
+        requestId,
+      }),
+    unsubscribePush: (accessToken: string, body: PushUnsubscribeRequest, requestId?: string) =>
+      http.call({
+        method: "DELETE",
+        path: `${V1}/staff/me/push/subscriptions`,
+        auth: user(accessToken),
+        body,
+        idempotent: true,
+        requestId,
+      }),
+    sendTestPush: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/staff/me/push/test`,
+        auth: user(accessToken),
+        schema: pushTestResponseSchema,
+        requestId,
+      }),
+    /** From another service's outbox; idempotent on `notificationId`. */
+    sendPushNotification: (body: PushNotificationRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/push-notifications`,
+        auth: service,
+        body,
+        schema: pushNotificationResponseSchema,
+        idempotent: true,
         requestId,
       }),
 

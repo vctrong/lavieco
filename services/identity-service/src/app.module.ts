@@ -20,6 +20,7 @@ import { AuthModule } from "./modules/auth";
 import { InvitationsModule } from "./modules/invitations";
 import { OtpModule } from "./modules/otp";
 import { IdentityOutboxModule } from "./modules/outbox";
+import { PushModule } from "./modules/push";
 import { SecurityModule } from "./modules/security";
 import { SessionsModule } from "./modules/sessions";
 import { SigningKeyStore, SigningKeysModule } from "./modules/signing-keys";
@@ -67,6 +68,7 @@ export class AppModule {
         OtpModule,
         InvitationsModule,
         AuthModule,
+        PushModule,
         IdentityOutboxModule,
       ],
     };

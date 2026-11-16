@@ -34,6 +34,8 @@ export const ERROR_CATALOG = {
   "otp.send_limited": { status: 429, title: "Too many codes requested" },
   "otp.verification_invalid": { status: 400, title: "Email verification is invalid or used" },
 
+  "push.unavailable": { status: 503, title: "Web Push is not configured on this server" },
+
   "member.email_taken": { status: 409, title: "An account already exists for this email" },
   "member.consent_required": { status: 422, title: "Data-processing consent is required" },
   "member.google_failed": { status: 400, title: "Google sign-in could not be completed" },

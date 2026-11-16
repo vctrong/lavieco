@@ -8,6 +8,8 @@ export interface UserRepository {
   findById(id: string, tx?: TxContext): Promise<User | null>;
   findByEmail(emailNormalized: string, tx?: TxContext): Promise<User | null>;
   findByGoogleSub(googleSub: string): Promise<User | null>;
+  /** Active staff only (a handful of people): who may receive staff alerts. */
+  listActiveStaff(): Promise<User[]>;
   /** Throws `member.email_taken` when the normalized email already exists. */
   insert(user: NewUser, tx?: TxContext): Promise<User>;
   recordFailedAttempt(

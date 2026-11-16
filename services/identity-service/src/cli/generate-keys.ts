@@ -1,6 +1,7 @@
 import { randomBytes, randomUUID } from "node:crypto";
 
 import { exportJWK, generateKeyPair } from "jose";
+import webPush from "web-push";
 
 /**
  * `npm run keys:generate -- <caller>` (repo root; builds identity-service first): prints fresh key material for
@@ -25,6 +26,13 @@ async function main() {
   console.log("# 32-byte random values (TOTP_ENCRYPTION_KEY, OTP_PEPPER, cookie secrets)");
   console.log(`RANDOM_32B_1=${randomBytes(32).toString("base64")}`);
   console.log(`RANDOM_32B_2=${randomBytes(32).toString("base64")}`);
+  console.log("");
+  // One pair per environment, identity-service only (ADR-0027). Rotating it drops
+  // every device subscription: staff turn alerts on again.
+  const vapid = webPush.generateVAPIDKeys();
+  console.log("# VAPID key pair for staff Web Push (identity-service)");
+  console.log(`WEB_PUSH_VAPID_PUBLIC_KEY=${vapid.publicKey}`);
+  console.log(`WEB_PUSH_VAPID_PRIVATE_KEY=${vapid.privateKey}`);
 }
 
 void main();
