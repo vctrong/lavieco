@@ -3,11 +3,14 @@ import { Inject, Injectable, type OnModuleInit } from "@nestjs/common";
 import { OutboxWorker } from "@lavieco/service-kit";
 
 import {
+  ALERT_STAFF_JOB,
   CANCEL_PAYMENT_LINK_JOB,
   SEND_EVENT_CANCELLED_JOB,
   SEND_TICKETS_JOB,
 } from "../application/order-jobs";
 import type { OrderSettlementService } from "../application/order-settlement-service";
+import type { StaffAlertService } from "../application/staff-alert-service";
+import type { StaffAlertReason } from "../domain/staff-alerts";
 import {
   ORDER_REPOSITORY,
   type OrderRepository,
@@ -18,7 +21,13 @@ import {
   type PaymentGateway,
   type TicketMailer,
 } from "../application/ports/order-services.port";
-import { ORDER_SETTLEMENT_SERVICE } from "../orders.tokens";
+import { ORDER_SETTLEMENT_SERVICE, STAFF_ALERT_SERVICE } from "../orders.tokens";
+
+const ALERT_REASONS: readonly StaffAlertReason[] = [
+  "confirmed",
+  "refund_required",
+  "amount_mismatch",
+];
 
 /** Outbox handlers of the orders module. Payloads hold ids only (CLAUDE §10). */
 @Injectable()
@@ -29,6 +38,7 @@ export class OrderJobHandlers implements OnModuleInit {
     @Inject(PAYMENT_GATEWAY) private readonly gateway: PaymentGateway,
     @Inject(ORDER_REPOSITORY) private readonly orders: OrderRepository,
     @Inject(ORDER_SETTLEMENT_SERVICE) private readonly settlement: OrderSettlementService,
+    @Inject(STAFF_ALERT_SERVICE) private readonly staffAlerts: StaffAlertService,
   ) {}
 
   onModuleInit() {
@@ -37,6 +47,10 @@ export class OrderJobHandlers implements OnModuleInit {
         resend: payload.resend === true,
         reissued: payload.reissued === true,
       });
+    });
+    this.worker.register(ALERT_STAFF_JOB, async (payload) => {
+      const reason = ALERT_REASONS.find((item) => item === payload.reason) ?? "confirmed";
+      await this.staffAlerts.alert(String(payload.orderId), reason);
     });
     this.worker.register(SEND_EVENT_CANCELLED_JOB, async (payload) => {
       await this.mailer.sendEventCancelled(String(payload.orderId));

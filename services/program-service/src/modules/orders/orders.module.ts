@@ -23,6 +23,8 @@ import { OrderAdminService } from "./application/order-admin-service";
 import { CheckoutService } from "./application/checkout-service";
 import { OrderExpiryService } from "./application/order-expiry-service";
 import { OrderSettlementService } from "./application/order-settlement-service";
+import { StaffAlertService } from "./application/staff-alert-service";
+import { STAFF_ALERT_SINK, type StaffAlertSink } from "../staff-alerts";
 import {
   ORDER_ANSWER_REPOSITORY,
   ORDER_REPOSITORY,
@@ -67,6 +69,7 @@ import {
   ORDER_EXPIRY_SERVICE,
   ORDER_ADMIN_SERVICE,
   ORDER_SETTLEMENT_SERVICE,
+  STAFF_ALERT_SERVICE,
 } from "./orders.tokens";
 
 export type OrdersModuleOptions = {
@@ -98,6 +101,16 @@ export class OrdersModule {
         { provide: TICKET_REPOSITORY, useClass: MongoTicketRepository },
         { provide: PAYMENT_EVENT_REPOSITORY, useClass: MongoPaymentEventRepository },
         { provide: ORDER_EXPIRY_OPTIONS, useValue: options.expiry },
+        {
+          provide: STAFF_ALERT_SERVICE,
+          useFactory: (
+            orders: OrderRepository,
+            events: EventRepository,
+            ticketTypes: TicketTypeRepository,
+            sink: StaffAlertSink,
+          ) => new StaffAlertService(orders, events, ticketTypes, sink),
+          inject: [ORDER_REPOSITORY, EVENT_REPOSITORY, TICKET_TYPE_REPOSITORY, STAFF_ALERT_SINK],
+        },
         {
           provide: EMAIL_PROOF_VERIFIER,
           useFactory: (tokens: TokenVerifier) => new JwksEmailProofVerifier(tokens),

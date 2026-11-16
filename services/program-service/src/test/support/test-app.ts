@@ -232,6 +232,7 @@ export async function createTestApp(
         runOrderExpiry: false,
         runCampaignWorker: false,
         auditSink: { send: async () => undefined },
+        staffAlertSink: { send: async () => undefined },
         ...overrides,
         emailSender: emails,
         logger,

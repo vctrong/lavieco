@@ -6,7 +6,7 @@ import { REVALIDATE_EVENT_JOB, type EventRepository } from "../../events";
 import type { TicketTypeRepository } from "../../ticketing";
 import type { VoucherLedger } from "../../vouchers";
 import { planSettlement, type OrderRecord } from "../domain/order";
-import { issueAndSend } from "./order-jobs";
+import { enqueueStaffAlert, issueAndSend } from "./order-jobs";
 import { convertHeldSeats, takeSeats } from "./seats";
 import type {
   OrderRepository,
@@ -127,6 +127,7 @@ export class OrderSettlementService {
           tx,
         );
         if (!flagged) throw new SettlementRace();
+        await enqueueStaffAlert(this.outbox, order.id, "amount_mismatch", tx);
         await this.record(payment, "amount_mismatch", tx);
         return "amount_mismatch";
       }
@@ -158,6 +159,7 @@ export class OrderSettlementService {
           tx,
         );
         if (!paid) throw new SettlementRace();
+        await enqueueStaffAlert(this.outbox, paid.id, "refund_required", tx);
         await this.record(payment, "refund_required", tx);
         return "refund_required";
       }
@@ -193,6 +195,8 @@ export class OrderSettlementService {
     if (allTaken) {
       await this.vouchers.redeemLate(paid.id, now, tx);
       await this.issue(paid, tx);
+    } else {
+      await enqueueStaffAlert(this.outbox, paid.id, "refund_required", tx);
     }
     const outcome = allTaken ? "paid" : "refund_required";
     await this.record(payment, outcome, tx);
