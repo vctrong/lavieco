@@ -847,6 +847,7 @@ Làm khi thỏa điều kiện ở `02` §14.1. Checklist:
 3. Tạo migration: `services/<tên>/migrations/YYYYMMDDHHmm-mo-ta.js`, **idempotent**, có tạo index cần thiết và đặt tên `idx_<collection>_<trường>`.
 4. Chạy thử trên DB cục bộ hai lần (kiểm tra idempotent); đo `explain` cho truy vấn liên quan.
 5. Cập nhật `03` (bảng collection, index, vòng đời dữ liệu, nếu có PII thì cập nhật bảng lưu giữ 8.1).
+6. **Collection mới:** cấp quyền cho tài khoản DB của service trên Atlas **trước khi deploy** (custom role theo từng collection, `docs/runbooks/deploy-vps.md`), ghi vào mô tả PR. Migration chạy bằng `migrator` nên không lộ thiếu quyền; chỉ lỗi khi service ghi.
 
 ### 13.5 Thêm một permission
 

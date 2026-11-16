@@ -120,6 +120,8 @@ Bản ghi để ở chế độ **DNS only** (nếu DNS ở Cloudflare: mây xá
    | `backup` | Chỉ đọc trên 3 database | `backup.env` |
 
    > Quyền tối thiểu của custom role **chưa được thử với ứng dụng thật**. Nếu service log `not authorized`, bổ sung đúng action còn thiếu; không đổi sang `readWrite`.
+
+   > **Collection mới = cấp quyền mới.** Role được cấp theo từng collection, nên mỗi migration tạo collection mới phải kèm bước thêm quyền trên Atlas **trước khi deploy**, nếu không service báo `user is not allowed to do action [...]` (17/11/2026, thông báo đẩy ADR-0027). Đã có: `svc_identity` trên `push_subscriptions`, `push_preferences`: `find`, `insert`, `update`, `remove`; `push_deliveries`: `find`, `insert` (TTL tự xoá).
 3. **Network Access:** chỉ IP của VPS. Không dùng `0.0.0.0/0`.
 4. `MONGODB_URI` dạng `mongodb+srv://<user>:<password>@<cluster>/`; `MONGODB_DB` riêng (`lavieco_identity`…). Production **không** dùng database `_dev`; service từ chối khởi động.
 

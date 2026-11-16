@@ -20,7 +20,7 @@
 ## Hệ quả
 
 - iOS chỉ nhận thông báo khi đã "Thêm vào MH chính" và từ iOS 16.4. Màn `/notifications` giải thích theo từng trường hợp.
-- App cài trên iPhone có kho cookie riêng: đăng nhập một lần trong app.
+- App cài trên iPhone có kho cookie riêng. iOS mới chép cookie của Safari lúc cài (không phải đăng nhập lại), bản cũ hơn thì bắt đăng nhập một lần; sau đó hai bên tách biệt.
 - Đổi cặp khoá VAPID làm mọi thiết bị mất đăng ký: staff bật lại ở `/notifications`.
 - Bản dev không có service worker (thông báo và trang offline chỉ thử được trên bản build).
 - `lead_new` đã có chủ đề nhưng chưa ai phát (lead-service chưa dựng); khi dựng chỉ cần ghi outbox như `program-service`.

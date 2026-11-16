@@ -9,7 +9,7 @@ Trang quản trị `https://admin.lavieco.io.vn` cài được lên màn hình c
 1. Mở **Safari** (bắt buộc Safari; Chrome trên iPhone cũng cài được nhưng qua menu riêng của nó) và vào `https://admin.lavieco.io.vn`.
 2. Bấm nút **Chia sẻ** (ô vuông có mũi tên lên) ở thanh dưới.
 3. Kéo xuống, chọn **Thêm vào MH chính** → **Thêm**.
-4. Mở **LAVIECO** từ màn hình chính và **đăng nhập lại một lần** (app cài có kho cookie riêng, không dùng chung với Safari), nhập mã 2FA.
+4. Mở **LAVIECO** từ màn hình chính. iOS mới chép phiên đăng nhập từ Safari sang lúc cài, nên thường vào thẳng được; bản iOS cũ hơn thì bắt đăng nhập lại một lần (kèm 2FA). Sau khi cài, app và Safari giữ phiên **riêng**: đăng xuất ở bên này không làm bên kia đăng xuất.
 
 ### Android (Chrome)
 
