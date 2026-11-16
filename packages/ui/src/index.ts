@@ -16,6 +16,7 @@ export { WaveLines } from "./illustrations/wave-lines";
 export { cn } from "./lib/cn";
 export {
   CheckboxField,
+  choiceControlClass,
   FieldError,
   SelectField,
   TextareaField,

@@ -61,6 +61,7 @@ export function OrganizationLeadForm() {
       <DraftRestoredNote shown={draftRestored} onForget={forgetDraft} tone="dark" />
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <TextField
+          tone="dark"
           id={fieldId("name")}
           label={t.fields.name.label}
           name="name"
@@ -70,6 +71,7 @@ export function OrganizationLeadForm() {
           error={errors.name}
         />
         <TextField
+          tone="dark"
           id={fieldId("organization")}
           label={t.fields.organization.label}
           name="organization"
@@ -81,6 +83,7 @@ export function OrganizationLeadForm() {
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <TextField
+          tone="dark"
           id={fieldId("phone")}
           label={t.fields.phone.label}
           name="phone"
@@ -91,6 +94,7 @@ export function OrganizationLeadForm() {
           error={errors.phone}
         />
         <SelectField
+          tone="dark"
           id={fieldId("interest")}
           label={t.fields.interest.label}
           name="interest"
@@ -101,6 +105,7 @@ export function OrganizationLeadForm() {
         />
       </div>
       <TextareaField
+        tone="dark"
         id={fieldId("message")}
         label={t.fields.message.label}
         name="message"
@@ -109,6 +114,7 @@ export function OrganizationLeadForm() {
         error={errors.message}
       />
       <CheckboxField
+        tone="dark"
         id={fieldId("consent")}
         label={t.consent}
         name="consent"

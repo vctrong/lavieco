@@ -61,6 +61,7 @@ export function ReissueQr({ ticketId, code }: { ticketId: string; code: string }
           <p className="mt-2 text-[13px] leading-relaxed text-charcoal/75">{t.body}</p>
           <div className="mt-4">
             <CheckboxField
+              tone="light"
               label={t.notify}
               checked={notify}
               onChange={(event) => setNotify(event.target.checked)}

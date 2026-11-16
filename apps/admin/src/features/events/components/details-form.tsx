@@ -19,6 +19,7 @@ import {
 import {
   Button,
   CheckboxField,
+  choiceControlClass,
   cn,
   DraftOfferBanner,
   DraftStatusLine,
@@ -86,7 +87,7 @@ function KindPicker({
                 value={kind}
                 checked={value === kind}
                 onChange={() => onChange(kind)}
-                className="accent-emerald-brand"
+                className={choiceControlClass("light")}
               />
               {t.kind[kind]}
             </span>
@@ -558,6 +559,7 @@ export function DetailsForm({
           </h2>
           <p className="mb-5 mt-1 text-[12.5px] text-charcoal/60">{t.editorBar.postEvent.hint}</p>
           <CheckboxField
+            tone="light"
             label={t.editorBar.postEvent.enabled}
             checked={values.postEvent.enabled}
             disabled={disabled}

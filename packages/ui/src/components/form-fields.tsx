@@ -21,9 +21,7 @@ const TONES = {
     // Error red is too dark on Deep Sea: its light counterpart, never Canary (warnings).
     error: "text-[11px] text-error-on-dark",
     required: "text-error-on-dark",
-    checkbox:
-      "border-hairline-light bg-soft-white/10 aria-[invalid=true]:outline-2 aria-[invalid=true]:outline-error-on-dark",
-    checkboxLabel: "text-[11.5px] text-mint-mist/80",
+    checkboxLabel: "text-[12.5px] text-mint-mist/90",
   },
   light: {
     control:
@@ -32,11 +30,29 @@ const TONES = {
     label: "text-deep-blue/70",
     error: "text-xs text-error",
     required: "text-error",
-    checkbox:
-      "border-hairline bg-white aria-[invalid=true]:outline-2 aria-[invalid=true]:outline-error",
-    checkboxLabel: "text-[12.5px] text-charcoal/75",
+    checkboxLabel: "text-[13px] text-charcoal/85",
   },
 } as const;
+
+/**
+ * Native checkbox / radio, kept native so keyboard, focus, disabled and Windows high
+ * contrast behave as the platform does. Only the accent changes: on light surfaces
+ * Emerald Ink (white tick ≈ 5.4:1; plain Emerald is too pale), on Deep Sea Emerald.
+ * 20px box; the label next to it is part of the hit area.
+ */
+const CHOICE_TONES = {
+  light: "accent-emerald-ink focus-visible:outline-emerald-ink aria-[invalid=true]:outline-error",
+  dark: "accent-emerald-brand focus-visible:outline-soft-white aria-[invalid=true]:outline-error-on-dark",
+} as const;
+
+export function choiceControlClass(tone: FieldTone, className?: string): string {
+  return cn(
+    "size-5 shrink-0 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50",
+    "focus-visible:outline-2 focus-visible:outline-offset-2 aria-[invalid=true]:outline-2 aria-[invalid=true]:outline-offset-2",
+    CHOICE_TONES[tone],
+    className,
+  );
+}
 
 const CONTROL_CLASS =
   "w-full border px-4 transition-colors focus:border-emerald-brand focus:outline-none";
@@ -127,7 +143,11 @@ type WithFieldProps<T> = T & {
   error?: string;
   /** Helper text under the control, hidden while an error is shown. */
   hint?: string;
-  tone?: FieldTone;
+  /**
+   * Surface the field sits on. Required: a dark-tone field on a white card has text that
+   * all but disappears (it happened to several consent boxes).
+   */
+  tone: FieldTone;
   wrapperClassName?: string;
 };
 
@@ -152,7 +172,7 @@ export function TextField({
   label,
   error,
   hint,
-  tone = "dark",
+  tone,
   wrapperClassName,
   className,
   id,
@@ -191,7 +211,7 @@ export function SelectField({
   label,
   error,
   hint,
-  tone = "dark",
+  tone,
   wrapperClassName,
   className,
   options,
@@ -243,7 +263,7 @@ export function TextareaField({
   label,
   error,
   hint,
-  tone = "dark",
+  tone,
   wrapperClassName,
   className,
   id,
@@ -284,7 +304,7 @@ export function TextareaField({
 export function CheckboxField({
   label,
   error,
-  tone = "dark",
+  tone,
   wrapperClassName,
   className,
   id,
@@ -301,14 +321,17 @@ export function CheckboxField({
           required={required}
           aria-invalid={error ? true : undefined}
           aria-describedby={error ? ids.error : undefined}
-          className={cn(
-            "mt-0.5 size-4 shrink-0 cursor-pointer rounded border accent-emerald-brand",
-            TONES[tone].checkbox,
-            className,
-          )}
+          className={choiceControlClass(tone, cn("mt-0.5", className))}
           {...rest}
         />
-        <label htmlFor={ids.controlId} className={cn("leading-relaxed", TONES[tone].checkboxLabel)}>
+        <label
+          htmlFor={ids.controlId}
+          className={cn(
+            "cursor-pointer leading-relaxed",
+            rest.disabled && "cursor-not-allowed opacity-70",
+            TONES[tone].checkboxLabel,
+          )}
+        >
           {label}
           {required ? <RequiredMark tone={tone} /> : null}
         </label>

@@ -1,7 +1,7 @@
 import { renderToString } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
-import { FormAlert, FormErrorNote, RequiredNote, TextField } from "@lavieco/ui";
+import { CheckboxField, FormAlert, FormErrorNote, RequiredNote, TextField } from "@lavieco/ui";
 
 // Fixture copy (not UI copy of the site).
 const COPY = {
@@ -12,6 +12,7 @@ const COPY = {
   email: "Email",
   busy: "Hệ thống đang bận.",
   required: "Các mục có dấu * là bắt buộc.",
+  consent: "Tôi đồng ý cho LAVIECO dùng thông tin để liên hệ.",
 };
 
 describe("shared form feedback (@lavieco/ui)", () => {
@@ -37,7 +38,7 @@ describe("shared form feedback (@lavieco/ui)", () => {
       <>
         <FormErrorNote tone="dark" message={COPY.note} announcement={COPY.announce} />
         <FormAlert surface="dark" message={COPY.busy} />
-        <TextField label={COPY.name} error={COPY.nameError} required />
+        <TextField tone="dark" label={COPY.name} error={COPY.nameError} required />
       </>,
     );
     expect(html).toContain("text-error-on-dark");
@@ -50,5 +51,17 @@ describe("shared form feedback (@lavieco/ui)", () => {
     expect(html).toContain('aria-hidden="true"');
     expect(html).toMatch(/required=""/);
     expect(renderToString(<RequiredNote text={COPY.required} />)).toContain("text-error");
+  });
+  // A consent box on a white card once rendered pale mint text (dark tone): unreadable.
+  it("keeps checkbox labels readable on each surface", () => {
+    const light = renderToString(<CheckboxField tone="light" label={COPY.consent} required />);
+    expect(light).toContain("text-charcoal/85");
+    expect(light).toContain("accent-emerald-ink");
+    expect(light).not.toContain("mint-mist");
+    expect(light).toMatch(/<label[^>]*for="[^"]+"/);
+
+    const dark = renderToString(<CheckboxField tone="dark" label={COPY.consent} />);
+    expect(dark).toContain("text-mint-mist/90");
+    expect(dark).toContain("accent-emerald-brand");
   });
 });

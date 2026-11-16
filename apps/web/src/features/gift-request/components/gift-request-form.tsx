@@ -59,6 +59,7 @@ export function GiftRequestForm() {
       <RequiredNote tone="dark" text={f.requiredNote} />
       <DraftRestoredNote shown={draftRestored} onForget={forgetDraft} tone="dark" />
       <TextField
+        tone="dark"
         id={fieldId("name")}
         label={t.fields.name.label}
         name="name"
@@ -68,6 +69,7 @@ export function GiftRequestForm() {
         error={errors.name}
       />
       <TextField
+        tone="dark"
         id={fieldId("phone")}
         label={t.fields.phone.label}
         name="phone"
@@ -78,6 +80,7 @@ export function GiftRequestForm() {
         error={errors.phone}
       />
       <SelectField
+        tone="dark"
         id={fieldId("interest")}
         label={t.fields.interest.label}
         name="interest"
@@ -87,6 +90,7 @@ export function GiftRequestForm() {
         error={errors.interest}
       />
       <CheckboxField
+        tone="dark"
         id={fieldId("consent")}
         label={t.consent}
         name="consent"
