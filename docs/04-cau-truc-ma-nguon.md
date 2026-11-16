@@ -362,7 +362,7 @@ export const TEXT = {
 | Chủ đề | Quy ước |
 |---|---|
 | **Tailwind** | Tailwind CSS **v4, cấu hình kiểu CSS-first (`@theme`)** **[kế thừa]**, không dùng `tailwind.config.js` và không dùng bản CDN của prototype. |
-| **Token** | Toàn bộ token ở **một tệp**: `packages/ui/src/styles/theme.css` (bên dưới). **Hex chỉ được xuất hiện trong tệp này.** Ngoại lệ duy nhất: email HTML chỉ nhận CSS inline, nên `packages/service-kit/src/notify/email/email-tokens.ts` sao chép giá trị token (mỗi giá trị ghi tên token gốc); đổi `theme.css` thì đổi cả tệp này. |
+| **Token** | Toàn bộ token ở **một tệp**: `packages/ui/src/styles/theme.css` (bên dưới). **Hex chỉ được xuất hiện trong tệp này.** Ngoại lệ: email HTML chỉ nhận CSS inline, nên `packages/service-kit/src/notify/email/email-tokens.ts` sao chép giá trị token (mỗi giá trị ghi tên token gốc); manifest PWA của admin cần màu literal, nên `apps/admin/src/features/pwa/constants/app.ts` (+ `public/offline.html`) cũng sao chép (ADR-0027). Đổi `theme.css` thì đổi cả các tệp này. |
 | **Cấm hex rời** | Không viết `#10B183`, `bg-[#...]`, `style={{ color: "#..." }}` trong component. Dùng lớp token (`bg-emerald-brand`, `text-deep-blue`). Có luật lint chặn (mục 10). |
 | **Font** | Fraunces (tiêu đề) và Be Vietnam Pro (nội dung) nạp bằng cơ chế tự lưu trữ của Next.js (`next/font`), chỉ bộ ký tự cần cho tiếng Việt; gán vào biến `--font-fraunces`, `--font-be-vietnam-pro`. |
 | **Icon** | Chỉ dùng bộ **Feather qua `react-icons`** (`react-icons/fi`) **[kế thừa]**. Không viết SVG inline cho icon. Cần icon Feather không có (ví dụ mã QR): xem PQ2. **Ngoại lệ có quản lý (ADR-013):** logo thương hiệu (Facebook, Zalo, GitHub, LinkedIn, Behance) từ `react-icons/si` và `react-icons/fa6`, chỉ trong `src/features/team/`. |
@@ -477,6 +477,9 @@ apps/admin/src/
 │       ├── layout.tsx               # requireStaff() + AdminShell (khung gộp chung)
 │       ├── page.tsx                 # tổng quan
 │       ├── events/  orders/  checkin/   # phân hệ Chương trình (Phase 2 → 6); UI ghi "Chương trình"
+│       ├── shop/                    # chỗ giữ "Sắp ra mắt" cho Shop
+│       ├── more/                    # tab "Thêm" trên điện thoại: toàn bộ điều hướng + tài khoản
+│       ├── notifications/           # bật/tắt thông báo đẩy trên máy này, chọn chủ đề (ADR-0027)
 │       │   # events/: danh sách, new/, [id]/ (soạn), [id]/preview/ (Route Handler chuyển hướng sang web), types/ (loại chương trình)
 │       ├── leads/                   # danh sách, chi tiết
 │       ├── handbook/                # chương, soạn, duyệt
@@ -491,11 +494,17 @@ apps/admin/src/
 │   auth · shell (khung, điều hướng theo quyền) · dashboard · events · orders · checkin
 │   leads · handbook · works · qr · programs · pages · media · site-settings · users · audit
 │   editor/                          # trình soạn thảo dạng khối dùng chung (ADR-008)
+│   pwa/                             # manifest, đăng ký service worker, gợi ý cài app (ADR-0027)
+│   notifications/  shop/
 ├── lib/                             # env, session (cookie staff SameSite=Strict), khởi tạo api-clients
 └── proxy.ts                         # chuyển hướng UX tới /login khi chưa có phiên; noindex; header bảo mật (KHÔNG phải hàng rào bảo mật)
 ```
 
-`apps/admin/public/` chỉ chứa logo và tài sản tối thiểu của giao diện quản trị.
+`apps/admin/public/` chỉ chứa tài sản tối thiểu của giao diện quản trị và tệp PWA: `sw.js` (service worker viết tay), `offline.html`, `icons/` (192, 512, maskable 512). Icon tab và `apple-icon.png` (180) theo quy ước tệp ở `src/app/`.
+
+- **PWA (ADR-0027, `docs/PWA.md`):** `app/manifest.ts` gọi `features/pwa`; `start_url`/`scope` là `/` (admin có tên miền riêng). Service worker chỉ cache `/_next/static` và `/icons`, **không bao giờ cache trang/dữ liệu**; chỉ đăng ký ở bản production (`publicEnv.isProductionBuild`). Đổi cách cache thì tăng `VERSION` trong `sw.js`. Các tệp PWA nằm trong `PUBLIC_PATHS` của `proxy.ts`.
+- **Khung theo bề rộng:** < 768 px thanh tab dưới đáy (Sự kiện, Vé, Check-in, Shop, Thêm → `/more`, `MOBILE_TABS` trong `features/shell/constants/nav.ts`); 768–1023 px menu xổ; ≥ 1024 px sidebar. Đệm theo `env(safe-area-inset-*)` (`viewport-fit=cover`). Bảng dài có bản thẻ dưới `md` (`md:hidden` / `hidden md:block`). Vùng bấm ≥ 44 px (nút `size="sm"` của `@lavieco/ui` mang `data-size="sm"`, `<main>` của admin nâng lên `min-h-11` dưới `md`; link/nút viết tay thêm `min-h-11 md:min-h-0`); ô nhập tone `light` cỡ 16 px dưới `md` (iOS không tự phóng to). Khung bảng có `overflow-x-auto` phải kèm `relative`, không thì ô `sr-only` (absolute) thoát ra và làm cả trang cuộn ngang.
+- **Hex cho PWA:** manifest và `theme-color` cần màu literal, nên `features/pwa/constants/app.ts` (và `public/offline.html`) sao chép token `theme.css`; ngoại lệ lint chỉ cho đúng tệp này trong `packages/config/eslint-next.mjs`.
 
 - **Loại chương trình** quản lý ở `/events/types` (quyền `program:write`), không ở `/site`: Coordinator không có `site:read` (D3, 18/10/2026).
 - **Ảnh chương trình** (ADR-020): form soạn có ảnh bìa + thư viện ≤ 12 ảnh (mỗi ảnh có mô tả `alt`). Tệp đi qua Route Handler `/api/media/event-images` (Server Action giới hạn thân 1 MB), BFF chuyển `content-service` bằng token staff; form chỉ lưu `{ mediaId, alt }`, `program-service` lấy thông tin tệp từ `content-service`. Ảnh hiển thị bằng `shared/components/media-image.tsx` (loader `next/image` chỉ dựng URL named transformation), có ở cả `web` và `admin`.
@@ -1014,3 +1023,4 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.9 | 22/10/2026 | Trang Chương trình làm lại: `features/events` tách thành thẻ, bộ lọc (client, URL), các section và thẻ vé (client); danh sách ở route group `(danh-sach)` để `loading.tsx` không bao trang con; `[slug]/lich/route.ts` (.ics); checkout nhận `?ve=&sl=`; huỷ chương trình và số người tham gia nằm ở module `orders` của `program-service` (theo hướng phụ thuộc `orders → events`); ngoại lệ JSON-LD; token `emerald-ink`, thang chữ, `rounded-pedestal` | V.C. Trọng |
 | v0.10 | 22/10/2026 | Báo lỗi form chung cho web và admin (§5.5): `useFormErrors` + `FormErrorNote`… ở `@lavieco/ui` (không còn hộp tóm tắt ở đầu form), `callAction`/`guarded` thay `.catch(() => null)`, mã tham chiếu cho lỗi 5xx, Turnstile reset sau mỗi lần gửi; token `error`/`error-on-dark` (C5). |
 | v0.6 | 18/10/2026 | Phase 2 xong: bản đồ route `web` (`events`, xem trước, `/api/revalidate`) và `admin` (`/events/*`, loại chương trình ở `/events/types`), module `program-service` đã dựng, trạng thái lộ trình và Phase 2b (`media` bắt buộc trước khi mở cho người dùng thật), các điều chỉnh khi duyệt kế hoạch | V.C. Trọng |
+| v0.11 | 17/11/2026 | Admin PWA (ADR-0027): `features/pwa`, `public/sw.js`, khung mobile có thanh tab, `/shop`, `/more`, `/notifications`, ngoại lệ hex cho manifest; identity module `push`, program-service module `staff-alerts` | V.C. Trọng |

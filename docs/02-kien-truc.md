@@ -504,10 +504,11 @@ Quy tắc: dữ liệu đi qua **mỗi ranh giới** đều bị validate lại;
 | **Token** | Access token JWT **ngắn hạn** (ví dụ vài chục phút trở xuống), ký bất đối xứng, kèm `sub`, `roles`, `aud`. Refresh token **xoay vòng**, lưu dạng băm ở `identity-service`, thu hồi được. |
 | **Cookie** | `httpOnly`, `Secure`, `SameSite=Strict`, phạm vi theo host của `admin`. |
 | **Thao tác nhạy cảm** | Xuất danh sách lead, đổi vai trò, thu hồi mã QR, xuất Excel người đăng ký, đánh dấu đơn đã hoàn tiền: **yêu cầu xác thực lại** (step-up) và ghi audit. Step-up (ADR-021): nhập lại mã TOTP → identity cấp token 5 phút gắn `sub` + `sid`, gửi qua header `x-step-up-token`; service đích kiểm tra bằng JWKS. Audit của service khác đi qua outbox → `POST /internal/v1/audit-events` của identity. |
+| **Thông báo đẩy cho staff** (ADR-0027) | Admin là PWA cài được (`docs/PWA.md`). Thiết bị đăng ký Web Push qua BFF admin → `identity` (`/internal/v1/staff/me/push/*`, token staff). Service phát cảnh báo ghi outbox trong giao dịch rồi gọi `POST /internal/v1/push-notifications` (`@AllowServices("program-service", "lead-service")`, idempotent theo `notificationId`); identity chọn người nhận theo permission + lựa chọn chủ đề, gửi bằng VAPID (khoá riêng chỉ ở identity). Nội dung thông báo **không chứa PII** (tên chương trình, số vé, mã đơn). Service worker của admin **không cache trang hay dữ liệu**, chỉ tệp tĩnh có băm và trang offline. |
 | **Mời admin** | Liên kết mời dùng một lần, hết hạn sau 48 giờ; người được mời tự đặt mật khẩu và cài 2FA (quét QR, xác nhận mã đầu tiên) trước khi tài khoản hoạt động. Super Admin đầu tiên tạo bằng lệnh `npm run admin:create`, cũng đi qua bước này. |
 | **Member** (ADR-016) | Email + mật khẩu sau khi xác thực email bằng OTP 6 số, hoặc Google (chỉ Member, không cho admin). Khóa tạm 15 phút sau 5 lần sai. Access token 15 phút, refresh 30 ngày, cookie `SameSite=Lax`. |
 | **OTP email** | Dùng chung cho `signup`, `reset_password`, `checkout`, `ticket_lookup`: 6 số, chỉ lưu HMAC, hết hạn 5 phút, tối đa 5 lần nhập, 3 lần gửi/10 phút mỗi email, 10 lần/10 phút mỗi IP, chờ 45 giây giữa hai lần gửi. Bộ đếm lưu trong MongoDB (`rate_limit_buckets`, khóa là HMAC, không lưu IP). Phản hồi không tiết lộ email đã có tài khoản hay chưa. |
-| **Khóa ký** | Ed25519 (`JWT_SIGNING_KEYS`), không nằm trong DB; `signing_keys` chỉ lưu nửa công khai để truy vết. Staff access token 10 phút, refresh 12 giờ, cookie `SameSite=Strict`. |
+| **Khóa ký** | Ed25519 (`JWT_SIGNING_KEYS`), không nằm trong DB; `signing_keys` chỉ lưu nửa công khai để truy vết. Staff access token 10 phút, refresh **72 giờ trượt** (mỗi lần làm mới tính lại; bỏ không quá 72 giờ thì đăng nhập lại kèm 2FA; 17/11/2026), cookie `SameSite=Strict`. |
 | **Gia hạn phiên ở BFF** | Server Component không ghi được cookie nên chuyển qua `/api/auth/refresh`. Server Action và Route Handler gọi service qua `withStaffToken` (admin) / `withMemberToken` (web): access cookie đã hết hoặc service trả `401` thì đổi refresh token lấy cặp mới, ghi cookie và gọi lại **đúng một lần** (`401` bị từ chối trước khi ghi, nên không ghi trùng). Mọi lần đổi trong một tiến trình đi qua `createSessionRefresher` (`@lavieco/api-clients`): cùng một refresh token chỉ xoay vòng một lần, người gọi đồng thời và trong 30 giây sau dùng chung kết quả, vì identity coi lần dùng thứ hai là đánh cắp và thu hồi cả họ phiên. Chỉ báo "hết phiên" khi đổi thất bại; form giữ nguyên dữ liệu. Giới hạn: đúng cho một instance BFF (AQ1). |
 | **Khóa/thu hồi** | Khóa tài khoản có hiệu lực trong thời gian sống tối đa của access token (ngắn); refresh token bị vô hiệu ngay. |
 
@@ -802,6 +803,7 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | 018 | Service token Ed25519 theo bên gọi, khai báo quyền truy cập endpoint | Chấp nhận |
 | 019 | Phiên bản & công cụ backend (NestJS 11, Mongoose 8, Vitest + swc, Testcontainers); xem lại khi NestJS 11 hết hỗ trợ bảo mật hoặc khi chuyển sang ESM | Đã chấp nhận |
 | 023 | Email: Brevo SMTP (tên miền `lavieco.io.vn`) làm đường chính, Gmail SMTP làm dự phòng có cooldown | Đề xuất |
+| 027 | Thông báo đẩy cho staff: Web Push (VAPID) qua `identity-service`, service worker viết tay chỉ cache tệp tĩnh | Chấp nhận |
 
 ## 17. Giả định & câu hỏi mở
 
@@ -855,6 +857,7 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 | v0.4 | 17/10/2026 | Phân hệ Chương trình vào GĐ1: 6 thành phần, `program-service` (ADR-014), payOS (ADR-015), Member + Google + OTP (ADR-016), service token theo bên gọi (ADR-018), 6 permission mới, AQ5 chốt, AR2/AR5 | V.C. Trọng |
 | v0.5 | 18/10/2026 | Phase 2: luồng làm mới cache service → `web/api/revalidate` (HMAC, qua outbox); chính sách nhúng trang, ngoại lệ xem trước sự kiện cho origin `admin`; `program` trong vùng mạng riêng | V.C. Trọng |
 | v0.6 | 18/10/2026 | Phase 2b: §8.2 ảnh tải lên bằng Cloudinary (ADR-020) thay object storage S3/MinIO, không lưu ảnh QR, bản chụp ánh xạ QR chờ chọn nơi lưu; §8.3, §6.4; §12.1 tách dev khỏi database production; quyền tải ảnh chương trình/avatar; AQ4 chấp nhận ảnh ngoài nước ở GĐ1 | V.C. Trọng |
+| v0.7 | 17/11/2026 | Admin PWA: phiên staff trượt 72 giờ; thông báo đẩy cho staff qua identity (ADR-0027), service worker chỉ cache tệp tĩnh | V.C. Trọng |
 ## Phụ lục: luồng gửi email hàng loạt (ADR-0026)
 
 Admin soạn và gửi → `program-service` chốt danh sách vào `campaign_recipients` → scheduler mỗi phút lấy từng người bằng cập nhật nguyên tử, giữ một suất ở `campaign_daily_usage`, gửi qua `EmailSender` chung (Brevo, rồi Gmail dự phòng). Hết hạn mức ngày thì dừng tới hôm sau. OTP và email vé không đi qua hàng đợi này.

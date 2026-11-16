@@ -76,6 +76,9 @@
 | | `invitations` | Lời mời admin | ít (có TTL) |
 | | `audit_events` | Nhật ký hoạt động, chỉ thêm | chục nghìn/năm |
 | | `signing_keys` | Siêu dữ liệu khóa ký JWT (khóa công khai) | ít |
+| | `push_subscriptions` | Thiết bị staff nhận thông báo đẩy (ADR-0027) | ≤ 10 / staff |
+| | `push_preferences` | Chủ đề thông báo staff đã chọn | ≤ 1 / staff |
+| | `push_deliveries` | Mã thông báo đã gửi (chống gửi trùng khi outbox thử lại) | tạm thời (TTL 7 ngày) |
 | **content** | `handbook_chapters` | Chương cẩm nang (chứa trang và khối) | chục |
 | | `works` | Tác phẩm, kèm story card nhúng | chục–trăm |
 | | `work_categories` | Nhóm sản phẩm | 3 |
@@ -302,6 +305,20 @@ Email mời gửi **trực tiếp** qua `NotifyModule` (`@lavieco/service-kit`),
 - Trường: `{ key, count, expiresAt }`. `key` là HMAC của `otp:email:<email>` / `otp:ip:<ip>` / `otp:cooldown:<mục đích>:<email>`.
 - Cửa sổ cố định, cập nhật nguyên tử bằng upsert dạng pipeline.
 - **Index:** `idx_rate_limit_buckets_key_uq` · TTL `idx_rate_limit_buckets_expires_at`.
+
+### 4.4c `push_subscriptions`, `push_preferences`, `push_deliveries` (thông báo đẩy cho staff, ADR-0027)
+
+`push_subscriptions`:
+
+- Trường: `userId`, `endpoint` (URL dịch vụ đẩy của trình duyệt: là quyền gửi, **không log, không trả về**), `endpointHash` (SHA-256), `keys { p256dh, auth }` (khoá công khai của trình duyệt để mã hoá nội dung), `deviceLabel` ("iPhone · Safari", suy từ user agent), `lastDeliveredAt`, `schemaVersion`, `createdAt`, `updatedAt`.
+- Mỗi staff tối đa 10 thiết bị (xoá bản cũ nhất). Dịch vụ đẩy trả 404/410 thì xoá ngay.
+- **Index:** `idx_push_subscriptions_endpoint_hash_uq` · `idx_push_subscriptions_user_id_created_at`.
+
+`push_preferences`: `{ userId, topics[] }` (chủ đề ∈ `PUSH_TOPICS` của `shared`, trần = số chủ đề). Chưa có bản ghi = nhận mọi chủ đề quyền cho phép; khi gửi luôn cắt theo permission hiện tại. **Index:** `idx_push_preferences_user_id_uq`.
+
+`push_deliveries`: `{ notificationId, createdAt }`. **Index:** `idx_push_deliveries_notification_id_uq` · TTL `idx_push_deliveries_created_at` (7 ngày).
+
+Không chứa PII của khách: nội dung thông báo không lưu ở đây.
 
 ### 4.5 `signing_keys`
 
@@ -724,7 +741,7 @@ Theo `05-programs-module.md` và các quyết định 17–18/10/2026. Tiền l�
 | Collection | Trường chính | Index |
 |---|---|---|
 | `event_types` | `key` (sinh từ tên tiếng Việt, không đổi), `name: LocalizedText`, `sortOrder`, `archivedAt` (lưu trữ thay vì xoá), `revision`. Seed bằng migration: `workshop`, `talkshow`, `trien-lam`. | `idx_event_types_key_uq`, `idx_event_types_sort_order` |
-| `events` | `kind` (`standard` \| `past`), `slug`, `status` (`draft` · `published` · `closed` · `ended` · `cancelled`), `title`, `searchKey`, `typeId`, `format` (`online` \| `offline`), `startAt`, `endAt`, `venue { name, address, mapUrl }` \| null, `onlineUrl` \| null, `summary`, `description` (văn bản thuần, TODO PQ5), `safetyNotes` (không bắt buộc), `cancellationPolicy` (ghi chú), `cancellationRules` ≤ 10 `{ condition, result }`, `minAge` \| null, `benefits` ≤ 8 `{ icon, title, description }` (`icon` thuộc `BENEFIT_ICONS`), `speakers` ≤ 10 `{ name, role, bio, avatar }`, `agenda` ≤ 30 `{ time, title, description }`, `faq` ≤ 20, `cover` (poster) \| null, `posterRatio` (`4:5` \| `1:1`, mặc định `4:5`), `capacity` \| null (sức chứa chung, tính theo người), `postEvent { enabled, delayHours, audience, surveyId, mode }`, `postEventCampaignId` \| null, `seatsSold`/`seatsHeld` (số người, chỉ đổi cùng đơn), `banner` (21:9) \| null và `gallery` ≤ 12 (`cover`, `banner`, `speakers[].avatar` và ảnh thư viện), mỗi phần tử là bản chụp `{ mediaId, publicId, width, height, alt }` của `media` ở `lavieco_content` (ADR-020), `form.questions` ≤ 30, `pricing { isFree, priceFrom }`, `attendance { count, approvedAt, approvedBy }` (chỉ `kind: past`), `cancellation { reason, at, by }` \| null, `publishedAt`, `firstPublishedAt`, `statusHistory` ≤ 100, `discarded`/`discardedAt`, `revision`, `createdBy`/`updatedBy` (`{ userId }`) | `idx_events_slug_uq` (partial `discarded: false`), `idx_events_status_start_at`, `idx_events_type_id_status` |
+| `events` | `kind` (`standard` \| `past`), `slug`, `status` (`draft` · `published` · `closed` · `ended` · `cancelled`), `title`, `searchKey`, `typeId`, `format` (`online` \| `offline`), `startAt`, `endAt`, `venue { name, address, mapUrl }` \| null, `onlineUrl` \| null, `summary`, `description` (văn bản thuần, TODO PQ5), `safetyNotes` (không bắt buộc), `cancellationPolicy` (ghi chú), `cancellationRules` ≤ 10 `{ condition, result }`, `minAge` \| null, `benefits` ≤ 8 `{ icon, title, description }` (`icon` thuộc `BENEFIT_ICONS`), `speakers` ≤ 10 `{ name, role, bio, avatar }`, `agenda` ≤ 30 `{ time, title, description }`, `faq` ≤ 20, `cover` (poster) \| null, `posterRatio` (`4:5` \| `1:1`, mặc định `4:5`), `capacity` \| null (sức chứa chung, tính theo người), `postEvent { enabled, delayHours, audience, surveyId, mode }`, `postEventCampaignId` \| null, `seatAlerts { fewLeftAt, soldOutAt }` (thời điểm đã báo staff "sắp hết chỗ"/"hết chỗ", mỗi loại một lần, ADR-0027; thiếu = `null`), `seatsSold`/`seatsHeld` (số người, chỉ đổi cùng đơn), `banner` (21:9) \| null và `gallery` ≤ 12 (`cover`, `banner`, `speakers[].avatar` và ảnh thư viện), mỗi phần tử là bản chụp `{ mediaId, publicId, width, height, alt }` của `media` ở `lavieco_content` (ADR-020), `form.questions` ≤ 30, `pricing { isFree, priceFrom }`, `attendance { count, approvedAt, approvedBy }` (chỉ `kind: past`), `cancellation { reason, at, by }` \| null, `publishedAt`, `firstPublishedAt`, `statusHistory` ≤ 100, `discarded`/`discardedAt`, `revision`, `createdBy`/`updatedBy` (`{ userId }`) | `idx_events_slug_uq` (partial `discarded: false`), `idx_events_status_start_at`, `idx_events_type_id_status` |
 | `ticket_types` | `eventId`, `name`, `description`, `price`, `quantity` (`null` = không giới hạn), `saleStartAt`/`saleEndAt`, `maxPerOrder` ≤ 20, `sortOrder`, `hidden`, `sold`, `held`, `revision` | `idx_ticket_types_event_id_sort_order` |
 | `preview_tokens` | `tokenHash` (SHA-256), `eventId`, `createdBy`, `expiresAt` (+10 phút) | `idx_preview_tokens_token_hash_uq`, `idx_preview_tokens_expires_at` (TTL) |
 | `outbox` | Job `web.revalidate_event` `{ slug }`; `media.release` `{ mediaId }` (ảnh bị thay, bỏ khỏi thư viện, hoặc bản nháp bị xoá) | như các service khác |
@@ -870,3 +887,4 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 | v0.6 | 18/10/2026 | Phase 2b: `media` (5.8) theo ADR-020: Cloudinary, `purpose`, `pending → attached → deleted`, avatar member, không lưu ảnh QR; `events.cover`/`gallery` là bản chụp media; outbox `media.release`, `media.destroy`; bản chụp ánh xạ QR chờ chọn nơi lưu | V.C. Trọng |
 | v0.7 | 22/10/2026 | `events`: `cancelled`, `banner`, `minAge`, `benefits`, `cancellationRules`, `speakers[].bio/avatar`, `agenda[].description`, `attendance`, `cancellation`; `isFree` = mọi vé 0đ; trạng thái hiển thị tính lúc đọc; migration `202610220001-event-page-fields` | V.C. Trọng |
 | v0.3 | 20/09/2026 | Bỏ khóa `team` và khối `team_members` khỏi `pages` (Đội ngũ là dữ liệu tĩnh); ghi chú ranh giới `media` và `public/` | V.C. Trọng |
+| v0.8 | 17/11/2026 | Thông báo đẩy cho staff (ADR-0027): `push_subscriptions`, `push_preferences`, `push_deliveries` ở `lavieco_identity` (4.4c, migration `202611170001-push`); `events.seatAlerts` | V.C. Trọng |
