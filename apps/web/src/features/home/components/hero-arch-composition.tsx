@@ -24,6 +24,15 @@ const ARCH_MIDDLE_MOTION =
 const ARCH_REAR_MOTION =
   "[transition-delay:120ms,120ms,120ms,120ms,0ms] [transform:translate3d(calc(var(--hero-px,0px)*0.35),calc(var(--hero-py,0px)*0.35),0)] motion-safe:group-data-[fanned=true]/fan:translate-x-[calc(var(--fan)*12px)] motion-safe:group-data-[fanned=true]/fan:-translate-y-[calc(var(--fan)*10px)] motion-safe:group-data-[fanned=true]/fan:rotate-[3deg]";
 
+/**
+ * Scale of the 460x560 canvas, stepped by the stage's width in 20px container queries.
+ * Each step is `breakpoint / 460`, so the canvas never overflows the stage (at most ~20px
+ * narrower, and centred). Not `tan(atan2(100cqw, 460px))`: iOS Safari resolves that to a
+ * negative number, which flips the whole cluster 180° over the hero text.
+ */
+const CANVAS_SCALE =
+  "[--s:0.5] @min-[240px]:[--s:0.522] @min-[260px]:[--s:0.565] @min-[280px]:[--s:0.609] @min-[300px]:[--s:0.652] @min-[320px]:[--s:0.696] @min-[340px]:[--s:0.739] @min-[360px]:[--s:0.783] @min-[380px]:[--s:0.826] @min-[400px]:[--s:0.87] @min-[420px]:[--s:0.913] @min-[440px]:[--s:0.957] @min-[460px]:[--s:1]";
+
 const LABEL_MOTION = "transition-transform duration-500 motion-safe:group-hover:-translate-y-1.5";
 const PEARL_GLOW =
   "transition-shadow duration-700 group-data-[fanned=true]/fan:shadow-[0_0_18px_var(--color-canary)]";
@@ -69,8 +78,10 @@ export function HeroArchComposition() {
     // never drift apart. The width is also capped by viewport height (svh).
     <HeroArchStage className="group/fan @container relative mx-auto aspect-[460/560] w-[min(100%,460px)] [--fan:0.35] md:[--fan:1] lg:ml-auto lg:mr-0 lg:w-[min(100%,calc(62svh*46/56))]">
       <div
-        className="absolute left-0 top-0 h-[560px] w-[460px] origin-top-left"
-        style={{ scale: "tan(atan2(100cqw, 460px))" }}
+        className={cn(
+          "absolute left-[calc(50%-230px*var(--s))] top-[calc(50%-280px*var(--s))] h-[560px] w-[460px] origin-top-left [scale:var(--s)]",
+          CANVAS_SCALE,
+        )}
       >
         <div
           aria-hidden="true"
