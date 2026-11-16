@@ -31,5 +31,18 @@ export const FORM_TEXT = {
       invalid_input: "Một số thông tin chưa hợp lệ. Vui lòng kiểm tra các mục được đánh dấu.",
     },
     reload: "Tải lại trang",
+    /** Draft notices of the long editors (`useStaffDraft`). */
+    draft: {
+      typing: "Đang nhập…",
+      saving: "Đang lưu nháp…",
+      savedAt: (time: string) => `Đã lưu nháp trên máy này lúc ${time}`,
+      failed: "Trình duyệt không cho lưu nháp: đừng đóng trang trước khi bấm Lưu.",
+      held: "Chưa lưu nháp mới: hãy chọn khôi phục hoặc bỏ bản nháp cũ ở đầu trang.",
+      offer: (time: string) => `Có bản nháp chưa lưu lên hệ thống, ghi lúc ${time}.`,
+      stale:
+        "Dữ liệu trên hệ thống đã thay đổi sau bản nháp này. Khôi phục rồi bấm Lưu sẽ ghi đè thay đổi đó; hãy so lại trước khi lưu.",
+      restore: "Khôi phục",
+      discard: "Bỏ bản nháp",
+    },
   },
 } as const;

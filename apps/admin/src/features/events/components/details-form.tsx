@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { FiLock } from "react-icons/fi";
 
 import {
@@ -20,6 +20,8 @@ import {
   Button,
   CheckboxField,
   cn,
+  DraftOfferBanner,
+  DraftStatusLine,
   FormAlert,
   SelectField,
   TextareaField,
@@ -43,6 +45,8 @@ import { BenefitsField, SpeakersField } from "./page-fields";
 import type { EditorBlockProps } from "../hooks/use-editor-blocks";
 import { RepeatableRows } from "./repeatable-rows";
 import { callAction } from "@/shared/call-action";
+import { FORM_TEXT } from "@/shared/constants/form-text";
+import { useStaffDraft } from "@/shared/drafts";
 import { failureText } from "../utils/failure-text";
 
 type DetailsFormProps = {
@@ -117,14 +121,38 @@ export function DetailsForm({
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [alert, setAlert] = useState<{ tone: "error" | "success"; message: string } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const disabled = busy || !canWrite;
   const savedIds = savedImageIds(event);
+
+  const markDirty = (value: boolean) => {
+    setDirty(value);
+    onDirtyChange?.("details", value);
+  };
 
   const set = <K extends keyof DetailsValues>(key: K, value: DetailsValues[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
     setAlert(null);
-    onDirtyChange?.("details", true);
+    markDirty(true);
   };
+
+  // Kept in this browser until the server accepts it: an expired session, a failed save
+  // or a closed tab no longer costs the typed details.
+  const draft = useStaffDraft<DetailsValues>({
+    form: "event-details",
+    record: event?.id ?? "new",
+    values,
+    dirty: dirty && canWrite,
+    revision: event?.revision ?? null,
+    onRestore: useCallback(
+      (restored: DetailsValues) => {
+        setValues(restored);
+        setDirty(true);
+        onDirtyChange?.("details", true);
+      },
+      [onDirtyChange],
+    ),
+  });
 
   /** Resolves true once saved; a refused save shows its errors on the form. */
   const save = async (): Promise<boolean> => {
@@ -144,7 +172,8 @@ export function DetailsForm({
       const result = await callAction(() => updateEvent(event.id, input));
       setBusy(false);
       if (result.status === "ok") {
-        onDirtyChange?.("details", false);
+        markDirty(false);
+        draft.clear();
         setAlert({ tone: "success", message: t.editor.saved });
         router.refresh();
         return true;
@@ -158,7 +187,8 @@ export function DetailsForm({
     }
     const result = await callAction(() => createEvent(input));
     if (result.status === "ok") {
-      onDirtyChange?.("details", false);
+      markDirty(false);
+      draft.clear();
       router.push(`/events/${result.data.id}`);
       return true;
     }
@@ -187,6 +217,12 @@ export function DetailsForm({
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-6">
+      <DraftOfferBanner
+        offer={canWrite ? draft.offer : null}
+        text={FORM_TEXT.vi.draft}
+        onRestore={draft.restore}
+        onDiscard={draft.discard}
+      />
       <EditorSection
         id="thong-tin"
         index={1}
@@ -637,11 +673,10 @@ export function DetailsForm({
 
       {canWrite ? (
         <div className="sticky bottom-4 z-20 flex flex-wrap items-center justify-between gap-3 rounded-full border border-hairline bg-white/95 px-4 py-3 shadow-float-dock backdrop-blur">
-          <FormAlert
-            message={alert?.message ?? null}
-            tone={alert?.tone}
-            className="min-w-0 flex-1"
-          />
+          <div className="min-w-0 flex-1">
+            <FormAlert message={alert?.message ?? null} tone={alert?.tone} />
+            {alert ? null : <DraftStatusLine status={draft.status} text={FORM_TEXT.vi.draft} />}
+          </div>
           <Button type="submit" disabled={busy} size="sm" className="disabled:opacity-70">
             {busy ? t.editor.saving : event ? t.editor.save : t.editor.createDraft}
           </Button>

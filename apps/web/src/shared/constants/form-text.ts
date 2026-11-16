@@ -31,5 +31,10 @@ export const FORM_TEXT = {
       invalid_input: "Một số thông tin chưa hợp lệ. Vui lòng kiểm tra các mục được đánh dấu.",
     },
     reload: "Tải lại trang",
+    /** Public forms keep what was typed in this tab only (`usePublicDraft`). */
+    draft: {
+      restored: "Đã điền lại thông tin bạn nhập trước đó trong tab này.",
+      clear: "Xoá và nhập lại",
+    },
   },
 } as const;

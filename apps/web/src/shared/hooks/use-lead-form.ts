@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import type { z } from "zod";
 
 import { useFormErrors } from "@lavieco/ui";
 
 import { callAction } from "../call-action";
+import { usePublicDraft } from "../drafts";
 import "../zod-vi";
 import { commonFailureMessage, type FormFailure } from "../form-failures";
 
@@ -20,7 +21,32 @@ type UseLeadFormOptions<TSchema extends z.ZodType<object>> = {
   /** Field keys from the top of the form (error summary order, first focus). */
   fieldOrder: readonly string[];
   fieldId: (key: string) => string;
+  /** Name of the draft kept in this tab while the form is being filled. */
+  draftForm: string;
 };
+
+/** Never part of a draft: consent is a fresh click (BR-06); the rest is per submit. */
+const NOT_DRAFTED = new Set(["consent", "website", "turnstileToken", "cf-turnstile-response"]);
+
+function draftableValues(form: HTMLFormElement): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(valuesOf(form)).filter(([key]) => !NOT_DRAFTED.has(key)),
+  );
+}
+
+/** Puts drafted values back into the (uncontrolled) fields. */
+function fillForm(form: HTMLFormElement, values: Record<string, string>) {
+  for (const [name, value] of Object.entries(values)) {
+    const field = form.elements.namedItem(name);
+    if (
+      field instanceof HTMLInputElement ||
+      field instanceof HTMLTextAreaElement ||
+      field instanceof HTMLSelectElement
+    ) {
+      field.value = value;
+    }
+  }
+}
 
 /** String values of a form, as the schema reads them. */
 function valuesOf(form: HTMLFormElement): Record<string, string> {
@@ -42,12 +68,28 @@ export function useLeadForm<TSchema extends z.ZodType<object>>({
   submit,
   fieldOrder,
   fieldId,
+  draftForm,
 }: UseLeadFormOptions<TSchema>) {
   const [status, setStatus] = useState<LeadFormStatus>("idle");
   // The call itself failed (page out of date, offline): shown instead of `status`.
   const [failure, setFailure] = useState<FormFailure | null>(null);
   const idempotencyKey = useRef<string | null>(null);
   const form = useFormErrors({ fieldOrder, fieldId, paused: status === "submitting" });
+  const formRef = useRef<HTMLFormElement>(null);
+  const [typed, setTyped] = useState<Record<string, string>>({});
+
+  // A failed submit, a reload ("Tải lại trang" after a deploy) or a dropped connection
+  // keeps what was typed, for this tab only.
+  const draft = usePublicDraft<Record<string, string>>({
+    form: draftForm,
+    record: "new",
+    values: typed,
+    dirty: status !== "success" && Object.values(typed).some((value) => value.trim() !== ""),
+    onRestore: useCallback((values: Record<string, string>) => {
+      if (formRef.current) fillForm(formRef.current, values);
+      setTyped(values);
+    }, []),
+  });
 
   useEffect(() => {
     idempotencyKey.current = crypto.randomUUID();
@@ -64,8 +106,17 @@ export function useLeadForm<TSchema extends z.ZodType<object>>({
     return found;
   };
 
-  const recheck = (event: FormEvent<HTMLFormElement>) =>
+  const recheck = (event: FormEvent<HTMLFormElement>) => {
     form.revalidate(errorsOf(event.currentTarget));
+    setTyped(draftableValues(event.currentTarget));
+  };
+
+  /** "Xoá và nhập lại". */
+  const forgetDraft = () => {
+    draft.forget();
+    formRef.current?.reset();
+    setTyped({});
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -90,6 +141,7 @@ export function useLeadForm<TSchema extends z.ZodType<object>>({
       });
       return;
     }
+    if (outcome.status === "success") draft.clear();
     setStatus(outcome.status);
   };
 
@@ -98,6 +150,14 @@ export function useLeadForm<TSchema extends z.ZodType<object>>({
     failure,
     errors: form.errors,
     invalidFields: form.invalidFields,
-    formProps: { onSubmit: handleSubmit, onChange: recheck, onBlur: recheck, noValidate: true },
+    draftRestored: draft.restored,
+    forgetDraft,
+    formProps: {
+      ref: formRef,
+      onSubmit: handleSubmit,
+      onChange: recheck,
+      onBlur: recheck,
+      noValidate: true,
+    },
   };
 }

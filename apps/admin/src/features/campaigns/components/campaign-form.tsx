@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useState, type FormEvent, type ReactNode } from "react";
 
 import {
   CAMPAIGN_CHECKIN_FILTERS,
@@ -11,9 +11,19 @@ import {
   type CampaignType,
   type CampaignView,
 } from "@lavieco/shared/events";
-import { Button, FormAlert, SelectField, TextareaField, TextField } from "@lavieco/ui";
+import {
+  Button,
+  DraftOfferBanner,
+  DraftStatusLine,
+  FormAlert,
+  SelectField,
+  TextareaField,
+  TextField,
+} from "@lavieco/ui";
 
 import { callAction } from "@/shared/call-action";
+import { FORM_TEXT } from "@/shared/constants/form-text";
+import { useStaffDraft } from "@/shared/drafts";
 
 import { createCampaign, previewAudience, updateCampaign } from "../actions/campaigns";
 import { TEXT } from "../constants/text";
@@ -62,6 +72,7 @@ export function CampaignForm({
   const [alert, setAlert] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [counting, setCounting] = useState(false);
   const [preview, setPreview] = useState<AudiencePreview | null>(null);
   const locked = campaign !== null && campaign.status !== "draft";
@@ -70,6 +81,7 @@ export function CampaignForm({
   const set = <K extends keyof CampaignFormValues>(key: K, value: CampaignFormValues[K]) => {
     setValues((current) => ({ ...current, [key]: value }));
     setSaved(false);
+    setDirty(true);
     onDirty?.(true);
   };
 
@@ -83,6 +95,7 @@ export function CampaignForm({
         ? { subject: template.subject, preheader: template.preheader, body: template.body }
         : {}),
     }));
+    setDirty(true);
     onDirty?.(true);
   };
 
@@ -99,6 +112,20 @@ export function CampaignForm({
     setAlert(result.status === "error" ? t.errors[result.reason] : t.errors.invalid);
   };
 
+  // Kept in this browser until the server accepts it (expired session, failed save,
+  // closed tab).
+  const draft = useStaffDraft<CampaignFormValues>({
+    form: "campaign",
+    record: campaign?.id ?? "new",
+    values,
+    dirty: dirty && !locked,
+    revision: campaign?.revision ?? null,
+    onRestore: useCallback((restored: CampaignFormValues) => {
+      setValues(restored);
+      setDirty(true);
+    }, []),
+  });
+
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setBusy(true);
@@ -112,6 +139,8 @@ export function CampaignForm({
     );
     setBusy(false);
     if (result.status === "ok") {
+      setDirty(false);
+      draft.clear();
       onDirty?.(false);
       if (campaign) {
         setSaved(true);
@@ -142,6 +171,12 @@ export function CampaignForm({
 
   return (
     <form onSubmit={submit} noValidate className="space-y-6">
+      <DraftOfferBanner
+        offer={!locked ? draft.offer : null}
+        text={FORM_TEXT.vi.draft}
+        onRestore={draft.restore}
+        onDiscard={draft.discard}
+      />
       <Group title={f.content}>
         <TextField
           tone="light"
@@ -377,7 +412,9 @@ export function CampaignForm({
         <p role="status" className="text-[13px] font-medium text-emerald-ink">
           {f.saved}
         </p>
-      ) : null}
+      ) : (
+        <DraftStatusLine status={draft.status} text={FORM_TEXT.vi.draft} />
+      )}
       {locked ? null : (
         <Button type="submit" disabled={busy}>
           {busy ? f.saving : f.save}
