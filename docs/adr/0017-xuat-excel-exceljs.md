@@ -16,6 +16,7 @@ Admin cần tải `.xlsx` danh sách người đăng ký của từng chương t
 1. Dùng **`exceljs`** (streaming writer) trong `program-service`, endpoint `GET /internal/v1/events/:id/registrations/export`. CSV UTF-8 là tuỳ chọn phụ.
 2. Xuất dữ liệu cá nhân phải **xác thực lại (step-up)** và **ghi audit**, giống xuất lead (`docs/02` §9.2). Permission `registration:export`.
 3. Tên file `LAVIECO_<slug>_<yyyy-mm-dd>.xlsx`, ngày theo Asia/Ho_Chi_Minh.
+4. **Định dạng chung (bổ sung 17/11/2026).** Mọi file Excel của service đi qua `ExcelWorkbookWriter`, nhận một `Workbook` có **kiểu cột** (`index`, `text`, `longText`, `code`, `number`, `money`, `dateTime`, `status`) thay vì mảng chuỗi. Bộ ghi lo phần trình bày: tiêu đề Deep Blue + bộ lọc, cố định dòng đầu và 2 cột đầu, dòng xen màu, số và tiền VND là số thật, ngày giờ hiển thị giờ Việt Nam, SĐT/mã giữ dạng chữ, trạng thái tô màu theo token, chữ dài tự xuống dòng (chiều cao dòng tính sẵn vì Excel không tự giãn), khổ in A4 ngang, sheet "Tổng quan" tuỳ chọn. Màu là bản sao ARGB của `theme.css` ở `sheet-tokens.ts`. Ô chữ luôn qua `safeCell` ở bộ ghi. Lý do: bản đầu ghi mọi ô dạng chữ không định dạng, nên số/ngày không lọc, sắp xếp, cộng được và file khó đọc.
 
 ## Hệ quả
 

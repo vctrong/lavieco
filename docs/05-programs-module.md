@@ -231,7 +231,7 @@ Admin chuyển khoản thủ công, sau đó bấm "Hoàn tiền": Order `refund
 
 ### 5.8 Danh sách người đăng ký & xuất Excel
 - Bảng theo từng chương trình: STT, họ tên, email, SĐT, loại vé, mã vé, mã đơn, trạng thái thanh toán, check-in, thời gian đăng ký, cùng **một cột cho mỗi FormField**. Có tìm kiếm, lọc, phân trang server-side.
-- `GET /admin/programs/:id/registrations/export?columns=...&includeCancelled=...` dùng `exceljs`, stream file `LAVIECO_<slug>_<yyyy-mm-dd>.xlsx`. Header in đậm, freeze dòng đầu, auto width.
+- `GET /admin/programs/:id/registrations/export?columns=...&includeCancelled=...` dùng `exceljs`, stream file `LAVIECO_<slug>_<yyyy-mm-dd>.xlsx`. Định dạng chung của `ExcelWorkbookWriter` (17/11/2026): sheet "Người đăng ký" có tiêu đề nền Deep Blue chữ trắng + bộ lọc, cố định dòng đầu và cột STT/Họ tên, dòng xen màu, viền mảnh; ô đúng kiểu (STT/Suất là số, Giảm giá là tiền `#,##0 ₫`, Giờ check-in/Thời gian đăng ký là ngày giờ Việt Nam, SĐT/mã vé/mã đơn giữ nguyên dạng chữ); trạng thái tô màu (xanh: đã thanh toán/đã xác nhận/đã check-in, vàng: chờ thanh toán, đỏ: đã hoàn tiền, xám: huỷ/hết hạn); câu trả lời dài tự xuống dòng; in khổ A4 ngang vừa một trang chiều ngang. Sheet thứ hai "Tổng quan": tên chương trình, bắt đầu/kết thúc, thời điểm xuất, số vé, đã/chưa check-in, vé huỷ, số vé theo loại.
 - Thao tác hàng loạt: gửi lại vé, check-in thủ công, huỷ vé.
 
 ## 6. Danh sách API (gợi ý)

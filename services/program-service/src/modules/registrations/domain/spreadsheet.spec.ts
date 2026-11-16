@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { exportFileName, safeCell } from "./spreadsheet";
+import { exportFileName, safeCell, vietnamWallClock } from "./spreadsheet";
 
 describe("safeCell", () => {
   it("neutralises cells Excel would run as formulas", () => {
@@ -20,6 +20,14 @@ describe("exportFileName", () => {
   it("uses the Vietnamese calendar day", () => {
     expect(exportFileName("workshop-vo-so", new Date("2026-10-19T18:30:00Z"))).toBe(
       "LAVIECO_workshop-vo-so_2026-10-20.xlsx",
+    );
+  });
+});
+
+describe("vietnamWallClock", () => {
+  it("moves the UTC clock to the time shown in Vietnam", () => {
+    expect(vietnamWallClock(new Date("2026-10-18T02:20:00Z")).toISOString()).toBe(
+      "2026-10-18T09:20:00.000Z",
     );
   });
 });
