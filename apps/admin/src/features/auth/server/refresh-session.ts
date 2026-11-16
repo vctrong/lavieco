@@ -4,9 +4,9 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { appUrl } from "@/lib/app-url";
 import { requestId } from "@/lib/request-meta";
-import { identityClient } from "@/lib/services";
 import { clearStaffSessionOn, setStaffSessionOn } from "@/lib/session";
 import { STAFF_COOKIES, safeNextPath } from "@/lib/session-cookies";
+import { staffRefresher } from "@/lib/staff-token";
 
 /**
  * `GET /api/auth/refresh?next=/...`: rotates the staff refresh token. A failure clears the
@@ -22,7 +22,8 @@ export async function handleStaffRefresh(request: NextRequest) {
   };
   if (!refreshToken) return toLogin();
   try {
-    const tokens = await identityClient().refreshSession({ refreshToken }, await requestId());
+    // Shared with Server Actions, so a page load and an action never rotate one token twice.
+    const tokens = await staffRefresher()(refreshToken, await requestId());
     const response = NextResponse.redirect(appUrl(next), 303);
     setStaffSessionOn(response, tokens);
     return response;

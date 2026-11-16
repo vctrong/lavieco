@@ -202,7 +202,8 @@ export const TEXT = {
       stale_version: FORM_TEXT.vi.failures.stale_version,
       offline: FORM_TEXT.vi.failures.offline,
       rate_limited: FORM_TEXT.vi.failures.rate_limited,
-      session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang để đăng nhập lại.",
+      session_expired:
+        "Phiên đăng nhập đã hết hạn. Đừng tải lại trang: dữ liệu vẫn còn. Đăng nhập lại ở tab mới, rồi quay về đây bấm lưu.",
       forbidden: "Bạn không có quyền thực hiện thao tác này.",
       not_found: "Không tìm thấy dữ liệu.",
       conflict: "Đơn vừa thay đổi. Tải lại trang rồi thử lại.",

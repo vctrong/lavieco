@@ -3,7 +3,7 @@ import "server-only";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { requestId } from "@/lib/request-meta";
-import { identityClient } from "@/lib/services";
+import { memberRefresher } from "@/lib/member-token";
 import { clearMemberSessionOn, setMemberSessionOn } from "@/lib/session";
 import { MEMBER_COOKIES, safeNextPath } from "@/lib/session-cookies";
 import { siteUrl } from "@/lib/site-url";
@@ -28,7 +28,8 @@ export async function handleSessionRefresh(request: NextRequest) {
   if (!refreshToken) return toLogin();
 
   try {
-    const tokens = await identityClient().refreshSession({ refreshToken }, await requestId());
+    // Shared with Server Actions, so a page load and an action never rotate one token twice.
+    const tokens = await memberRefresher()(refreshToken, await requestId());
     const response = NextResponse.redirect(siteUrl(next), 303);
     setMemberSessionOn(response, tokens);
     return response;

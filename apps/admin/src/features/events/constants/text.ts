@@ -375,7 +375,8 @@ export const TEXT = {
       stale_version: FORM_TEXT.vi.failures.stale_version,
       offline: FORM_TEXT.vi.failures.offline,
       rate_limited: FORM_TEXT.vi.failures.rate_limited,
-      session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang để đăng nhập lại.",
+      session_expired:
+        "Phiên đăng nhập đã hết hạn. Đừng tải lại trang: dữ liệu vẫn còn. Đăng nhập lại ở tab mới, rồi quay về đây bấm lưu.",
       forbidden: "Bạn không có quyền thực hiện thao tác này.",
       not_found: "Không tìm thấy chương trình.",
       conflict: "Dữ liệu vừa được người khác thay đổi. Tải lại trang rồi thử lại.",
@@ -439,7 +440,8 @@ export const TEXT = {
         too_large: "Ảnh lớn hơn 8 MB. Vui lòng chọn ảnh nhỏ hơn.",
         image_invalid: "Không đọc được ảnh này (có thể tệp bị hỏng). Vui lòng chọn ảnh khác.",
         too_many_pixels: "Ảnh có độ phân giải quá lớn (tối đa 40 megapixel).",
-        session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang để đăng nhập lại.",
+        session_expired:
+          "Phiên đăng nhập đã hết hạn. Đừng tải lại trang: dữ liệu vẫn còn. Đăng nhập lại ở tab mới, rồi quay về đây bấm lưu.",
         forbidden: "Bạn không có quyền tải ảnh cho chương trình.",
         unavailable: "Chưa tải được ảnh. Thử lại sau ít phút.",
       },

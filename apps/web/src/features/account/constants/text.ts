@@ -37,7 +37,8 @@ export const TEXT = {
         too_large: "Ảnh lớn hơn 2 MB. Vui lòng chọn ảnh nhỏ hơn.",
         image_invalid: "Không đọc được ảnh này (có thể tệp bị hỏng). Vui lòng chọn ảnh khác.",
         too_many_pixels: "Ảnh có độ phân giải quá lớn (tối đa 40 megapixel).",
-        session_expired: "Phiên đăng nhập đã hết hạn. Tải lại trang rồi thử lại.",
+        session_expired:
+          "Phiên đăng nhập đã hết hạn. Đăng nhập lại ở tab mới, rồi quay về đây thử lại.",
         unavailable: "Chưa cập nhật được ảnh. Thử lại sau ít phút.",
       },
     },

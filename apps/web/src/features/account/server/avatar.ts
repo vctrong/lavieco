@@ -7,6 +7,7 @@ import { MEDIA_LIMITS, checkImageFile, type Media } from "@lavieco/shared/media"
 import { publicEnv } from "@/lib/env.public";
 import { requestId } from "@/lib/request-meta";
 import { contentClient, webLogger } from "@/lib/services";
+import { withMemberToken } from "@/lib/member-token";
 import { readMemberSession } from "@/lib/session";
 
 import type { AvatarFailure, AvatarResult } from "../types";
@@ -59,8 +60,9 @@ function toFailure(error: unknown): AvatarResult {
 /** `POST /api/account/avatar`: replace the avatar (ADR-0020; the old file is deleted). */
 export async function handleAvatarUpload(request: Request): Promise<Response> {
   if (!sameOrigin(request)) return respond(fail("unavailable"));
-  const { accessToken } = await readMemberSession();
-  if (!accessToken) return respond(fail("session_expired"));
+  // Only "signed in at all?" before reading the body; withMemberToken renews below.
+  const { accessToken, refreshToken } = await readMemberSession();
+  if (!accessToken && !refreshToken) return respond(fail("session_expired"));
   if (Number(request.headers.get("content-length") ?? "0") > MAX_REQUEST_BYTES) {
     return respond(fail("too_large"));
   }
@@ -77,12 +79,12 @@ export async function handleAvatarUpload(request: Request): Promise<Response> {
     return respond(fail(issue.code, issue.code === "format_refused" ? issue.format : undefined));
   }
   try {
-    const { avatar } = await contentClient().replaceMyAvatar(
-      accessToken,
-      { bytes: file, filename: file.name || "avatar" },
-      await requestId(),
+    const id = await requestId();
+    const call = await withMemberToken(id, (token) =>
+      contentClient().replaceMyAvatar(token, { bytes: file, filename: file.name || "avatar" }, id),
     );
-    return respond({ status: "ok", avatar });
+    if (call.session === "none") return respond(fail("session_expired"));
+    return respond({ status: "ok", avatar: call.value.avatar });
   } catch (error) {
     return respond(toFailure(error));
   }
@@ -91,10 +93,10 @@ export async function handleAvatarUpload(request: Request): Promise<Response> {
 /** `DELETE /api/account/avatar`: remove the avatar; its file is deleted. */
 export async function handleAvatarRemoval(request: Request): Promise<Response> {
   if (!sameOrigin(request)) return respond(fail("unavailable"));
-  const { accessToken } = await readMemberSession();
-  if (!accessToken) return respond(fail("session_expired"));
   try {
-    await contentClient().removeMyAvatar(accessToken, await requestId());
+    const id = await requestId();
+    const call = await withMemberToken(id, (token) => contentClient().removeMyAvatar(token, id));
+    if (call.session === "none") return respond(fail("session_expired"));
     return respond({ status: "ok", avatar: null });
   } catch (error) {
     return respond(toFailure(error));

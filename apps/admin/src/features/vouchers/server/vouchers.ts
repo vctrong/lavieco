@@ -10,6 +10,7 @@ import { failureKind, refOf } from "@/lib/action-errors";
 import { requestId } from "@/lib/request-meta";
 import { adminLogger, programClient } from "@/lib/services";
 import { readStaffSession } from "@/lib/session";
+import { withStaffToken } from "@/lib/staff-token";
 
 import type { VoucherActionResult, VoucherFailure } from "../types";
 
@@ -70,9 +71,9 @@ export async function callVouchers<T>(
 ): Promise<VoucherActionResult<T>> {
   const id = await requestId();
   try {
-    const { accessToken } = await readStaffSession();
-    if (!accessToken) return { status: "error", reason: "session_expired" };
-    return { status: "ok", data: await run(accessToken, id) };
+    const call = await withStaffToken(id, (token) => run(token, id));
+    if (call.session === "expired") return { status: "error", reason: "session_expired" };
+    return { status: "ok", data: call.value };
   } catch (error) {
     if (isServiceProblem(error)) {
       const reason = FAILURE_BY_CODE[error.code];
