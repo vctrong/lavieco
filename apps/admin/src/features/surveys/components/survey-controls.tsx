@@ -15,7 +15,7 @@ import type { SurveyFailure } from "../types";
 
 const t = TEXT.vi;
 const ACTION =
-  "inline-flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist disabled:opacity-50";
+  "inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0 disabled:opacity-50";
 
 export function SurveyActions({ survey }: { survey: SurveyView }) {
   const router = useRouter();

@@ -49,6 +49,12 @@ export const nextPreset = defineConfig([
     rules: { "no-restricted-syntax": restrictedSyntax(without("processEnv")) },
   },
   {
+    // Web app manifest and browser chrome take literal colors, not CSS variables: one file
+    // holds copies of the theme.css tokens for the installed admin app (docs/PWA.md).
+    files: ["src/features/pwa/constants/app.ts"],
+    rules: { "no-restricted-syntax": restrictedSyntax(without("hex")) },
+  },
+  {
     // The only places allowed to read process.env.
     files: ["src/lib/env.ts", "src/lib/env.public.ts"],
     rules: { "no-restricted-syntax": restrictedSyntax(without("processEnv")) },

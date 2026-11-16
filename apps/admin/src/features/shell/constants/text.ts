@@ -29,6 +29,20 @@ export const TEXT = {
       users: "Người dùng",
       audit: "Nhật ký hoạt động",
       site: "Cài đặt",
+      shop: "Shop",
+      notifications: "Thông báo",
+    },
+    tabsLabel: "Điều hướng nhanh",
+    tabs: {
+      events: "Sự kiện",
+      orders: "Vé",
+      checkin: "Check-in",
+      shop: "Shop",
+      more: "Thêm",
+    },
+    more: {
+      title: "Thêm",
+      lead: "Mọi mục quản trị và tài khoản của bạn.",
     },
     roles: {
       super_admin: "Super Admin",

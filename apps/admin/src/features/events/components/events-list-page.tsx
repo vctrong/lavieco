@@ -74,7 +74,7 @@ function StatusTabs({
                 href={listHref(filters, { status: tab === "all" ? undefined : tab })}
                 aria-current={active ? "page" : undefined}
                 className={cn(
-                  "flex items-center gap-2 rounded-full px-4 py-2 text-[13px] transition-colors",
+                  "flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-[13px] transition-colors md:min-h-0",
                   active
                     ? "bg-emerald-brand font-semibold text-deep-blue shadow-emerald-cta-sm"
                     : "text-charcoal/75 hover:bg-mint-mist hover:text-deep-blue",
@@ -146,7 +146,7 @@ function Filters({ filters, types }: { filters: EventListFilters; types: EventTy
         </Button>
         <Link
           href={filters.status ? `/events?status=${filters.status}` : "/events"}
-          className="px-2 py-2 text-[12.5px] text-deep-blue/70 underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center px-2 py-2 text-[12.5px] text-deep-blue/70 underline-offset-4 hover:underline md:min-h-0"
         >
           {t.list.filters.reset}
         </Link>
@@ -256,7 +256,7 @@ function EventRow({
       <div className="flex gap-2">
         <Link
           href={`/events/${event.id}`}
-          className="flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+          className="flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0"
         >
           <FiEdit2 aria-hidden="true" size={13} />
           {t.list.edit}
@@ -266,7 +266,7 @@ function EventRow({
           href={previewPath(event.id)}
           target="_blank"
           rel="noopener"
-          className="flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+          className="flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0"
         >
           <FiEye aria-hidden="true" size={13} />
           {t.list.preview}
@@ -283,7 +283,7 @@ function EventRow({
               <Link
                 key={shortcut.key}
                 href={shortcut.href}
-                className="inline-flex items-center gap-1.5 font-medium text-deep-blue/75 underline-offset-4 hover:text-emerald-brand hover:underline"
+                className="inline-flex min-h-11 items-center gap-1.5 font-medium text-deep-blue/75 underline-offset-4 hover:text-emerald-brand hover:underline md:min-h-0"
               >
                 <Icon aria-hidden="true" size={13} />
                 {t.list.shortcuts[shortcut.key]}
@@ -376,7 +376,7 @@ export function EventsListPage({
           {page.nextCursor ? (
             <Link
               href={listHref(filters, { cursor: page.nextCursor })}
-              className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-deep-blue hover:bg-mint-mist"
+              className="flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-deep-blue hover:bg-mint-mist md:min-h-0"
             >
               {t.next}
               <FiArrowRight aria-hidden="true" size={13} />

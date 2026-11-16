@@ -27,6 +27,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { id: "campaigns", href: "/campaigns", permission: "campaign:send", available: true },
       { id: "orders", href: "/orders", permission: "order:read", available: true },
       { id: "checkin", href: "/checkin", permission: "checkin:perform", available: true },
+      // Placeholder page until the shop exists (no permission yet: nothing to protect).
+      { id: "shop", href: "/shop", permission: null, available: true },
     ],
   },
   {
@@ -50,6 +52,26 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { id: "users", href: "/users", permission: "user:read", available: false },
       { id: "audit", href: "/audit", permission: "audit:read", available: false },
       { id: "site", href: "/site", permission: "site:read", available: false },
+      // Own devices only: any staff member chooses their alerts (docs/PWA.md).
+      { id: "notifications", href: "/notifications", permission: null, available: true },
     ],
   },
+];
+
+export type MobileTab = {
+  id: "events" | "orders" | "checkin" | "shop" | "more";
+  href: string;
+  permission: Permission | null;
+};
+
+/**
+ * Bottom tab bar on phones (< 768 px, docs/PWA.md). "Thêm" opens `/more`, the full
+ * navigation, so every screen stays one tap away without JavaScript.
+ */
+export const MOBILE_TABS: readonly MobileTab[] = [
+  { id: "events", href: "/events", permission: "program:read" },
+  { id: "orders", href: "/orders", permission: "order:read" },
+  { id: "checkin", href: "/checkin", permission: "checkin:perform" },
+  { id: "shop", href: "/shop", permission: null },
+  { id: "more", href: "/more", permission: null },
 ];

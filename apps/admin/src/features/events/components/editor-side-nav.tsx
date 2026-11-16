@@ -27,7 +27,7 @@ export function EditorSideNav({
             <li key={item.key} className="shrink-0">
               <a
                 href={`#${item.anchor}`}
-                className="flex items-center justify-between gap-3 rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist"
+                className="flex items-center justify-between gap-3 min-h-11 rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist lg:min-h-0"
               >
                 {t.nav[item.key]}
                 <Icon
@@ -44,7 +44,7 @@ export function EditorSideNav({
           <li className="shrink-0">
             <a
               href="#ma-giam-gia"
-              className="flex items-center rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist"
+              className="flex items-center min-h-11 rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist lg:min-h-0"
             >
               {t.navVouchers}
             </a>
@@ -54,7 +54,7 @@ export function EditorSideNav({
           <li className="shrink-0">
             <a
               href="#khao-sat-feedback"
-              className="flex items-center rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist"
+              className="flex items-center min-h-11 rounded-xl px-3 py-2 text-[13px] font-medium text-deep-blue hover:bg-mint-mist lg:min-h-0"
             >
               {t.navSurveys}
             </a>

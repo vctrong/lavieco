@@ -12,6 +12,7 @@ import { TEXT } from "../constants/text";
 import { formatTime, normaliseTicketCode } from "../utils/format";
 import { callAction } from "@/shared/call-action";
 import { failureText } from "../utils/failure-text";
+import { createScanFeedback } from "../utils/scan-feedback";
 
 /** Native detector (Android Chrome, recent Safari); absent elsewhere, then jsQR decodes. */
 type NativeDetector = { detect: (source: CanvasImageSource) => Promise<{ rawValue: string }[]> };
@@ -52,6 +53,8 @@ export function CheckinScanner({
   const [alert, setAlert] = useState<string | null>(null);
   const [manualError, setManualError] = useState<string | undefined>();
   const resultRef = useRef<HTMLElement>(null);
+  const feedbackRef = useRef<ReturnType<typeof createScanFeedback> | null>(null);
+  const feedback = () => (feedbackRef.current ??= createScanFeedback());
 
   const submit = useCallback(
     async (input: { qrToken: string } | { code: string }) => {
@@ -62,12 +65,14 @@ export function CheckinScanner({
       const response = await callAction(() => checkIn({ eventId, ...input }));
       setChecking(false);
       if (response.status === "ok") {
+        feedbackRef.current?.signal(response.data.result);
         setResult(response.data);
         setStats(response.data.stats);
       } else if (response.status === "error") {
         setAlert(failureText(response));
         busyRef.current = false;
       } else {
+        feedbackRef.current?.signal("invalid");
         setResult({ result: "invalid", ticket: null, stats });
       }
     },
@@ -81,6 +86,8 @@ export function CheckinScanner({
   }, []);
 
   const startCamera = async () => {
+    // A tap: the only moment iOS lets the page start audio for later beeps.
+    feedback().unlock();
     setCameraError(null);
     if (!navigator.mediaDevices?.getUserMedia) {
       setCameraError(t.cameraUnsupported);
@@ -103,6 +110,7 @@ export function CheckinScanner({
   };
 
   useEffect(() => stopCamera, [stopCamera]);
+  useEffect(() => () => feedbackRef.current?.close(), []);
 
   // A code typed at the bottom of the page gets its answer above the camera: bring it
   // into view, or the door team never sees "already used".
@@ -163,6 +171,7 @@ export function CheckinScanner({
 
   const handleManual = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    feedback().unlock();
     const form = event.currentTarget;
     const code = normaliseTicketCode(String(new FormData(form).get("code") ?? ""));
     if (!code) return setManualError(t.manualInvalid);
@@ -281,7 +290,13 @@ export function CheckinScanner({
           error={manualError}
           wrapperClassName="flex-1"
         />
-        <Button type="submit" variant="deep" size="sm" className="h-10.5 px-5" disabled={checking}>
+        <Button
+          type="submit"
+          variant="deep"
+          size="sm"
+          className="h-11 px-5 md:h-10.5"
+          disabled={checking}
+        >
           {t.manualSubmit}
         </Button>
       </form>

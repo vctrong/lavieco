@@ -3,8 +3,23 @@ import { NextResponse, type NextRequest } from "next/server";
 import { appUrl } from "@/lib/app-url";
 import { STAFF_COOKIES } from "@/lib/session-cookies";
 
-/** Pages reachable without a staff session. */
-const PUBLIC_PATHS = ["/login", "/2fa", "/accept-invite", "/api/auth/refresh"];
+/**
+ * Reachable without a staff session. The PWA files are fetched by the browser without
+ * cookies (the manifest) or before sign-in (the service worker, offline page, icons):
+ * redirecting them to /login would make the app impossible to install (docs/PWA.md).
+ */
+const PUBLIC_PATHS = [
+  "/login",
+  "/2fa",
+  "/accept-invite",
+  "/api/auth/refresh",
+  "/manifest.webmanifest",
+  "/sw.js",
+  "/offline.html",
+  "/icons",
+  "/icon.png",
+  "/apple-icon.png",
+];
 
 const SECURITY_HEADERS: Record<string, string> = {
   "x-robots-tag": "noindex, nofollow",

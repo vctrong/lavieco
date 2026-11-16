@@ -114,7 +114,7 @@ export function VouchersListPage({ page, filters }: { page: VoucherList; filters
         <div className="mt-5 flex justify-end">
           <Link
             href={`/vouchers?${nextParams.toString()}`}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12.5px] text-deep-blue hover:bg-mint-mist"
+            className="flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12.5px] text-deep-blue hover:bg-mint-mist md:min-h-0"
           >
             {t.next}
             <FiArrowRight aria-hidden="true" size={13} />

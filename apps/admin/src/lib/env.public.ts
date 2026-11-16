@@ -15,4 +15,6 @@ const parsed = publicEnvSchema.parse({
 
 export const publicEnv = {
   cloudinaryCloudName: parsed.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  /** Inlined at build time; the service worker is registered in production builds only. */
+  isProductionBuild: process.env.NODE_ENV === "production",
 } as const;
