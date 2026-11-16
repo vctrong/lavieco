@@ -20,7 +20,8 @@ export const identityEnvSchema = baseServiceEnvSchema.extend(mailEnvSchema.shape
   OTP_PEPPER: base64Key(32),
   STAFF_ACCESS_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(600),
   MEMBER_ACCESS_TTL_SECONDS: z.coerce.number().int().min(60).max(3600).default(900),
-  STAFF_REFRESH_TTL_HOURS: z.coerce.number().int().min(1).max(72).default(12),
+  /** Sliding: every refresh (at most every 10 min while in use) starts a new window. */
+  STAFF_REFRESH_TTL_HOURS: z.coerce.number().int().min(1).max(72).default(72),
   MEMBER_REFRESH_TTL_DAYS: z.coerce.number().int().min(1).max(90).default(30),
   /** Origin of `admin`, used in invitation links. */
   ADMIN_APP_URL: z.url(),
@@ -31,6 +32,15 @@ export const identityEnvSchema = baseServiceEnvSchema.extend(mailEnvSchema.shape
   GOOGLE_CLIENT_SECRET: z.string().default(""),
   /** The only redirect URI accepted for the code exchange (must match the Google console). */
   GOOGLE_REDIRECT_URI: z.string().default(""),
+  /**
+   * Web Push for staff alerts (ADR-0027): VAPID key pair from `npm run keys:generate`,
+   * base64url. Leave both empty to turn staff alerts off. The private half never
+   * leaves identity-service; the public half is handed to the admin app.
+   */
+  WEB_PUSH_VAPID_PUBLIC_KEY: z.string().default(""),
+  WEB_PUSH_VAPID_PRIVATE_KEY: z.string().default(""),
+  /** Contact the browser push services may use about our traffic: `mailto:` or https URL. */
+  WEB_PUSH_SUBJECT: z.string().default("mailto:hello@lavieco.io.vn"),
 });
 
 export type IdentityEnv = z.infer<typeof identityEnvSchema>;

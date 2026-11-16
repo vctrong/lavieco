@@ -19,6 +19,7 @@ import type { ProgramEnv } from "./config/env";
 import { EventTypesModule } from "./modules/event-types";
 import { EventsModule, type MediaAttachments } from "./modules/events";
 import { ProgramAuditModule, type AuditSink } from "./modules/audit";
+import { StaffAlertsModule, type StaffAlertSink } from "./modules/staff-alerts";
 import { CampaignsModule } from "./modules/campaigns";
 import { CheckinModule } from "./modules/checkin";
 import { OrdersModule } from "./modules/orders";
@@ -42,6 +43,8 @@ export type AppOverrides = {
   paymentGateway?: Provider;
   /** Captures audit events instead of sending them to identity-service. */
   auditSink?: AuditSink;
+  /** Captures staff alerts instead of sending them to identity-service (ADR-0027). */
+  staffAlertSink?: StaffAlertSink;
   /** Off in tests that drive the seat-hold expiry themselves. */
   runOrderExpiry?: boolean;
   /** Off in tests that drive the campaign queue themselves. */
@@ -87,6 +90,7 @@ export class AppModule {
         NotifyModule.forRoot(overrides.emailSender ? { sender: overrides.emailSender } : { env }),
         OutboxModule.forRoot(overrides.outbox),
         ProgramAuditModule.forRoot(overrides.auditSink),
+        StaffAlertsModule.forRoot(overrides.staffAlertSink),
         HealthModule,
         EventTypesModule,
         events,

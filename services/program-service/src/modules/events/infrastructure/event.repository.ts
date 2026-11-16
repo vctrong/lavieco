@@ -352,6 +352,26 @@ export class MongoEventRepository implements EventRepository {
       );
   }
 
+  async claimSeatAlert(id: string, kind: "few_left" | "sold_out", at: Date) {
+    const field = kind === "few_left" ? "seatAlerts.fewLeftAt" : "seatAlerts.soldOutAt";
+    // `null` also matches events saved before the field existed.
+    const result = await this.model.updateOne(
+      { _id: new Types.ObjectId(id), [field]: null },
+      { $set: { [field]: at } },
+      { timestamps: false },
+    );
+    return result.modifiedCount === 1;
+  }
+
+  async releaseSeatAlert(id: string, kind: "few_left" | "sold_out") {
+    const field = kind === "few_left" ? "seatAlerts.fewLeftAt" : "seatAlerts.soldOutAt";
+    await this.model.updateOne(
+      { _id: new Types.ObjectId(id) },
+      { $set: { [field]: null } },
+      { timestamps: false },
+    );
+  }
+
   async markPostEventCampaign(id: string, campaignId: string) {
     const result = await this.model.updateOne(
       { _id: new Types.ObjectId(id), postEventCampaignId: null },

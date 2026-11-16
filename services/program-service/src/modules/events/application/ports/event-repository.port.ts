@@ -123,6 +123,13 @@ export interface EventRepository {
   listPostEventDue(now: Date): Promise<EventRecord[]>;
   /** Claims the campaign of an event; false when another instance already did. */
   markPostEventCampaign(id: string, campaignId: string): Promise<boolean>;
+  /**
+   * Claims the one staff alert of this kind for an event (ADR-0027); false when it was
+   * already sent, so seats going back and forth never alert twice.
+   */
+  claimSeatAlert(id: string, kind: "few_left" | "sold_out", at: Date): Promise<boolean>;
+  /** Undoes a claim whose alert could not be sent. */
+  releaseSeatAlert(id: string, kind: "few_left" | "sold_out"): Promise<void>;
   /** Any event, discarded included (orders keep pointing at their event). */
   findByIds(ids: string[]): Promise<EventRecord[]>;
 }

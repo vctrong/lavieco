@@ -27,7 +27,7 @@ function BackToList() {
   return (
     <Link
       href="/surveys"
-      className="mb-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-deep-blue/70 hover:text-deep-blue print:hidden"
+      className="mb-4 inline-flex min-h-11 items-center gap-1.5 text-[12.5px] font-medium text-deep-blue/70 hover:text-deep-blue md:min-h-0 print:hidden"
     >
       <FiArrowLeft aria-hidden="true" size={13} />
       {t.back}
@@ -126,7 +126,7 @@ export function SurveysListPage({
                 </div>
                 <Link
                   href={`/surveys/${survey.id}/results`}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+                  className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0"
                 >
                   <FiBarChart2 aria-hidden="true" size={13} />
                   {t.actions.results}
@@ -140,7 +140,7 @@ export function SurveysListPage({
         <div className="mt-5 flex justify-end">
           <Link
             href={`/surveys?${nextParams.toString()}`}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12.5px] text-deep-blue hover:bg-mint-mist"
+            className="flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12.5px] text-deep-blue hover:bg-mint-mist md:min-h-0"
           >
             {t.next}
             <FiArrowRight aria-hidden="true" size={13} />
@@ -195,13 +195,13 @@ function ShareCard({ survey, link }: { survey: SurveyView; link: { url: string; 
           <a
             href={link.qr}
             download={`khao-sat-${survey.slug}.png`}
-            className="inline-flex items-center rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+            className="inline-flex min-h-11 items-center rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0"
           >
             {s.png}
           </a>
           <Link
             href={`/surveys/${survey.id}/qr`}
-            className="inline-flex items-center rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+            className="inline-flex min-h-11 items-center rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0"
           >
             {s.a4}
           </Link>
@@ -234,7 +234,7 @@ export function EditSurveyPage({
         </div>
         <Link
           href={`/surveys/${survey.id}/results`}
-          className="inline-flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist"
+          className="inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0"
         >
           <FiBarChart2 aria-hidden="true" size={13} />
           {t.actions.results}
@@ -381,7 +381,7 @@ export function SurveyResultsPage({
       {results.responses.length > 0 ? (
         <section className="mt-8">
           <h2 className="mb-3 font-display text-xl text-deep-blue">{r.table}</h2>
-          <div className="overflow-x-auto rounded-3xl border border-hairline bg-white">
+          <div className="relative overflow-x-auto rounded-3xl border border-hairline bg-white">
             <table className="w-full min-w-[40rem] text-left text-[13px]">
               <thead className="bg-soft-white text-[11px] uppercase tracking-museum text-deep-blue/60">
                 <tr>

@@ -48,7 +48,7 @@ function AddButton({
       type="button"
       disabled={disabled}
       onClick={onClick}
-      className="flex items-center gap-2 rounded-full border border-dashed border-deep-blue/25 px-4 py-2 text-[13px] font-medium text-deep-blue hover:border-emerald-brand hover:bg-mint-mist"
+      className="flex min-h-11 items-center gap-2 rounded-full border border-dashed border-deep-blue/25 px-4 py-2 text-[13px] font-medium text-deep-blue hover:border-emerald-brand hover:bg-mint-mist md:min-h-0"
     >
       <FiPlus aria-hidden="true" size={14} />
       {label}

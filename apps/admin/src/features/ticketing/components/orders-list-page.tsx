@@ -51,7 +51,7 @@ export function OrdersListPage({ filters, page, events, refundCount }: OrdersLis
           </p>
           <Link
             href={listHref({}, { flag: "refund_required" })}
-            className="font-semibold underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center font-semibold underline-offset-4 hover:underline md:min-h-0"
           >
             {t.orders.viewRefunds}
           </Link>
@@ -107,7 +107,7 @@ export function OrdersListPage({ filters, page, events, refundCount }: OrdersLis
           </Button>
           <Link
             href="/orders"
-            className="px-2 py-2 text-[12.5px] text-deep-blue/70 underline-offset-4 hover:underline"
+            className="inline-flex min-h-11 items-center px-2 py-2 text-[12.5px] text-deep-blue/70 underline-offset-4 hover:underline md:min-h-0"
           >
             {t.orders.filters.reset}
           </Link>
@@ -119,85 +119,135 @@ export function OrdersListPage({ filters, page, events, refundCount }: OrdersLis
           {t.orders.empty}
         </p>
       ) : (
-        <div className="overflow-x-auto rounded-3xl border border-hairline bg-white">
-          <table className="w-full min-w-[56rem] text-left text-[13.5px]">
-            <thead className="border-b border-hairline text-[11px] uppercase tracking-museum text-deep-blue/60">
-              <tr>
-                <th scope="col" className="px-5 py-3 font-semibold">
-                  {t.orders.columns.order}
-                </th>
-                <th scope="col" className="px-5 py-3 font-semibold">
-                  {t.orders.columns.buyer}
-                </th>
-                <th scope="col" className="px-5 py-3 font-semibold">
-                  {t.orders.columns.event}
-                </th>
-                <th scope="col" className="px-5 py-3 font-semibold">
-                  {t.orders.columns.amount}
-                </th>
-                <th scope="col" className="px-5 py-3 font-semibold">
-                  {t.orders.columns.status}
-                </th>
-                <th scope="col" className="px-5 py-3 font-semibold">
-                  {t.orders.columns.createdAt}
-                </th>
-                <th scope="col" className="px-5 py-3">
-                  <span className="sr-only">{t.orders.open}</span>
-                </th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-hairline">
-              {page.items.map((order) => (
-                <tr key={order.id} className="align-top">
-                  <td className="px-5 py-4">
-                    <p className="font-semibold text-deep-blue">{order.orderCode}</p>
-                    <p className="text-[12px] text-charcoal/60">
-                      {t.orders.tickets(order.ticketCount)}
-                    </p>
-                  </td>
-                  <td className="px-5 py-4">
-                    <p className="text-deep-blue">{order.buyer.fullName}</p>
-                    <p className="break-all text-[12px] text-charcoal/60">{order.buyer.email}</p>
-                  </td>
-                  <td className="max-w-56 px-5 py-4 text-charcoal/80">{order.event.title}</td>
-                  <td className="px-5 py-4 font-semibold text-deep-blue">
-                    {order.amount === 0 ? t.free : formatVnd(order.amount)}
-                    {order.voucherCode ? (
-                      <span className="block text-[11.5px] font-normal text-charcoal/60">
-                        {t.detail.voucher(order.voucherCode)}: −{formatVnd(order.discountAmount)}
-                      </span>
-                    ) : null}
-                  </td>
-                  <td className="space-y-1 px-5 py-4">
+        <>
+          {/* Phones: one card per order, the whole card opens it (no sideways scrolling). */}
+          <ul className="space-y-3 md:hidden">
+            {page.items.map((order) => (
+              <li key={order.id}>
+                <Link
+                  href={`/orders/${order.id}`}
+                  className="block rounded-3xl border border-hairline bg-white p-4 active:bg-mint-mist"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="font-semibold text-deep-blue">
+                        {order.orderCode}
+                        <span className="ml-2 text-[12.5px] font-normal text-charcoal/60">
+                          {t.orders.tickets(order.ticketCount)}
+                        </span>
+                      </p>
+                      <p className="mt-0.5 truncate text-[14px] text-deep-blue">
+                        {order.buyer.fullName}
+                      </p>
+                    </div>
                     <OrderStatusBadge status={orderDisplayStatus(order)} />
-                    {order.flags.refundRequired ? (
-                      <p className="text-[11.5px] font-semibold text-deep-blue">
-                        {t.orders.flags.refund_required}
-                      </p>
-                    ) : null}
-                    {order.flags.amountMismatch ? (
-                      <p className="text-[11.5px] font-semibold text-deep-blue">
-                        {t.orders.flags.amount_mismatch}
-                      </p>
-                    ) : null}
-                  </td>
-                  <td className="px-5 py-4 text-[12.5px] text-charcoal/70">
-                    {formatDateTime(order.createdAt)}
-                  </td>
-                  <td className="px-5 py-4 text-right">
-                    <Link
-                      href={`/orders/${order.id}`}
-                      className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-deep-blue hover:text-emerald-brand"
-                    >
-                      {t.orders.open}
-                      <FiArrowRight aria-hidden="true" size={13} />
-                    </Link>
-                  </td>
+                  </div>
+                  <p className="mt-2 line-clamp-2 text-[13.5px] text-charcoal/75">
+                    {order.event.title}
+                  </p>
+                  {order.flags.refundRequired || order.flags.amountMismatch ? (
+                    <p className="mt-2 text-[12.5px] font-semibold text-deep-blue">
+                      {[
+                        order.flags.refundRequired ? t.orders.flags.refund_required : null,
+                        order.flags.amountMismatch ? t.orders.flags.amount_mismatch : null,
+                      ]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  ) : null}
+                  <div className="mt-3 flex items-center justify-between gap-3 border-t border-hairline pt-3">
+                    <span className="font-semibold text-deep-blue">
+                      {order.amount === 0 ? t.free : formatVnd(order.amount)}
+                    </span>
+                    <span className="flex items-center gap-1 text-[12.5px] text-charcoal/65">
+                      {formatDateTime(order.createdAt)}
+                      <FiArrowRight aria-hidden="true" size={14} />
+                    </span>
+                  </div>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <div className="relative hidden overflow-x-auto rounded-3xl border border-hairline bg-white md:block">
+            <table className="w-full min-w-[56rem] text-left text-[13.5px]">
+              <thead className="border-b border-hairline text-[11px] uppercase tracking-museum text-deep-blue/60">
+                <tr>
+                  <th scope="col" className="px-5 py-3 font-semibold">
+                    {t.orders.columns.order}
+                  </th>
+                  <th scope="col" className="px-5 py-3 font-semibold">
+                    {t.orders.columns.buyer}
+                  </th>
+                  <th scope="col" className="px-5 py-3 font-semibold">
+                    {t.orders.columns.event}
+                  </th>
+                  <th scope="col" className="px-5 py-3 font-semibold">
+                    {t.orders.columns.amount}
+                  </th>
+                  <th scope="col" className="px-5 py-3 font-semibold">
+                    {t.orders.columns.status}
+                  </th>
+                  <th scope="col" className="px-5 py-3 font-semibold">
+                    {t.orders.columns.createdAt}
+                  </th>
+                  <th scope="col" className="px-5 py-3">
+                    <span className="sr-only">{t.orders.open}</span>
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-hairline">
+                {page.items.map((order) => (
+                  <tr key={order.id} className="align-top">
+                    <td className="px-5 py-4">
+                      <p className="font-semibold text-deep-blue">{order.orderCode}</p>
+                      <p className="text-[12px] text-charcoal/60">
+                        {t.orders.tickets(order.ticketCount)}
+                      </p>
+                    </td>
+                    <td className="px-5 py-4">
+                      <p className="text-deep-blue">{order.buyer.fullName}</p>
+                      <p className="break-all text-[12px] text-charcoal/60">{order.buyer.email}</p>
+                    </td>
+                    <td className="max-w-56 px-5 py-4 text-charcoal/80">{order.event.title}</td>
+                    <td className="px-5 py-4 font-semibold text-deep-blue">
+                      {order.amount === 0 ? t.free : formatVnd(order.amount)}
+                      {order.voucherCode ? (
+                        <span className="block text-[11.5px] font-normal text-charcoal/60">
+                          {t.detail.voucher(order.voucherCode)}: −{formatVnd(order.discountAmount)}
+                        </span>
+                      ) : null}
+                    </td>
+                    <td className="space-y-1 px-5 py-4">
+                      <OrderStatusBadge status={orderDisplayStatus(order)} />
+                      {order.flags.refundRequired ? (
+                        <p className="text-[11.5px] font-semibold text-deep-blue">
+                          {t.orders.flags.refund_required}
+                        </p>
+                      ) : null}
+                      {order.flags.amountMismatch ? (
+                        <p className="text-[11.5px] font-semibold text-deep-blue">
+                          {t.orders.flags.amount_mismatch}
+                        </p>
+                      ) : null}
+                    </td>
+                    <td className="px-5 py-4 text-[12.5px] text-charcoal/70">
+                      {formatDateTime(order.createdAt)}
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <Link
+                        href={`/orders/${order.id}`}
+                        className="inline-flex items-center gap-1 text-[12.5px] font-semibold text-deep-blue hover:text-emerald-brand"
+                      >
+                        {t.orders.open}
+                        <FiArrowRight aria-hidden="true" size={13} />
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
       {page.nextCursor ? (
         <div className="mt-6 text-right">

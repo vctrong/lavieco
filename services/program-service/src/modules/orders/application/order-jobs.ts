@@ -2,6 +2,7 @@ import type { TxContext } from "@lavieco/service-kit/ports";
 import type { OutboxPort } from "@lavieco/service-kit/ports";
 
 import type { OrderRecord } from "../domain/order";
+import type { StaffAlertReason } from "../domain/staff-alerts";
 import { newQrToken, newTicketCode } from "../domain/codes";
 import type { TicketRecord } from "../domain/ticket";
 import type { TicketRepository } from "./ports/order-repositories.port";
@@ -12,6 +13,21 @@ export const SEND_TICKETS_JOB = "order.send_tickets";
 export const CANCEL_PAYMENT_LINK_JOB = "payment.cancel_link";
 /** Outbox job: tell the buyer of a paid order that the event was cancelled. Payload `{ orderId }`. */
 export const SEND_EVENT_CANCELLED_JOB = "order.send_event_cancelled";
+/**
+ * Outbox job: alert staff by Web Push (ADR-0027). Payload `{ orderId, reason }` (no PII):
+ * `confirmed` (paid or free registration), or a payment needing a person's attention.
+ */
+export const ALERT_STAFF_JOB = "order.alert_staff";
+
+/** Enqueues the staff alert of an order in the caller's transaction. */
+export function enqueueStaffAlert(
+  outbox: OutboxPort,
+  orderId: string,
+  reason: StaffAlertReason,
+  tx: TxContext,
+): Promise<void> {
+  return outbox.enqueue(tx, { type: ALERT_STAFF_JOB, payload: { orderId, reason } });
+}
 
 /**
  * One ticket per person (a combo unit gives several), each with its own random QR token
@@ -67,4 +83,5 @@ export async function issueAndSend(
 ): Promise<void> {
   await issueTickets(tickets, order, tx);
   await outbox.enqueue(tx, { type: SEND_TICKETS_JOB, payload: { orderId: order.id } });
+  await enqueueStaffAlert(outbox, order.id, "confirmed", tx);
 }

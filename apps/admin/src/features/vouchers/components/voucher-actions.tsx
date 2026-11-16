@@ -14,7 +14,7 @@ import { TEXT } from "../constants/text";
 
 const t = TEXT.vi;
 const ACTION =
-  "inline-flex items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist disabled:opacity-50";
+  "inline-flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-3 py-1.5 text-[12.5px] font-medium text-deep-blue hover:bg-mint-mist md:min-h-0 disabled:opacity-50";
 
 /** Pause, resume, archive and duplicate; the list and the detail page share them. */
 export function VoucherActions({ voucher }: { voucher: VoucherView }) {

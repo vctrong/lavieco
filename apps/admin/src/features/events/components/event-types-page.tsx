@@ -135,7 +135,7 @@ export function EventTypesPage({ types, canWrite }: { types: EventType[]; canWri
         back={
           <Link
             href="/events"
-            className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-deep-blue/70 hover:text-deep-blue"
+            className="inline-flex min-h-11 items-center gap-1.5 text-[12.5px] font-medium text-deep-blue/70 hover:text-deep-blue md:min-h-0"
           >
             <FiArrowLeft aria-hidden="true" size={13} />
             {t.back}

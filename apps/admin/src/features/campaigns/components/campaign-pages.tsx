@@ -19,7 +19,7 @@ function BackToList() {
   return (
     <Link
       href="/campaigns"
-      className="mb-4 inline-flex items-center gap-1.5 text-[12.5px] font-medium text-deep-blue/70 hover:text-deep-blue"
+      className="mb-4 inline-flex min-h-11 items-center gap-1.5 text-[12.5px] font-medium text-deep-blue/70 hover:text-deep-blue md:min-h-0"
     >
       <FiArrowLeft aria-hidden="true" size={13} />
       {t.back}
@@ -82,7 +82,7 @@ export function CampaignsListPage({ page }: { page: CampaignList }) {
         <div className="mt-5 flex justify-end">
           <Link
             href={`/campaigns?cursor=${encodeURIComponent(page.nextCursor)}`}
-            className="flex items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12.5px] text-deep-blue hover:bg-mint-mist"
+            className="flex min-h-11 items-center gap-1.5 rounded-full border border-hairline px-4 py-2 text-[12.5px] text-deep-blue hover:bg-mint-mist md:min-h-0"
           >
             {t.next}
             <FiArrowRight aria-hidden="true" size={13} />
@@ -143,36 +143,51 @@ function Recipients({
       {recipients.items.length === 0 ? (
         <p className="text-[13px] text-charcoal/60">{r.none}</p>
       ) : (
-        <div className="overflow-x-auto rounded-3xl border border-hairline bg-white">
-          <table className="w-full min-w-[36rem] text-left text-[13px]">
-            <thead className="bg-soft-white text-[11px] uppercase tracking-museum text-deep-blue/60">
-              <tr>
-                {[r.email, r.name, r.status, r.sentAt].map((title) => (
-                  <th key={title} scope="col" className="px-4 py-3 font-semibold">
-                    {title}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {recipients.items.map((row) => (
-                <tr key={row.id} className="border-t border-hairline">
-                  <td className="px-4 py-2.5">{row.email}</td>
-                  <td className="px-4 py-2.5">{row.name}</td>
-                  <td className="px-4 py-2.5">
-                    {t.recipientStatus[row.status]}
-                    {row.error ? (
-                      <span className="block text-[11.5px] text-charcoal/60">{row.error}</span>
-                    ) : null}
-                  </td>
-                  <td className="whitespace-nowrap px-4 py-2.5 text-charcoal/70">
-                    {row.sentAt ? DATE_TIME.format(new Date(row.sentAt)) : ""}
-                  </td>
+        <>
+          <ul className="divide-y divide-hairline rounded-3xl border border-hairline bg-white md:hidden">
+            {recipients.items.map((row) => (
+              <li key={row.id} className="px-4 py-3 text-[13.5px]">
+                <p className="break-all font-medium text-deep-blue">{row.email}</p>
+                {row.name ? <p className="text-charcoal/75">{row.name}</p> : null}
+                <p className="mt-1 text-[12.5px] text-charcoal/65">
+                  {t.recipientStatus[row.status]}
+                  {row.sentAt ? ` · ${DATE_TIME.format(new Date(row.sentAt))}` : ""}
+                </p>
+                {row.error ? <p className="text-[12px] text-charcoal/60">{row.error}</p> : null}
+              </li>
+            ))}
+          </ul>
+          <div className="relative hidden overflow-x-auto rounded-3xl border border-hairline bg-white md:block">
+            <table className="w-full min-w-[36rem] text-left text-[13px]">
+              <thead className="bg-soft-white text-[11px] uppercase tracking-museum text-deep-blue/60">
+                <tr>
+                  {[r.email, r.name, r.status, r.sentAt].map((title) => (
+                    <th key={title} scope="col" className="px-4 py-3 font-semibold">
+                      {title}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {recipients.items.map((row) => (
+                  <tr key={row.id} className="border-t border-hairline">
+                    <td className="px-4 py-2.5">{row.email}</td>
+                    <td className="px-4 py-2.5">{row.name}</td>
+                    <td className="px-4 py-2.5">
+                      {t.recipientStatus[row.status]}
+                      {row.error ? (
+                        <span className="block text-[11.5px] text-charcoal/60">{row.error}</span>
+                      ) : null}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-2.5 text-charcoal/70">
+                      {row.sentAt ? DATE_TIME.format(new Date(row.sentAt)) : ""}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
       {recipients.nextCursor ? (
         <Link

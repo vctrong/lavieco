@@ -1,3 +1,4 @@
+import { InstallPrompt } from "@/features/pwa";
 import { AdminShell, requireStaff } from "@/features/shell";
 import { DraftOwnerProvider } from "@/shared/drafts";
 
@@ -7,6 +8,7 @@ export default async function DashboardLayout({ children }: LayoutProps<"/">) {
   return (
     <AdminShell staff={staff}>
       <DraftOwnerProvider owner={staff.id}>{children}</DraftOwnerProvider>
+      <InstallPrompt />
     </AdminShell>
   );
 }

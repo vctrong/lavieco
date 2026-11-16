@@ -24,8 +24,9 @@ const TONES = {
     checkboxLabel: "text-[12.5px] text-mint-mist/90",
   },
   light: {
+    // 16 px on phones: iOS Safari zooms into any field under 16 px (admin PWA, docs/PWA.md).
     control:
-      "border-hairline bg-white text-sm text-charcoal placeholder:text-charcoal/40 aria-[invalid=true]:border-error",
+      "border-hairline bg-white text-base text-charcoal md:text-sm placeholder:text-charcoal/40 aria-[invalid=true]:border-error",
     select: "bg-white",
     label: "text-deep-blue/70",
     error: "text-xs text-error",

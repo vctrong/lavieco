@@ -67,6 +67,14 @@ const objectId = (id: string) => (Types.ObjectId.isValid(id) ? new Types.ObjectI
 export class MongoUserRepository implements UserRepository {
   constructor(@InjectModel(USER_MODEL) private readonly model: Model<UserDoc>) {}
 
+  async listActiveStaff() {
+    const docs = await this.model
+      .find({ type: "staff", status: "active" })
+      .lean<UserDoc[]>()
+      .exec();
+    return docs.map(toUser);
+  }
+
   async findById(id: string, tx?: TxContext) {
     const _id = objectId(id);
     if (!_id) return null;

@@ -124,6 +124,11 @@ export const eventSchema = new Schema(
       mode: { type: String, enum: EVENT_POST_MODES, default: "draft" },
     },
     postEventCampaignId: { type: String, default: null },
+    /** When staff were alerted that seats run low / ran out (ADR-0027): once each. */
+    seatAlerts: {
+      fewLeftAt: { type: Date, default: null },
+      soldOutAt: { type: Date, default: null },
+    },
     seatsSold: { type: Number, required: true, default: 0 },
     seatsHeld: { type: Number, required: true, default: 0 },
     /** Banner, 21:9. */

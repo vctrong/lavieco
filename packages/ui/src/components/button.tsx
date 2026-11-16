@@ -43,6 +43,8 @@ export function Button<T extends ElementType = "button">({
   const Component: ElementType = as ?? "button";
   return (
     <Component
+      // Lets an app adjust one size in its own layout (admin: 44 px touch targets).
+      data-size={variant === "link" ? undefined : size}
       className={cn(
         "group inline-flex items-center gap-2 transition-all duration-300",
         // `cn` only joins classes, it does not resolve conflicts: a text link must not

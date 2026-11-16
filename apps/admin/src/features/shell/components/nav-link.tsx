@@ -14,7 +14,8 @@ export function NavLink({ href, label, available }: NavLinkProps) {
   const pathname = usePathname();
   const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
   const base =
-    "flex items-center justify-between rounded-full px-4 py-2 text-[13.5px] transition-colors";
+    // 44 px targets on touch screens; the desktop sidebar keeps its tighter rhythm.
+    "flex min-h-11 items-center justify-between rounded-full px-4 py-2 text-[14.5px] transition-colors lg:min-h-0 lg:text-[13.5px]";
 
   if (!available) {
     return (

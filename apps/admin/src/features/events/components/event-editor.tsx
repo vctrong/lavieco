@@ -75,7 +75,9 @@ export function EventEditor({
         dirtyBlocks={dirtyBlocks}
         saveDirty={saveDirty}
       />
-      <div className="grid gap-6 lg:grid-cols-[11rem_minmax(0,1fr)] xl:grid-cols-[11rem_minmax(0,1fr)_20rem]">
+      {/* One shrinkable column on phones: an implicit `auto` column grew to the width of the
+          scrolling section nav and pushed the whole editor off screen. */}
+      <div className="grid grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[11rem_minmax(0,1fr)] xl:grid-cols-[11rem_minmax(0,1fr)_20rem]">
         <EditorSideNav
           event={event}
           withVouchers={Boolean(vouchersSection)}

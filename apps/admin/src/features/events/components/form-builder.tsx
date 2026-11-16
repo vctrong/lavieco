@@ -208,7 +208,7 @@ function QuestionCard({
                       ),
                     )
                   }
-                  className="w-full rounded-full border border-hairline bg-white px-4 py-2 text-sm text-charcoal focus:border-emerald-brand focus:outline-none"
+                  className="w-full rounded-full border border-hairline bg-white px-4 py-2 text-base text-charcoal focus:border-emerald-brand focus:outline-none md:text-sm"
                 />
                 <button
                   type="button"
@@ -241,7 +241,7 @@ function QuestionCard({
               onClick={() =>
                 set("options", [...question.options, { id: crypto.randomUUID(), label: "" }])
               }
-              className="mt-2 flex items-center gap-1.5 text-[12.5px] font-medium text-deep-blue hover:text-emerald-brand"
+              className="mt-2 flex min-h-11 items-center gap-1.5 text-[12.5px] font-medium text-deep-blue hover:text-emerald-brand md:min-h-0"
             >
               <FiPlus aria-hidden="true" size={13} />
               {t.addOption}

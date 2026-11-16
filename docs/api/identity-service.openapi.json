@@ -1295,6 +1295,454 @@
           "members"
         ]
       }
+    },
+    "/internal/v1/staff/me/push": {
+      "get": {
+        "operationId": "StaffPushController_settings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "available": {
+                      "type": "boolean"
+                    },
+                    "vapidPublicKey": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "allowedTopics": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "order_paid",
+                          "registration_free",
+                          "order_attention",
+                          "event_seats",
+                          "lead_new"
+                        ]
+                      }
+                    },
+                    "topics": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "order_paid",
+                          "registration_free",
+                          "order_attention",
+                          "event_seats",
+                          "lead_new"
+                        ]
+                      }
+                    },
+                    "devices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "deviceLabel": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "deviceLabel",
+                          "createdAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "available",
+                    "vapidPublicKey",
+                    "allowedTopics",
+                    "topics",
+                    "devices"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Alert settings, allowed topics and devices of the caller",
+        "tags": [
+          "push"
+        ]
+      }
+    },
+    "/internal/v1/staff/me/push/topics": {
+      "put": {
+        "operationId": "StaffPushController_setTopics",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "topics": {
+                    "maxItems": 5,
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "order_paid",
+                        "registration_free",
+                        "order_attention",
+                        "event_seats",
+                        "lead_new"
+                      ]
+                    }
+                  }
+                },
+                "required": [
+                  "topics"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "available": {
+                      "type": "boolean"
+                    },
+                    "vapidPublicKey": {
+                      "nullable": true,
+                      "type": "string"
+                    },
+                    "allowedTopics": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "order_paid",
+                          "registration_free",
+                          "order_attention",
+                          "event_seats",
+                          "lead_new"
+                        ]
+                      }
+                    },
+                    "topics": {
+                      "type": "array",
+                      "items": {
+                        "type": "string",
+                        "enum": [
+                          "order_paid",
+                          "registration_free",
+                          "order_attention",
+                          "event_seats",
+                          "lead_new"
+                        ]
+                      }
+                    },
+                    "devices": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "deviceLabel": {
+                            "type": "string"
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
+                          }
+                        },
+                        "required": [
+                          "deviceLabel",
+                          "createdAt"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "available",
+                    "vapidPublicKey",
+                    "allowedTopics",
+                    "topics",
+                    "devices"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Choose the alert topics (cut down to the caller's permissions)",
+        "tags": [
+          "push"
+        ]
+      }
+    },
+    "/internal/v1/staff/me/push/subscriptions": {
+      "put": {
+        "operationId": "StaffPushController_subscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "format": "uri"
+                  },
+                  "keys": {
+                    "type": "object",
+                    "properties": {
+                      "p256dh": {
+                        "type": "string",
+                        "minLength": 80,
+                        "maxLength": 120,
+                        "pattern": "^[A-Za-z0-9_-]+$"
+                      },
+                      "auth": {
+                        "type": "string",
+                        "minLength": 16,
+                        "maxLength": 32,
+                        "pattern": "^[A-Za-z0-9_-]+$"
+                      }
+                    },
+                    "required": [
+                      "p256dh",
+                      "auth"
+                    ]
+                  },
+                  "deviceLabel": {
+                    "default": "",
+                    "type": "string",
+                    "maxLength": 60
+                  }
+                },
+                "required": [
+                  "endpoint",
+                  "keys"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Register this browser for alerts (idempotent on the endpoint)",
+        "tags": [
+          "push"
+        ]
+      },
+      "delete": {
+        "operationId": "StaffPushController_unsubscribe",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "endpoint": {
+                    "type": "string",
+                    "maxLength": 2048,
+                    "format": "uri"
+                  }
+                },
+                "required": [
+                  "endpoint"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Stop alerts on this browser",
+        "tags": [
+          "push"
+        ]
+      }
+    },
+    "/internal/v1/staff/me/push/test": {
+      "post": {
+        "operationId": "StaffPushController_test",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sent": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  },
+                  "required": [
+                    "sent"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Send a test alert to every device of the caller",
+        "tags": [
+          "push"
+        ]
+      }
+    },
+    "/internal/v1/push-notifications": {
+      "post": {
+        "operationId": "PushNotificationsController_notify",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notificationId": {
+                    "type": "string",
+                    "format": "uuid",
+                    "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$"
+                  },
+                  "topic": {
+                    "type": "string",
+                    "enum": [
+                      "order_paid",
+                      "registration_free",
+                      "order_attention",
+                      "event_seats",
+                      "lead_new"
+                    ]
+                  },
+                  "title": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "body": {
+                    "type": "string",
+                    "maxLength": 200
+                  },
+                  "url": {
+                    "type": "string",
+                    "maxLength": 300,
+                    "pattern": "^\\/(?!\\/)[^\\\\\\s]*$"
+                  },
+                  "tag": {
+                    "type": "string",
+                    "maxLength": 64
+                  }
+                },
+                "required": [
+                  "notificationId",
+                  "topic",
+                  "title",
+                  "body",
+                  "url"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "sent": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    },
+                    "duplicate": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "sent",
+                    "duplicate"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Alert the staff who want this topic (idempotent on notificationId)",
+        "tags": [
+          "push"
+        ]
+      }
     }
   },
   "info": {

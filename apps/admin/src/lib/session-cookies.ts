@@ -17,6 +17,9 @@ export const RETURN_SECTIONS = [
   "/surveys",
   "/campaigns",
   "/checkin",
+  "/shop",
+  "/more",
+  "/notifications",
 ] as const;
 
 /** Base for parsing a relative path; never used as a destination. */

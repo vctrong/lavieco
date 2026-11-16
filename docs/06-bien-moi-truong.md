@@ -180,13 +180,16 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `OTP_PEPPER` | Bắt buộc | **Có** | Pepper HMAC cho mã OTP và khoá giới hạn tần suất | `RANDOM_32B` của `keys:generate` | Khác nhau từng môi trường | `T1RQLWdpYS1naWEtZ2lhLWdpYS1naWEtZ2lhLWdpYQ==` |
 | `STAFF_ACCESS_TTL_SECONDS` | Tuỳ chọn (mặc định `600`) | Không | Hạn access token staff | Tự đặt | | `600` |
 | `MEMBER_ACCESS_TTL_SECONDS` | Tuỳ chọn (mặc định `900`) | Không | Hạn access token member | Tự đặt | | `900` |
-| `STAFF_REFRESH_TTL_HOURS` | Tuỳ chọn (mặc định `12`) | Không | Hạn refresh token staff | Tự đặt | | `12` |
+| `STAFF_REFRESH_TTL_HOURS` | Tuỳ chọn (mặc định `72`, tối đa `72`) | Không | Hạn refresh token staff, **trượt**: mỗi lần làm mới (khi đang dùng admin) tính lại từ đầu, nên chỉ phải đăng nhập lại (kèm 2FA) khi bỏ không quá chừng ấy giờ | Tự đặt | Prod: `72` (17/11/2026) | `72` |
 | `MEMBER_REFRESH_TTL_DAYS` | Tuỳ chọn (mặc định `30`) | Không | Hạn refresh token member | Tự đặt | | `30` |
 | `ADMIN_APP_URL` | Bắt buộc | Không | Origin admin, dùng trong link mời | Tự đặt | Prod: origin admin thật | `http://localhost:3001` |
 | `WEB_APP_URL` | Bắt buộc | Không | Origin web, dùng trong email member | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
 | `GOOGLE_CLIENT_ID` | Tuỳ chọn | Không | Đăng nhập Google (member) | Google Cloud Console → Credentials | Cùng giá trị với `web` | `123-gia.apps.googleusercontent.com` |
 | `GOOGLE_CLIENT_SECRET` | Tuỳ chọn | **Có** | Client secret Google, **chỉ ở identity** | Google Cloud Console → Credentials → OAuth client → Client secret | Dev/prod hai client | `GOCSPX-gia` |
 | `GOOGLE_REDIRECT_URI` | Tuỳ chọn | Không | Redirect URI duy nhất được chấp nhận | Tự đặt, khớp `web` và Google Console | | `http://localhost:3000/api/auth/google/callback` |
+| `WEB_PUSH_VAPID_PUBLIC_KEY` | Tuỳ chọn (trống = tắt thông báo đẩy) | Không (khoá công khai, admin nhận qua API) | Nửa công khai cặp khoá VAPID cho thông báo đẩy tới staff (ADR-0027) | `npm run keys:generate` → `WEB_PUSH_VAPID_PUBLIC_KEY` | Mỗi môi trường một cặp; đổi cặp là mọi thiết bị phải bật lại thông báo | `BOr-gia-khoa-cong-khai` |
+| `WEB_PUSH_VAPID_PRIVATE_KEY` | Tuỳ chọn (có thì phải có khoá công khai) | **Có** | Nửa bí mật cặp VAPID, **chỉ ở identity** | Như trên | Như trên | `gia-khoa-bi-mat` |
+| `WEB_PUSH_SUBJECT` | Tuỳ chọn (mặc định `mailto:hello@lavieco.io.vn`) | Không | Liên hệ gửi kèm VAPID để dịch vụ đẩy của Google/Apple/Mozilla báo khi có vấn đề | Tự đặt: `mailto:` hoặc URL https | Prod: hộp thư đội đọc được | `mailto:hello@lavieco.io.vn` |
 | `CAMPAIGN_DAILY_LIMIT` | Tuỳ chọn (mặc định `150`) | Không | Số email chiến dịch tối đa mỗi ngày theo giờ Việt Nam (ADR-0026). Brevo cho 300/ngày, dùng chung với OTP và email vé nên phải chừa phần cho chúng | Tự đặt | Prod: `150` | `150` |
 | `CAMPAIGN_RATE_PER_MINUTE` | Tuỳ chọn (mặc định `10`) | Không | Số email chiến dịch tối đa mỗi phút | Tự đặt | Prod: `10` | `10` |
 | `MAIL_PROVIDER` | Tuỳ chọn (mặc định `smtp`) | Không | Kiểu gửi email; chỉ có `smtp` (Brevo và Gmail đều qua SMTP, ADR-0023) | Tự đặt | | `smtp` |
@@ -300,3 +303,5 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 25/10/2026 | `web`: `GEMINI_MODEL` | Đổi mặc định `gemini-2.5-flash` → `gemini-3.8-flash` (bản 2.5 trả 404 cho người dùng mới) | `feat/web-laviagent-demo` |
 | 25/10/2026 | `web`: `GEMINI_THINKING`, `LAVIAGENT_DEMO_VO_SO` | Thêm (mức thinking cấu hình được; chế độ diễn demo vỏ sò) | `feat/web-laviagent-demo` |
 | 21/10/2026 | Root: `MONGO_PORT`; `identity-service`, `content-service`, `program-service`: `MONGODB_URI` | Đổi mặc định dev sang cổng `27018` (Mongo local trong compose); thêm mẫu Atlas dạng comment trong `.env.example`. `env:check` báo lỗi khi `SMTP_HOST=localhost` (Node phân giải ra `::1`, Mailpit chỉ nghe `127.0.0.1`). Không đổi tên biến | `docs/dev-local.md` |
+| 17/11/2026 | `identity-service`: `WEB_PUSH_VAPID_PUBLIC_KEY`, `WEB_PUSH_VAPID_PRIVATE_KEY`, `WEB_PUSH_SUBJECT` | Thêm (thông báo đẩy cho staff, ADR-0027) | `feat/admin-pwa` |
+| 17/11/2026 | `identity-service`: `STAFF_REFRESH_TTL_HOURS` | Đổi mặc định `12` → `72` (phiên admin trượt 72 giờ, app cài trên điện thoại) | `feat/admin-pwa` |
