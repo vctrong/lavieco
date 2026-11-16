@@ -16,6 +16,7 @@ import { AccountPanelBody, NeutralAccountLink, type LogoutAction } from "./accou
 import { BrandLogo } from "./brand-logo";
 import { LaviAgentDrawerCard } from "./laviagent-link";
 import { fullTitleOf } from "./nav-links";
+import { ICON_HIT_AREA_CLASS } from "./styles";
 
 const t = TEXT.vi;
 const { inline: MAIN_ITEMS, explore: EXPLORE_ITEMS } = groupNavItems(NAV_ITEMS);
@@ -76,7 +77,10 @@ export function MobileDrawer({ logoutAction }: { logoutAction: LogoutAction }) {
         aria-controls={dialogId}
         aria-haspopup="dialog"
         onClick={openDrawer}
-        className="flex size-8 items-center justify-center rounded-full bg-deep-blue text-soft-white transition-colors hover:bg-emerald-brand lg:hidden"
+        className={cn(
+          "flex size-8 items-center justify-center rounded-full bg-deep-blue text-soft-white transition-colors hover:bg-emerald-brand lg:hidden",
+          ICON_HIT_AREA_CLASS,
+        )}
       >
         <FiMenu aria-hidden="true" size={16} />
       </button>
@@ -103,7 +107,7 @@ export function MobileDrawer({ logoutAction }: { logoutAction: LogoutAction }) {
               type="button"
               aria-label={t.drawer.closeLabel}
               onClick={close}
-              className="flex size-9 items-center justify-center rounded-full bg-mint-mist text-deep-blue transition-colors hover:bg-emerald-brand hover:text-soft-white"
+              className="flex size-11 items-center justify-center rounded-full bg-mint-mist text-deep-blue transition-colors hover:bg-emerald-brand hover:text-soft-white"
             >
               <FiX aria-hidden="true" size={18} />
             </button>
@@ -143,7 +147,7 @@ export function MobileDrawer({ logoutAction }: { logoutAction: LogoutAction }) {
                 <p className="mb-3 text-[10px] font-bold uppercase tracking-museum text-charcoal/50">
                   {t.drawer.exploreHeading}
                 </p>
-                <ul className="space-y-3">
+                <ul className="space-y-1">
                   {EXPLORE_ITEMS.map((item) => {
                     const active = isNavItemActive(pathname, item.href);
                     return (
@@ -153,7 +157,7 @@ export function MobileDrawer({ logoutAction }: { logoutAction: LogoutAction }) {
                           onClick={close}
                           aria-current={active ? "page" : undefined}
                           className={cn(
-                            "flex items-center gap-2 text-sm font-medium text-charcoal/80 transition-colors hover:text-emerald-brand",
+                            "flex min-h-11 items-center gap-2 text-sm font-medium text-charcoal/80 transition-colors hover:text-emerald-brand",
                             active && "font-semibold text-deep-blue",
                           )}
                         >

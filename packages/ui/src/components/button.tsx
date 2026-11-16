@@ -12,7 +12,7 @@ const VARIANTS = {
   deep: "bg-deep-blue text-soft-white font-semibold shadow-md hover:bg-deep-blue/90 hover:scale-[1.02] active:scale-[0.98]",
   secondary:
     "border border-deep-blue/25 text-deep-blue font-semibold hover:bg-mint-mist hover:border-emerald-brand",
-  link: "rounded-none px-0 py-2 text-deep-blue font-medium hover:text-emerald-brand",
+  link: "min-h-11 justify-start py-2 text-left text-deep-blue font-medium hover:text-emerald-brand",
 } as const;
 
 const SIZES = {
@@ -44,8 +44,10 @@ export function Button<T extends ElementType = "button">({
   return (
     <Component
       className={cn(
-        "group inline-flex items-center justify-center gap-2 rounded-full transition-all duration-300",
-        SIZES[size],
+        "group inline-flex items-center gap-2 transition-all duration-300",
+        // `cn` only joins classes, it does not resolve conflicts: a text link must not
+        // also get the pill's padding and centring (it indented and split on phones).
+        variant === "link" ? null : cn("justify-center rounded-full", SIZES[size]),
         VARIANTS[variant],
         className,
       )}
