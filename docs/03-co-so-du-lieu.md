@@ -810,7 +810,7 @@ Quy tắc dữ liệu:
 
 | Tài khoản | Database | Quyền |
 |---|---|---|
-| `svc_identity` | `lavieco_identity` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` trên các collection; **riêng `audit_events` chỉ `find` + `insert`** |
+| `svc_identity` | `lavieco_identity` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` trên các collection; **riêng `audit_events` chỉ `find` + `insert`**; `push_deliveries` chỉ `find` + `insert` (TTL tự xoá) |
 | `svc_content` | `lavieco_content` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
 | `svc_lead` | `lavieco_lead` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
 | `svc_program` | `lavieco_program` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
