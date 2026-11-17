@@ -1,6 +1,7 @@
 import type { PaymentOutcome } from "@lavieco/shared/events";
 
 import type { OrderSettlementService, PaymentGateway } from "../../orders";
+import { isShopOrderCode, type ShopSettlementService } from "../../shop-orders";
 
 /** payOS `code` of a successful transfer. */
 const SUCCESS = "00";
@@ -14,6 +15,7 @@ export class PayosWebhookService {
   constructor(
     private readonly gateway: PaymentGateway,
     private readonly settlement: OrderSettlementService,
+    private readonly shop: ShopSettlementService,
   ) {}
 
   async handle(body: unknown): Promise<PaymentOutcome | "ignored"> {
@@ -21,7 +23,9 @@ export class PayosWebhookService {
     const success =
       typeof body === "object" && body !== null && "success" in body && body.success === true;
     if (!success || payment.code !== SUCCESS) return "ignored";
-    return this.settlement.settle({
+    // One payOS account for tickets and the shop: the code range says which (ADR-0028).
+    const settlement = isShopOrderCode(payment.orderCode) ? this.shop : this.settlement;
+    return settlement.settle({
       orderCode: payment.orderCode,
       amount: payment.amount,
       reference: payment.reference,

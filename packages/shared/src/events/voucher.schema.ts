@@ -21,11 +21,13 @@ export const VOUCHER_STATUSES = ["active", "paused", "archived"] as const;
 export const voucherStatusSchema = z.enum(VOUCHER_STATUSES);
 export type VoucherStatus = z.infer<typeof voucherStatusSchema>;
 
-export const VOUCHER_SCOPES = ["event", "global"] as const;
+/** `global` = every event and the shop ("voucher toàn app"); `shop` = shop orders only. */
+export const VOUCHER_SCOPES = ["event", "global", "shop"] as const;
 export const voucherScopeSchema = z.enum(VOUCHER_SCOPES);
 export type VoucherScope = z.infer<typeof voucherScopeSchema>;
 
-export const VOUCHER_DISCOUNT_TYPES = ["percent", "fixed"] as const;
+/** `free_shipping`: takes the shop delivery fee off, up to `value` VND (Q-S3). */
+export const VOUCHER_DISCOUNT_TYPES = ["percent", "fixed", "free_shipping"] as const;
 export const voucherDiscountTypeSchema = z.enum(VOUCHER_DISCOUNT_TYPES);
 export type VoucherDiscountType = z.infer<typeof voucherDiscountTypeSchema>;
 

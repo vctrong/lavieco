@@ -34,6 +34,9 @@ export type ProgramAuditAction =
   | "product.impact_approve"
   | "product.stock_adjust"
   | "product.import"
+  | "shop_order.cancel"
+  | "shop_order.refund"
+  | "shop_order.export"
   | "shop.category"
   | "shop.brand"
   | "shop.settings";

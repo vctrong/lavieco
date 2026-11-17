@@ -319,6 +319,7 @@ export class OrdersModule {
         PAYMENT_EVENT_REPOSITORY,
         PAYMENT_GATEWAY,
         ORDER_LINKS,
+        EMAIL_PROOF_VERIFIER,
         CHECKOUT_SERVICE,
         ORDER_SETTLEMENT_SERVICE,
         OrderExpiryScheduler,

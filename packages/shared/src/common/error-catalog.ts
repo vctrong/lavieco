@@ -159,6 +159,26 @@ export const ERROR_CATALOG = {
   },
   "import.has_errors": { status: 422, title: "Some rows still have errors: fix or skip them" },
   "import.locked": { status: 409, title: "This import is being saved or is closed" },
+  "cart.unavailable": { status: 409, title: "This product is not on sale any more" },
+  "cart.full": { status: 422, title: "The cart already holds the maximum number of lines" },
+  "shop_order.cart_empty": { status: 422, title: "Nothing to order: the cart is empty" },
+  "shop_order.cart_changed": {
+    status: 409,
+    title: "Prices or stock changed since the cart was shown: check it again",
+  },
+  "shop_order.out_of_stock": { status: 409, title: "Not enough stock left for this order" },
+  "shop_order.cod_not_allowed": {
+    status: 422,
+    title: "Cash on delivery is not offered for this amount",
+  },
+  "shop_order.too_many_pending": {
+    status: 429,
+    title: "This email already has orders waiting for payment",
+  },
+  "shop_order.invalid_action": {
+    status: 409,
+    title: "This action is not possible in the order's status",
+  },
 } as const satisfies Record<string, { status: number; title: string }>;
 
 export type ErrorCode = keyof typeof ERROR_CATALOG;

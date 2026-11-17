@@ -1,4 +1,16 @@
 import {
+  shopOrderAdminSchema,
+  shopOrderCreatedSchema,
+  shopOrderListSchema,
+  shopOrderLookupSchema,
+  shopOrderPublicSchema,
+  shopOverviewSchema,
+  shopQuoteSchema,
+  type ShopOrderActionRequest,
+  type ShopOrderCreateRequest,
+  type ShopOrderListQuery,
+  type ShopQuoteRequest,
+  cartSchema,
   importJobSchema,
   type ImportImagesRequest,
   type ImportMode,
@@ -27,6 +39,8 @@ import {
   type ShopSettingsUpdateRequest,
   type StockAdjustRequest,
 } from "@lavieco/shared/shop";
+
+import { STEP_UP_HEADER } from "@lavieco/shared/identity";
 
 import type { createHttpClient } from "./http-client";
 
@@ -337,6 +351,158 @@ export function shopMethods(http: Http) {
         path: `${V1}/import-jobs/${segment(id)}/cancel`,
         auth: user(accessToken),
         schema: importJobSchema,
+        requestId,
+      }),
+
+    // --- web: cart (cookie token; claim with the member's token) ---
+    getCart: (token: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/public/carts/${segment(token)}`,
+        auth: service,
+        schema: cartSchema,
+        requestId,
+      }),
+    setCartItem: (token: string, variantId: string, quantity: number, requestId?: string) =>
+      http.call({
+        method: "PUT",
+        path: `${V1}/public/carts/${segment(token)}/items/${segment(variantId)}`,
+        auth: service,
+        body: { quantity },
+        schema: cartSchema,
+        requestId,
+      }),
+    claimCart: (accessToken: string, token: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/me/cart/claim`,
+        auth: user(accessToken),
+        body: { token },
+        schema: cartSchema,
+        requestId,
+      }),
+
+    // --- web: checkout and orders (UC-37) ---
+    quoteShopOrder: (body: ShopQuoteRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/public/checkout/quote`,
+        auth: service,
+        body,
+        schema: shopQuoteSchema,
+        requestId,
+      }),
+    createShopOrder: (body: ShopOrderCreateRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/public/orders`,
+        auth: service,
+        body,
+        schema: shopOrderCreatedSchema,
+        timeoutMs: 30_000,
+        requestId,
+      }),
+    getShopOrderByLink: (token: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/public/orders/${segment(token)}`,
+        auth: service,
+        schema: shopOrderPublicSchema,
+        timeoutMs: 15_000,
+        requestId,
+      }),
+    cancelShopOrderByLink: (token: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/public/orders/${segment(token)}/cancel`,
+        auth: service,
+        schema: shopOrderPublicSchema,
+        requestId,
+      }),
+    lookupShopOrders: (verificationToken: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/public/orders/lookup`,
+        auth: service,
+        body: { verificationToken },
+        schema: shopOrderLookupSchema,
+        requestId,
+      }),
+    listMyShopOrders: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/me/orders`,
+        auth: user(accessToken),
+        schema: shopOrderLookupSchema,
+        requestId,
+      }),
+
+    // --- admin: shop orders (UC-40) ---
+    getShopOverview: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/overview`,
+        auth: user(accessToken),
+        schema: shopOverviewSchema,
+        requestId,
+      }),
+    listShopOrders: (accessToken: string, query: Partial<ShopOrderListQuery>, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/orders${queryString(query)}`,
+        auth: user(accessToken),
+        schema: shopOrderListSchema,
+        requestId,
+      }),
+    getShopOrder: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/orders/${segment(id)}`,
+        auth: user(accessToken),
+        schema: shopOrderAdminSchema,
+        requestId,
+      }),
+    actOnShopOrder: (
+      accessToken: string,
+      id: string,
+      body: ShopOrderActionRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/orders/${segment(id)}/actions`,
+        auth: user(accessToken),
+        body,
+        schema: shopOrderAdminSchema,
+        requestId,
+      }),
+    refundShopOrder: (
+      accessToken: string,
+      id: string,
+      body: ShopOrderActionRequest,
+      stepUpToken: string,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/orders/${segment(id)}/refund`,
+        auth: user(accessToken),
+        headers: { [STEP_UP_HEADER]: stepUpToken },
+        body,
+        schema: shopOrderAdminSchema,
+        requestId,
+      }),
+    exportShopOrders: (
+      accessToken: string,
+      range: { from: string; to: string },
+      stepUpToken: string,
+      requestId?: string,
+    ) =>
+      http.download({
+        path: `${V1}/orders/export${queryString(range)}`,
+        auth: user(accessToken),
+        headers: { [STEP_UP_HEADER]: stepUpToken },
+        timeoutMs: 60_000,
         requestId,
       }),
 

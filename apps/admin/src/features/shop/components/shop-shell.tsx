@@ -5,9 +5,10 @@ import { TEXT } from "../constants/text";
 
 const t = TEXT.vi;
 
-export type ShopSection = "overview" | "products" | "categories" | "brands" | "settings";
+export type ShopSection = "overview" | "orders" | "products" | "categories" | "brands" | "settings";
 
 const LINKS: { id: Exclude<ShopSection, "overview">; href: string }[] = [
+  { id: "orders", href: "/shop/orders" },
   { id: "products", href: "/shop/products" },
   { id: "categories", href: "/shop/categories" },
   { id: "brands", href: "/shop/brands" },

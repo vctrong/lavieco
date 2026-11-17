@@ -16,8 +16,10 @@ export {
   type TicketRepository,
 } from "./application/ports/order-repositories.port";
 export {
+  EMAIL_PROOF_VERIFIER,
   ORDER_LINKS,
   PAYMENT_GATEWAY,
+  type EmailProofVerifier,
   type OrderLinks,
   type PaymentGateway,
   type PaymentLinkRequest,

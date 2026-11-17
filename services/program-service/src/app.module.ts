@@ -28,7 +28,9 @@ import { RegistrationsModule } from "./modules/registrations";
 import { SurveysModule } from "./modules/surveys";
 import { ProgramOutboxModule } from "./modules/outbox";
 import { ShopCatalogModule, type ProductMedia } from "./modules/shop-catalog";
+import { ShopCartsModule } from "./modules/shop-carts";
 import { ShopImportsModule } from "./modules/shop-imports";
+import { ShopOrdersModule } from "./modules/shop-orders";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
 export type AppOverrides = {
@@ -70,6 +72,13 @@ export class AppModule {
     });
     const surveys = SurveysModule.forRoot(events, orders);
     const shopCatalog = ShopCatalogModule.forRoot(overrides.productMedia);
+    const shopCarts = ShopCartsModule.forRoot(shopCatalog);
+    const shopOrders = ShopOrdersModule.forRoot({
+      orders,
+      shopCatalog,
+      shopCarts,
+      expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
+    });
     return {
       module: AppModule,
       imports: [
@@ -100,7 +109,7 @@ export class AppModule {
         EventTypesModule,
         events,
         orders,
-        PaymentsModule.forRoot(orders),
+        PaymentsModule.forRoot(orders, shopOrders),
         CheckinModule.forRoot(orders),
         RegistrationsModule.forRoot(events, orders),
         surveys,
@@ -110,6 +119,8 @@ export class AppModule {
         }),
         shopCatalog,
         ShopImportsModule.forRoot(shopCatalog),
+        shopCarts,
+        shopOrders,
         ProgramOutboxModule.forRoot(events, shopCatalog, overrides.revalidateFetch),
       ],
     };
