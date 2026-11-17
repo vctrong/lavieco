@@ -27,7 +27,15 @@ export type ProgramAuditAction =
   | "campaign.pause"
   | "campaign.resume"
   | "campaign.cancel"
-  | "campaign.retry";
+  | "campaign.retry"
+  | "product.create"
+  | "product.update"
+  | "product.status"
+  | "product.impact_approve"
+  | "product.stock_adjust"
+  | "shop.category"
+  | "shop.brand"
+  | "shop.settings";
 
 export type AuditEntry = {
   action: ProgramAuditAction;

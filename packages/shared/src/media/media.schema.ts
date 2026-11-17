@@ -25,16 +25,20 @@ export type EventImagePurpose = z.infer<typeof eventImagePurposeSchema>;
 export const eventImageUploadFieldsSchema = z.object({ purpose: eventImagePurposeSchema });
 export type EventImageUploadFields = z.infer<typeof eventImageUploadFieldsSchema>;
 
-/** Where an attached image is used. Only events for now (ADR-0020). */
+/** Where an attached image is used: an event, or a shop product (ADR-0020, ADR-0028). */
 export const mediaAttachmentRefSchema = z.object({
-  kind: z.literal("event"),
+  kind: z.enum(["event", "product"]),
   id: objectIdSchema,
 });
 export type MediaAttachmentRef = z.infer<typeof mediaAttachmentRefSchema>;
 
-/** `POST /internal/v1/media/{id}/attach`, called by program-service before it saves an event. */
+/** Purposes program-service may attach: event images, and product images. */
+export const attachablePurposeSchema = z.enum(["event_cover", "event_gallery", "product_image"]);
+export type AttachablePurpose = z.infer<typeof attachablePurposeSchema>;
+
+/** `POST /internal/v1/media/{id}/attach`, called by program-service before it saves an event or product. */
 export const mediaAttachRequestSchema = z.object({
-  purpose: eventImagePurposeSchema,
+  purpose: attachablePurposeSchema,
   ref: mediaAttachmentRefSchema,
 });
 export type MediaAttachRequest = z.infer<typeof mediaAttachRequestSchema>;

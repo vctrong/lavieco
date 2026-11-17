@@ -20,6 +20,8 @@ export {
 export {
   eventImagePurposeSchema,
   eventImageUploadFieldsSchema,
+  attachablePurposeSchema,
+  type AttachablePurpose,
   mediaAttachRequestSchema,
   mediaAttachmentRefSchema,
   mediaFormatSchema,

@@ -27,6 +27,7 @@ import { PaymentsModule, payosGatewayProvider } from "./modules/payments";
 import { RegistrationsModule } from "./modules/registrations";
 import { SurveysModule } from "./modules/surveys";
 import { ProgramOutboxModule } from "./modules/outbox";
+import { ShopCatalogModule, type ProductMedia } from "./modules/shop-catalog";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
 export type AppOverrides = {
@@ -38,6 +39,8 @@ export type AppOverrides = {
   revalidateFetch?: typeof fetch;
   /** Stands in for content-service (event images). */
   mediaAttachments?: MediaAttachments;
+  /** Stands in for content-service (product images). */
+  productMedia?: ProductMedia;
   emailSender?: EmailSender;
   /** Replaces payOS (provider of PAYMENT_GATEWAY). */
   paymentGateway?: Provider;
@@ -65,6 +68,7 @@ export class AppModule {
       expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
     });
     const surveys = SurveysModule.forRoot(events, orders);
+    const shopCatalog = ShopCatalogModule.forRoot(overrides.productMedia);
     return {
       module: AppModule,
       imports: [
@@ -103,7 +107,8 @@ export class AppModule {
           run: overrides.runCampaignWorker ?? true,
           intervalMs: CAMPAIGN_INTERVAL_MS,
         }),
-        ProgramOutboxModule.forRoot(events, overrides.revalidateFetch),
+        shopCatalog,
+        ProgramOutboxModule.forRoot(events, shopCatalog, overrides.revalidateFetch),
       ],
     };
   }

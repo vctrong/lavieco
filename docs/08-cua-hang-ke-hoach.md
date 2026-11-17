@@ -8,6 +8,21 @@
 
 ---
 
+## Quyết định đã chốt (17/11/2026)
+
+| Mã | Quyết định |
+|---|---|
+| Q-S1 | Giá cố định, sửa BR-10 (LAVIECO đã qua giai đoạn bán hàng). |
+| Q-S2 | Pháp lý bổ sung sau khi xong chức năng; cờ `SHOP_ENABLED` giữ Cửa hàng tắt trên production tới lúc đó. |
+| Q-S3 | **Phí giao mặc định 20.000đ**, admin sửa được ở cài đặt cửa hàng; mã ưu đãi giảm được cả phí giao (loại ưu đãi "miễn/giảm phí giao"). |
+| Q-S4 | **Có COD**, chỉ cho đơn **≤ 200.000đ**; đơn trên 200.000đ phải thanh toán trước qua payOS. Mức này admin sửa được. |
+| Q-S6 | **Đổi trả trong 14 ngày** kể từ khi nhận nếu hàng lỗi; **khách chịu phí gửi trả**. |
+| Q-S7 | Đối tác theo mặc định: tỉ lệ hoa hồng theo thương hiệu, chụp lên dòng đơn; LAVIECO giữ kho và giao. |
+| Q-S8 | Đường dẫn **`/bo-suu-tap`** cho trang bán (danh sách và chi tiết sản phẩm). |
+| Q-S16 | Được dùng `@dnd-kit` (kéo thả ảnh) và `fflate` (giải nén zip trong trình duyệt). |
+| Ảnh khi import cập nhật | **Không thay toàn bộ.** Ảnh mới được **thêm** vào sau ảnh hiện có. Bước xem trước hiện ảnh hiện có + ảnh mới dạng thẻ có nút **×** để bỏ từng ảnh, và nút **"Bỏ toàn bộ ảnh cũ"**. Ảnh bị bỏ được giải phóng khi xác nhận. |
+| Còn lại | Theo mặc định ở §12. |
+
 ## 0. Tóm tắt một trang
 
 - **Đặt Cửa hàng trong `program-service`** (nhóm module `shop-*` mới), không tạo service thứ 7. Lý do chính: giữ hàng + mã giảm giá + đơn phải nằm trong **một giao dịch của một service** (luật cứng §5.6), và payOS, sổ mã giảm giá, OTP chứng thực email, email, khảo sát, chiến dịch, cảnh báo đẩy cho staff, `exceljs` đều đã ở đó. Cần **ADR-0028** sửa lộ trình `order-service` ở `docs/02` §14.2. Phương án khác ở §3.1.

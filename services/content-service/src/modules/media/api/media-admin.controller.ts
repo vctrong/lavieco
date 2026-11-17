@@ -48,4 +48,24 @@ export class MediaAdminController {
     });
     return toMediaDto(record);
   }
+
+  @Post("product-images")
+  @HttpCode(201)
+  // Product images belong to the shop catalogue (ADR-0028).
+  @RequirePermission("product:write")
+  @ImageUpload(MEDIA_LIMITS.maxBytes.product_image, {})
+  @ApiOperation({
+    summary: "Upload one shop product image (JPEG/PNG/WebP, ≤ 8 MB, EXIF stripped)",
+  })
+  @ApiZodResponse(201, mediaSchema)
+  async uploadProductImage(
+    @UploadedFile() file: Express.Multer.File | undefined,
+    @CurrentPrincipal() principal: StaffPrincipal,
+  ) {
+    const record = await this.media.uploadProductImage(requireFile(file), {
+      kind: "staff",
+      userId: principal.userId,
+    });
+    return toMediaDto(record);
+  }
 }

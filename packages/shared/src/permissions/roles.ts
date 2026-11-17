@@ -37,6 +37,12 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "registration:export",
     "checkin:perform",
     "impact:approve",
+    "product:read",
+    "product:write",
+    "product:publish",
+    "product:import",
+    "order:fulfill",
+    "order:export",
   ],
   content_editor: [
     "content:read",
@@ -47,6 +53,10 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "site:read",
     "site:write",
     "program:read",
+    "product:read",
+    "product:write",
+    "product:publish",
+    "product:import",
   ],
   coordinator: [
     "content:read",
@@ -64,6 +74,12 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "campaign:send",
     "registration:export",
     "checkin:perform",
+    "product:read",
+    "product:write",
+    "product:publish",
+    "product:import",
+    "order:fulfill",
+    "order:export",
   ],
   auditor: [
     "survey:read",
@@ -75,6 +91,7 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "audit:read",
     "program:read",
     "order:read",
+    "product:read",
   ],
 };
 

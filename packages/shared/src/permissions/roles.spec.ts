@@ -38,6 +38,12 @@ const MATRIX: Record<Permission, [boolean, boolean, boolean, boolean]> = {
   "survey:read": [true, false, true, true],
   "survey:write": [true, false, true, false],
   "campaign:send": [true, false, true, false],
+  "product:read": [true, true, true, true],
+  "product:write": [true, true, true, false],
+  "product:publish": [true, true, true, false],
+  "product:import": [true, true, true, false],
+  "order:fulfill": [true, false, true, false],
+  "order:export": [true, false, true, false],
 };
 
 const COLUMNS: readonly Role[] = ["super_admin", "content_editor", "coordinator", "auditor"];
