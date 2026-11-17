@@ -498,8 +498,7 @@ File `.zip` được giải nén **ngay trong trình duyệt** (cần thư việ
 `GET shop/admin/orders?status&q&cursor` · `GET shop/admin/orders/:id` · `POST .../:id/confirm|pack|ship|deliver|complete|cancel|return|mark-cod-paid|resend-email` · `POST .../:id/refund` (step-up)
 `GET shop/admin/overview` · `GET|POST shop/admin/reviews[/:id/publish|hide]`
 
-**Permission mới** (đề xuất, cập nhật `docs/01` §4.4, `docs/02` §9.3, ma trận test):
-`shop:read`, `shop:write` (sản phẩm, danh mục, thương hiệu, tồn kho, cài đặt), `shop:publish`, `shop:import`, `shop_order:read`, `shop_order:fulfill`, `shop_order:export`, dùng lại `order:refund`, `voucher:write`, `impact:approve`. Gán vai trò: Q-S12.
+**Permission (đã ghi vào `docs/01` §4.4, `docs/02` §9.3, ADR-0028):** `product:read`, `product:write` (sản phẩm, biến thể, ảnh, danh mục, thương hiệu, tồn kho, cài đặt), `product:publish`, `product:import`; đơn hàng dùng chung tài nguyên `order` với đơn vé: `order:read`, `order:refund` (đã có) + `order:fulfill`, `order:export` (mới). Dùng lại `voucher:write`, `impact:approve`. Gán vai trò: Super Admin tất cả; Content Editor `product:*`; Coordinator `product:*` + `order:*` (giống quyền với đơn vé hiện nay); Auditor `product:read` + `order:read`.
 
 ---
 
@@ -542,7 +541,7 @@ Component: `ImageManager`, `VariantMatrix` (sinh tổ hợp từ tuỳ chọn, s
 
 | GĐ | Nội dung | Tiêu chí hoàn thành |
 |---|---|---|
-| **S0 Quyết định & tài liệu** | Trả lời §12; ADR-0028 (Shop trong program-service, `payment_refs`); sửa BR-10, thêm BR-20…25, UC mới ở `docs/01`; collection ở `docs/03`; permission; `docs/04` cấu trúc; quyền Atlas. Chỉ tài liệu. | Đội duyệt; không mâu thuẫn giữa `01`–`04` và CLAUDE.md. |
+| **S0 Quyết định & tài liệu** (xong 17/11/2026, chờ duyệt) | Trả lời §12; ADR-0028 (Shop trong program-service, `payment_refs`); sửa BR-10, thêm BR-20…25, UC mới ở `docs/01`; collection ở `docs/03`; permission; `docs/04` cấu trúc; quyền Atlas. Chỉ tài liệu. | Đội duyệt; không mâu thuẫn giữa `01`–`04` và CLAUDE.md. |
 | **S1 Danh mục & sản phẩm (admin)** | `shared/shop` schema; module `shop-catalog` (categories, brands, products, variants, publish, BR-20); media `product_image`; `ImageManager` kéo thả; `Toast`, `Skeleton`, `ProductImage` ở `@lavieco/ui`; trang admin products/categories/brands; điều chỉnh tồn kho + `stock_movements`. | Tạo sản phẩm 2 biến thể, 5 ảnh sắp xếp/đại diện/gắn biến thể/alt, xuất bản chỉ khi đủ BR-20; test domain xuất bản, phân quyền, không lộ nháp; dùng được trên 390 px; lint/typecheck/test/build xanh. |
 | **S2 Import / xuất sản phẩm** | `shop-imports`, file mẫu, wizard, ảnh hàng loạt, báo cáo lỗi, xuất sản phẩm. | Import 200 dòng có lỗi trộn: báo đúng dòng/cột; sửa tại chỗ; commit bị ngắt giữa chừng rồi chạy lại không trùng; xuất → import cập nhật ra cùng dữ liệu; test tích hợp Mongo thật. |
 | **S3 Cửa hàng công khai** | `/cua-hang`, chi tiết, lọc, SEO, cache tag + revalidate, nav. | Lighthouse mobile ≥90 hiệu năng/≥95 truy cập trên trang chi tiết; đọc được khi tắt JS (trừ chọn biến thể); test hợp đồng không lộ trường admin (`commissionRate`, `held`). |
@@ -570,7 +569,7 @@ Component: `ImageManager`, `VariantMatrix` (sinh tổ hợp từ tuỳ chọn, s
 | **Q-S9** | Quan hệ "tác phẩm" (`works`, content-service, chưa làm) và "sản phẩm": gộp làm một (sản phẩm là nguồn duy nhất, QR trỏ trang sản phẩm), hay giữ hai? | Gộp: không làm `works` riêng; QR trỏ sản phẩm làm ở giai đoạn sau với ADR. |
 | **Q-S10** | Gói quà/thiệp viết tay, combo quà tặng: bán như sản phẩm thường (combo là một SKU) hay tuỳ chọn thêm trong giỏ? | Combo = sản phẩm riêng; không có tuỳ chọn gói quà ở bản đầu. |
 | **Q-S11** | Số liệu tác động trên từng sản phẩm: ai cung cấp nguồn? Có giữ không? | Có trường, mặc định ẩn tới khi Super Admin duyệt (BR-09). |
-| **Q-S12** | Vai trò nào được quản lý sản phẩm / xử lý đơn / xuất đơn / hoàn tiền? Có cần vai trò mới (ví dụ "Vận hành cửa hàng") không? | `coordinator`: sản phẩm + đơn; `content_editor`: sản phẩm (không đơn); `super_admin`: tất cả; hoàn tiền + xuất đơn: `super_admin`. |
+| Q-S12 | Vai trò nào được quản lý sản phẩm / xử lý đơn / xuất đơn / hoàn tiền? | **Áp dụng ở S0 (có thể đổi):** như §9: Coordinator xử lý, hoàn tiền và xuất đơn giống quyền đơn vé hiện nay; Content Editor chỉ sản phẩm. Không thêm vai trò mới. |
 | **Q-S13** | Member có sổ địa chỉ không (thêm PII vào identity hay program)? | Không; điền lại từ đơn gần nhất của chính member. |
 | **Q-S14** | Gộp tra cứu vé và tra cứu đơn thành một trang + một purpose OTP? | Gộp: `/tra-cuu` (giữ `/tra-cuu-ve` chuyển hướng), purpose `order_lookup` thay `ticket_lookup` theo mẫu mở rộng → co lại. |
 | **Q-S15** | Có cần lịch sử tồn kho chi tiết đến từng lần giữ/nhả, hay chỉ nhập/điều chỉnh/bán/trả? | Chỉ nhập/điều chỉnh/bán/trả. |
@@ -596,5 +595,6 @@ Component: `ImageManager`, `VariantMatrix` (sinh tổ hợp từ tuỳ chọn, s
 
 | Phiên bản | Ngày | Nội dung | Thực hiện |
 |---|---|---|---|
+| v0.3 | 17/11/2026 | S0: ADR-0028, `docs/01` (BR-10 sửa, BR-20 → 25, UC-35 → 40, ma trận), `docs/02` (§4, §9.3, AR2), `docs/03` §9.3, `docs/04`, `CLAUDE.md`; permission đổi tên thành `product:*` + `order:fulfill|export` | Claude (chờ duyệt) |
 | v0.2 | 17/11/2026 | Chốt Q-S1 (giá cố định, sửa BR-10), Q-S2 lùi sau khi xong chức năng; viết lại §8.2 (ảnh đi kèm file Excel); export dùng bộ ghi Excel chung | Claude (chờ duyệt) |
 | v0.1 | 17/11/2026 | Bản đề xuất đầu: khảo sát, đối chiếu thiết kế, dữ liệu, API, import, giai đoạn, câu hỏi | Claude (chờ duyệt) |

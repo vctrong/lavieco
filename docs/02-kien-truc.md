@@ -170,8 +170,8 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 | **identity-service** | Ai là ai, được làm gì, đã làm gì | `auth` (staff 2 bước, member, Google), `users`, `invitations`, `sessions`, `otp`, `security`, `signing-keys`, `audit`, `outbox` | Người dùng (staff, member), phiên/refresh token, lời mời, mã OTP, bộ đếm giới hạn tần suất, nhật ký hoạt động. GĐ2+: liên kết Partner/Supplier | 1 |
 | **content-service** | Mọi thứ được **xuất bản** cho công chúng | `handbook`, `catalog` (tác phẩm, nhóm, story card), `qr`, `programs-public` (mô tả chương trình), `pages` (Trang chủ, Câu chuyện, Tác động, Hợp tác; **Đội ngũ là dữ liệu tĩnh trong `web`**, không thuộc CMS), `site-settings`, `media`, `consent`, `outbox` | Chương/trang cẩm nang, tác phẩm, story card, mã QR + số lượt quét theo ngày, mô tả chương trình, trang tĩnh, cấu hình site, metadata media, nội dung đồng ý (bất biến), outbox | 1 |
 | **lead-service** | Mọi **liên hệ đến** từ bên ngoài | `leads`, `gift-requests`, `waitlist`, `internal-notes`, `outbox`, `idempotency` | Lead, lịch sử trạng thái, ghi chú nội bộ, yêu cầu quà tặng, người đăng ký nhận tin, bản ghi đồng ý, outbox | 1 |
-| **program-service** | Chương trình **vận hành**: sự kiện, vé, check-in (GĐ1); lịch, buổi học, **số liệu tác động** (GĐ2) | GĐ1: `events`, `event-types`, `ticketing`, `orders`, `tickets`, `checkin`, `registrations`, `payments`, `outbox`, `idempotency`, `jobs`. GĐ2: `sessions`, `impact` | Sự kiện, loại vé, đơn, vé, câu trả lời form, sự kiện thanh toán; GĐ2: buổi học, số liệu tác động | 1 (ADR-014) |
-| **order-service** | Đơn hàng combo B2B: báo giá, xác nhận, giao nhận, thanh toán | `orders`, `quotes`, `payments` (tách `payments` khỏi `program-service` khi cần dùng chung, ADR-015) | Đơn hàng, báo giá, giao dịch thanh toán | 2 |
+| **program-service** | Chương trình **vận hành**: sự kiện, vé, check-in (GĐ1); **Cửa hàng**: sản phẩm, tồn kho, giỏ, đơn hàng (ADR-0028); lịch, buổi học, **số liệu tác động** (GĐ2) | GĐ1: `events`, `event-types`, `ticketing`, `orders`, `tickets`, `checkin`, `registrations`, `payments`, `outbox`, `idempotency`, `jobs`. Cửa hàng: `shop-catalog`, `shop-inventory`, `shop-carts`, `shop-orders`, `shop-imports`, `shop-reviews`. GĐ2: `sessions`, `impact` | Sự kiện, loại vé, đơn, vé, câu trả lời form, sự kiện thanh toán; sản phẩm, biến thể, tồn kho, giỏ, đơn hàng, đánh giá; GĐ2: buổi học, số liệu tác động | 1 (ADR-014) |
+| **order-service** | *(Lùi lại, ADR-0028: bán lẻ nằm trong `program-service`)* Đơn hàng combo B2B: báo giá, xác nhận, giao nhận, thanh toán | `orders`, `quotes`, `payments` (tách `payments` khỏi `program-service` khi cần dùng chung, ADR-015) | Đơn hàng, báo giá, giao dịch thanh toán | 2 |
 | **notification-service** | Gửi thông báo đa kênh (email, Zalo) theo sự kiện | `templates`, `channels`, `deliveries` | Mẫu thông báo, lịch sử gửi, tùy chọn nhận | 2 |
 | **rewards-service** | Điểm thưởng, mở khóa nội dung freemium | `points`, `entitlements` | Số dư, giao dịch điểm, quyền truy cập | 3 |
 | **collection-service** | Nhà cung ứng, lịch thu gom, khối lượng vỏ hải sản | `suppliers`, `pickups`, `volumes` | Nhà cung ứng, lịch thu gom, khối lượng | 3 |
@@ -188,10 +188,10 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 | Module (01) | Thành phần sở hữu | Ghi chú |
 |---|---|---|
 | M1 Cẩm nang xanh số | `content-service` (`handbook`, `qr`) | Ghi chú/đánh dấu lưu trên **thiết bị** ở GĐ1; GĐ2 đồng bộ qua collection `reader_states` **của `content-service`** (`03` §9.1) |
-| M2 Bộ sưu tập & sản phẩm | `content-service` (`catalog`) | |
+| M2 Bộ sưu tập & sản phẩm | `program-service` (`shop-*`, ADR-0028) | Sản phẩm bán, biến thể, tồn kho, giỏ, đơn, import. `content-service` `catalog` không dựng cho sản phẩm bán |
 | M3 Hợp tác & lead | `lead-service` | |
 | M4 Chương trình giáo dục | `content-service` (mô tả) + `program-service` (sự kiện, vé, check-in: GĐ1; lịch, buổi học: GĐ2) | ADR-014 |
-| M5 Yêu cầu quà & đơn hàng | `lead-service` (yêu cầu, GĐ1) → `order-service` (đơn, GĐ2) | Yêu cầu quà tặng luôn gắn với một lead |
+| M5 Yêu cầu quà & đơn hàng | `lead-service` (yêu cầu quà, đơn B2B) · đơn bán lẻ ở `program-service` `shop-orders` (ADR-0028) | Yêu cầu quà tặng luôn gắn với một lead |
 | M6 Tác động & báo cáo ESG | `program-service` (`impact`, GĐ2) → service riêng (GĐ3) | |
 | M7 Tài khoản & phân quyền | `identity-service` | Admin và Member GĐ1 (ADR-016), Partner GĐ2, Supplier GĐ3 |
 | M8 Thu gom nguyên liệu | `collection-service` | GĐ3 |
@@ -546,6 +546,12 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `registration:export` (xuất Excel người đăng ký, step-up + audit) | ✓ | — | ✓ | — |
 | `checkin:perform` (quét check-in tại cửa) | ✓ | — | ✓ | — |
 | `impact:approve` (công bố số liệu tác động, vd. số người tham gia nhập tay của sự kiện lưu trữ, BR-09) | ✓ | — | — | — |
+| `product:read` (sản phẩm, danh mục, thương hiệu, tồn kho; cả bản nháp) | ✓ | ✓ | ✓ | ✓ |
+| `product:write` (tạo/sửa sản phẩm, biến thể, ảnh, danh mục, thương hiệu, điều chỉnh tồn kho, cài đặt cửa hàng) | ✓ | ✓ | ✓ | — |
+| `product:publish` (xuất bản/ẩn/lưu trữ sản phẩm, BR-20) | ✓ | ✓ | ✓ | — |
+| `product:import` (import Excel hàng loạt) | ✓ | ✓ | ✓ | — |
+| `order:fulfill` (xác nhận COD, đóng gói, giao, huỷ đơn cửa hàng, duyệt đánh giá) | ✓ | — | ✓ | — |
+| `order:export` (xuất Excel đơn cửa hàng, step-up + audit) | ✓ | — | ✓ | — |
 
 (*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014); "Huỷ chương trình" dùng `program:write` + step-up + audit (22/10/2026). `impact:approve` có sớm từ GĐ1 (22/10/2026) cho số người tham gia của sự kiện lưu trữ; các permission GĐ2+ khác (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cho nội dung (cẩm nang, tác phẩm) cần `content:write`, tải ảnh chương trình cần `program:write`, avatar do chính member tải (`@RequireMember`, ADR-020); sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
 
@@ -703,7 +709,7 @@ Tách hoặc thêm khi thỏa **ít nhất một** điều kiện và đã thử
 | GĐ | Thành phần triển khai | Thêm so với GĐ trước |
 |---|---|---|
 | **1** | `web`, `admin`, `identity`, `content`, `lead`, `program` (sự kiện, vé, payOS; ADR-014); Member trong `identity` | (khởi đầu) |
-| **2** | + `impact` trong `program-service`, `order-service`, `notification-service`, message broker, API Gateway *(nếu đủ điều kiện)*; Partner trong `identity` | Thương mại hóa giáo dục, đơn B2B, thông báo đa kênh |
+| **2** | + `impact` trong `program-service`, `order-service` *(lùi lại: bán lẻ đã ở `program-service`, ADR-0028)*, `notification-service`, message broker, API Gateway *(nếu đủ điều kiện)*; Partner trong `identity` | Thương mại hóa giáo dục, đơn B2B, thông báo đa kênh |
 | **3** | + `rewards-service`, `collection-service`, tách `impact`, client ứng dụng cộng đồng; Supplier trong `identity` | Hệ sinh thái cộng đồng, thu gom |
 
 ### 14.3 Đích đến (GĐ3)
@@ -812,7 +818,7 @@ Mỗi quyết định lớn viết một tệp ngắn trong `docs/adr/`, trạng
 | Mã | Giả định |
 |---|---|
 | **AR1** | Lưu lượng GĐ1 thấp/trung bình (thí điểm tại Cần Thơ); một máy chủ đủ đáp ứng. Cần đo để xác nhận. |
-| **AR2** | Thanh toán online ở GĐ1 chỉ cho vé chương trình, qua payOS/VietQR (ADR-015). LAVIECO không lưu dữ liệu thẻ; `payment_events` chỉ lưu trường cần đối soát. |
+| **AR2** | Thanh toán online cho vé chương trình và đơn Cửa hàng, qua cùng một tài khoản payOS/VietQR (ADR-015, ADR-0028; `payment_refs` định tuyến webhook). LAVIECO không lưu dữ liệu thẻ; `payment_events` chỉ lưu trường cần đối soát. |
 | **AR5** | MongoDB: một cụm Atlas (Singapore, replica set) chứa 4 database logic (`lavieco_identity`, `_content`, `_lead`, `_program`); mỗi service một user DB chỉ có quyền trên database của mình. Local: replica set một nút trong compose. |
 | **AR3** | Các câu hỏi mở Q1–Q9 ở `01` **không thay đổi ranh giới service**, chỉ ảnh hưởng chi tiết nội bộ (ví dụ Q4 ảnh hưởng danh mục nhóm đối tác trong `lead-service`). |
 | **AR4** | Đội có thể quản lý được tên miền lâu dài và tài khoản Cloudflare dưới danh nghĩa của LAVIECO (không gắn cá nhân). |
@@ -857,6 +863,7 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 | v0.4 | 17/10/2026 | Phân hệ Chương trình vào GĐ1: 6 thành phần, `program-service` (ADR-014), payOS (ADR-015), Member + Google + OTP (ADR-016), service token theo bên gọi (ADR-018), 6 permission mới, AQ5 chốt, AR2/AR5 | V.C. Trọng |
 | v0.5 | 18/10/2026 | Phase 2: luồng làm mới cache service → `web/api/revalidate` (HMAC, qua outbox); chính sách nhúng trang, ngoại lệ xem trước sự kiện cho origin `admin`; `program` trong vùng mạng riêng | V.C. Trọng |
 | v0.6 | 18/10/2026 | Phase 2b: §8.2 ảnh tải lên bằng Cloudinary (ADR-020) thay object storage S3/MinIO, không lưu ảnh QR, bản chụp ánh xạ QR chờ chọn nơi lưu; §8.3, §6.4; §12.1 tách dev khỏi database production; quyền tải ảnh chương trình/avatar; AQ4 chấp nhận ảnh ngoài nước ở GĐ1 | V.C. Trọng |
+| v0.8 | 17/11/2026 | Cửa hàng trong `program-service` (ADR-0028): `order-service` lùi lại, M2 chuyển sang `shop-*`, `payment_refs` cho một webhook payOS, 6 permission mới (`product:*`, `order:fulfill`, `order:export`); `order:read`/`order:refund` dùng cho cả đơn vé và đơn cửa hàng | V.C. Trọng |
 | v0.7 | 17/11/2026 | Admin PWA: phiên staff trượt 72 giờ; thông báo đẩy cho staff qua identity (ADR-0027), service worker chỉ cache tệp tĩnh | V.C. Trọng |
 ## Phụ lục: luồng gửi email hàng loạt (ADR-0026)
 

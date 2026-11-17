@@ -788,6 +788,31 @@ Quy tắc dữ liệu:
 
 **Lưu giữ (DQ8, 8.1).** Thiết kế schema sao cho PII (khối `buyer`, `order_answers`, ghi chú) **tách khỏi** trường tài chính. Job ẩn danh chỉ cần xóa/ghi đè các trường PII: đặt `buyer`, `note` và `order_answers` của đơn về giá trị ẩn danh, thêm `anonymizedAt` (`TODO(dq8-anonymize)`, hoãn theo quyết định 6 của kế hoạch Phase 3; lần chạy đầu sớm nhất 24 tháng sau sự kiện đầu tiên). `orderCode`, `amount`, `paidAt`, mã đối soát, trạng thái hoàn tiền giữ ≥ 10 năm. Mốc tính 24 tháng là `endAt` của sự kiện. Job làm ở phase có đơn hàng.
 
+### 9.3 Cửa hàng trong `lavieco_program` (ADR-0028)
+
+Chi tiết trường ở `08-cua-hang-ke-hoach.md` §4; bảng dưới là phần chốt. Quy ước chung như §1.2 (`revision`, `schemaVersion`, tiền VND số nguyên, `LocalizedText`, xoá mềm).
+
+| Collection | Nội dung chính | Index |
+|---|---|---|
+| `product_categories` | `key` (bất biến), `name`, `sortOrder`, `archivedAt`. Seed: `phu-kien-vo-nguyen-ban`, `gom-bot-vo-so`, `combo-qua-tang-xanh`, `doi-tac-xanh` | `idx_product_categories_key_uq`, `idx_product_categories_sort_order` |
+| `partner_brands` | `slug`, `name`, `story`, `logo` (bản chụp media), `website`, `commissionRate` (phần nghìn, chỉ admin), `active`, `archivedAt`. Không lưu liên hệ cá nhân | `idx_partner_brands_slug_uq` |
+| `products` | `slug` (+ `slugHistory` ≤20), `title`, `summary`, `categoryId`, `partnerBrandId`, `story { message, story, lesson }`, `handbookLink` (bản chụp chương), `materials`, `care`, `impact { items ≤6, status, approvedBy, approvedAt }`, `options` (≤3, mỗi cái ≤20 giá trị), `images` (≤10, bản chụp media + `alt` + `variantKeys`), `coverMediaId`, `priceMin`/`priceMax`, `status` (`draft`·`published`·`hidden`·`archived`), `live`, `seo`, `badges`, `sortOrder`, `search.key`, `publishedAt` | `idx_products_slug_uq`, `idx_products_live_category_id_sort_order`, `idx_products_live_price_min`, `idx_products_partner_brand_id`, `idx_products_search_key` |
+| `product_variants` | `productId`, `sku` (unique), `optionKey` (chuỗi chuẩn hoá của tổ hợp), `optionValues`, `price`, `compareAtPrice`, `stock { onHand, held, sold }`, `lowStockThreshold`, `weightGrams`, `status` (`active`·`archived`), `sortOrder` | `idx_product_variants_sku_uq`, `idx_product_variants_product_id_sort_order`, `idx_product_variants_product_id_option_key_uq` |
+| `stock_movements` | Chỉ thêm: `variantId`, `productId`, `type` (`receive`·`adjust`·`sell`·`return`·`import`), `delta`, `orderId`, `importJobId`, `actor`, `reason`, `at` | `idx_stock_movements_variant_id_at` |
+| `carts` | `owner` (`{ kind: guest, tokenHash }` hoặc `{ kind: member, userId }`), `items` (≤50, chỉ `variantId` + `quantity`, không lưu giá), `expiresAt` (khách 30 ngày, Member 180 ngày) | `idx_carts_owner_token_hash_uq` (partial), `idx_carts_owner_user_id_uq` (partial), TTL `idx_carts_expires_at_ttl` |
+| `shop_orders` | `orderCode` (payOS), `publicCode` (`LVS-` + 6 ký tự Crockford), `userId`, `verificationId`, `buyer` và `shipping` (**PII, tách riêng**), `items` (≤50, bản chụp giá/tên/biến thể/ảnh/hoa hồng), `subtotal`, `discount`, `shippingFee`, `amount`, `paymentMethod` (`payos`·`cod`), `status`, `stockState` (`held`·`committed`·`released`), các mốc thời gian, `tracking`, `statusHistory` (≤100), `consent`, `flags`, `payment`, `anonymizedAt` | `idx_shop_orders_order_code_uq`, `idx_shop_orders_public_code_uq`, `idx_shop_orders_verification_id_uq`, `idx_shop_orders_status_expires_at`, `idx_shop_orders_buyer_email_normalized_created_at`, `idx_shop_orders_user_id_created_at`, `idx_shop_orders_status_created_at` |
+| `payment_refs` | `orderCode` → `{ kind: event·shop, orderId }`; ghi cùng giao dịch tạo đơn; migration điền ngược từ `orders` | `idx_payment_refs_order_code_uq` |
+| `product_reviews` | `productId`, `variantId`, `orderId`, `orderLineSku`, `userId`, `displayName`, `rating` (1–5), `body` (chữ thuần ≤1.000), `status` (`pending`·`published`·`hidden`), `moderatedBy` | `idx_product_reviews_order_id_order_line_sku_uq`, `idx_product_reviews_product_id_status_created_at` |
+| `import_jobs`, `import_job_rows` | Job import: chế độ, tên file, `fileSha256`, trạng thái, bộ đếm, ảnh đã tải; từng dòng: `raw`, `parsed`, `issues`, `action`, `result`. Hết hạn sau 20 giờ (trước khi ảnh `pending` bị dọn) | `idx_import_job_rows_job_id_row_number_uq`, TTL `idx_import_jobs_expires_at_ttl` |
+| `shop_settings` | Một tài liệu: phí giao, mức miễn phí, nhận tại chỗ, `holdMinutes`, COD, ngưỡng sắp hết | — |
+
+Quy tắc dữ liệu:
+
+- **Giữ hàng** (BR-22): `stock.held` chỉ tăng bằng `$inc` có điều kiện `onHand − held ≥ n` trong giao dịch tạo đơn; một biến thể thiếu thì cả giao dịch huỷ. Thanh toán chuyển `held → sold` và trừ `onHand`; hết hạn/huỷ trả `held` bằng update có điều kiện trên `stockState`, nên đua với webhook vẫn chỉ trả một lần.
+- **`orderCode` duy nhất trên cả vé và đơn hàng** nhờ `payment_refs` unique.
+- **Lưu giữ (DQ8)**: như đơn vé; `buyer`, `shipping` là PII (24 tháng sau khi đơn hoàn tất rồi ẩn danh), phần tài chính giữ 10 năm. `TODO(dq8-anonymize)` dùng chung job.
+- Ảnh sản phẩm: `media.purpose = product_image` (≤8 MB), `attachedTo = { kind: product }` (ADR-0020).
+
 ## 10. Vận hành: migration, index, quyền truy cập
 
 ### 10.1 Migration
@@ -813,7 +838,7 @@ Quy tắc dữ liệu:
 | `svc_identity` | `lavieco_identity` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` trên các collection; **riêng `audit_events` chỉ `find` + `insert`**; `push_deliveries` chỉ `find` + `insert` (TTL tự xoá) |
 | `svc_content` | `lavieco_content` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
 | `svc_lead` | `lavieco_lead` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
-| `svc_program` | `lavieco_program` | Vai trò tùy biến: `find`, `insert`, `update`, `remove` |
+| `svc_program` | `lavieco_program` | Vai trò tùy biến: `find`, `insert`, `update`, `remove`; gồm cả collection Cửa hàng (§9.3), **riêng `stock_movements` chỉ `find` + `insert`** |
 | `migrator` | cả bốn | Tạo/sửa index và collection; **chỉ dùng trong pipeline**, thông tin xác thực không nằm ở service chạy |
 | `backup` | cả bốn | Chỉ đọc |
 
@@ -887,4 +912,5 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 | v0.6 | 18/10/2026 | Phase 2b: `media` (5.8) theo ADR-020: Cloudinary, `purpose`, `pending → attached → deleted`, avatar member, không lưu ảnh QR; `events.cover`/`gallery` là bản chụp media; outbox `media.release`, `media.destroy`; bản chụp ánh xạ QR chờ chọn nơi lưu | V.C. Trọng |
 | v0.7 | 22/10/2026 | `events`: `cancelled`, `banner`, `minAge`, `benefits`, `cancellationRules`, `speakers[].bio/avatar`, `agenda[].description`, `attendance`, `cancellation`; `isFree` = mọi vé 0đ; trạng thái hiển thị tính lúc đọc; migration `202610220001-event-page-fields` | V.C. Trọng |
 | v0.3 | 20/09/2026 | Bỏ khóa `team` và khối `team_members` khỏi `pages` (Đội ngũ là dữ liệu tĩnh); ghi chú ranh giới `media` và `public/` | V.C. Trọng |
+| v0.9 | 17/11/2026 | Cửa hàng (ADR-0028): §9.3 collection `product_categories`, `partner_brands`, `products`, `product_variants`, `stock_movements`, `carts`, `shop_orders`, `payment_refs`, `product_reviews`, `import_jobs`, `import_job_rows`, `shop_settings`; quyền `svc_program` | V.C. Trọng |
 | v0.8 | 17/11/2026 | Thông báo đẩy cho staff (ADR-0027): `push_subscriptions`, `push_preferences`, `push_deliveries` ở `lavieco_identity` (4.4c, migration `202611170001-push`); `events.seatAlerts` | V.C. Trọng |

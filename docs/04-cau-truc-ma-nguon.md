@@ -477,7 +477,7 @@ apps/admin/src/
 │       ├── layout.tsx               # requireStaff() + AdminShell (khung gộp chung)
 │       ├── page.tsx                 # tổng quan
 │       ├── events/  orders/  checkin/   # phân hệ Chương trình (Phase 2 → 6); UI ghi "Chương trình"
-│       ├── shop/                    # chỗ giữ "Sắp ra mắt" cho Shop
+│       ├── shop/                    # Cửa hàng (ADR-0028): tổng quan, products/ (+ import/), categories/, brands/, orders/, packing/ (mobile), reviews/, settings/
 │       ├── more/                    # tab "Thêm" trên điện thoại: toàn bộ điều hướng + tài khoản
 │       ├── notifications/           # bật/tắt thông báo đẩy trên máy này, chọn chủ đề (ADR-0027)
 │       │   # events/: danh sách, new/, [id]/ (soạn), [id]/preview/ (Route Handler chuyển hướng sang web), types/ (loại chương trình)
@@ -592,7 +592,7 @@ flowchart LR
 | Service | Module (`src/modules/`) |
 |---|---|
 | `identity-service` | `auth` (staff 2 bước, member, Google) · `users` · `invitations` · `sessions` · `otp` · `security` · `signing-keys` · `audit` · `outbox` (đã dựng, Phase 1) |
-| `program-service` | `events` · `event-types` · `ticketing` · `outbox` (đã dựng, Phase 2) · `orders` · `tickets` · `checkin` · `registrations` · `payments` · `idempotency` · `jobs` (Phase 3 → 6, ADR-014). Use case loại vé nằm ở `events` (chủ sở hữu sự kiện); `ticketing` giữ repository và quy tắc chỗ ngồi |
+| `program-service` | `events` · `event-types` · `ticketing` · `outbox` (đã dựng, Phase 2) · `orders` · `tickets` · `checkin` · `registrations` · `payments` · `idempotency` · `jobs` (Phase 3 → 6, ADR-014). Use case loại vé nằm ở `events` (chủ sở hữu sự kiện); `ticketing` giữ repository và quy tắc chỗ ngồi. **Cửa hàng** (ADR-0028): `shop-catalog` · `shop-inventory` · `shop-carts` · `shop-orders` · `shop-imports` · `shop-reviews`; `payments` định tuyến webhook qua `payment_refs` |
 | `content-service` | `handbook` · `catalog` (tác phẩm, nhóm, story card) · `qr` · `programs-public` · `pages` · `site-settings` · `media` · `consent` · `outbox` |
 | `lead-service` | `leads` · `gift-requests` · `waitlist` · `internal-notes` · `idempotency` · `outbox` |
 
@@ -1024,5 +1024,6 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.9 | 22/10/2026 | Trang Chương trình làm lại: `features/events` tách thành thẻ, bộ lọc (client, URL), các section và thẻ vé (client); danh sách ở route group `(danh-sach)` để `loading.tsx` không bao trang con; `[slug]/lich/route.ts` (.ics); checkout nhận `?ve=&sl=`; huỷ chương trình và số người tham gia nằm ở module `orders` của `program-service` (theo hướng phụ thuộc `orders → events`); ngoại lệ JSON-LD; token `emerald-ink`, thang chữ, `rounded-pedestal` | V.C. Trọng |
 | v0.10 | 22/10/2026 | Báo lỗi form chung cho web và admin (§5.5): `useFormErrors` + `FormErrorNote`… ở `@lavieco/ui` (không còn hộp tóm tắt ở đầu form), `callAction`/`guarded` thay `.catch(() => null)`, mã tham chiếu cho lỗi 5xx, Turnstile reset sau mỗi lần gửi; token `error`/`error-on-dark` (C5). |
 | v0.6 | 18/10/2026 | Phase 2 xong: bản đồ route `web` (`events`, xem trước, `/api/revalidate`) và `admin` (`/events/*`, loại chương trình ở `/events/types`), module `program-service` đã dựng, trạng thái lộ trình và Phase 2b (`media` bắt buộc trước khi mở cho người dùng thật), các điều chỉnh khi duyệt kế hoạch | V.C. Trọng |
+| v0.13 | 17/11/2026 | Cửa hàng (ADR-0028): module `shop-*` của `program-service`, route admin `/shop/*`, ảnh sản phẩm không dùng khung vòm (`arch-frame`), khung bo góc 1:1/4:5 | V.C. Trọng |
 | v0.12 | 17/11/2026 | Xuất Excel có định dạng chung (`ExcelWorkbookWriter` nhận `Workbook` có kiểu cột: số, tiền VND, ngày giờ Việt Nam, mã giữ nguyên, trạng thái tô màu; tiêu đề Deep Blue + bộ lọc, cố định dòng đầu và 2 cột đầu, dòng xen màu, sheet "Tổng quan"); bản sao token `sheet-tokens.ts` | V.C. Trọng |
 | v0.11 | 17/11/2026 | Admin PWA (ADR-0027): `features/pwa`, `public/sw.js`, khung mobile có thanh tab, `/shop`, `/more`, `/notifications`, ngoại lệ hex cho manifest; identity module `push`, program-service module `staff-alerts` | V.C. Trọng |
