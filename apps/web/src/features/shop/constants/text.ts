@@ -16,6 +16,7 @@ export const TEXT = {
       all: "Tất cả",
       filters: "Lọc theo danh mục",
       sort: "Sắp xếp",
+      count: (n: number, more: boolean) => (more ? `Hơn ${n} sản phẩm` : `${n} sản phẩm`),
       sorts: {
         featured: "Nổi bật",
         newest: "Mới nhất",
