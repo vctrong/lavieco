@@ -34,5 +34,9 @@ export {
 export { useFormDraft, type DraftOffer, type DraftStatus } from "./drafts/use-form-draft";
 export { DraftOfferBanner, DraftStatusLine, type DraftText } from "./drafts/draft-notice";
 export { Skeleton } from "./components/skeleton";
-export { ProductFrame, type ProductFrameRatio } from "./components/product-frame";
+export {
+  ProductFrame,
+  productFrameRatioOf,
+  type ProductFrameRatio,
+} from "./components/product-frame";
 export { ToastProvider, useToast, type ToastInput, type ToastTone } from "./components/toast";
