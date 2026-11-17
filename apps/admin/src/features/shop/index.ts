@@ -1,5 +1,7 @@
 export { BrandsPage, CategoriesPage, ShopSettingsPage } from "./components/catalog-pages";
 export { ImportWizard } from "./components/import-wizard";
+export { OrderDetail } from "./components/order-detail";
+export { OrdersListPage } from "./components/orders-list-page";
 export { ProductEditor } from "./components/product-editor";
 export { ProductsListPage } from "./components/products-list-page";
 export { ShopOverview } from "./components/shop-overview";
@@ -13,3 +15,9 @@ export {
   loadShopSettings,
 } from "./server/shop";
 export { handleImportUpload, handleShopDownload } from "./server/import";
+export {
+  handleShopOrdersExport,
+  loadShopOrder,
+  loadShopOrders,
+  loadShopOverview,
+} from "./server/orders";

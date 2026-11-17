@@ -79,6 +79,9 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, ShopFailure>> = {
   "import.file_invalid": "file_invalid",
   "import.has_errors": "has_errors",
   "import.locked": "conflict",
+  "shop_order.invalid_action": "conflict",
+  "auth.mfa_code_invalid": "code_invalid",
+  "auth.step_up_required": "code_invalid",
 };
 
 /** Runs a write with the staff token; program-service checks `product:*` itself. */

@@ -132,6 +132,8 @@ export interface ProductRepository {
   variantsOf(productIds: readonly string[]): Promise<Map<string, VariantRecord[]>>;
   findVariant(id: string): Promise<VariantRecord | null>;
   findVariantsBySku(skus: readonly string[]): Promise<VariantRecord[]>;
+  findVariants(ids: readonly string[]): Promise<VariantRecord[]>;
+  findByIds(ids: readonly string[]): Promise<ProductRecord[]>;
   /** Inserts new variants (with their opening stock) and updates the given fields of the others. */
   writeVariants(
     productId: string,
@@ -150,6 +152,16 @@ export interface ProductRepository {
     tx: TxContext,
   ): Promise<{ variant: VariantRecord; delta: number } | null>;
   insertMovement(movement: Omit<StockMovementRecord, "id">, tx: TxContext): Promise<void>;
+  /** BR-22: `held += n` only if `onHand - held >= n`. */
+  reserveStock(variantId: string, quantity: number, tx: TxContext): Promise<boolean>;
+  /** Paid or confirmed: `held -= n`, `onHand -= n`, `sold += n`. */
+  commitStock(variantId: string, quantity: number, tx: TxContext): Promise<void>;
+  /** Expired or cancelled before commit: `held -= n`. */
+  releaseStock(variantId: string, quantity: number, tx: TxContext): Promise<void>;
+  /** Cancelled or returned after commit, back on the shelf: `onHand += n`, `sold -= n`. */
+  restock(variantId: string, quantity: number, tx: TxContext): Promise<void>;
+  /** A late payment for released goods: take them again if still there (`onHand -= n`). */
+  takeAgain(variantId: string, quantity: number, tx: TxContext): Promise<boolean>;
   listMovements(variantId: string, limit: number): Promise<StockMovementRecord[]>;
 }
 

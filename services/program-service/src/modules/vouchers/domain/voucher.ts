@@ -113,6 +113,7 @@ export const isLive = (voucher: VoucherRecord, now: Date) =>
 
 export function appliesToEvent(voucher: VoucherRecord, eventId: string, eventTypeId: string) {
   if (voucher.scope === "event") return voucher.eventId === eventId;
+  if (voucher.scope === "shop" || voucher.discountType === "free_shipping") return false;
   if (voucher.excludedEventIds.includes(eventId)) return false;
   return voucher.eventTypeIds.length === 0 || voucher.eventTypeIds.includes(eventTypeId);
 }
@@ -161,6 +162,43 @@ export function quoteVoucher(voucher: VoucherRecord, context: VoucherContext): n
   const seats = covered.reduce((sum, line) => sum + line.quantity * line.seatsPerUnit, 0);
   if (seats < voucher.minSeats || base < voucher.minSubtotal) refuse();
   const discount = discountOf(voucher, base);
+  if (discount <= 0) refuse();
+  return discount;
+}
+
+export type ShopVoucherContext = {
+  subtotal: number;
+  items: number;
+  shippingFee: number;
+  email: string | null;
+  userId: string | null;
+  paidOrders: number;
+  now: Date;
+};
+
+/**
+ * The discount on a shop order (ADR-0028): `global` and `shop` vouchers only; `minSeats`
+ * reads as a minimum number of items. `free_shipping` takes the delivery fee off, up to
+ * `value`. Same single generic refusal as tickets (BR-18).
+ */
+export function quoteShopVoucher(voucher: VoucherRecord, context: ShopVoucherContext): number {
+  if (!isLive(voucher, context.now)) refuse();
+  if (voucher.scope === "event") refuse();
+  const eligibility: VoucherContext = {
+    eventId: "",
+    eventTypeId: "",
+    lines: [],
+    email: context.email,
+    userId: context.userId,
+    paidOrders: context.paidOrders,
+    now: context.now,
+  };
+  if (!isEligible(voucher, eligibility)) refuse();
+  if (context.items < voucher.minSeats || context.subtotal < voucher.minSubtotal) refuse();
+  const discount =
+    voucher.discountType === "free_shipping"
+      ? Math.min(context.shippingFee, voucher.value)
+      : discountOf(voucher, context.subtotal);
   if (discount <= 0) refuse();
   return discount;
 }

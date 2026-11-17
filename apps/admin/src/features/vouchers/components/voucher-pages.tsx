@@ -18,9 +18,11 @@ const t = TEXT.vi;
 const money = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" });
 
 function discountText(voucher: Pick<VoucherView, "discountType" | "value">) {
-  return voucher.discountType === "percent"
-    ? t.summary.percent(voucher.value)
-    : t.summary.fixed(money.format(voucher.value));
+  if (voucher.discountType === "percent") return t.summary.percent(voucher.value);
+  if (voucher.discountType === "free_shipping") {
+    return t.summary.freeShipping(money.format(voucher.value));
+  }
+  return t.summary.fixed(money.format(voucher.value));
 }
 
 function VoucherRow({ voucher }: { voucher: VoucherView }) {

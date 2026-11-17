@@ -6,6 +6,7 @@ import { CTA_HREF } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { AccountButton, AccountMenu, type LogoutAction } from "./account-menu";
 import { BrandLogo } from "./brand-logo";
+import { CartLink } from "./cart-link";
 import { LaviAgentPill } from "./laviagent-link";
 import { MobileDrawer } from "./mobile-drawer";
 import { NavbarShell } from "./navbar-shell";
@@ -46,6 +47,7 @@ export function Navbar({ logoutAction, compact = false }: NavbarProps) {
         <div className="hidden lg:flex lg:items-center">
           <LaviAgentPill />
         </div>
+        <CartLink />
         <span aria-hidden="true" className="hidden h-6 w-px shrink-0 bg-hairline lg:block" />
         <div className="hidden lg:block">
           <AccountMenu logoutAction={logoutAction} />

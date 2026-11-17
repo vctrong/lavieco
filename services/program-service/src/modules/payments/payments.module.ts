@@ -10,6 +10,7 @@ import {
   type OrderSettlementService,
   type PaymentGateway,
 } from "../orders";
+import { SHOP_SETTLEMENT_SERVICE, type ShopSettlementService } from "../shop-orders";
 import { PaymentWebhooksController } from "./api/payment-webhooks.controller";
 import { PayosWebhookService } from "./application/payos-webhook-service";
 import { PayosGateway } from "./infrastructure/payos-gateway";
@@ -38,17 +39,20 @@ export const payosGatewayProvider: Provider = {
 /** payOS webhook (ADR-0015). Settlement itself belongs to the orders module. */
 @Module({})
 export class PaymentsModule {
-  static forRoot(orders: DynamicModule): DynamicModule {
+  static forRoot(orders: DynamicModule, shopOrders: DynamicModule): DynamicModule {
     return {
       module: PaymentsModule,
-      imports: [orders],
+      imports: [orders, shopOrders],
       controllers: [PaymentWebhooksController],
       providers: [
         {
           provide: PAYOS_WEBHOOK_SERVICE,
-          useFactory: (gateway: PaymentGateway, settlement: OrderSettlementService) =>
-            new PayosWebhookService(gateway, settlement),
-          inject: [PAYMENT_GATEWAY, ORDER_SETTLEMENT_SERVICE],
+          useFactory: (
+            gateway: PaymentGateway,
+            settlement: OrderSettlementService,
+            shop: ShopSettlementService,
+          ) => new PayosWebhookService(gateway, settlement, shop),
+          inject: [PAYMENT_GATEWAY, ORDER_SETTLEMENT_SERVICE, SHOP_SETTLEMENT_SERVICE],
         },
       ],
     };

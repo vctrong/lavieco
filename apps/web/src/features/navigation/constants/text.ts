@@ -26,6 +26,7 @@ export const TEXT = {
       /** Full titles in the "Khám phá" panel and drawer; `items.*.label` stays short. */
       exploreTitles: { handbook: "Cẩm nang xanh số", impact: "Tác động cộng đồng" },
     },
+    cart: (n: number) => (n > 0 ? `Giỏ hàng, ${n} sản phẩm` : "Giỏ hàng"),
     account: {
       signIn: "Đăng nhập",
       loading: "Đang tải thông tin tài khoản",

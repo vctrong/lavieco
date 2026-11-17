@@ -22,8 +22,16 @@ export const TEXT = {
       apply: "Lọc",
     },
     status: { active: "Đang chạy", paused: "Tạm dừng", archived: "Đã lưu trữ" },
-    scope: { event: "Theo sự kiện", global: "Toàn app" },
-    discountType: { percent: "Phần trăm", fixed: "Số tiền" },
+    scope: {
+      event: "Theo sự kiện",
+      global: "Toàn app (sự kiện và cửa hàng)",
+      shop: "Chỉ cửa hàng",
+    },
+    discountType: {
+      percent: "Phần trăm",
+      fixed: "Số tiền",
+      free_shipping: "Miễn / giảm phí giao (đ tối đa)",
+    },
     eligibility: {
       everyone: "Mọi người",
       members: "Thành viên đã đăng nhập",
@@ -38,6 +46,7 @@ export const TEXT = {
     summary: {
       percent: (value: number) => `Giảm ${value}%`,
       fixed: (value: string) => `Giảm ${value}`,
+      freeShipping: (value: string) => `Giảm phí giao tới ${value}`,
       uses: (used: number, held: number, total: number | null) =>
         total === null
           ? `Đã dùng ${used} · đang giữ ${held}`

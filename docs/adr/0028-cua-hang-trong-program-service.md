@@ -14,7 +14,7 @@ Ba phương án đã cân nhắc (`docs/08` §3.1): (A) module mới trong `prog
 
 1. **Cửa hàng là nhóm module `shop-*` trong `program-service`**: `shop-catalog` (danh mục, thương hiệu đối tác, sản phẩm, biến thể), `shop-inventory`, `shop-carts`, `shop-orders`, `shop-imports`, `shop-reviews`. Database vẫn là `lavieco_program`.
 2. **Tồn kho đi cùng sản phẩm** trong `program-service`. `content-service` `catalog`/`works` không dựng cho sản phẩm bán; trang sản phẩm mang story card và liên kết Cẩm nang (BR-01, BR-20).
-3. **payOS dùng chung một gateway và một webhook.** Collection `payment_refs` (`orderCode` unique → `{ kind: event | shop, orderId }`) được ghi cùng giao dịch tạo đơn; webhook và đối soát tra bảng này để gọi đúng settlement. Mã `orderCode` duy nhất trên cả hai loại đơn.
+3. **payOS dùng chung một gateway và một webhook.** Mã `orderCode` của đơn hàng nằm ở **dải riêng 11 chữ số** (≥ 10.000.000.000), đơn vé ở dải 10 chữ số: webhook và đối soát nhìn mã là biết gọi settlement nào, không cần bảng `payment_refs` (cập nhật 17/11/2026 khi cài đặt, đơn giản hơn và không cần migration điền ngược).
 4. **Mã giảm giá toàn app**: `vouchers` thêm scope cho cửa hàng; `VoucherLedger` nhận ngữ cảnh tổng quát (sự kiện hoặc giỏ hàng) thay vì gắn cứng `eventId`.
 5. **Sản phẩm tự xuất bản** bởi người có `product:publish` (như BR-17 cho sự kiện), không qua duyệt hai người (BR-05). Số liệu tác động trên sản phẩm vẫn cần `impact:approve` (BR-09, BR-23).
 6. **Permission:** `product:read|write|publish|import`; đơn hàng dùng chung tài nguyên `order`: `order:read`, `order:refund` (đã có) + `order:fulfill`, `order:export` (mới).

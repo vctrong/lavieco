@@ -5,7 +5,9 @@ import {
   appliesToEvent,
   customerKeyOf,
   isLive,
+  quoteShopVoucher,
   quoteVoucher,
+  type ShopVoucherContext,
   type VoucherContext,
   type VoucherRecord,
 } from "../domain/voucher";
@@ -63,6 +65,25 @@ export class VoucherLedger {
     const voucher = await this.vouchers.findByCode(code);
     if (!voucher) throw new DomainError("voucher.invalid");
     const discount = quoteVoucher(voucher, context);
+    if (context.email !== null) {
+      const taken = await this.redemptions.countActive(
+        voucher.id,
+        customerKeyOf({ userId: context.userId, email: context.email }),
+        normalizeEmail(context.email),
+      );
+      if (taken >= voucher.perCustomer) throw new DomainError("voucher.invalid");
+    }
+    if (voucher.totalUses !== null && voucher.used + voucher.held >= voucher.totalUses) {
+      throw new DomainError("voucher.invalid");
+    }
+    return { voucher, discount };
+  }
+
+  /** The discount for a shop order (ADR-0028), or `voucher.invalid`. */
+  async quoteShop(code: string, context: ShopVoucherContext): Promise<VoucherQuote> {
+    const voucher = await this.vouchers.findByCode(code);
+    if (!voucher) throw new DomainError("voucher.invalid");
+    const discount = quoteShopVoucher(voucher, context);
     if (context.email !== null) {
       const taken = await this.redemptions.countActive(
         voucher.id,

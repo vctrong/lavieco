@@ -326,6 +326,26 @@ export class MongoProductRepository implements ProductRepository {
     return doc ? toVariant(doc) : null;
   }
 
+  async findVariants(ids: readonly string[]) {
+    const valid = ids.filter((id) => Types.ObjectId.isValid(id)).map(oid);
+    if (valid.length === 0) return [];
+    const docs = await this.variants
+      .find({ _id: { $in: valid } })
+      .lean<VariantDoc[]>()
+      .exec();
+    return docs.map(toVariant);
+  }
+
+  async findByIds(ids: readonly string[]) {
+    const valid = ids.filter((id) => Types.ObjectId.isValid(id)).map(oid);
+    if (valid.length === 0) return [];
+    const docs = await this.products
+      .find({ _id: { $in: valid } })
+      .lean<ProductDoc[]>()
+      .exec();
+    return docs.map(toProduct);
+  }
+
   async findVariantsBySku(skus: readonly string[]) {
     const docs = await this.variants
       .find({ sku: { $in: [...skus] } })
@@ -424,6 +444,65 @@ export class MongoProductRepository implements ProductRepository {
       ],
       { session: sessionOf(tx) },
     );
+  }
+
+  async reserveStock(variantId: string, quantity: number, tx: TxContext) {
+    const result = await this.variants
+      .updateOne(
+        {
+          _id: oid(variantId),
+          status: "active",
+          $expr: { $gte: [{ $subtract: ["$stock.onHand", "$stock.held"] }, quantity] },
+        },
+        { $inc: { "stock.held": quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+    return result.modifiedCount === 1;
+  }
+
+  async commitStock(variantId: string, quantity: number, tx: TxContext) {
+    await this.variants
+      .updateOne(
+        { _id: oid(variantId) },
+        { $inc: { "stock.held": -quantity, "stock.onHand": -quantity, "stock.sold": quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+  }
+
+  async releaseStock(variantId: string, quantity: number, tx: TxContext) {
+    await this.variants
+      .updateOne(
+        { _id: oid(variantId) },
+        { $inc: { "stock.held": -quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+  }
+
+  async restock(variantId: string, quantity: number, tx: TxContext) {
+    await this.variants
+      .updateOne(
+        { _id: oid(variantId) },
+        { $inc: { "stock.onHand": quantity, "stock.sold": -quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+  }
+
+  async takeAgain(variantId: string, quantity: number, tx: TxContext) {
+    const result = await this.variants
+      .updateOne(
+        {
+          _id: oid(variantId),
+          $expr: { $gte: [{ $subtract: ["$stock.onHand", "$stock.held"] }, quantity] },
+        },
+        { $inc: { "stock.onHand": -quantity, "stock.sold": quantity } },
+        { session: sessionOf(tx) },
+      )
+      .exec();
+    return result.modifiedCount === 1;
   }
 
   async listMovements(variantId: string, limit: number) {
