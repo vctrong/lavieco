@@ -16,6 +16,9 @@ declare global {
   }
 }
 
+/** Name of the hidden input holding the token; forms read it from `FormData` under it. */
+export const TURNSTILE_FIELD = "turnstileToken";
+
 type TurnstileWidgetProps = {
   siteKey: string | null;
   /**
@@ -42,7 +45,7 @@ export function TurnstileWidget({ siteKey, resetSignal = 0 }: TurnstileWidgetPro
     const id = api.render(container, {
       sitekey: siteKey,
       theme: "light",
-      "response-field-name": "turnstileToken",
+      "response-field-name": TURNSTILE_FIELD,
     });
     widgetId.current = id;
     return () => {
