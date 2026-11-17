@@ -186,7 +186,7 @@ export function CheckoutPage({
 
   if (quote && quote.lines.length === 0) {
     return (
-      <Container className="py-14 text-center">
+      <Container className="mt-dock-clearance py-14 text-center">
         <p className="text-charcoal/80">{t.empty}</p>
         <Button as={Link} href="/bo-suu-tap" className="mt-5">
           {TEXT.vi.cart.emptyCta}
@@ -215,7 +215,7 @@ export function CheckoutPage({
   const radio = "flex min-h-11 cursor-pointer items-start gap-3 rounded-2xl border p-4";
 
   return (
-    <Container className="py-10 md:py-14">
+    <Container className="mt-dock-clearance py-10 md:py-14">
       <h1 className="mb-8 font-display text-4xl text-deep-blue">{t.title}</h1>
       <form
         onSubmit={submit}

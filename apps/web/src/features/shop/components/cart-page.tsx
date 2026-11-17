@@ -257,7 +257,7 @@ function CartView({ settings }: { settings: PublicShopSettings | null }) {
 export function CartPage({ settings }: { settings: PublicShopSettings | null }) {
   return (
     <ToastProvider labels={TEXT.vi.toast}>
-      <Container className="py-10 md:py-14">
+      <Container className="mt-dock-clearance py-10 md:py-14">
         <h1 className="mb-8 font-display text-4xl text-deep-blue">{t.title}</h1>
         <CartView settings={settings} />
       </Container>

@@ -97,7 +97,7 @@ export function ShopPaymentPage({
   const minutes =
     left === null ? null : `${Math.floor(left / 60)}:${String(left % 60).padStart(2, "0")}`;
   return (
-    <Container className="py-10 md:py-14">
+    <Container className="mt-dock-clearance py-10 md:py-14">
       <div className="mx-auto max-w-3xl space-y-6">
         <header>
           <p className="text-[12px] font-semibold uppercase tracking-museum text-deep-blue/60">
@@ -198,7 +198,7 @@ export function ShopOrderPage({
 }) {
   const done = order.status !== "cancelled" && order.status !== "expired";
   return (
-    <Container className="py-10 md:py-14">
+    <Container className="mt-dock-clearance py-10 md:py-14">
       <div className="mx-auto max-w-3xl space-y-6">
         <header className="space-y-2">
           {fresh && done ? (
@@ -388,7 +388,7 @@ export function OrderLookupPage() {
   };
 
   return (
-    <Container className="py-10 md:py-14">
+    <Container className="mt-dock-clearance py-10 md:py-14">
       <div className="mx-auto max-w-xl space-y-5">
         <h1 className="font-display text-4xl text-deep-blue">{tl.title}</h1>
         <p className="text-charcoal/80">{tl.intro}</p>

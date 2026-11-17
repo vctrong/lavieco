@@ -49,7 +49,7 @@ export function CollectionPage({
     PUBLIC_PRODUCT_SORTS.map((sort) => [sort, href({ category: filters.category, sort })]),
   ) as Record<PublicProductSort, string>;
   return (
-    <Container className="py-12 md:py-16">
+    <Container className="mt-dock-clearance py-12 md:py-16">
       <header className="mb-8 max-w-2xl">
         <Eyebrow>{t.eyebrow}</Eyebrow>
         <h1 className="mt-3 font-display text-4xl text-deep-blue md:text-5xl">{t.title}</h1>
