@@ -87,7 +87,7 @@ export class ShopCatalogModule {
           inject: [CATALOG_REPOSITORY, PRODUCT_REPOSITORY],
         },
       ],
-      exports: [PRODUCT_REPOSITORY, CATALOG_REPOSITORY, PRODUCT_MEDIA],
+      exports: [PRODUCT_REPOSITORY, CATALOG_REPOSITORY, PRODUCT_MEDIA, PRODUCT_ADMIN_SERVICE],
     };
   }
 }

@@ -1,4 +1,8 @@
 import {
+  importJobSchema,
+  type ImportImagesRequest,
+  type ImportMode,
+  type ImportRemovedImagesRequest,
   partnerBrandListSchema,
   partnerBrandSchema,
   productCategoryListSchema,
@@ -212,6 +216,127 @@ export function shopMethods(http: Http) {
         auth: user(accessToken),
         body,
         schema: shopSettingsSchema,
+        requestId,
+      }),
+
+    // --- admin: bulk import / export (UC-39) ---
+    downloadImportTemplate: (accessToken: string, requestId?: string) =>
+      http.download({
+        path: `${V1}/import/template`,
+        auth: user(accessToken),
+        timeoutMs: 30_000,
+        requestId,
+      }),
+    exportProducts: (accessToken: string, requestId?: string) =>
+      http.download({
+        path: `${V1}/products/export`,
+        auth: user(accessToken),
+        timeoutMs: 60_000,
+        requestId,
+      }),
+    uploadImport: (
+      accessToken: string,
+      file: { bytes: Blob; filename: string },
+      mode: ImportMode,
+      requestId?: string,
+    ) => {
+      const form = new FormData();
+      form.set("mode", mode);
+      form.set("file", file.bytes, file.filename);
+      return http.call({
+        method: "POST",
+        path: `${V1}/import-jobs`,
+        auth: user(accessToken),
+        form,
+        schema: importJobSchema,
+        timeoutMs: 60_000,
+        requestId,
+      });
+    },
+    getImportJob: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/import-jobs/${segment(id)}`,
+        auth: user(accessToken),
+        schema: importJobSchema,
+        requestId,
+      }),
+    updateImportRow: (
+      accessToken: string,
+      id: string,
+      row: number,
+      raw: Record<string, string>,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "PATCH",
+        path: `${V1}/import-jobs/${segment(id)}/rows/${row}`,
+        auth: user(accessToken),
+        body: { raw },
+        schema: importJobSchema,
+        timeoutMs: 30_000,
+        requestId,
+      }),
+    skipImportRow: (
+      accessToken: string,
+      id: string,
+      row: number,
+      skipped: boolean,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/import-jobs/${segment(id)}/rows/${row}/skip`,
+        auth: user(accessToken),
+        body: { skipped },
+        schema: importJobSchema,
+        timeoutMs: 30_000,
+        requestId,
+      }),
+    addImportImages: (
+      accessToken: string,
+      id: string,
+      body: ImportImagesRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/import-jobs/${segment(id)}/images`,
+        auth: user(accessToken),
+        body,
+        schema: importJobSchema,
+        timeoutMs: 30_000,
+        requestId,
+      }),
+    setImportRemovedImages: (
+      accessToken: string,
+      id: string,
+      body: ImportRemovedImagesRequest,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "PUT",
+        path: `${V1}/import-jobs/${segment(id)}/removed-images`,
+        auth: user(accessToken),
+        body,
+        schema: importJobSchema,
+        requestId,
+      }),
+    commitImport: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/import-jobs/${segment(id)}/commit`,
+        auth: user(accessToken),
+        schema: importJobSchema,
+        timeoutMs: 120_000,
+        requestId,
+      }),
+    cancelImport: (accessToken: string, id: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/import-jobs/${segment(id)}/cancel`,
+        auth: user(accessToken),
+        schema: importJobSchema,
         requestId,
       }),
 

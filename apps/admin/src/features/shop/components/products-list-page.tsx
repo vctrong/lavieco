@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { FiAlertTriangle, FiArrowRight, FiImage, FiPlus } from "react-icons/fi";
+import {
+  FiAlertTriangle,
+  FiArrowRight,
+  FiDownload,
+  FiImage,
+  FiPlus,
+  FiUploadCloud,
+} from "react-icons/fi";
 
 import {
   PRODUCT_STATUSES,
@@ -102,10 +109,20 @@ export function ProductsListPage({
     ][],
   );
   const create = (
-    <Button as={Link} href="/shop/products/new" size="sm">
-      <FiPlus aria-hidden="true" size={15} />
-      {t.list.create}
-    </Button>
+    <div className="flex flex-wrap gap-2">
+      <Button as="a" href="/api/shop/products/export" variant="secondary" size="sm">
+        <FiDownload aria-hidden="true" size={14} />
+        {t.import.export}
+      </Button>
+      <Button as={Link} href="/shop/products/import" variant="secondary" size="sm">
+        <FiUploadCloud aria-hidden="true" size={14} />
+        {t.import.open}
+      </Button>
+      <Button as={Link} href="/shop/products/new" size="sm">
+        <FiPlus aria-hidden="true" size={15} />
+        {t.list.create}
+      </Button>
+    </div>
   );
   return (
     <ShopShell section="products" title={t.list.title} intro={t.list.intro} actions={create}>

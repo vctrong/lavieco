@@ -1,4 +1,6 @@
 export { ShopCatalogModule } from "./shop-catalog.module";
+export { PRODUCT_ADMIN_SERVICE } from "./shop-catalog.tokens";
+export type { ProductAdminService } from "./application/product-admin-service";
 export {
   CATALOG_REPOSITORY,
   PRODUCT_MEDIA,
