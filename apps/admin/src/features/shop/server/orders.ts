@@ -88,3 +88,8 @@ export async function handleShopOrdersExport(request: Request): Promise<Response
     return Response.json({ reason }, { status: reason === "unavailable" ? 503 : 400 });
   }
 }
+
+export const loadReviews = (status: "pending" | "published" | "hidden") =>
+  read("/shop/reviews", (token, id) =>
+    programClient().listReviews(token, { status, limit: 50 }, id),
+  );

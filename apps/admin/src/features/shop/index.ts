@@ -4,6 +4,7 @@ export { OrderDetail } from "./components/order-detail";
 export { OrdersListPage } from "./components/orders-list-page";
 export { ProductEditor } from "./components/product-editor";
 export { ProductsListPage } from "./components/products-list-page";
+export { ReviewsPage } from "./components/reviews-page";
 export { ShopOverview } from "./components/shop-overview";
 export { AdminToasts } from "./components/shop-toasts";
 export { TEXT as SHOP_TEXT } from "./constants/text";
@@ -19,5 +20,6 @@ export {
   handleShopOrdersExport,
   loadShopOrder,
   loadShopOrders,
+  loadReviews,
   loadShopOverview,
 } from "./server/orders";

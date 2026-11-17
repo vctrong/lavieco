@@ -33,7 +33,13 @@ export class ShopOrderJobHandlers implements OnModuleInit {
   onModuleInit() {
     this.worker.register(SHOP_ORDER_JOBS.email, async (payload) => {
       const kind = String(payload.kind);
-      if (kind === "placed" || kind === "paid" || kind === "shipped" || kind === "cancelled") {
+      if (
+        kind === "placed" ||
+        kind === "paid" ||
+        kind === "shipped" ||
+        kind === "cancelled" ||
+        kind === "review"
+      ) {
         await this.mailer.send(String(payload.orderId), kind);
       }
     });

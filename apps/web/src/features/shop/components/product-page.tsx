@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { FiArrowLeft, FiArrowRight, FiBookOpen } from "react-icons/fi";
 
 import type { PublicProduct, PublicShopSettings } from "@lavieco/shared/shop";
@@ -21,10 +22,13 @@ export function ProductPage({
   product,
   settings,
   url,
+  reviews,
 }: {
   product: PublicProduct;
   settings: PublicShopSettings | null;
   url: string;
+  /** Published reviews (BR-24), rendered by the page so they can load on their own. */
+  reviews?: ReactNode;
 }) {
   const facts: { label: string; value: string }[] = [];
   if (product.materials.length > 0)
@@ -165,6 +169,7 @@ export function ProductPage({
           ) : null}
         </section>
       </div>
+      {reviews}
     </Container>
   );
 }

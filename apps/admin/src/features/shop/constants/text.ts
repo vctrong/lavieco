@@ -6,6 +6,7 @@ export const TEXT = {
     toast: { region: "Thông báo", close: "Đóng thông báo" },
     nav: {
       orders: "Đơn hàng",
+      reviews: "Đánh giá",
       products: "Sản phẩm",
       categories: "Danh mục",
       brands: "Thương hiệu đối tác",
@@ -16,6 +17,7 @@ export const TEXT = {
         "Mỗi sản phẩm là một minh chứng cho thông điệp giáo dục: đi kèm story card và liên kết về Cẩm nang.",
       cards: {
         orders: "Xác nhận COD, đóng gói, giao hàng, hoàn tiền, xuất Excel.",
+        reviews: "Duyệt cảm nhận của người đã mua trước khi hiện công khai.",
         products: "Thêm, sửa ảnh, giá, tồn kho và xuất bản sản phẩm.",
         categories: "Nhóm sản phẩm hiện làm bộ lọc ở trang Bộ sưu tập.",
         brands: "Thương hiệu tái chế xanh mà LAVIECO phân phối và tỉ lệ hoa hồng.",
@@ -340,6 +342,18 @@ export const TEXT = {
         submit: "Tải file",
         failed: "Chưa xuất được file. Kiểm tra mã xác thực rồi thử lại.",
       },
+    },
+    reviews: {
+      meta: "Đánh giá sản phẩm",
+      title: "Đánh giá",
+      intro:
+        "Cảm nhận của người đã nhận hàng. Chỉ hiện trên trang sản phẩm sau khi được duyệt (BR-24).",
+      tabs: { pending: "Chờ duyệt", published: "Đã hiện", hidden: "Đã ẩn" },
+      publish: "Cho hiện",
+      hide: "Ẩn",
+      empty: "Không có đánh giá nào.",
+      stars: (n: number) => `${n}/5 sao`,
+      done: "Đã cập nhật đánh giá",
     },
     overviewStats: {
       revenue: "Doanh thu đã thu",

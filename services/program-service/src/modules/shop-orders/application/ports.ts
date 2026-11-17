@@ -39,5 +39,8 @@ export interface ShopOrderRepository {
 
 /** Order emails: confirmation (with payment or COD note), shipped, delivered. */
 export interface ShopOrderMailer {
-  send(orderId: string, kind: "placed" | "paid" | "shipped" | "cancelled"): Promise<void>;
+  send(
+    orderId: string,
+    kind: "placed" | "paid" | "shipped" | "cancelled" | "review",
+  ): Promise<void>;
 }

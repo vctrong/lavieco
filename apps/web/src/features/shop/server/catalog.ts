@@ -102,3 +102,17 @@ export async function loadProduct(slug: string): Promise<PublicProduct | null> {
     throw error;
   }
 }
+
+/** Published reviews of a product; an empty list when the service cannot answer. */
+export async function loadProductReviews(slug: string) {
+  const cached = unstable_cache(
+    () => programClient().getProductReviews(slug),
+    ["shop-product-reviews", slug],
+    { tags: [SHOP_CACHE_TAGS.product(slug)], revalidate: CACHE_SECONDS },
+  );
+  try {
+    return await cached();
+  } catch {
+    return { average: 0, count: 0, items: [] };
+  }
+}
