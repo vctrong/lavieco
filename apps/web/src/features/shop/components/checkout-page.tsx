@@ -24,7 +24,7 @@ import { callAction } from "@/shared/call-action";
 import { HoneypotField } from "@/shared/components/honeypot-field";
 import { MEDIA_DELIVERY_READY, MediaImage } from "@/shared/components/media-image";
 import { OtpInput } from "@/shared/components/otp-input";
-import { TurnstileWidget } from "@/shared/components/turnstile-widget";
+import { TURNSTILE_FIELD, TurnstileWidget } from "@/shared/components/turnstile-widget";
 
 import {
   confirmShopCheckout,
@@ -96,6 +96,17 @@ export function CheckoutPage({
   const [challenge, setChallenge] = useState<{ id: string; form: unknown } | null>(null);
   const [code, setCode] = useState("");
   const [resetSignal, setResetSignal] = useState(0);
+  const alertRef = useRef<HTMLDivElement>(null);
+
+  // A server failure is shown above the form, out of sight of the order button: bring it
+  // into view below the floating navbar (scroll-mt) and move focus there.
+  useEffect(() => {
+    const node = alertRef.current;
+    if (!alert || !node) return;
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    node.scrollIntoView({ block: "start", behavior: reduce ? "auto" : "smooth" });
+    node.focus({ preventScroll: true });
+  }, [alert]);
 
   const set = <K extends keyof Values>(key: K, value: Values[K]) =>
     setValues((v) => ({ ...v, [key]: value }));
@@ -135,7 +146,7 @@ export function CheckoutPage({
       voucherCode: applied,
       consent: data.get("consent") === "on",
       website: String(data.get("website") ?? ""),
-      turnstileToken: String(data.get("cf-turnstile-response") ?? ""),
+      turnstileToken: String(data.get(TURNSTILE_FIELD) ?? ""),
     };
     const parsed = shopCheckoutFormSchema.safeParse(form);
     if (!parsed.success) {
@@ -212,7 +223,9 @@ export function CheckoutPage({
         className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_380px]"
       >
         <div className="space-y-6">
-          <FormAlert tone="error" message={alert} />
+          <div ref={alertRef} tabIndex={-1} className="scroll-mt-32 outline-none">
+            <FormAlert tone="error" message={alert} />
+          </div>
           <fieldset className="space-y-4 rounded-pedestal border border-hairline bg-white p-5 md:p-6">
             <legend className="font-display text-xl text-deep-blue">{t.buyer}</legend>
             {field("fullName", t.fullName, { required: true, autoComplete: "name" })}
