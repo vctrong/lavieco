@@ -6,7 +6,14 @@ import { useMemo, useState } from "react";
 import { FiFeather, FiMinus, FiPlus, FiShoppingBag } from "react-icons/fi";
 
 import type { PublicProduct } from "@lavieco/shared/shop";
-import { Button, ProductFrame, ToastProvider, cn, useToast } from "@lavieco/ui";
+import {
+  Button,
+  ProductFrame,
+  ToastProvider,
+  cn,
+  productFrameRatioOf,
+  useToast,
+} from "@lavieco/ui";
 
 import { callAction } from "@/shared/call-action";
 import { MEDIA_DELIVERY_READY, MediaImage } from "@/shared/components/media-image";
@@ -43,6 +50,9 @@ function Purchase({ product }: { product: PublicProduct }) {
     return own.length + general.length > 0 ? [...own, ...general] : product.images;
   }, [product.images, selected]);
   const shown = images[Math.min(imageIndex, Math.max(0, images.length - 1))];
+  // Taken from the product's first image so the frame does not jump between photos.
+  const first = product.images[0];
+  const galleryRatio = first ? productFrameRatioOf(first.width, first.height) : "square";
 
   const add = async () => {
     if (!variant || max === 0) return;
@@ -64,7 +74,9 @@ function Purchase({ product }: { product: PublicProduct }) {
   return (
     <div className="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] lg:gap-12">
       <section aria-label={t.gallery} className="space-y-3">
-        <ProductFrame ratio="portrait">
+        {/* The frame follows the first image (square or 4:5) and never crops: a designed
+            image keeps its logo and text near the edges (docs/08 §6.1). */}
+        <ProductFrame ratio={galleryRatio} fit="contain">
           {shown && MEDIA_DELIVERY_READY ? (
             <MediaImage
               publicId={shown.publicId}

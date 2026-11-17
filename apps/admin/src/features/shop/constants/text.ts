@@ -151,7 +151,7 @@ export const TEXT = {
       },
     },
     images: {
-      hint: "Kéo thả để sắp xếp. Ảnh đầu tiên là ảnh đại diện. JPG, PNG hoặc WebP, tối đa 8 MB, tối đa 10 ảnh.",
+      hint: "Kéo thả để sắp xếp. Ảnh đầu tiên là ảnh đại diện. Nên dùng ảnh vuông 1:1 (khoảng 1600 × 1600 px) hoặc dọc 4:5; giữ logo và chữ cách mép ít nhất 8% vì ô lưới bộ sưu tập cắt ảnh 4:5 thành vuông. JPG, PNG hoặc WebP, tối đa 8 MB, tối đa 10 ảnh.",
       add: "Thêm ảnh",
       drop: "Thả ảnh vào đây hoặc bấm để chọn",
       uploading: (done: number, total: number) => `Đang tải ${done}/${total} ảnh…`,

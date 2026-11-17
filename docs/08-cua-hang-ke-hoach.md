@@ -334,6 +334,8 @@ Nguyên tắc chung cho mọi màn: token ở `theme.css` (không dùng bảng m
 
 ### 6.1 Khung ảnh
 - Component `ProductImage` trong `@lavieco/ui`: tỉ lệ `1:1` (lưới, giỏ, admin) hoặc `4:5` (gallery chi tiết), bo góc một token duy nhất (`theme.css` hiện chỉ có `--radius-pedestal: 1.25rem` và các `--radius-arch*`; đề xuất dùng `rounded-pedestal`, hoặc thêm `--radius-media` trong một PR riêng ở `packages/ui`), **không dùng `--radius-arch*`**, nền `mint-mist` khi đang tải, `object-cover`. **Không dùng `arch-frame`** cho sản phẩm (ghi chú trong component và docs/04).
+- **Gallery chi tiết không cắt ảnh** (18/11/2026): khung chọn theo ảnh đầu tiên (`productFrameRatioOf`: cao/rộng ≥ 1,1 thì `4:5`, còn lại `1:1`) và dùng `fit="contain"`, phần thừa là nền `mint-mist`. Lý do: ảnh sản phẩm thường là ảnh thiết kế có logo, chữ sát mép; khung 4:5 cố định cắt mất hai bên ảnh vuông. Lưới, giỏ, admin vẫn `object-cover` vuông.
+- **Quy định ảnh tải lên** (gợi ý trong `ImageManager`): ảnh vuông 1:1 khoảng 1600 × 1600 px (hoặc dọc 4:5), logo và chữ cách mép ≥ 8% vì ô lưới cắt ảnh 4:5 thành vuông.
 - Skeleton cùng tỉ lệ để không nhảy bố cục; `next/image` với `sizes` đúng lưới, `loading="lazy"` trừ ảnh đầu (`priority`), `placeholder` màu.
 
 ### 6.2 Quản lý nhiều ảnh (admin `ImageManager`)
