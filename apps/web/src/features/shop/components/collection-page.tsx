@@ -1,16 +1,16 @@
 import Link from "next/link";
-import { FiArrowRight, FiBookOpen } from "react-icons/fi";
+import { FiBookOpen } from "react-icons/fi";
 
 import {
   PUBLIC_PRODUCT_SORTS,
   type PublicCategory,
-  type PublicProductList,
   type PublicProductSort,
 } from "@lavieco/shared/shop";
 import { Button, Container, Eyebrow, cn } from "@lavieco/ui";
 
 import { TEXT } from "../constants/text";
-import type { CollectionFilters } from "../server/catalog";
+import { PAGE_SIZE, type CollectionFilters, type CollectionPageData } from "../server/catalog";
+import { Pagination } from "./pagination";
 import { ProductCard } from "./product-card";
 import { SortMenu } from "./sort-menu";
 
@@ -20,7 +20,7 @@ const href = (filters: Partial<CollectionFilters>) => {
   const params = new URLSearchParams();
   if (filters.category) params.set("danh_muc", filters.category);
   if (filters.sort && filters.sort !== "featured") params.set("sap_xep", filters.sort);
-  if (filters.cursor) params.set("trang", filters.cursor);
+  if (filters.page && filters.page > 1) params.set("trang", String(filters.page));
   const query = params.toString();
   return query ? `/bo-suu-tap?${query}` : "/bo-suu-tap";
 };
@@ -34,7 +34,7 @@ export function CollectionPage({
   categories,
   filters,
 }: {
-  result: { status: "ok"; page: PublicProductList } | { status: "error" };
+  result: { status: "ok"; data: CollectionPageData } | { status: "error" };
   categories: PublicCategory[];
   filters: CollectionFilters;
 }) {
@@ -48,8 +48,6 @@ export function CollectionPage({
   const sortHrefs = Object.fromEntries(
     PUBLIC_PRODUCT_SORTS.map((sort) => [sort, href({ category: filters.category, sort })]),
   ) as Record<PublicProductSort, string>;
-  const shown = result.status === "ok" ? result.page.items.length : 0;
-  const more = result.status === "ok" && result.page.nextCursor !== null;
   return (
     <Container className="py-12 md:py-16">
       <header className="mb-8 max-w-2xl">
@@ -86,7 +84,7 @@ export function CollectionPage({
         </nav>
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p aria-live="polite" className="text-[14px] text-charcoal/70">
-            {result.status === "ok" ? t.count(shown, more) : null}
+            {result.status === "ok" ? t.count(result.data.total) : null}
           </p>
           <SortMenu current={filters.sort} hrefOf={sortHrefs} />
         </div>
@@ -99,7 +97,7 @@ export function CollectionPage({
         >
           {t.error}
         </p>
-      ) : result.page.items.length === 0 ? (
+      ) : result.data.items.length === 0 ? (
         <div className="rounded-pedestal border border-hairline bg-white p-10 text-center">
           <p className="text-charcoal/75">{t.empty}</p>
           <p className="mt-1 text-[14px] text-charcoal/60">{t.emptyHint}</p>
@@ -110,25 +108,23 @@ export function CollectionPage({
         </div>
       ) : (
         <>
-          <ul className="grid grid-cols-2 gap-x-4 gap-y-10 md:grid-cols-3 xl:grid-cols-4">
-            {result.page.items.map((product, index) => (
+          <ul
+            id="danh-sach"
+            className="grid scroll-mt-28 grid-cols-2 gap-3 sm:gap-5 md:grid-cols-3 xl:grid-cols-4"
+          >
+            {result.data.items.map((product, index) => (
               <li key={product.slug}>
                 <ProductCard product={product} priority={index < 4} />
               </li>
             ))}
           </ul>
-          {result.page.nextCursor ? (
-            <div className="mt-10 flex justify-center">
-              <Button
-                as={Link}
-                href={href({ ...filters, cursor: result.page.nextCursor })}
-                variant="secondary"
-              >
-                {t.more}
-                <FiArrowRight aria-hidden="true" size={15} />
-              </Button>
-            </div>
-          ) : null}
+          <Pagination
+            page={result.data.page}
+            pages={result.data.pages}
+            total={result.data.total}
+            pageSize={PAGE_SIZE}
+            hrefOf={(page) => `${href({ ...filters, page })}#danh-sach`}
+          />
         </>
       )}
     </Container>

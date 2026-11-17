@@ -246,6 +246,42 @@ const PRODUCTS: readonly DevProduct[] = [
   },
 ];
 
+/**
+ * Plain fillers so `/bo-suu-tap` has more than one page (12 per page) to try the
+ * pagination with. One variant each, in stock, no impact figures.
+ */
+const FILLERS: readonly DevProduct[] = [
+  ["bong-tai-vo-so-hat-mua", "Bông tai vỏ sò Hạt Mưa", "phu-kien-vo-nguyen-ban", 55_000],
+  ["kep-toc-vo-diep", "Kẹp tóc vỏ điệp", "phu-kien-vo-nguyen-ban", 42_000],
+  ["vong-tay-vo-oc-nho", "Vòng tay vỏ ốc nhỏ", "phu-kien-vo-nguyen-ban", 65_000],
+  ["day-chuyen-mat-vo-so", "Dây chuyền mặt vỏ sò", "phu-kien-vo-nguyen-ban", 79_000],
+  ["khay-gom-vo-so-mini", "Khay gốm vỏ sò mini", "gom-bot-vo-so", 85_000],
+  ["gia-cam-but-gom-vo-so", "Giá cắm bút gốm vỏ sò", "gom-bot-vo-so", 99_000],
+  ["dia-xa-phong-vo-so", "Đĩa xà phòng vỏ sò", "gom-bot-vo-so", 59_000],
+  ["chan-nen-gom-vo-so", "Chân nến gốm vỏ sò", "gom-bot-vo-so", 109_000],
+  ["combo-hoc-cu-tai-che", "Combo học cụ tái chế", "combo-qua-tang-xanh", 189_000],
+  ["combo-ban-lam-viec-xanh", "Combo bàn làm việc xanh", "combo-qua-tang-xanh", 239_000],
+].map(([slug, title, category, price], index) => ({
+  slug: slug as string,
+  title: title as string,
+  summary: "Sản phẩm mẫu để thử phân trang của bộ sưu tập.",
+  category: category as string,
+  status: "published" as const,
+  materials: ["Vỏ sò"],
+  care: "Lau bằng khăn khô.",
+  dimensions: "Cỡ nhỏ",
+  story: {
+    message: "Phế liệu nào cũng có thể kể một câu chuyện.",
+    story: "Làm thủ công tại xưởng nhỏ ở Cần Thơ từ vỏ sò thu gom.",
+    lesson: "Dùng lại trước khi bỏ đi.",
+  },
+  handbook: HANDBOOK,
+  variants: [
+    { sku: `DEV-FILL-${String(index + 1).padStart(2, "0")}`, price: price as number, stock: 30 },
+  ],
+  sortOrder: 20 + index,
+}));
+
 export async function seedShop(db: mongo.Db, now: Date) {
   const categories = new Map(
     (await db.collection("product_categories").find().toArray()).map((c) => [
@@ -277,7 +313,7 @@ export async function seedShop(db: mongo.Db, now: Date) {
     { upsert: true, returnDocument: "after" },
   );
 
-  for (const seed of PRODUCTS) {
+  for (const seed of [...PRODUCTS, ...FILLERS]) {
     const categoryId = categories.get(seed.category);
     if (!categoryId) throw new Error(`Category ${seed.category} is missing: run the migrations`);
     if (await db.collection("products").findOne({ slug: seed.slug })) {
