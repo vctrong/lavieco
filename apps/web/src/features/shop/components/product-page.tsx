@@ -37,7 +37,7 @@ export function ProductPage({
   if (product.care) facts.push({ label: t.care, value: product.care });
 
   return (
-    <Container className="py-8 md:py-12">
+    <Container className="mt-dock-clearance py-8 md:py-12">
       <JsonLd
         data={{
           "@context": "https://schema.org",

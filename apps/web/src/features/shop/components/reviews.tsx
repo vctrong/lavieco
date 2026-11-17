@@ -141,7 +141,7 @@ function ReviewForm({ token, item }: { token: string; item: ReviewableOrder["ite
 /** `/danh-gia/[token]`: one small form per bought product (BR-24). */
 export function ReviewPage({ token, order }: { token: string; order: ReviewableOrder }) {
   return (
-    <Container className="py-10 md:py-14">
+    <Container className="mt-dock-clearance py-10 md:py-14">
       <div className="mx-auto max-w-2xl space-y-6">
         <header>
           <p className="text-[12px] font-semibold uppercase tracking-museum text-deep-blue/60">
