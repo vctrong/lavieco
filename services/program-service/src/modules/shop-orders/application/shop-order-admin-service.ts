@@ -107,8 +107,13 @@ export class ShopOrderAdminService {
         input.revision,
       );
       if (!result) throw new DomainError("common.conflict");
-      const mail =
-        input.action === "ship" ? "shipped" : input.action === "cancel" ? "cancelled" : null;
+      // Delivered: invite a review of what was bought (BR-24).
+      const MAIL: Partial<Record<typeof input.action, string>> = {
+        ship: "shipped",
+        cancel: "cancelled",
+        deliver: "review",
+      };
+      const mail = MAIL[input.action] ?? null;
       if (mail)
         await this.outbox.enqueue(tx, {
           type: SHOP_ORDER_JOBS.email,

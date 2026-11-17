@@ -1,5 +1,13 @@
 import Link from "next/link";
-import { FiArrowRight, FiBox, FiSettings, FiShoppingBag, FiTag, FiUsers } from "react-icons/fi";
+import {
+  FiArrowRight,
+  FiBox,
+  FiMessageSquare,
+  FiSettings,
+  FiShoppingBag,
+  FiTag,
+  FiUsers,
+} from "react-icons/fi";
 
 import type { ShopOverview as Stats } from "@lavieco/shared/shop";
 
@@ -10,6 +18,7 @@ const t = TEXT.vi;
 
 const CARDS = [
   { id: "orders", href: "/shop/orders", icon: FiShoppingBag },
+  { id: "reviews", href: "/shop/reviews", icon: FiMessageSquare },
   { id: "products", href: "/shop/products", icon: FiBox },
   { id: "categories", href: "/shop/categories", icon: FiTag },
   { id: "brands", href: "/shop/brands", icon: FiUsers },

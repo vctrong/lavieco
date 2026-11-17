@@ -50,3 +50,14 @@ export async function getCheckoutPrefill() {
     return null;
   }
 }
+
+/** Lines of a delivered order to review (`/danh-gia/[token]`), or null for a 404. */
+export async function getReviewableOrder(token: string) {
+  if (!orderLinkSchema.safeParse(token).success) return null;
+  try {
+    return await programClient().getReviewableOrder(token, await requestId());
+  } catch (error) {
+    if (isServiceProblem(error) && (error.status === 404 || error.status === 400)) return null;
+    throw error;
+  }
+}

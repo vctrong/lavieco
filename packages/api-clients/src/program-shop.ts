@@ -1,4 +1,10 @@
 import {
+  productReviewsSchema,
+  reviewAdminSchema,
+  reviewListSchema,
+  reviewableOrderSchema,
+  type ReviewCreateRequest,
+  type ReviewListQuery,
   shopOrderAdminSchema,
   shopOrderCreatedSchema,
   shopOrderListSchema,
@@ -41,6 +47,7 @@ import {
 } from "@lavieco/shared/shop";
 
 import { STEP_UP_HEADER } from "@lavieco/shared/identity";
+import { z } from "zod";
 
 import type { createHttpClient } from "./http-client";
 
@@ -503,6 +510,55 @@ export function shopMethods(http: Http) {
         auth: user(accessToken),
         headers: { [STEP_UP_HEADER]: stepUpToken },
         timeoutMs: 60_000,
+        requestId,
+      }),
+
+    // --- reviews (BR-24) ---
+    getReviewableOrder: (orderToken: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/public/reviews/orders/${segment(orderToken)}`,
+        auth: service,
+        schema: reviewableOrderSchema,
+        requestId,
+      }),
+    createReview: (body: ReviewCreateRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/public/reviews`,
+        auth: service,
+        body,
+        schema: z.object({ status: z.string() }),
+        requestId,
+      }),
+    getProductReviews: (slug: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/public/products/${segment(slug)}/reviews`,
+        auth: service,
+        schema: productReviewsSchema,
+        requestId,
+      }),
+    listReviews: (accessToken: string, query: Partial<ReviewListQuery>, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/reviews${queryString(query)}`,
+        auth: user(accessToken),
+        schema: reviewListSchema,
+        requestId,
+      }),
+    moderateReview: (
+      accessToken: string,
+      id: string,
+      status: "published" | "hidden",
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/reviews/${segment(id)}/status`,
+        auth: user(accessToken),
+        body: { status },
+        schema: reviewAdminSchema,
         requestId,
       }),
 

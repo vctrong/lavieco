@@ -1,7 +1,13 @@
 import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 
-import { ProductPage, loadProduct, loadShopSettings } from "@/features/shop";
+import {
+  ProductPage,
+  ProductReviewsSection,
+  loadProduct,
+  loadProductReviews,
+  loadShopSettings,
+} from "@/features/shop";
 import { siteUrl } from "@/lib/site-url";
 
 export async function generateMetadata({
@@ -23,11 +29,13 @@ export default async function ProductRoute({ params }: PageProps<"/bo-suu-tap/[s
   if (!product) notFound();
   // A former slug (renamed product) moves to the current one.
   if (product.slug !== slug) permanentRedirect(`/bo-suu-tap/${product.slug}`);
+  const reviews = await loadProductReviews(product.slug);
   return (
     <ProductPage
       product={product}
       settings={settings}
       url={siteUrl(`/bo-suu-tap/${product.slug}`).toString()}
+      reviews={<ProductReviewsSection reviews={reviews} />}
     />
   );
 }

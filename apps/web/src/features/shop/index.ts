@@ -8,12 +8,20 @@ export {
 } from "./components/order-pages";
 export { CollectionPage } from "./components/collection-page";
 export { ProductPage } from "./components/product-page";
+export { ProductReviewsSection, ReviewPage } from "./components/reviews";
 export { TEXT as SHOP_TEXT } from "./constants/text";
 export {
   loadCategories,
   loadCollection,
   loadProduct,
+  loadProductReviews,
   loadShopSettings,
   toFilters,
 } from "./server/catalog";
-export { getCheckoutPrefill, getMyShopOrders, getShopOrder, qrImage } from "./server/orders";
+export {
+  getCheckoutPrefill,
+  getMyShopOrders,
+  getReviewableOrder,
+  getShopOrder,
+  qrImage,
+} from "./server/orders";

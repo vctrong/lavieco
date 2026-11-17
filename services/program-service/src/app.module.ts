@@ -31,6 +31,7 @@ import { ShopCatalogModule, type ProductMedia } from "./modules/shop-catalog";
 import { ShopCartsModule } from "./modules/shop-carts";
 import { ShopImportsModule } from "./modules/shop-imports";
 import { ShopOrdersModule } from "./modules/shop-orders";
+import { ShopReviewsModule } from "./modules/shop-reviews";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
 export type AppOverrides = {
@@ -121,6 +122,7 @@ export class AppModule {
         ShopImportsModule.forRoot(shopCatalog),
         shopCarts,
         shopOrders,
+        ShopReviewsModule.forRoot({ orders, shopCatalog, shopOrders }),
         ProgramOutboxModule.forRoot(events, shopCatalog, overrides.revalidateFetch),
       ],
     };

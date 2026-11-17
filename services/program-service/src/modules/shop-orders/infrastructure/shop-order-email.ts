@@ -16,13 +16,14 @@ import { addressText, type ShopOrderRecord } from "../domain/shop-order";
 
 const MONEY = new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" });
 
-type Kind = "placed" | "paid" | "shipped" | "cancelled";
+type Kind = "placed" | "paid" | "shipped" | "cancelled" | "review";
 
 const SUBJECT: Record<Kind, (code: string) => string> = {
   placed: (code) => `Đã nhận đơn ${code}`,
   paid: (code) => `Đã thanh toán đơn ${code}`,
   shipped: (code) => `Đơn ${code} đang được giao`,
   cancelled: (code) => `Đơn ${code} đã huỷ`,
+  review: (code) => `Bạn thấy đơn ${code} thế nào?`,
 };
 
 function intro(kind: Kind, order: ShopOrderRecord): string {
@@ -31,6 +32,9 @@ function intro(kind: Kind, order: ShopOrderRecord): string {
     return order.shipping.method === "pickup"
       ? "Đơn của bạn đã sẵn sàng để nhận tại chỗ."
       : "Đơn của bạn đã được giao cho đơn vị vận chuyển.";
+  }
+  if (kind === "review") {
+    return "Đơn đã được giao. Vài dòng cảm nhận của bạn giúp người sau hiểu thêm câu chuyện phía sau sản phẩm.";
   }
   if (kind === "cancelled") {
     return order.paidAt
@@ -102,7 +106,9 @@ export class SmtpShopOrderMailer implements ShopOrderMailer {
         ),
         { muted: true, small: true },
       ),
-      emailButton("Xem đơn hàng", url),
+      kind === "review"
+        ? emailButton("Viết đánh giá", `${this.webAppUrl}/danh-gia/${this.links.sign(order.id)}`)
+        : emailButton("Xem đơn hàng", url),
     ].join("\n");
 
     const textLines = [

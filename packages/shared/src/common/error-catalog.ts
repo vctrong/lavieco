@@ -160,6 +160,8 @@ export const ERROR_CATALOG = {
   "import.has_errors": { status: 422, title: "Some rows still have errors: fix or skip them" },
   "import.locked": { status: 409, title: "This import is being saved or is closed" },
   "cart.unavailable": { status: 409, title: "This product is not on sale any more" },
+  "review.not_allowed": { status: 409, title: "Only lines of a delivered order can be reviewed" },
+  "review.already_reviewed": { status: 409, title: "This order line already has a review" },
   "cart.full": { status: 422, title: "The cart already holds the maximum number of lines" },
   "shop_order.cart_empty": { status: 422, title: "Nothing to order: the cart is empty" },
   "shop_order.cart_changed": {
