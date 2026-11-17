@@ -35,12 +35,17 @@ export class CartService {
   }
 
   async setItem(token: string, variantId: string, quantity: number, now = new Date()) {
-    const variant = await this.products.findVariant(variantId);
-    if (!variant || variant.status !== "active") throw new DomainError("cart.unavailable");
-    const product = await this.products.findById(variant.productId);
-    if (!product || product.status !== "published") throw new DomainError("cart.unavailable");
+    // Removing is always allowed: a line whose product was unpublished, archived or
+    // deleted must not get stuck in the cart. Only adding or raising checks the catalogue.
+    if (quantity > 0) {
+      const variant = await this.products.findVariant(variantId);
+      if (!variant || variant.status !== "active") throw new DomainError("cart.unavailable");
+      const product = await this.products.findById(variant.productId);
+      if (!product || product.status !== "published") throw new DomainError("cart.unavailable");
+    }
     const cart = await this.carts.findByTokenHash(hash(token));
-    const items = (cart?.items ?? []).filter((item) => item.variantId !== variantId);
+    const kept = await this.withoutMissing(cart?.items ?? []);
+    const items = kept.filter((item) => item.variantId !== variantId);
     if (quantity > 0) {
       const previous = cart?.items.find((item) => item.variantId === variantId);
       items.push({ variantId, quantity, addedAt: previous?.addedAt ?? now });
@@ -75,6 +80,18 @@ export class CartService {
       cart.items.filter((item) => !variantIds.includes(item.variantId)),
       cart.userId,
     );
+  }
+
+  /**
+   * Drops lines whose variant no longer exists. They are never shown, so without this
+   * they would still count towards the line limit and could never be removed.
+   */
+  private async withoutMissing(items: readonly CartItem[]) {
+    if (items.length === 0) return [];
+    const found = new Set(
+      (await this.products.findVariants(items.map((item) => item.variantId))).map((v) => v.id),
+    );
+    return items.filter((item) => found.has(item.variantId));
   }
 
   private async price(items: readonly CartItem[]) {
