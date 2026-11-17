@@ -17,6 +17,7 @@ import {
   type When,
 } from "./dev-events";
 import { devDatabaseIssue } from "./dev-guard";
+import { seedShop } from "./dev-shop";
 import { MIGRATIONS_DIR, runMigrations } from "./migrate";
 
 /**
@@ -498,8 +499,9 @@ async function main() {
       if (!typeId) throw new Error(`Event type ${seed.typeKey} is missing`);
       await seedEvent(db, seed, typeId, now);
     }
+    await seedShop(db, now);
     console.log(
-      "dev:seed (program) done. Buyers are *@lavieco.test; look tickets up at /tra-cuu-ve (OTP in Mailpit).",
+      "dev:seed (program) done. Buyers are *@lavieco.test; look tickets up at /tra-cuu-ve (OTP in Mailpit). Shop: /bo-suu-tap.",
     );
   } finally {
     await client.close();

@@ -5,12 +5,14 @@ import {
   PUBLIC_PRODUCT_SORTS,
   type PublicCategory,
   type PublicProductList,
+  type PublicProductSort,
 } from "@lavieco/shared/shop";
 import { Button, Container, Eyebrow, cn } from "@lavieco/ui";
 
 import { TEXT } from "../constants/text";
 import type { CollectionFilters } from "../server/catalog";
 import { ProductCard } from "./product-card";
+import { SortMenu } from "./sort-menu";
 
 const t = TEXT.vi.collection;
 
@@ -38,11 +40,16 @@ export function CollectionPage({
 }) {
   const chip = (active: boolean) =>
     cn(
-      "flex min-h-11 items-center whitespace-nowrap rounded-full px-4 text-[13.5px]",
+      "flex min-h-11 items-center rounded-full px-4 text-[14px] transition-colors motion-reduce:transition-none",
       active
         ? "bg-deep-blue font-semibold text-soft-white"
-        : "border border-hairline bg-white text-deep-blue hover:bg-mint-mist",
+        : "border border-hairline bg-white text-deep-blue hover:border-emerald-brand hover:bg-mint-mist",
     );
+  const sortHrefs = Object.fromEntries(
+    PUBLIC_PRODUCT_SORTS.map((sort) => [sort, href({ category: filters.category, sort })]),
+  ) as Record<PublicProductSort, string>;
+  const shown = result.status === "ok" ? result.page.items.length : 0;
+  const more = result.status === "ok" && result.page.nextCursor !== null;
   return (
     <Container className="py-12 md:py-16">
       <header className="mb-8 max-w-2xl">
@@ -51,9 +58,10 @@ export function CollectionPage({
         <p className="mt-4 text-[16px] leading-relaxed text-charcoal/80">{t.intro}</p>
       </header>
 
-      <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <nav aria-label={t.filters} className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
-          <ul className="flex gap-2">
+      {/* Categories wrap onto more lines instead of scrolling sideways; sort is one menu. */}
+      <div className="mb-8 space-y-4 border-b border-hairline pb-5">
+        <nav aria-label={t.filters}>
+          <ul className="flex flex-wrap gap-2">
             <li>
               <Link
                 href={href({ sort: filters.sort })}
@@ -76,21 +84,12 @@ export function CollectionPage({
             ))}
           </ul>
         </nav>
-        <nav aria-label={t.sort} className="-mx-4 overflow-x-auto px-4 md:mx-0 md:px-0">
-          <ul className="flex gap-2">
-            {PUBLIC_PRODUCT_SORTS.map((sort) => (
-              <li key={sort}>
-                <Link
-                  href={href({ category: filters.category, sort })}
-                  aria-current={filters.sort === sort ? "page" : undefined}
-                  className={cn(chip(filters.sort === sort), "text-[12.5px]")}
-                >
-                  {t.sorts[sort]}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <p aria-live="polite" className="text-[14px] text-charcoal/70">
+            {result.status === "ok" ? t.count(shown, more) : null}
+          </p>
+          <SortMenu current={filters.sort} hrefOf={sortHrefs} />
+        </div>
       </div>
 
       {result.status === "error" ? (
