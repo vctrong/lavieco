@@ -1,5 +1,13 @@
-import { ExcelWorkbookWriter } from "../../registrations";
+import { ExcelWorkbookWriter, type SheetColumn } from "../../registrations";
 import type { Sheet, SheetFile } from "../application/survey-service";
+
+/** The row number, the submission time and the respondent are short; answers wrap. */
+const SHORT_COLUMNS = new Set(["Thời gian", "Họ tên", "Email"]);
+
+const columnOf = (header: string): SheetColumn => ({
+  header,
+  kind: header === "STT" ? "index" : SHORT_COLUMNS.has(header) ? "text" : "longText",
+});
 
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
@@ -22,6 +30,9 @@ export async function writeSurveySheet(sheet: Sheet, format: "xlsx" | "csv"): Pr
     };
   }
   const fileName = `${sheet.fileName}.xlsx`;
-  const content = await new ExcelWorkbookWriter().write({ ...sheet, fileName });
+  const content = await new ExcelWorkbookWriter().write({
+    fileName,
+    table: { name: "Câu trả lời", columns: sheet.header.map(columnOf), rows: sheet.rows },
+  });
   return { fileName, contentType: XLSX, content };
 }

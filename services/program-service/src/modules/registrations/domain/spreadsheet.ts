@@ -17,3 +17,14 @@ export function exportFileName(slug: string, now: Date): string {
   }).format(now);
   return `LAVIECO_${slug}_${day}.xlsx`;
 }
+
+/** Vietnam has no daylight saving: UTC+7 all year. */
+const VIETNAM_OFFSET_MS = 7 * 60 * 60 * 1000;
+
+/**
+ * Excel stores a date without a time zone and exceljs writes the UTC clock. Shifting the
+ * instant by +7 h makes the cell show the time people saw in Vietnam (Asia/Ho_Chi_Minh).
+ */
+export function vietnamWallClock(instant: Date): Date {
+  return new Date(instant.getTime() + VIETNAM_OFFSET_MS);
+}

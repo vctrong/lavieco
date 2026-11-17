@@ -207,11 +207,17 @@ describe("registrations and Excel export (step-up + audit)", () => {
     expect(String(sheet.getRow(2).getCell(2).value)).toBe(
       `'=HYPERLINK("http://evil.example","bam")`,
     );
+    expect(sheet.name).toBe("Người đăng ký");
     expect(sheet.getRow(1).getCell(16).value).toBe("Bạn đến từ đâu?");
     // A free order went through: "confirmed", not "paid".
+    expect(sheet.getRow(1).getCell(11).value).toBe("Thanh toán");
     expect(sheet.getRow(2).getCell(11).value).toBe("Đã xác nhận");
-    expect(sheet.getRow(1).getCell(6).value).toBe("Số người mỗi suất");
-    expect(sheet.getRow(2).getCell(8).value).toBe("1/1");
+    expect(sheet.getRow(1).getCell(10).value).toBe("Vé trong suất");
+    expect(sheet.getRow(2).getCell(10).value).toBe("1/1");
+    // Real types: a number for STT and a date for the registration time.
+    expect(sheet.getRow(2).getCell(1).value).toBe(1);
+    expect(sheet.getRow(2).getCell(13).value).toBeInstanceOf(Date);
+    expect(workbook.worksheets[1]?.name).toBe("Tổng quan");
 
     await drainOutbox(t);
     const event1 = audited.find(

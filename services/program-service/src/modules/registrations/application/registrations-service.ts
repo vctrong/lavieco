@@ -19,7 +19,8 @@ import {
   type TicketRecord,
   type TicketRepository,
 } from "../../orders";
-import { exportFileName, safeCell } from "../domain/spreadsheet";
+import { exportFileName } from "../domain/spreadsheet";
+import type { SheetCell, SheetColumn, SheetTone, Workbook, WorkbookWriter } from "./workbook";
 
 export type RegistrationColumn = { questionId: string; label: string; hidden: boolean };
 
@@ -30,13 +31,6 @@ export type RegistrationRow = {
   /** `questionId` → answer text. */
   answers: Record<string, string>;
 };
-
-export type Sheet = { fileName: string; header: string[]; rows: string[][] };
-
-/** Writes the sheet as `.xlsx` (exceljs streaming writer, ADR-0017). */
-export interface WorkbookWriter {
-  write(sheet: Sheet): Promise<Buffer>;
-}
 
 const ORDER_STATUS_TEXT: Record<OrderDisplayStatus, string> = {
   pending: "Chờ thanh toán",
@@ -52,14 +46,39 @@ const TICKET_STATUS_TEXT: Record<TicketStatus, string> = {
   void: "Đã huỷ",
 };
 
-const DATE_TIME = new Intl.DateTimeFormat("vi-VN", {
-  timeZone: "Asia/Ho_Chi_Minh",
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
+/** Colour of each status in the sheet: what is done is green, what needs a look stands out. */
+const STATUS_TONES: Readonly<Record<string, SheetTone>> = {
+  [ORDER_STATUS_TEXT.paid]: "ok",
+  [ORDER_STATUS_TEXT.confirmed]: "ok",
+  [ORDER_STATUS_TEXT.pending]: "warn",
+  [ORDER_STATUS_TEXT.expired]: "muted",
+  [ORDER_STATUS_TEXT.cancelled]: "muted",
+  [ORDER_STATUS_TEXT.refunded]: "bad",
+  [TICKET_STATUS_TEXT.used]: "ok",
+  [TICKET_STATUS_TEXT.void]: "muted",
+};
+
+/**
+ * Columns of the registrations sheet, grouped as the team reads it on the day: who,
+ * which ticket and whether they came, then payment, then the form's own questions.
+ */
+const REGISTRATION_COLUMNS: SheetColumn[] = [
+  { header: "STT", kind: "index" },
+  { header: "Họ tên", kind: "text" },
+  { header: "Số điện thoại", kind: "code" },
+  { header: "Email", kind: "text" },
+  { header: "Loại vé", kind: "text" },
+  { header: "Mã vé", kind: "code" },
+  { header: "Check-in", kind: "status", tones: STATUS_TONES },
+  { header: "Giờ check-in", kind: "dateTime" },
+  { header: "Suất", kind: "number" },
+  { header: "Vé trong suất", kind: "code" },
+  { header: "Thanh toán", kind: "status", tones: STATUS_TONES },
+  { header: "Mã đơn", kind: "code" },
+  { header: "Thời gian đăng ký", kind: "dateTime" },
+  { header: "Mã ưu đãi", kind: "code" },
+  { header: "Giảm giá", kind: "money" },
+];
 
 const EXPORT_PAGE = 100;
 
@@ -109,50 +128,39 @@ export class RegistrationsService {
       cursor = page.nextCursor ?? undefined;
     } while (cursor);
 
-    const sheet: Sheet = {
+    const book: Workbook = {
       fileName: exportFileName(event.slug, now),
-      header: [
-        "STT",
-        "Họ tên",
-        "Email",
-        "Số điện thoại",
-        "Loại vé",
-        "Số người mỗi suất",
-        "Suất",
-        "Vé trong suất",
-        "Mã vé",
-        "Mã đơn",
-        "Trạng thái thanh toán",
-        "Check-in",
-        "Thời gian đăng ký",
-        "Mã ưu đãi",
-        "Giảm giá",
-        ...columns.map((column) => (column.hidden ? `${column.label} (đã ẩn)` : column.label)),
-      ],
-      rows: rows.map((row, index) =>
-        [
-          String(index + 1),
+      table: {
+        name: "Người đăng ký",
+        columns: [
+          ...REGISTRATION_COLUMNS,
+          ...columns.map((column): SheetColumn => ({
+            header: column.hidden ? `${column.label} (đã ẩn)` : column.label,
+            kind: "longText",
+          })),
+        ],
+        rows: rows.map((row, index): SheetCell[] => [
+          index + 1,
           row.order.buyer.fullName,
-          row.order.buyer.email,
           row.order.buyer.phone,
+          row.order.buyer.email,
           row.ticket.ticketTypeName,
-          String(row.ticket.seatsPerUnit),
-          String(row.ticket.unitIndex),
-          `${row.ticket.seatIndex}/${row.ticket.seatsPerUnit}`,
           row.ticket.code,
-          String(row.order.orderCode),
+          row.ticket.checkedInAt ? TICKET_STATUS_TEXT.used : TICKET_STATUS_TEXT[row.ticket.status],
+          row.ticket.checkedInAt,
+          row.ticket.unitIndex,
+          `${row.ticket.seatIndex}/${row.ticket.seatsPerUnit}`,
           ORDER_STATUS_TEXT[orderDisplayStatus(row.order)],
-          row.ticket.checkedInAt
-            ? `${TICKET_STATUS_TEXT.used} ${DATE_TIME.format(row.ticket.checkedInAt)}`
-            : TICKET_STATUS_TEXT[row.ticket.status],
-          DATE_TIME.format(row.order.createdAt),
-          row.order.discount?.code ?? "",
-          String(row.order.discount?.amount ?? 0),
-          ...columns.map((column) => row.answers[column.questionId] ?? ""),
-        ].map(safeCell),
-      ),
+          String(row.order.orderCode),
+          row.order.createdAt,
+          row.order.discount?.code ?? null,
+          row.order.discount?.amount ?? null,
+          ...columns.map((column) => row.answers[column.questionId] ?? null),
+        ]),
+      },
+      summary: summaryOf(event, rows, query.includeRefunded, now),
     };
-    const content = await this.workbook.write(sheet);
+    const content = await this.workbook.write(book);
     await this.unitOfWork.run((tx) =>
       this.audit.record(
         tx,
@@ -166,7 +174,7 @@ export class RegistrationsService {
         now,
       ),
     );
-    return { fileName: sheet.fileName, content };
+    return { fileName: book.fileName, content };
   }
 
   private async event(eventId: string): Promise<EventRecord> {
@@ -190,6 +198,38 @@ export class RegistrationsService {
       return (tickets.get(order.id) ?? []).map((ticket) => ({ order, ticket, answers: text }));
     });
   }
+}
+
+/** The "Tổng quan" sheet: the event, when the file was made, and the counts. */
+function summaryOf(
+  event: EventRecord,
+  rows: readonly RegistrationRow[],
+  includeRefunded: boolean,
+  now: Date,
+): NonNullable<Workbook["summary"]> {
+  const count = (keep: (row: RegistrationRow) => boolean) => rows.filter(keep).length;
+  const byType = new Map<string, number>();
+  for (const row of rows) {
+    byType.set(row.ticket.ticketTypeName, (byType.get(row.ticket.ticketTypeName) ?? 0) + 1);
+  }
+  return {
+    name: "Tổng quan",
+    title: event.title,
+    lines: [
+      ["Bắt đầu", event.startAt],
+      ["Kết thúc", event.endAt],
+      ["Xuất lúc", now],
+      ["Tổng số vé", rows.length],
+      ["Đã check-in", count((row) => row.ticket.checkedInAt !== null)],
+      [
+        "Chưa check-in",
+        count((row) => row.ticket.checkedInAt === null && row.ticket.status === "valid"),
+      ],
+      ["Vé đã huỷ", count((row) => row.ticket.status === "void")],
+      ["Gồm đơn đã hoàn tiền", includeRefunded ? "Có" : "Không"],
+      ...[...byType].map(([name, total]): [string, SheetCell] => [`Loại vé: ${name}`, total]),
+    ],
+  };
 }
 
 /** Every question ever on the form, in form order, hidden ones included (BR-17). */
