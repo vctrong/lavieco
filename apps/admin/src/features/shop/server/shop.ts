@@ -76,6 +76,9 @@ const FAILURE_BY_CODE: Partial<Record<ErrorCode, ShopFailure>> = {
   "media.unavailable": "media_unavailable",
   "category.name_taken": "name_taken",
   "brand.slug_taken": "name_taken",
+  "import.file_invalid": "file_invalid",
+  "import.has_errors": "has_errors",
+  "import.locked": "conflict",
 };
 
 /** Runs a write with the staff token; program-service checks `product:*` itself. */

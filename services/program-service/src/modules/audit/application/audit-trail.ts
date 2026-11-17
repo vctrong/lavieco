@@ -33,6 +33,7 @@ export type ProgramAuditAction =
   | "product.status"
   | "product.impact_approve"
   | "product.stock_adjust"
+  | "product.import"
   | "shop.category"
   | "shop.brand"
   | "shop.settings";

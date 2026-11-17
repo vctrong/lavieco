@@ -28,6 +28,7 @@ import { RegistrationsModule } from "./modules/registrations";
 import { SurveysModule } from "./modules/surveys";
 import { ProgramOutboxModule } from "./modules/outbox";
 import { ShopCatalogModule, type ProductMedia } from "./modules/shop-catalog";
+import { ShopImportsModule } from "./modules/shop-imports";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
 export type AppOverrides = {
@@ -108,6 +109,7 @@ export class AppModule {
           intervalMs: CAMPAIGN_INTERVAL_MS,
         }),
         shopCatalog,
+        ShopImportsModule.forRoot(shopCatalog),
         ProgramOutboxModule.forRoot(events, shopCatalog, overrides.revalidateFetch),
       ],
     };

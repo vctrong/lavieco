@@ -153,6 +153,12 @@ export const ERROR_CATALOG = {
   },
   "category.name_taken": { status: 409, title: "A category with this name already exists" },
   "brand.slug_taken": { status: 409, title: "Another partner brand already uses this address" },
+  "import.file_invalid": {
+    status: 422,
+    title: "Not a readable .xlsx/.csv with the template headers, or too large / too many rows",
+  },
+  "import.has_errors": { status: 422, title: "Some rows still have errors: fix or skip them" },
+  "import.locked": { status: 409, title: "This import is being saved or is closed" },
 } as const satisfies Record<string, { status: number; title: string }>;
 
 export type ErrorCode = keyof typeof ERROR_CATALOG;
