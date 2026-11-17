@@ -7,7 +7,7 @@ import {
   PUBLIC_PRODUCT_SORTS,
   SHOP_CACHE_TAGS,
   type PublicProduct,
-  type PublicProductList,
+  type PublicProductCard,
   type PublicProductSort,
 } from "@lavieco/shared/shop";
 
@@ -15,17 +15,35 @@ import { programClient, webLogger } from "@/lib/services";
 
 /** Fallback lifetime; program-service asks for a revalidation on every public change. */
 const CACHE_SECONDS = 300;
-const PAGE_SIZE = 24;
+/** Products per numbered page of `/bo-suu-tap`. */
+export const PAGE_SIZE = 12;
+/** Upper bound of the walk below: 10 × 100 products is far beyond the GĐ1 catalogue. */
+const MAX_BATCHES = 10;
+const BATCH = 100;
 
-const cachedList = unstable_cache(
-  (category: string, sort: PublicProductSort, cursor: string) =>
-    programClient().listPublicProducts({
-      category: category || undefined,
-      sort,
-      cursor: cursor || undefined,
-      limit: PAGE_SIZE,
-    }),
-  ["shop-products-list"],
+/**
+ * The whole published list of one category and sort, walked with the service's cursor
+ * (docs/02: lists are cursor-paginated) and cached as one entry. Numbered pages are cut
+ * from it here, so a visitor can jump straight to page 3 and see how many pages there are.
+ */
+const cachedAll = unstable_cache(
+  async (category: string, sort: PublicProductSort) => {
+    const items: PublicProductCard[] = [];
+    let cursor: string | undefined;
+    for (let batch = 0; batch < MAX_BATCHES; batch += 1) {
+      const page = await programClient().listPublicProducts({
+        category: category || undefined,
+        sort,
+        cursor,
+        limit: BATCH,
+      });
+      items.push(...page.items);
+      if (!page.nextCursor) break;
+      cursor = page.nextCursor;
+    }
+    return items;
+  },
+  ["shop-products-all"],
   { tags: [SHOP_CACHE_TAGS.products], revalidate: CACHE_SECONDS },
 );
 
@@ -41,7 +59,14 @@ const cachedSettings = unstable_cache(
   { tags: [SHOP_CACHE_TAGS.products], revalidate: CACHE_SECONDS },
 );
 
-export type CollectionFilters = { category: string; sort: PublicProductSort; cursor: string };
+export type CollectionFilters = { category: string; sort: PublicProductSort; page: number };
+
+export type CollectionPageData = {
+  items: PublicProductCard[];
+  page: number;
+  pages: number;
+  total: number;
+};
 
 export function toFilters(
   params: Record<string, string | string[] | undefined>,
@@ -53,16 +78,28 @@ export function toFilters(
     sort: (PUBLIC_PRODUCT_SORTS as readonly string[]).includes(sort)
       ? (sort as PublicProductSort)
       : "featured",
-    cursor: first(params.trang).slice(0, 200),
+    page: /^[1-9]d{0,3}$/.test(first(params.trang)) ? Number(first(params.trang)) : 1,
   };
 }
 
 /** The list the page renders, or a failure it shows as such (never a fake empty list). */
 export async function loadCollection(
   filters: CollectionFilters,
-): Promise<{ status: "ok"; page: PublicProductList } | { status: "error" }> {
+): Promise<{ status: "ok"; data: CollectionPageData } | { status: "error" }> {
   try {
-    return { status: "ok", page: await cachedList(filters.category, filters.sort, filters.cursor) };
+    const all = await cachedAll(filters.category, filters.sort);
+    const pages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+    // A page past the end (old link, fewer products now) shows the last one, not nothing.
+    const page = Math.min(filters.page, pages);
+    return {
+      status: "ok",
+      data: {
+        items: all.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE),
+        page,
+        pages,
+        total: all.length,
+      },
+    };
   } catch (error) {
     webLogger().warn("shop list failed", {
       errorCode: isServiceProblem(error) ? error.code : "unavailable",
