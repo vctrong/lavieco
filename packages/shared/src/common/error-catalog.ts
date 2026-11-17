@@ -126,6 +126,33 @@ export const ERROR_CATALOG = {
   },
 
   "event_type.name_taken": { status: 409, title: "An event type with this name already exists" },
+
+  "product.slug_taken": { status: 409, title: "Another product already uses this address" },
+  "product.sku_taken": { status: 409, title: "Another variant already uses this SKU" },
+  "product.publish_blocked": {
+    status: 422,
+    title: "Story card, handbook link, described images and a variant on sale are required",
+  },
+  "product.variants_invalid": {
+    status: 422,
+    title: "Variants do not match the product options (missing, unknown or repeated values)",
+  },
+  "product.images_invalid": { status: 422, title: "Images are repeated or too many" },
+  "product.price_invalid": {
+    status: 422,
+    title: "The struck-through price must be above the selling price",
+  },
+  "product.category_unknown": { status: 422, title: "Category or partner brand does not exist" },
+  "product.stock_below_held": {
+    status: 409,
+    title: "Stock cannot go below the units held by pending orders",
+  },
+  "product.variant_locked": {
+    status: 409,
+    title: "A variant that was ordered cannot be removed; archive it instead",
+  },
+  "category.name_taken": { status: 409, title: "A category with this name already exists" },
+  "brand.slug_taken": { status: 409, title: "Another partner brand already uses this address" },
 } as const satisfies Record<string, { status: number; title: string }>;
 
 export type ErrorCode = keyof typeof ERROR_CATALOG;

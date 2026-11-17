@@ -44,16 +44,28 @@ export function assertPixelCount(width: number, height: number) {
   if (width * height > MEDIA_LIMITS.maxPixels) throw new DomainError("media.too_many_pixels");
 }
 
-/** `lavieco/<env>/<events|avatars>/<media id>`: stable, never reused, no personal data. */
+const FOLDER: Record<MediaPurpose, string> = {
+  avatar: "avatars",
+  event_cover: "events",
+  event_gallery: "events",
+  product_image: "products",
+};
+
+/** `lavieco/<env>/<events|avatars|products>/<media id>`: stable, never reused, no personal data. */
 export function publicIdFor(root: string, purpose: MediaPurpose, id: string) {
-  return `${root}/${purpose === "avatar" ? "avatars" : "events"}/${id}`;
+  return `${root}/${FOLDER[purpose]}/${id}`;
 }
 
 const sameRef = (a: MediaAttachmentRef | null, b: MediaAttachmentRef) =>
   a !== null && a.kind === b.kind && a.id === b.id;
 
-const isEventImage = (purpose: MediaPurpose) =>
-  purpose === "event_cover" || purpose === "event_gallery";
+/** Images program-service attaches: event images to events, product images to products. */
+const isAttachable = (purpose: MediaPurpose, kind?: MediaAttachmentRef["kind"]) =>
+  kind === "product"
+    ? purpose === "product_image"
+    : kind === "event"
+      ? purpose === "event_cover" || purpose === "event_gallery"
+      : purpose !== "avatar";
 
 /**
  * Attaching is idempotent for the same holder; an image that is gone, an avatar,
@@ -63,7 +75,8 @@ export function attachDecision(
   record: MediaRecord | null,
   ref: MediaAttachmentRef,
 ): "attach" | "already_attached" {
-  if (!record || !isEventImage(record.purpose)) throw new DomainError("media.unavailable");
+  if (!record || !isAttachable(record.purpose, ref.kind))
+    throw new DomainError("media.unavailable");
   if (record.status === "pending") return "attach";
   if (record.status === "attached" && sameRef(record.attachedTo, ref)) return "already_attached";
   throw new DomainError("media.unavailable");
@@ -78,7 +91,7 @@ export function releaseDecision(
   ref: MediaAttachmentRef,
 ): "release" | "nothing_to_do" {
   if (!record || record.status === "deleted") return "nothing_to_do";
-  if (!isEventImage(record.purpose)) throw new DomainError("media.unavailable");
+  if (!isAttachable(record.purpose, ref.kind)) throw new DomainError("media.unavailable");
   if (record.status === "pending" || sameRef(record.attachedTo, ref)) return "release";
   throw new DomainError("media.unavailable");
 }

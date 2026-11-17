@@ -45,7 +45,11 @@ export class MediaService {
   ) {}
 
   /** Admin: cover or gallery image of an event. Stays `pending` until program-service attaches it. */
-  async uploadEventImage(purpose: EventImagePurpose, bytes: Uint8Array, actor: MediaActor) {
+  async uploadEventImage(
+    purpose: EventImagePurpose | "product_image",
+    bytes: Uint8Array,
+    actor: MediaActor,
+  ) {
     const prepared = await this.prepare(purpose, bytes);
     await this.store(prepared);
     try {
@@ -59,6 +63,11 @@ export class MediaService {
       await this.forget(prepared.record.publicId);
       throw error;
     }
+  }
+
+  /** Admin: one image of a shop product (ADR-0028). `pending` until program-service attaches it. */
+  uploadProductImage(bytes: Uint8Array, actor: MediaActor) {
+    return this.uploadEventImage("product_image", bytes, actor);
   }
 
   /** Called by program-service before it saves an event (the snapshot comes from here). */

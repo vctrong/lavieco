@@ -209,6 +209,15 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Gửi email hàng loạt | — | — | — | — | ✓ | — | ✓ | — |
 | Huỷ chương trình (nhập lại 2FA, ghi nhật ký) | — | — | — | — | ✓ | — | ✓ | — |
 | Duyệt số người tham gia của sự kiện lưu trữ (BR-09) | — | — | — | — | ✓ | — | — | — |
+| Xem cửa hàng, giỏ hàng, đặt hàng, tra cứu đơn | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
+| Xem đơn hàng của tôi, viết đánh giá sản phẩm đã mua | — | ✓ | ✓ | ✓ | — | — | — | — |
+| Tạo/sửa sản phẩm, danh mục, thương hiệu, tồn kho; import | — | — | — | — | ✓ | ✓ | ✓ | đọc |
+| Xuất bản/ẩn sản phẩm | — | — | — | — | ✓ | ✓ | ✓ | — |
+| Xem đơn hàng cửa hàng (có dữ liệu cá nhân) | — | — | — | — | ✓ | — | ✓ | đọc |
+| Xử lý đơn: xác nhận, đóng gói, giao, duyệt đánh giá | — | — | — | — | ✓ | — | ✓ | — |
+| Hoàn tiền, huỷ đơn đã trả tiền | — | — | — | — | ✓ | — | ✓ | — |
+| Xuất Excel đơn hàng | — | — | — | — | ✓ | — | ✓ | — |
+| Duyệt số liệu tác động trên sản phẩm (BR-23) | — | — | — | — | ✓ | — | — | — |
 | Yêu cầu/đơn quà tặng | — | — | — | — | ✓ | — | ✓ | đọc |
 | Nhập số liệu tác động | — | — | — | — | ✓ | — | ✓ | đọc |
 | Duyệt & công bố báo cáo tác động | — | — | — | — | ✓ | — | — | đọc |
@@ -543,6 +552,19 @@ Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định b�
 | UC-33 | Xem người đăng ký theo từng sự kiện, xuất Excel (step-up + audit). Xem đơn, đối soát payOS; hoàn tiền thủ công rồi cập nhật trạng thái. | BR-04, BR-06 |
 | UC-34 | Quét QR (hoặc nhập mã vé) → hợp lệ / đã dùng / không hợp lệ; hiện bộ đếm đã check-in / tổng. | BR-16 |
 
+### 6.3c Use case phân hệ Cửa hàng (ADR-0028, tóm tắt)
+
+Kế hoạch chi tiết, mô hình dữ liệu và giai đoạn ở `08-cua-hang-ke-hoach.md`.
+
+| Mã | Luồng chính tóm tắt | Quy tắc |
+|---|---|---|
+| UC-35 | Xem Cửa hàng: lọc theo danh mục, chất liệu, thương hiệu, giá → trang sản phẩm (ảnh, chọn biến thể, story card, liên kết Cẩm nang, tác động đã duyệt, đánh giá). | BR-01, BR-20, BR-23 |
+| UC-36 | Giỏ hàng: thêm/sửa/xoá; giỏ của khách lưu bằng cookie trên trình duyệt, của Member lưu trên server và **gộp** khi đăng nhập; báo từng dòng khi giá hoặc tồn kho đổi. | BR-21, BR-22 |
+| UC-37 | Đặt hàng một trang: người nhận, nhận hàng (giao/nhận tại chỗ), mã ưu đãi, đồng ý dữ liệu → OTP email (Member có email đã xác thực thì bỏ qua) → giữ hàng 15 phút → VietQR payOS (hoặc COD nếu bật) → trang đơn hàng, email xác nhận. Tra cứu đơn bằng email + OTP, hoặc trong "Đơn hàng của tôi". | BR-06, BR-12, BR-13, BR-15, BR-18, BR-21, BR-22 |
+| UC-38 | Admin quản lý sản phẩm: danh mục, thương hiệu đối tác, biến thể, **nhiều ảnh** (kéo thả thứ tự, ảnh đại diện, mô tả ảnh, ảnh theo biến thể), tồn kho có lịch sử, tự xuất bản. | BR-20, BR-23, BR-25 |
+| UC-39 | Admin **import sản phẩm hàng loạt** từ Excel/CSV kèm thư mục ảnh: xem trước, báo lỗi từng dòng, sửa hoặc bỏ dòng, tải ảnh có tiến độ, tạo mới hoặc cập nhật theo SKU/slug, chạy lại không tạo trùng; xuất sản phẩm cùng định dạng. | BR-20 |
+| UC-40 | Admin xử lý đơn (desktop và PWA): xác nhận COD, đóng gói, giao (mã vận đơn), đã giao, huỷ, hoàn tiền thủ công (step-up); xuất Excel đơn (step-up + audit); duyệt đánh giá. | BR-04, BR-15, BR-24 |
+
 ### 6.4 Use case giai đoạn 2–3 (tóm tắt)
 
 | Mã | Vai trò | Mô tả & luồng chính tóm tắt | Quy tắc |
@@ -583,7 +605,7 @@ Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định b�
 | **BR-07** | Lead gửi lại (cùng số điện thoại hoặc email) trong khoảng thời gian ngắn được **cảnh báo/gộp**, không tạo bản sao vô hạn. | Tránh nhiễu danh sách, tránh liên hệ một người nhiều lần |
 | **BR-08** | **Không thu thông tin cá nhân của học sinh.** Trường/giáo viên chỉ khai số lượng (số lớp, số học sinh). | Học sinh là trẻ vị thành niên, giảm rủi ro dữ liệu |
 | **BR-09** | Số liệu tác động chỉ được công bố công khai hoặc đưa vào báo cáo ESG khi đã **có nguồn và được Super Admin duyệt.** | Tránh cường điệu (greenwashing), bảo vệ uy tín với đối tác ESG |
-| **BR-10** | Giá hiển thị công khai là **khoảng giá niêm yết** (30.000đ – 500.000đ tùy nhóm). Giá chốt do đội xác nhận khi liên hệ, đến khi có đơn hàng ở GĐ2. | Khớp với thực tế chưa có thanh toán online ở GĐ1 |
+| **BR-10** | Sản phẩm trong **Cửa hàng** có **giá bán cố định** (sửa 17/11/2026: LAVIECO đã qua giai đoạn bán hàng). Đơn số lượng lớn/B2B (UC-18, UC-25) vẫn báo giá qua đội. | Đã có thanh toán online (ADR-0028) |
 | **BR-11** | Ghi chú và đánh dấu cá nhân **chỉ chủ sở hữu thấy**; admin không truy cập nội dung ghi chú. | Riêng tư của người đọc |
 | **BR-12** | Email người đặt vé và người đăng ký tài khoản phải **xác thực bằng OTP** trước khi tạo đơn/tài khoản, kể cả chương trình miễn phí. | Chống đăng ký ảo, vé gửi đúng người |
 | **BR-13** | Chỉ thu thông tin **người đặt** (họ tên, email, SĐT) và số lượng vé. **Không** thu tên từng người tham dự, dữ liệu sức khoẻ, cân nặng, CCCD. Chương trình cho trẻ em: người đặt là phụ huynh/người giám hộ. | Thu tối thiểu (BR-06), bảo vệ trẻ vị thành niên (BR-08) |
@@ -593,6 +615,12 @@ Luồng chi tiết ở `05-programs-module.md` §5 và mục "Quyết định b�
 | **BR-17** | Sự kiện do người có quyền tự xuất bản, không cần người duyệt thứ hai (khác BR-05). Chỉ gỡ xuất bản khi chưa có người đăng ký. Form đã có người trả lời chỉ được thêm hoặc ẩn câu hỏi. | Không làm mất dữ liệu người đăng ký |
 | **BR-18** | Mỗi đơn dùng **một** mã ưu đãi, không cộng dồn; tiền giảm tính ở server trên tạm tính và không vượt tạm tính; không vượt tổng lượt và lượt mỗi khách; lượt dùng đi theo đơn (giữ → đã dùng, hoặc trả lại khi đơn hết hạn/huỷ); **hoàn tiền không trả lại lượt dùng**. Từ chối mã luôn bằng một thông báo chung. |
 | **BR-19** | Email hàng loạt phải tôn trọng huỷ nhận và có hạn mức riêng, không được làm ảnh hưởng email OTP và email vé. Gửi cần xác thực lại, gõ lại số người nhận và được ghi nhật ký. |
+| **BR-20** | Trang sản phẩm luôn có **story card** (thông điệp, câu chuyện, bài học) và **liên kết một chương Cẩm nang**; thiếu một trong hai, hoặc thiếu ảnh có mô tả, hoặc thiếu biến thể đang bán thì **không xuất bản được** (mở rộng BR-01). | Sản phẩm là minh chứng |
+| **BR-21** | Giá, giảm giá và phí vận chuyển **tính ở server**; dòng đơn lưu **bản chụp** tên, biến thể, giá. Đổi giá sau không ảnh hưởng đơn đã tạo. | An toàn tiền |
+| **BR-22** | Giữ hàng chỉ sau OTP (như BR-14), **15 phút** khi chờ thanh toán; hết hạn hoặc huỷ thì nhả hàng. **Không bán vượt tồn kho.** Giỏ hàng không giữ hàng. | Công bằng, không bán vượt |
+| **BR-23** | Số liệu tác động trên sản phẩm (ví dụ gram vỏ tái chế) chỉ hiện khi **có nguồn** và đã được người có `impact:approve` duyệt (áp BR-09). Chưa duyệt thì ẩn phần đó, không chặn xuất bản. | Tránh greenwashing |
+| **BR-24** | Đánh giá sản phẩm chỉ từ **đơn đã giao**, một đánh giá cho một dòng đơn, chỉ chữ thuần, **duyệt trước khi hiện**, không hiện email/SĐT. | Đánh giá thật, riêng tư |
+| **BR-25** | Sản phẩm của thương hiệu đối tác ghi rõ thương hiệu. Tỉ lệ hoa hồng chụp lại trên dòng đơn, **không hiện công khai**; chi trả hoa hồng làm ngoài hệ thống. | Lớp Truyền thông, minh bạch nội bộ |
 
 ## 8. Thực thể khái niệm & vòng đời
 
@@ -782,4 +810,5 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.5 | 17/10/2026 | Phân hệ Chương trình vào GĐ1 (ADR-014): Member (UC-09 lên GĐ1), UC-30 → 34, BR-12 → 17, quyền mới trong ma trận, A1 cập nhật, A9 | V.C. Trọng |
 | v0.6 | 18/10/2026 | UC-32: sự kiện đã diễn ra (lưu trữ); UC-30: ô lưu ý an toàn chỉ khi chương trình có lưu ý | V.C. Trọng |
 | v0.7 | 18/10/2026 | Phase 2b: UC-09 thêm ảnh đại diện tuỳ chọn của Member; UC-32 có ảnh bìa và thư viện ảnh (≤ 12, bắt buộc mô tả ảnh). Ảnh lưu ở Cloudinary, đã xoá EXIF (ADR-020) | V.C. Trọng |
+| v0.9 | 17/11/2026 | Phân hệ Cửa hàng (ADR-0028): sửa BR-10 (giá cố định), thêm BR-20 → 25, UC-35 → 40 (§6.3c), dòng mới trong ma trận §4.4 | V.C. Trọng |
 | v0.8 | 22/10/2026 | Trang Chương trình làm lại: UC-32 thêm trạng thái **Đã huỷ** (cuối; vô hiệu vé, đơn đã trả tiền chờ hoàn thủ công, email người đặt), banner/poster, "Bạn sẽ nhận", bảng chính sách huỷ, giới thiệu người hướng dẫn. "Miễn phí" = **mọi** loại vé 0đ; "Sắp hết chỗ" khi còn ≤ 20% hoặc ≤ 5 chỗ; chương trình quá giờ kết thúc tự vào mục "Đã diễn ra". Số người tham gia: vé đã check-in, hoặc số nhập tay của sự kiện lưu trữ sau khi Super Admin duyệt (BR-09, permission `impact:approve`) | V.C. Trọng |

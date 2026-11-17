@@ -34,6 +34,17 @@ export const PERMISSIONS = [
   "survey:write",
   /** Bulk email: audiences hold personal data, and it reaches people outside. */
   "campaign:send",
+  // Shop (ADR-0028). Shop orders share the `order` resource with ticket orders.
+  "product:read",
+  "product:write",
+  /** Publish, hide or archive a product (BR-20 checked by the service). */
+  "product:publish",
+  /** Bulk import from Excel/CSV. */
+  "product:import",
+  /** Confirm cash on delivery, pack, ship, deliver, cancel shop orders; moderate reviews. */
+  "order:fulfill",
+  /** Excel export of shop orders: personal data, step-up and audit. */
+  "order:export",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];

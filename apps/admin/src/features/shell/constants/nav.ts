@@ -27,8 +27,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
       { id: "campaigns", href: "/campaigns", permission: "campaign:send", available: true },
       { id: "orders", href: "/orders", permission: "order:read", available: true },
       { id: "checkin", href: "/checkin", permission: "checkin:perform", available: true },
-      // Placeholder page until the shop exists (no permission yet: nothing to protect).
-      { id: "shop", href: "/shop", permission: null, available: true },
+      { id: "shop", href: "/shop", permission: "product:read", available: true },
     ],
   },
   {
@@ -72,6 +71,6 @@ export const MOBILE_TABS: readonly MobileTab[] = [
   { id: "events", href: "/events", permission: "program:read" },
   { id: "orders", href: "/orders", permission: "order:read" },
   { id: "checkin", href: "/checkin", permission: "checkin:perform" },
-  { id: "shop", href: "/shop", permission: null },
+  { id: "shop", href: "/shop", permission: "product:read" },
   { id: "more", href: "/more", permission: null },
 ];

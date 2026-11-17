@@ -53,6 +53,17 @@ export function createContentClient(options: ContentClientOptions) {
         requestId,
       }),
 
+    uploadProductImage: (accessToken: string, file: ImageFile, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/media/product-images`,
+        auth: user(accessToken),
+        form: imageForm(file, {}),
+        schema: mediaSchema,
+        timeoutMs: UPLOAD_TIMEOUT_MS,
+        requestId,
+      }),
+
     // --- web (member token, own avatar only) ---
     getMyAvatar: (accessToken: string, requestId?: string) =>
       http.call({
