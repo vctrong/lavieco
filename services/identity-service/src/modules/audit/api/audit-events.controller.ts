@@ -24,7 +24,7 @@ export class AuditEventsController {
 
   @Post()
   @HttpCode(204)
-  @AllowServices("program-service")
+  @AllowServices("program-service", "content-service")
   @ApiOperation({ summary: "Record an audit event of another service (idempotent on eventId)" })
   @ApiZodResponse(204)
   async create(

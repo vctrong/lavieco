@@ -44,6 +44,9 @@ const MATRIX: Record<Permission, [boolean, boolean, boolean, boolean]> = {
   "product:import": [true, true, true, false],
   "order:fulfill": [true, false, true, false],
   "order:export": [true, false, true, false],
+  "handbook:read": [true, true, true, true],
+  "handbook:write": [true, true, false, false],
+  "handbook:publish": [true, true, false, false],
 };
 
 const COLUMNS: readonly Role[] = ["super_admin", "content_editor", "coordinator", "auditor"];

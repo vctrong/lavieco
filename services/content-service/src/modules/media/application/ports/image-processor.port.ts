@@ -15,5 +15,6 @@ export type CleanImage = {
  * bytes do not decode as `format`, `media.too_many_pixels` above the pixel limit.
  */
 export interface ImageProcessor {
-  clean(bytes: Uint8Array, format: MediaFormat): Promise<CleanImage>;
+  /** `output` re-encodes into another format (handbook pages are stored as JPEG). */
+  clean(bytes: Uint8Array, format: MediaFormat, output?: MediaFormat): Promise<CleanImage>;
 }

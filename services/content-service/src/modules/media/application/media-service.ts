@@ -6,6 +6,7 @@ import type {
   EventImagePurpose,
   MediaAttachRequest,
   MediaAttachmentRef,
+  MediaFormat,
   MediaPurpose,
 } from "@lavieco/shared/media";
 
@@ -68,6 +69,54 @@ export class MediaService {
   /** Admin: one image of a shop product (ADR-0028). `pending` until program-service attaches it. */
   uploadProductImage(bytes: Uint8Array, actor: MediaActor) {
     return this.uploadEventImage("product_image", bytes, actor);
+  }
+
+  /**
+   * One page of the handbook (ADR-0029): cleaned and re-encoded as JPEG, attached to
+   * the handbook at once. A page whose cleaned bytes are already stored is reused, so
+   * re-uploading a whole book only stores the pages that really changed.
+   */
+  async storeHandbookPage(
+    bytes: Uint8Array,
+    handbookId: string,
+    actor: MediaActor,
+  ): Promise<{ record: MediaRecord; reused: boolean }> {
+    const prepared = await this.prepare("handbook_page", bytes, "jpeg");
+    const existing = await this.media.findLiveByHash("handbook_page", prepared.record.sha256);
+    if (existing) return { record: existing, reused: true };
+    await this.store(prepared);
+    try {
+      const record = await this.media.insert({
+        ...prepared.record,
+        status: "attached",
+        owner: null,
+        uploadedBy: actor,
+        attachedTo: { service: "content-service", kind: "handbook", id: handbookId },
+      });
+      return { record, reused: false };
+    } catch (error) {
+      await this.forget(prepared.record.publicId);
+      throw error;
+    }
+  }
+
+  /** Handbook page images created before `cutoff` (the cleanup decides which are unused). */
+  listHandbookPageIds(cutoff: Date) {
+    return this.media.listLiveIdsBefore("handbook_page", cutoff);
+  }
+
+  /** Releases handbook page images no kept version uses; their files are deleted by the outbox. */
+  async releaseHandbookPages(ids: readonly string[], now = new Date()) {
+    let released = 0;
+    for (const id of ids) {
+      await this.unitOfWork.run(async (tx) => {
+        const record = await this.media.findById(id, tx);
+        if (!record || record.purpose !== "handbook_page" || record.status === "deleted") return;
+        await this.discard(id, now, tx);
+        released += 1;
+      });
+    }
+    return released;
   }
 
   /** Called by program-service before it saves an event (the snapshot comes from here). */
@@ -180,7 +229,7 @@ export class MediaService {
   }
 
   /** Size → real type → decode, rotate, strip metadata (ADR-0020). Nothing is stored yet. */
-  private async prepare(purpose: MediaPurpose, bytes: Uint8Array) {
+  private async prepare(purpose: MediaPurpose, bytes: Uint8Array, output?: MediaFormat) {
     assertUploadSize(purpose, bytes.byteLength);
     const sniffed = sniffImageFormat(bytes);
     if (sniffed === null) throw new DomainError("media.type_unsupported");
@@ -188,7 +237,7 @@ export class MediaService {
       // `detail` names the format ("heic", "heif", "avif") so the UI can say which one.
       throw new DomainError("media.format_refused", sniffed.format);
     }
-    const clean = await this.images.clean(bytes, sniffed.format);
+    const clean = await this.images.clean(bytes, sniffed.format, output);
     assertPixelCount(clean.width, clean.height);
     const id = this.media.newId();
     return {

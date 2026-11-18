@@ -1,3 +1,24 @@
+import { z } from "zod";
+
+import {
+  handbookImportJobSchema,
+  handbookOverviewSchema,
+  handbookPreviewTokenSchema,
+  handbookPublishResultSchema,
+  handbookPublishedTextSchema,
+  handbookSearchResultSchema,
+  handbookUploadSchema,
+  handbookVersionSchema,
+  publicHandbookPageDetailSchema,
+  publicHandbookSchema,
+  type HandbookDraftCreate,
+  type HandbookImportCreate,
+  type HandbookPageUpdate,
+  type HandbookPublishRequest,
+  type HandbookRestoreRequest,
+  type HandbookStructureUpdate,
+  type HandbookUploadCreate,
+} from "@lavieco/shared/content";
 import {
   mediaSchema,
   memberAvatarSchema,
@@ -61,6 +82,185 @@ export function createContentClient(options: ContentClientOptions) {
         form: imageForm(file, {}),
         schema: mediaSchema,
         timeoutMs: UPLOAD_TIMEOUT_MS,
+        requestId,
+      }),
+
+    // --- admin: handbook (staff token, handbook:read|write|publish, ADR-0029) ---
+    getHandbook: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/handbook`,
+        auth: user(accessToken),
+        schema: handbookOverviewSchema,
+        requestId,
+      }),
+    startHandbookDraft: (accessToken: string, body: HandbookDraftCreate, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/handbook/draft`,
+        auth: user(accessToken),
+        body,
+        schema: handbookVersionSchema,
+        requestId,
+      }),
+    updateHandbookStructure: (
+      accessToken: string,
+      body: HandbookStructureUpdate,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "PUT",
+        path: `${V1}/handbook/draft/structure`,
+        auth: user(accessToken),
+        body,
+        schema: handbookVersionSchema,
+        requestId,
+      }),
+    updateHandbookPage: (
+      accessToken: string,
+      pageId: string,
+      body: HandbookPageUpdate,
+      requestId?: string,
+    ) =>
+      http.call({
+        method: "PATCH",
+        path: `${V1}/handbook/draft/pages/${segment(pageId)}`,
+        auth: user(accessToken),
+        body,
+        schema: handbookVersionSchema,
+        requestId,
+      }),
+    discardHandbookDraft: (accessToken: string, revision: number, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/handbook/draft/discard`,
+        auth: user(accessToken),
+        body: { revision },
+        requestId,
+      }),
+    publishHandbook: (accessToken: string, body: HandbookPublishRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/handbook/draft/publish`,
+        auth: user(accessToken),
+        body,
+        schema: handbookPublishResultSchema,
+        requestId,
+      }),
+    restoreHandbook: (accessToken: string, body: HandbookRestoreRequest, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/handbook/restore`,
+        auth: user(accessToken),
+        body,
+        schema: handbookPublishResultSchema,
+        requestId,
+      }),
+    createHandbookPreviewToken: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/handbook/draft/preview-tokens`,
+        auth: user(accessToken),
+        schema: handbookPreviewTokenSchema,
+        requestId,
+      }),
+    createHandbookUpload: (accessToken: string, body: HandbookUploadCreate, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/handbook/uploads`,
+        auth: user(accessToken),
+        body,
+        schema: handbookUploadSchema,
+        requestId,
+      }),
+    sendHandbookChunk: (
+      accessToken: string,
+      uploadId: string,
+      index: number,
+      chunk: Blob,
+      requestId?: string,
+    ) => {
+      const form = new FormData();
+      form.set("chunk", chunk, "chunk");
+      return http.call({
+        method: "PUT",
+        path: `${V1}/handbook/uploads/${segment(uploadId)}/chunks/${index}`,
+        auth: user(accessToken),
+        form,
+        schema: handbookUploadSchema,
+        timeoutMs: UPLOAD_TIMEOUT_MS,
+        requestId,
+      });
+    },
+    createHandbookImport: (accessToken: string, body: HandbookImportCreate, requestId?: string) =>
+      http.call({
+        method: "POST",
+        path: `${V1}/handbook/imports`,
+        auth: user(accessToken),
+        body,
+        schema: handbookImportJobSchema,
+        requestId,
+      }),
+    listHandbookImports: (accessToken: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/handbook/imports`,
+        auth: user(accessToken),
+        schema: z.object({ items: z.array(handbookImportJobSchema) }),
+        requestId,
+      }),
+    getHandbookImport: (accessToken: string, jobId: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/handbook/imports/${segment(jobId)}`,
+        auth: user(accessToken),
+        schema: handbookImportJobSchema,
+        requestId,
+      }),
+
+    // --- web: published handbook (service token, ADR-0029) ---
+    getPublishedHandbook: (requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-handbook`,
+        auth: service,
+        schema: publicHandbookSchema,
+        idempotent: true,
+        requestId,
+      }),
+    getPublishedHandbookPage: (key: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-handbook/pages/${segment(key)}`,
+        auth: service,
+        schema: publicHandbookPageDetailSchema,
+        idempotent: true,
+        requestId,
+      }),
+    searchHandbook: (query: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-handbook/search?q=${encodeURIComponent(query)}`,
+        auth: service,
+        schema: handbookSearchResultSchema,
+        idempotent: true,
+        requestId,
+      }),
+    getHandbookText: (cursor: number, limit: number, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-handbook/text?cursor=${cursor}&limit=${limit}`,
+        auth: service,
+        schema: handbookPublishedTextSchema,
+        idempotent: true,
+        requestId,
+      }),
+    getHandbookPreview: (token: string, requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/published-handbook/previews/${segment(token)}`,
+        auth: service,
+        schema: publicHandbookSchema,
         requestId,
       }),
 

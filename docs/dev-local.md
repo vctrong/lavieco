@@ -10,6 +10,7 @@ Tài liệu ngắn để dựng và chạy toàn bộ monorepo trên máy. **Ch�
 | Docker Desktop | Chạy MongoDB (replica set) và Mailpit. Phải đang mở trước khi chạy `npm run dev:up` |
 | Git | Trên Windows có Git Bash là đủ |
 | Ứng dụng authenticator (tuỳ chọn) | Google Authenticator, 1Password…; hoặc dùng `npm run dev:totp` |
+| poppler (tuỳ chọn) | Chỉ cần khi thử **nhập PDF Cẩm nang** ở máy dev (`pdfinfo`, `pdftoppm`, `pdftotext` phải có trong PATH). Windows: `winget install oschwartz10612.Poppler` hoặc `choco install poppler`; macOS: `brew install poppler`. Ảnh PNG/JPG nhập được mà không cần poppler. Image Docker của `content-service` đã có sẵn (ADR-0029) |
 
 ## 2. Lần đầu
 

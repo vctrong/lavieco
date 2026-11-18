@@ -14,6 +14,7 @@ export const PUSH_TOPICS = [
   "order_attention",
   "event_seats",
   "lead_new",
+  "handbook_published",
 ] as const;
 export const pushTopicSchema = z.enum(PUSH_TOPICS);
 export type PushTopic = z.infer<typeof pushTopicSchema>;
@@ -25,6 +26,7 @@ export const PUSH_TOPIC_PERMISSIONS: Readonly<Record<PushTopic, Permission>> = {
   order_attention: "order:read",
   event_seats: "program:read",
   lead_new: "lead:read",
+  handbook_published: "handbook:read",
 };
 
 /** Base64url without padding, as browsers give the subscription keys. */

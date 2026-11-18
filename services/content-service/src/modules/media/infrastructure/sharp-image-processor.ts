@@ -13,7 +13,7 @@ import type { CleanImage, ImageProcessor } from "../application/ports/image-proc
  */
 @Injectable()
 export class SharpImageProcessor implements ImageProcessor {
-  async clean(bytes: Uint8Array, format: MediaFormat): Promise<CleanImage> {
+  async clean(bytes: Uint8Array, format: MediaFormat, output = format): Promise<CleanImage> {
     const input = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength);
     const options = { limitInputPixels: MEDIA_LIMITS.maxPixels, failOn: "error" } as const;
     let metadata: sharp.Metadata;
@@ -28,16 +28,26 @@ export class SharpImageProcessor implements ImageProcessor {
     // The decoder must agree with the magic bytes, or the file is not what it claims.
     if (metadata.format !== format) throw new DomainError("media.image_invalid");
 
-    const pipeline = sharp(input, options).rotate();
+    // A transparent PNG flattened to JPEG gets a white page, not a black one.
+    const base = sharp(input, options).rotate();
+    const pipeline =
+      output === "jpeg" && format !== "jpeg"
+        ? base.flatten({ background: { r: 255, g: 255, b: 255 } })
+        : base;
     const encoded =
-      format === "jpeg"
+      output === "jpeg"
         ? pipeline.jpeg({ quality: 90, mozjpeg: true })
-        : format === "png"
+        : output === "png"
           ? pipeline.png({ compressionLevel: 9 })
           : pipeline.webp({ quality: 90 });
     try {
       const { data, info } = await encoded.toBuffer({ resolveWithObject: true });
-      return { bytes: new Uint8Array(data), width: info.width, height: info.height, format };
+      return {
+        bytes: new Uint8Array(data),
+        width: info.width,
+        height: info.height,
+        format: output,
+      };
     } catch {
       throw new DomainError("media.image_invalid");
     }

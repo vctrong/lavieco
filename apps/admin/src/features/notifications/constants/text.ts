@@ -38,6 +38,7 @@ export const TEXT = {
         order_attention: "Đơn cần xử lý (cần hoàn tiền, lệch số tiền)",
         event_seats: "Chương trình sắp hết chỗ hoặc đã hết chỗ",
         lead_new: "Liên hệ hợp tác mới",
+        handbook_published: "Cẩm nang Xanh số có phiên bản mới",
       } satisfies Record<PushTopic, string>,
       notes: {
         lead_new: "Sẽ hoạt động khi form hợp tác ra mắt.",

@@ -49,7 +49,7 @@
 | Chủ đề | Quy ước |
 |---|---|
 | **Database** | `lavieco_<service>`: `lavieco_identity`, `lavieco_content`, `lavieco_lead`. Mỗi môi trường một cụm/instance riêng (không dùng hậu tố tên database để tách môi trường). |
-| **Collection** | `snake_case`, số nhiều: `handbook_chapters`, `qr_codes`. |
+| **Collection** | `snake_case`, số nhiều: `handbook_versions`, `qr_codes`. |
 | **Trường** | `camelCase`. Trường khóa ngoại kết thúc bằng `Id`: `leadId`, `assigneeId`. |
 | **`_id`** | `ObjectId`. Ngoại lệ có chủ đích: `site_settings` (`_id` cố định `"public"`/`"system"`). |
 | **Thời gian** | `Date` (UTC). Riêng trường phân nhóm theo ngày (`day`) là chuỗi `YYYY-MM-DD` tính theo **Asia/Ho_Chi_Minh** để báo cáo khớp lịch của đội. |
@@ -79,7 +79,11 @@
 | | `push_subscriptions` | Thiết bị staff nhận thông báo đẩy (ADR-0027) | ≤ 10 / staff |
 | | `push_preferences` | Chủ đề thông báo staff đã chọn | ≤ 1 / staff |
 | | `push_deliveries` | Mã thông báo đã gửi (chống gửi trùng khi outbox thử lại) | tạm thời (TTL 7 ngày) |
-| **content** | `handbook_chapters` | Chương cẩm nang (chứa trang và khối) | chục |
+| **content** | `handbooks` | Cẩm nang (GĐ1: một cuốn) và con trỏ phiên bản (ADR-0029) | 1 |
+| | `handbook_versions` | Mỗi phiên bản là bản chụp đầy đủ chương + trang ảnh + chữ + điểm bấm | chục |
+| | `handbook_uploads` | Upload theo khúc đang chờ nhập (tệp trên đĩa) | tạm thời (TTL 2 ngày) |
+| | `handbook_import_jobs` | Job nhập PDF/ảnh, tiến độ, cảnh báo | tạm thời (TTL 30 ngày) |
+| | `handbook_preview_tokens` | Băm token xem trước bản nháp | tạm thời (TTL 10 phút) |
 | | `works` | Tác phẩm, kèm story card nhúng | chục–trăm |
 | | `work_categories` | Nhóm sản phẩm | 3 |
 | | `program_pages` | Mô tả công khai chương trình | 4 |
@@ -141,13 +145,13 @@ erDiagram
 erDiagram
   WORK_CATEGORIES ||--o{ WORKS : "gom"
   WORKS ||--o{ CONTENT_REVISIONS : "lich su"
-  HANDBOOK_CHAPTERS ||--o{ CONTENT_REVISIONS : "lich su"
+  HANDBOOKS ||--o{ HANDBOOK_VERSIONS : "phien ban"
   PROGRAM_PAGES ||--o{ CONTENT_REVISIONS : "lich su"
   PAGES ||--o{ CONTENT_REVISIONS : "lich su"
   QR_CODES ||--o{ QR_SCAN_DAILY : "dem"
-  HANDBOOK_CHAPTERS ||--o{ HANDBOOK_STATS_DAILY : "dem"
+  HANDBOOKS ||--o{ HANDBOOK_STATS_DAILY : "dem"
   QR_CODES }o--o| WORKS : "tro toi"
-  QR_CODES }o--o| HANDBOOK_CHAPTERS : "tro toi"
+  QR_CODES }o--o| HANDBOOKS : "tro toi"
   WORKS }o--o{ MEDIA : "thu vien anh"
   WORKS {
     ObjectId _id PK
@@ -184,7 +188,7 @@ erDiagram
 
 ## 3. Mẫu tài liệu có thể xuất bản (publishable)
 
-Áp dụng cho `handbook_chapters`, `works`, `program_pages`, `pages`. Thay vì hai collection (nháp và xuất bản), mỗi tài liệu chứa **cả bản nháp lẫn bản đang chạy**:
+Áp dụng cho `works`, `program_pages`, `pages`. (Cẩm nang có mô hình phiên bản riêng, §5.1, ADR-0029.) Thay vì hai collection (nháp và xuất bản), mỗi tài liệu chứa **cả bản nháp lẫn bản đang chạy**:
 
 ```jsonc
 {
@@ -326,37 +330,29 @@ Không chứa PII của khách: nội dung thông báo không lưu ở đây.
 
 ## 5. Database `lavieco_content`
 
-### 5.1 `handbook_chapters`
+### 5.1 Cẩm nang: `handbooks`, `handbook_versions` (ADR-0029)
 
-Dùng mẫu publishable (mục 3). **Chương là đơn vị xuất bản; trang và khối được nhúng.** Lý do: người đọc lấy cả chương một lần, xuất bản theo chương là nguyên tử, dữ liệu vừa (chục trang/chương).
+Trang Cẩm nang là **ảnh** do nhóm đồ hoạ thiết kế (A5 dọc) kèm **chữ** của trang. Bản cũ (chương có khối nội dung) đã bỏ. Không theo mẫu publishable §3: **cả cuốn có phiên bản**, mỗi phiên bản là một tài liệu bất biến sau khi xuất bản.
 
-Nội dung (`draft`/`published`):
+**`handbooks`**: `slug` (unique, GĐ1 `cam-nang-xanh-so`), `accessLevel` (`free`·`member`·`premium`, BR-03), `publishedVersionId`, `draftVersionId`, `lastNumber` (số phiên bản lớn nhất đã cấp), `revision` (khoá lạc quan cho con trỏ). Index `idx_handbooks_slug_uq`.
+
+**`handbook_versions`**: `handbookId`, `number` (1, 2, 3…), `status` (`draft`·`published`·`archived`; archived mà `publishedAt = null` là bản nháp đã bỏ), `title`, `description`, `note` (ghi chú phiên bản, bắt buộc khi xuất bản, BR-26), `basedOnNumber`, `revision`, `createdBy`/`publishedBy` (`{ userId, name }` bản chụp), `publishedAt`, và:
 
 | Trường | Ghi chú |
 |---|---|
-| `title`, `summary` | `LocalizedText`. |
-| `coverMediaId` | Tham chiếu `media`. |
-| `accessLevel` | `free` (GĐ1) · `member` · `premium` (BR-03). Có sẵn từ đầu để làm freemium (GĐ3). |
-| `pages[]` | Mỗi trang: `{ id (UUID ổn định), order, title, blocks[] }`. |
-| `pages[].blocks[]` | Mỗi khối: `{ id (UUID ổn định), type, data }`. |
+| `chapters[]` | `{ id (UUID ổn định), slug, title, tint }`. `tint` ∈ `mint`·`canary`·`paper`·`emerald`·`deep-blue` (màu tab mép sổ). ≤ 30. Slug giữ nguyên khi đổi tên (sản phẩm liên kết theo slug chương). |
+| `pages[]` | `{ id (UUID ổn định), key (8 ký tự Crockford ngẫu nhiên, địa chỉ `/cam-nang/trang/<key>`), chapterId, title, alt, image { mediaId, publicId, width, height }, text (≤ 8 000 ký tự), textSource (`pdf`·`manual`·`none`), hotspots[] }`. ≤ 300. Trang của một chương liền nhau, thứ tự mảng là thứ tự đọc. |
+| `pages[].hotspots[]` | `{ id, x, y, w, h (% của trang), label, target }`; `target` theo `type`: `product { productId, slug, title }` (bản chụp từ program-service), `page { pageId }`, `video { url }` (chỉ YouTube/TikTok), `url { url }` (https), `laviagent { prompt }`. ≤ 20/trang. |
 
-**`id` của trang và khối là UUID ổn định qua các lần chỉnh sửa/xuất bản**: đây là điểm neo cho ghi chú và đánh dấu của người đọc (GĐ1 lưu ở trình duyệt, GĐ2 đồng bộ, xem 9.1).
+**Quy tắc:** một bản nháp mỗi cuốn (`idx_handbook_versions_draft_uq`, partial `{ status: "draft" }`); `idx_handbook_versions_handbook_id_number_uq`. Sửa bản nháp kèm `revision` (409 khi lệch). Xuất bản trong một giao dịch: nháp → `published`, bản đang chạy → `archived`, dời con trỏ, outbox `handbook.published` (làm mới cache web + thông báo đẩy) + `audit.record`. Khôi phục = tài liệu mới chép nội dung bản cũ, xuất bản ngay. Endpoint công khai chỉ đọc bản `published` qua con trỏ và trả hình dạng công khai (không `note`, `mediaId`, `revision`, người soạn).
 
-**Loại khối (`blocks[].type`)**, kiểm tra bằng Zod theo từng loại:
+**Ảnh:** `media` purpose `handbook_page` (JPEG đã làm sạch, ≤ 25 MB khi tải lên), gắn `attachedTo { service: "content-service", kind: "handbook" }` ngay khi lưu. Ảnh trùng SHA-256 dùng lại (`idx_media_purpose_sha256`, partial `live`). Giữ ảnh của bản đang xuất bản, bản nháp và 3 bản đã xuất bản gần nhất; job dọn 6 giờ/lần giải phóng ảnh mồ côi cũ hơn 24 giờ.
 
-| Loại | Dữ liệu chính | Ghi chú giao diện |
-|---|---|---|
-| `heading` | `text`, `level` | |
-| `paragraph` | `content: LocalizedRichText` | Mảng span (đậm, nghiêng, liên kết); không HTML |
-| `image` | `mediaId`, `alt`, `caption` | `alt` bắt buộc |
-| `quote` | `text`, `attribution?` | Trích dẫn nổi bật |
-| `callout` | `tone`, `content` | Khối nhấn mạnh |
-| `infographic` | `mediaId`, `alt`, `caption?` | Sơ đồ minh họa |
-| `reveal` | `prompt`, `content` | "Chạm để lật mở bí mật phế phẩm" |
-| `note_area` | `label` | Vùng "Ghi chú của bạn" (nội dung ghi chú **không** lưu ở đây) |
-| `related_works` | `workIds[]` | Gắn tác phẩm liên quan |
+**`handbook_uploads`** (TTL 2 ngày): `kind` (`pdf`·`image`), `fileName`, `size`, `chunkBytes` (6 MB), `chunks`, `receivedChunks`, `consumed`, `createdBy`. Tệp nằm ở `HANDBOOK_UPLOAD_DIR`, xoá khi nhập xong, muộn nhất sau 24 giờ.
 
-**Index:** `{ slug: 1 }` unique · `{ live: 1, order: 1 }` · `{ status: 1, updatedAt: -1 }`.
+**`handbook_import_jobs`** (TTL 30 ngày): `draftVersionId`, `uploadIds`, `mode` (`append`·`replace_all`·`replace_page`), `pageId`, `chapterId`, `status` (`queued`·`running`·`done`·`failed`), `total`, `done`, `warnings[] { code, page }`, `error`, `leaseUntil`. Index `{ status, createdAt }` (hàng đợi), `{ handbookId, createdAt: -1 }`.
+
+**`handbook_preview_tokens`**: `tokenHash` (unique), `versionId`, `createdBy`, `expiresAt` (TTL).
 
 ### 5.2 `works` (tác phẩm, kèm story card nhúng)
 
@@ -615,7 +611,7 @@ flowchart LR
   subgraph content["lavieco_content"]
     works[("works")]
     prog[("program_pages")]
-    chap[("handbook_chapters")]
+    chap[("handbook_versions")]
   end
   subgraph lead["lavieco_lead"]
     leads[("leads")]
@@ -857,15 +853,15 @@ Không dùng vai trò `readWrite` dựng sẵn cho ứng dụng vì nó gồm c�
 
 | Use case | Collection đọc/ghi |
 |---|---|
-| UC-01 Quét QR | đọc `qr_codes`, `works`/`handbook_chapters`; ghi `qr_scan_daily` |
-| UC-02 Đọc cẩm nang | đọc `handbook_chapters`; ghi `handbook_stats_daily` (ghi chú ở trình duyệt) |
+| UC-01 Quét QR | đọc `qr_codes`, `works`/`handbooks`; ghi `qr_scan_daily` |
+| UC-02 Đọc cẩm nang | đọc `handbooks`, `handbook_versions` (bản xuất bản); đánh dấu ở trình duyệt |
 | UC-03 Bộ sưu tập | đọc `works`, `work_categories`, `media` |
 | UC-04 Yêu cầu quà tặng | ghi `leads`, `gift_requests`, `idempotency_keys`, `outbox`, `counters`; đọc `consent_texts` (qua `web`) |
 | UC-05 / 06 Form hợp tác, đăng ký khóa học | ghi `leads`, `idempotency_keys`, `outbox`, `counters`; đọc `program_pages` (qua `web`) |
 | UC-07 Nhận tin khi ra mắt | ghi `waitlist_subscribers`; đọc `consent_texts` |
 | UC-08 Trang giới thiệu | đọc `pages`, `media` |
 | UC-21 Quản lý lead | đọc/ghi `leads`, `lead_notes`, `gift_requests`; ghi `outbox`; đọc `users` (qua `identity-service`) |
-| UC-22 Soạn & xuất bản cẩm nang | đọc/ghi `handbook_chapters`, `content_revisions`, `media`, `outbox` |
+| UC-22 Soạn & xuất bản cẩm nang | đọc/ghi `handbooks`, `handbook_versions`, `handbook_uploads`, `handbook_import_jobs`, `handbook_preview_tokens`, `media`, `outbox` |
 | UC-23 Tác phẩm, story card, QR | đọc/ghi `works`, `qr_codes`, `content_revisions`, `media`, `outbox`; ghi bản chụp ánh xạ QR (`TODO(qr-snapshot)`) |
 | UC-27 Người dùng & phân quyền | đọc/ghi `users`, `invitations`, `sessions`, `audit_events` |
 | UC-28 Cấu hình site | đọc/ghi `site_settings`, `consent_texts`, `outbox` |
@@ -914,3 +910,4 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 | v0.3 | 20/09/2026 | Bỏ khóa `team` và khối `team_members` khỏi `pages` (Đội ngũ là dữ liệu tĩnh); ghi chú ranh giới `media` và `public/` | V.C. Trọng |
 | v0.9 | 17/11/2026 | Cửa hàng (ADR-0028): §9.3 collection `product_categories`, `partner_brands`, `products`, `product_variants`, `stock_movements`, `carts`, `shop_orders`, `payment_refs`, `product_reviews`, `import_jobs`, `import_job_rows`, `shop_settings`; quyền `svc_program` | V.C. Trọng |
 | v0.8 | 17/11/2026 | Thông báo đẩy cho staff (ADR-0027): `push_subscriptions`, `push_preferences`, `push_deliveries` ở `lavieco_identity` (4.4c, migration `202611170001-push`); `events.seatAlerts` | V.C. Trọng |
+| v1.0 | 19/11/2026 | Cẩm nang trang ảnh có phiên bản (ADR-0029): §5.1 thay `handbook_chapters` (khối) bằng `handbooks` + `handbook_versions` + `handbook_uploads` + `handbook_import_jobs` + `handbook_preview_tokens`; `media` purpose `handbook_page`, index `idx_media_purpose_sha256`; migration `202611190001-handbook` | V.C. Trọng |

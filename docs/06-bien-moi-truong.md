@@ -33,11 +33,12 @@ Mỗi bên gọi có **một cặp khoá Ed25519** sinh bằng `npm run keys:gen
 
 | Bên gọi (giữ khoá riêng) | Khoá công khai phải có trong `SERVICE_TOKEN_TRUSTED_KEYS` của |
 |---|---|
-| `apps/web` (`"web"`) | `identity-service`, `program-service` |
+| `apps/web` (`"web"`) | `identity-service`, `program-service`, `content-service` (đọc Cẩm nang đã xuất bản, ADR-0029) |
 | `apps/admin` (`"admin"`) | `identity-service`, `program-service` |
 | `program-service` (`"program-service"`) | `content-service` (gắn/giải phóng ảnh), `identity-service` (ghi audit qua outbox, ADR-021) |
+| `content-service` (`"content-service"`) | `identity-service` (audit và thông báo đẩy của Cẩm nang qua outbox, ADR-0029) |
 
-Lời gọi thay mặt người dùng (avatar của member, tải ảnh của staff) dùng **token người dùng**, không dùng service token, nên `content-service` không cần khoá của `web`/`admin`.
+Lời gọi thay mặt người dùng (avatar của member, tải ảnh và quản trị Cẩm nang của staff) dùng **token người dùng**, không dùng service token, nên `content-service` không cần khoá của `admin`; khoá của `web` chỉ để đọc Cẩm nang công khai.
 
 Ví dụ `SERVICE_TOKEN_TRUSTED_KEYS` của `program-service`: `'{"web": <JWK công khai của web>, "admin": <JWK công khai của admin>}'` (bọc cả chuỗi JSON trong dấu nháy đơn).
 
@@ -221,6 +222,11 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `CLOUDINARY_CLOUD_NAME` | Bắt buộc | Không | Cloud name | Cloudinary Dashboard → API Keys | **Product environment riêng** cho dev và prod | `demo-dev` |
 | `CLOUDINARY_API_KEY` | Bắt buộc | Không (nhưng đừng công bố) | API key | Cloudinary Dashboard → API Keys | Như trên | `123456789012345` |
 | `CLOUDINARY_API_SECRET` | Bắt buộc | **Có** | API secret, chỉ ở content-service | Cloudinary Dashboard → API Keys → API Secret | Như trên | `gia-cloudinary-secret` |
+| `IDENTITY_SERVICE_URL` | Bắt buộc | Không | identity trên mạng riêng: audit và thông báo đẩy của Cẩm nang (outbox) | Tự đặt | Prod: địa chỉ nội bộ | `http://127.0.0.1:4001` |
+| `SERVICE_TOKEN_PRIVATE_JWK` | Bắt buộc | **Có** | Khoá riêng Ed25519 của content-service; nửa công khai vào `SERVICE_TOKEN_TRUSTED_KEYS` của identity với tên `"content-service"` | `npm run keys:generate -- content-service` | Khoá riêng cho mỗi môi trường | `{"kty":"OKP",...}` |
+| `WEB_APP_URL` | Bắt buộc | Không | Địa chỉ `web` để gọi `/api/revalidate` sau khi xuất bản Cẩm nang | Tự đặt | Prod: `https://lavieco.io.vn` | `http://localhost:3000` |
+| `REVALIDATE_SECRET` | Bắt buộc | **Có** | Bí mật HMAC, **cùng giá trị** với `REVALIDATE_SECRET` của `web` (và program-service) | `npm run keys:generate` | Như trên | base64 32 byte |
+| `HANDBOOK_UPLOAD_DIR` | Tuỳ chọn (mặc định thư mục tạm của hệ điều hành) | Không | Nơi chứa file PDF/ảnh Cẩm nang đang chờ nhập (xoá sau khi nhập, muộn nhất 24 giờ) | Tự đặt | Prod: volume Docker `/var/lib/lavieco/handbook-uploads` | (để trống) |
 
 ## `program-service`: `services/program-service/.env.local`
 
@@ -305,3 +311,4 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 21/10/2026 | Root: `MONGO_PORT`; `identity-service`, `content-service`, `program-service`: `MONGODB_URI` | Đổi mặc định dev sang cổng `27018` (Mongo local trong compose); thêm mẫu Atlas dạng comment trong `.env.example`. `env:check` báo lỗi khi `SMTP_HOST=localhost` (Node phân giải ra `::1`, Mailpit chỉ nghe `127.0.0.1`). Không đổi tên biến | `docs/dev-local.md` |
 | 17/11/2026 | `identity-service`: `WEB_PUSH_VAPID_PUBLIC_KEY`, `WEB_PUSH_VAPID_PRIVATE_KEY`, `WEB_PUSH_SUBJECT` | Thêm (thông báo đẩy cho staff, ADR-0027) | `feat/admin-pwa` |
 | 17/11/2026 | `identity-service`: `STAFF_REFRESH_TTL_HOURS` | Đổi mặc định `12` → `72` (phiên admin trượt 72 giờ, app cài trên điện thoại) | `feat/admin-pwa` |
+| 19/11/2026 | `content-service`: `IDENTITY_SERVICE_URL`, `SERVICE_TOKEN_PRIVATE_JWK`, `WEB_APP_URL`, `REVALIDATE_SECRET`, `HANDBOOK_UPLOAD_DIR`; `content-service` `SERVICE_TOKEN_TRUSTED_KEYS` thêm `web`; `identity-service` `SERVICE_TOKEN_TRUSTED_KEYS` thêm `content-service` | Thêm | Cẩm nang Xanh số (ADR-0029), `feat/handbook-data-upload-admin` |

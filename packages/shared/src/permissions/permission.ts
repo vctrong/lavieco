@@ -45,6 +45,11 @@ export const PERMISSIONS = [
   "order:fulfill",
   /** Excel export of shop orders: personal data, step-up and audit. */
   "order:export",
+  // Digital Green Handbook (ADR-0029): pages are images, versioned as a whole book.
+  "handbook:read",
+  "handbook:write",
+  /** Publish or restore a version: self-publish, no second reviewer (BR-26). */
+  "handbook:publish",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];

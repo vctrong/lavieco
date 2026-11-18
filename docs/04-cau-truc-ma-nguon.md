@@ -411,7 +411,7 @@ export const TEXT = {
 | **Gọi Server Action** (22/10/2026) | Client gọi qua `callAction` (`src/shared/form-failures.ts`), không `.catch(() => null)`: trang cũ sau deploy → "Trang đã có bản cập nhật" + nút Tải lại, mất mạng → báo kiểm tra mạng. Action bọc `guarded` (`src/lib/action-errors.ts`), không bao giờ ném lỗi ra trình duyệt; mỗi bước một `x-request-id`; chỉ lỗi 5xx/không gọi được mới là "Hệ thống đang bận" kèm mã tham chiếu (8 ký tự đầu của request id, log có đủ id). `common.rate_limited` → "thử lại sau X giây", `common.validation_failed` → dưới đúng trường, `common.unavailable` khi gửi mã OTP → "Chưa gửi được mã xác thực". Turnstile (`TurnstileWidget`, render explicit) reset sau **mỗi** lần gửi qua `resetSignal`. |
 | **Nháp form** (15/11/2026) | Dữ liệu đang nhập không bao giờ mất vì tải lại, đóng tab, hết phiên hay gửi lỗi. Cơ chế chung ở `@lavieco/ui` `drafts/`: `useFormDraft` (ghi sau 800 ms ngừng gõ và ngay khi tab bị ẩn/rời trang, ghi tuần tự nên bản cũ không đè bản mới, trạng thái thật: đang nhập/đang lưu/đã lưu lúc HH:mm/không lưu được), `DraftOfferBanner`, `DraftStatusLine`. Khóa nháp = người dùng + form + bản ghi; `clear()` sau khi server nhận. **Admin** (`src/shared/drafts.tsx`, `useStaffDraft`): IndexedDB `lavieco-admin-drafts`, chủ sở hữu là staff id (`DraftOwnerProvider` ở layout dashboard), giữ 7 ngày; khi mở lại, bản nháp được **đề nghị** khôi phục, không tự áp, và báo nếu bản ghi trên server đã đổi sau bản nháp (`revision`). Đang dùng ở chi tiết chương trình, chiến dịch email, khảo sát, mã giảm giá. **Web công khai** (`src/shared/drafts.ts`, `usePublicDraft`): chứa PII nên chỉ `sessionStorage` (mất khi đóng tab, BR-06), tự điền lại kèm "Xoá và nhập lại"; **không bao giờ** lưu ô đồng ý, honeypot, Turnstile. Đang dùng ở đặt vé và mọi form qua `useLeadForm` (bắt buộc `draftForm`). |
 | **State phía client** | Ưu tiên state cục bộ và server state. Không thêm thư viện quản lý state toàn cục khi chưa có nhu cầu đo được. |
-| **Lưu cục bộ (Cẩm nang)** | Ghi chú/đánh dấu/tiến độ ở IndexedDB, bọc sau một module `features/handbook/storage` với ID UUID, `updatedAt`, cờ xóa mềm (`03` §9.1). Không rải truy cập IndexedDB khắp nơi. |
+| **Lưu cục bộ (Cẩm nang)** | GĐ1: trang đang đọc, trang đã đánh dấu và bật/tắt tiếng lật giấy ở `localStorage` (dữ liệu nhỏ), bọc sau một module `features/handbook/storage` (mọi đọc/ghi trong try/catch; trình duyệt chặn lưu thì vẫn đọc được). Không rải truy cập `localStorage` khắp nơi. GĐ2 đồng bộ theo tài khoản qua `reader_states` (`03` §9.1). |
 
 ### 5.6 Bản đồ `apps/web`
 
@@ -425,8 +425,10 @@ export const TEXT = {
 | `/bo-suu-tap` | Bộ sưu tập, lọc theo nhóm | ISR | `collection` |
 | `/bo-suu-tap/[slug]` | Chi tiết tác phẩm/combo | ISR | `collection` |
 | `/tac-dong` | Từ Cần Thơ ra biển lớn | ISR | `impact` |
-| `/cam-nang` | Mục lục Cẩm nang | ISR | `handbook` |
-| `/cam-nang/[chapterSlug]` | Đọc chương (tùy chọn `?trang=<pageId>`) | ISR + client | `handbook` |
+| `/cam-nang` | Trang bìa Cẩm nang: sổ đóng, "Mở sổ", "Đọc tiếp trang X", các chương (ADR-0029) | ISR, tag `content:handbook` | `handbook` |
+| `/cam-nang/doc?trang=N` | Màn đọc sổ lật trang (2 trang ngang / 1 trang dọc), mục lục, tìm, đánh dấu, điểm bấm; `noindex` (canonical là trang SEO) | ISR + client | `handbook` |
+| `/cam-nang/trang/[key]` | Một trang: ảnh + chữ (chế độ đọc, SEO, chia sẻ, OG image là ảnh trang); có trong sitemap | ISR, tag `content:handbook` | `handbook` |
+| `/xem-truoc/cam-nang/[token]` | Xem trước bản nháp Cẩm nang bằng token 10 phút, `noindex` | Động, không cache | `handbook` |
 | `/hop-tac` | Form hợp tác, 5 nhóm đối tác | ISR + form | `contact` |
 | `/sap-ra-mat` | Trang chờ + nhận tin | ISR + form | `coming-soon` |
 | `/dang-ky` · `/dang-nhap` · `/quen-mat-khau` | Tài khoản Member: đăng ký (OTP), đăng nhập, Google, đặt lại mật khẩu | Động | `auth` |
@@ -457,7 +459,7 @@ export const TEXT = {
 | `story`, `programs`, `impact` | Trang giới thiệu; `programs` dành cho mô tả `program_pages` (content-service) |
 | `events` | `/chuong-trinh` (danh sách, lọc bằng link/GET form), `/chuong-trinh/[slug]`, xem trước, `/chuong-trinh/truong-hoc` (ghép form `contact` ở `app/`). Đọc qua `unstable_cache` với tag `program:events`, `program:events:<slug>` |
 | `collection` | Danh sách, bộ lọc, chi tiết tác phẩm, "trong hộp có gì", tác phẩm liên quan |
-| `handbook` | Trình đọc: mục lục chương, kết xuất khối, lật trang, ghi chú, đánh dấu, cỡ chữ, chế độ tối, tiến độ; `storage` cục bộ |
+| `handbook` | Sổ lật trang từ trang ảnh (ADR-0029): bìa, màn đọc (lật trang CSS 3D + `motion`, 1/2 trang theo màn hình, tải trước trang kế), mục lục, tìm trong sổ, đánh dấu, điểm bấm, chế độ đọc/SEO; `storage` cục bộ |
 | `contact` | Form hợp tác |
 | `gift-request` | Form chọn quà / đặt số lượng lớn |
 | `waitlist` | Form nhận tin |
@@ -482,7 +484,7 @@ apps/admin/src/
 │       ├── notifications/           # bật/tắt thông báo đẩy trên máy này, chọn chủ đề (ADR-0027)
 │       │   # events/: danh sách, new/, [id]/ (soạn), [id]/preview/ (Route Handler chuyển hướng sang web), types/ (loại chương trình)
 │       ├── leads/                   # danh sách, chi tiết
-│       ├── handbook/                # chương, soạn, duyệt
+│       ├── handbook/                # Cẩm nang (ADR-0029): quản lý trang, history/, preview/ (Route Handler sang web)
 │       ├── works/                   # tác phẩm, story card
 │       ├── qr/                      # mã QR, thống kê
 │       ├── programs/  pages/        # mô tả chương trình công khai (program_pages), trang tĩnh
@@ -1027,3 +1029,4 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.13 | 17/11/2026 | Cửa hàng (ADR-0028): module `shop-*` của `program-service`, route admin `/shop/*`, ảnh sản phẩm không dùng khung vòm (`arch-frame`), khung bo góc 1:1/4:5 | V.C. Trọng |
 | v0.12 | 17/11/2026 | Xuất Excel có định dạng chung (`ExcelWorkbookWriter` nhận `Workbook` có kiểu cột: số, tiền VND, ngày giờ Việt Nam, mã giữ nguyên, trạng thái tô màu; tiêu đề Deep Blue + bộ lọc, cố định dòng đầu và 2 cột đầu, dòng xen màu, sheet "Tổng quan"); bản sao token `sheet-tokens.ts` | V.C. Trọng |
 | v0.11 | 17/11/2026 | Admin PWA (ADR-0027): `features/pwa`, `public/sw.js`, khung mobile có thanh tab, `/shop`, `/more`, `/notifications`, ngoại lệ hex cho manifest; identity module `push`, program-service module `staff-alerts` | V.C. Trọng |
+| v0.13 | 19/11/2026 | Cẩm nang trang ảnh (ADR-0029): route web `/cam-nang`, `/cam-nang/doc`, `/cam-nang/trang/[key]`, `/xem-truoc/cam-nang/[token]` thay `/cam-nang/[chapterSlug]`; admin `/handbook`, `/handbook/history`, `/handbook/preview`, BFF `PUT /api/handbook/uploads/[id]/chunks/[index]`; lưu cục bộ Cẩm nang bằng `localStorage` | V.C. Trọng |

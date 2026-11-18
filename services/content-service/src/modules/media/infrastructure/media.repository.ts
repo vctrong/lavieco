@@ -47,9 +47,7 @@ function toRecord(doc: MediaDoc): MediaRecord {
     format: doc.format,
     sha256: doc.sha256,
     owner: doc.owner ? { kind: "member", userId: doc.owner.userId } : null,
-    attachedTo: doc.attachedTo
-      ? { service: "program-service", kind: "event", id: doc.attachedTo.id }
-      : null,
+    attachedTo: doc.attachedTo ?? null,
     uploadedBy: { kind: doc.uploadedBy.kind, userId: doc.uploadedBy.userId },
     deletedAt: doc.deletedAt ?? null,
     storageDeletedAt: doc.storageDeletedAt ?? null,
@@ -88,7 +86,7 @@ export class MongoMediaRepository implements MediaRepository {
             sha256: media.sha256,
             exifStripped: true,
             owner: media.owner,
-            attachedTo: null,
+            attachedTo: media.attachedTo ?? null,
             uploadedBy: media.uploadedBy,
             eraseAfterDestroy: false,
           },
@@ -178,5 +176,18 @@ export class MongoMediaRepository implements MediaRepository {
       .lean<MediaDoc[]>()
       .exec();
     return docs.map(toRecord);
+  }
+
+  async findLiveByHash(purpose: MediaPurpose, sha256: string) {
+    const doc = await this.model.findOne({ purpose, sha256, live: true }).lean<MediaDoc>().exec();
+    return doc ? toRecord(doc) : null;
+  }
+
+  async listLiveIdsBefore(purpose: MediaPurpose, cutoff: Date) {
+    const docs = await this.model
+      .find({ purpose, live: true, createdAt: { $lt: cutoff } }, { _id: 1 })
+      .lean<Pick<MediaDoc, "_id">[]>()
+      .exec();
+    return docs.map((doc) => doc._id.toHexString());
   }
 }
