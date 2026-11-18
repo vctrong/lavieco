@@ -56,8 +56,9 @@ export const TEXT = {
         total > 0 ? `Đang xử lý trang ${done}/${total}` : "Đang mở file…",
       done: (total: number) => `Đã nhập ${total} trang vào bản nháp.`,
       warnings: {
-        aspect_off: (page: number | null) => `Trang ${page ?? "?"} lệch khổ A5`,
-        missing_text: (page: number | null) => `Trang ${page ?? "?"} thiếu chữ`,
+        aspect_off: (pages: number[]) => `Lệch khổ A5: trang ${pages.join(", ")}`,
+        missing_text: (pages: number[]) =>
+          `${pages.length} trang thiếu chữ (gõ chữ trong ô “Chữ của trang”): trang ${pages.join(", ")}`,
         low_text_ratio: () =>
           "Dưới một nửa số trang có chữ: tìm kiếm và SEO sẽ kém. Hãy xuất PDF với chữ chưa chuyển thành nét (outline), hoặc gõ chữ cho các trang.",
       },
