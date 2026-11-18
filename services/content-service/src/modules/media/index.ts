@@ -6,5 +6,6 @@ export {
 } from "./application/ports/media-storage.port";
 export { CloudinaryMediaStorage } from "./infrastructure/cloudinary-media-storage";
 export { PendingMediaSweeper } from "./infrastructure/pending-media-sweeper";
+export type { MediaActor, MediaRecord } from "./domain/media";
 export { MediaModule, type MediaModuleOptions } from "./media.module";
 export { MEDIA_SERVICE } from "./media.tokens";

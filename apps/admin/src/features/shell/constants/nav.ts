@@ -33,7 +33,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
   {
     id: "content",
     items: [
-      { id: "handbook", href: "/handbook", permission: "content:read", available: false },
+      { id: "handbook", href: "/handbook", permission: "handbook:read", available: true },
       { id: "works", href: "/works", permission: "content:read", available: false },
       { id: "qr", href: "/qr", permission: "qr:read", available: false },
       { id: "programs", href: "/programs", permission: "content:read", available: false },

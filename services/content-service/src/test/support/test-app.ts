@@ -1,23 +1,38 @@
 import "reflect-metadata";
 
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import { Writable } from "node:stream";
 
 import type { INestApplication } from "@nestjs/common";
 import { Test } from "@nestjs/testing";
 import { SignJWT, exportJWK, generateKeyPair, type KeyLike } from "jose";
 import { Types, mongo } from "mongoose";
+import sharp from "sharp";
 import request from "supertest";
 
 import { createLogger } from "@lavieco/observability";
 import { OutboxWorker, configureServiceApp } from "@lavieco/service-kit";
 import type { ServiceName } from "@lavieco/shared";
-import { IDENTITY_ISSUER, TOKEN_AUDIENCES } from "@lavieco/shared/identity";
+import {
+  IDENTITY_ISSUER,
+  TOKEN_AUDIENCES,
+  type AuditEventIngestRequest,
+  type PushNotificationRequest,
+} from "@lavieco/shared/identity";
 import type { Role } from "@lavieco/shared/permissions";
 
 import { AppModule } from "../../app.module";
 import { runMigrations } from "../../cli/migrate";
 import { contentEnvSchema, type ContentEnv } from "../../config/env";
+import {
+  HandbookWorker,
+  PdfInvalidError,
+  type PdfRenderer,
+  type TextExtractor,
+} from "../../modules/handbook";
 import { MediaStorageError, PendingMediaSweeper, type MediaStorage } from "../../modules/media";
 
 type CallerKey = { privateKey: KeyLike; kid: string };
@@ -38,6 +53,51 @@ export class FakeMediaStorage implements MediaStorage {
   }
 }
 
+/**
+ * Stand-in for poppler: a "PDF" whose bytes after the header list its pages as
+ * `<width>x<height>|<text>` lines; each page is rendered as a plain PNG of that size.
+ */
+export class FakePdf implements PdfRenderer, TextExtractor {
+  private pages(path: string) {
+    const raw = readFileSync(path, "utf8");
+    if (raw.includes("ENCRYPTED")) throw new PdfInvalidError("pdf_encrypted");
+    const lines = raw.split("\n").slice(1).filter(Boolean);
+    if (lines.length === 0) throw new PdfInvalidError("file_invalid");
+    return lines.map((line) => {
+      const [size = "", text = ""] = line.split("|");
+      const [width, height] = size.split("x").map(Number);
+      return { width: width ?? 100, height: height ?? 141, text };
+    });
+  }
+
+  async inspect(path: string) {
+    return { pages: this.pages(path).length };
+  }
+
+  async renderPage(path: string, page: number) {
+    const spec = this.pages(path)[page - 1]!;
+    const png = await sharp({
+      create: {
+        width: spec.width,
+        height: spec.height,
+        channels: 3,
+        background: { r: page * 20, g: 90, b: 60 },
+      },
+    })
+      .png()
+      .toBuffer();
+    return new Uint8Array(png);
+  }
+
+  async fromPdfPage(path: string, page: number) {
+    return this.pages(path)[page - 1]!.text;
+  }
+
+  async fromImage() {
+    return "";
+  }
+}
+
 export type TestApp = {
   app: INestApplication;
   http: () => ReturnType<typeof request>;
@@ -45,6 +105,9 @@ export type TestApp = {
   env: ContentEnv;
   db: mongo.Db;
   storage: FakeMediaStorage;
+  audits: AuditEventIngestRequest[];
+  alerts: PushNotificationRequest[];
+  revalidations: string[];
   staffToken: (roles: Role[], userId?: string) => Promise<string>;
   memberToken: (userId?: string) => Promise<string>;
   serviceToken: (caller: ServiceName, audience?: ServiceName) => Promise<string>;
@@ -88,7 +151,16 @@ export async function createTestApp(mongoUri: string): Promise<TestApp> {
     CLOUDINARY_CLOUD_NAME: "test-cloud",
     CLOUDINARY_API_KEY: "test-key",
     CLOUDINARY_API_SECRET: "test-secret-never-logged",
+    IDENTITY_SERVICE_URL: "http://identity.test",
+    SERVICE_TOKEN_PRIVATE_JWK: "unused-in-tests",
+    WEB_APP_URL: "http://web.test",
+    REVALIDATE_SECRET: randomBytes(32).toString("base64"),
   });
+  const uploadDir = mkdtempSync(join(tmpdir(), "lavieco-handbook-test-"));
+  const audits: AuditEventIngestRequest[] = [];
+  const alerts: PushNotificationRequest[] = [];
+  const revalidations: string[] = [];
+  const fakePdf = new FakePdf();
 
   const client = new mongo.MongoClient(mongoUri);
   await client.connect();
@@ -116,6 +188,16 @@ export async function createTestApp(mongoUri: string): Promise<TestApp> {
         mediaStorage: storage,
         logger,
         userKeyResolver: async () => identity.publicKey,
+        auditSink: { send: async (event) => void audits.push(event) },
+        staffAlertSink: { send: async (alert) => void alerts.push(alert) },
+        revalidateFetch: async (_url, init) => {
+          revalidations.push(String(init?.body ?? ""));
+          return new Response(null, { status: 204 });
+        },
+        pdfRenderer: fakePdf,
+        textExtractor: fakePdf,
+        runHandbookWorker: false,
+        handbookUploadDir: uploadDir,
       }),
     ],
   }).compile();
@@ -140,6 +222,9 @@ export async function createTestApp(mongoUri: string): Promise<TestApp> {
     env,
     db,
     storage,
+    audits,
+    alerts,
+    revalidations,
     staffToken: (roles, userId = new Types.ObjectId().toHexString()) =>
       userToken({ typ: "staff", roles, sid: randomUUID() }, TOKEN_AUDIENCES.staff, userId),
     memberToken: (userId = new Types.ObjectId().toHexString()) =>
@@ -160,6 +245,7 @@ export async function createTestApp(mongoUri: string): Promise<TestApp> {
       await app.close();
       await db.dropDatabase();
       await client.close();
+      rmSync(uploadDir, { recursive: true, force: true });
     },
   };
 }
@@ -167,6 +253,11 @@ export async function createTestApp(mongoUri: string): Promise<TestApp> {
 /** Runs every due outbox job once (the worker is off in tests). */
 export function drainOutbox(testApp: TestApp) {
   return testApp.app.get(OutboxWorker).drainOnce();
+}
+
+/** Runs queued handbook imports once (the worker is off in tests). */
+export function runHandbookImports(testApp: TestApp) {
+  return testApp.app.get(HandbookWorker).tick();
 }
 
 export function sweepPending(testApp: TestApp, now?: Date) {

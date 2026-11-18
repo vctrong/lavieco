@@ -8,6 +8,7 @@ export default defineConfig((options) => ({
     "identity/index": "src/identity/index.ts",
     "events/index": "src/events/index.ts",
     "media/index": "src/media/index.ts",
+    "content/index": "src/content/index.ts",
     "shop/index": "src/shop/index.ts",
   },
   format: ["esm", "cjs"],

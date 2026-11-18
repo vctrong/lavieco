@@ -17,6 +17,8 @@ export type NewMedia = {
   sha256: string;
   owner: { kind: "member"; userId: string } | null;
   uploadedBy: MediaActor;
+  /** Set when the image is used at once (handbook pages are attached on upload). */
+  attachedTo?: MediaAttachment | null;
 };
 
 export type MarkDeletedOptions = { eraseAfterDestroy?: boolean; onlyIfPending?: boolean };
@@ -44,4 +46,8 @@ export interface MediaRepository {
   listAvatars(userId: string, tx?: TxContext): Promise<MediaRecord[]>;
   /** Pending uploads created before `cutoff`, oldest first. */
   listPendingBefore(cutoff: Date, limit: number): Promise<MediaRecord[]>;
+  /** A live image of this purpose with these exact cleaned bytes (handbook re-uploads). */
+  findLiveByHash(purpose: MediaPurpose, sha256: string): Promise<MediaRecord | null>;
+  /** Ids of live images of this purpose created before `cutoff`. */
+  listLiveIdsBefore(purpose: MediaPurpose, cutoff: Date): Promise<string[]>;
 }

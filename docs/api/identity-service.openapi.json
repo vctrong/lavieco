@@ -895,7 +895,16 @@
                           "voucher:write",
                           "survey:read",
                           "survey:write",
-                          "campaign:send"
+                          "campaign:send",
+                          "product:read",
+                          "product:write",
+                          "product:publish",
+                          "product:import",
+                          "order:fulfill",
+                          "order:export",
+                          "handbook:read",
+                          "handbook:write",
+                          "handbook:publish"
                         ]
                       }
                     }
@@ -1324,7 +1333,8 @@
                           "registration_free",
                           "order_attention",
                           "event_seats",
-                          "lead_new"
+                          "lead_new",
+                          "handbook_published"
                         ]
                       }
                     },
@@ -1337,7 +1347,8 @@
                           "registration_free",
                           "order_attention",
                           "event_seats",
-                          "lead_new"
+                          "lead_new",
+                          "handbook_published"
                         ]
                       }
                     },
@@ -1399,7 +1410,7 @@
                 "type": "object",
                 "properties": {
                   "topics": {
-                    "maxItems": 5,
+                    "maxItems": 6,
                     "type": "array",
                     "items": {
                       "type": "string",
@@ -1408,7 +1419,8 @@
                         "registration_free",
                         "order_attention",
                         "event_seats",
-                        "lead_new"
+                        "lead_new",
+                        "handbook_published"
                       ]
                     }
                   }
@@ -1444,7 +1456,8 @@
                           "registration_free",
                           "order_attention",
                           "event_seats",
-                          "lead_new"
+                          "lead_new",
+                          "handbook_published"
                         ]
                       }
                     },
@@ -1457,7 +1470,8 @@
                           "registration_free",
                           "order_attention",
                           "event_seats",
-                          "lead_new"
+                          "lead_new",
+                          "handbook_published"
                         ]
                       }
                     },
@@ -1673,7 +1687,8 @@
                       "registration_free",
                       "order_attention",
                       "event_seats",
-                      "lead_new"
+                      "lead_new",
+                      "handbook_published"
                     ]
                   },
                   "title": {

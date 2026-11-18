@@ -96,7 +96,7 @@ export class PushNotificationsController {
 
   @Post()
   @HttpCode(200)
-  @AllowServices("program-service", "lead-service")
+  @AllowServices("program-service", "lead-service", "content-service")
   @ApiOperation({ summary: "Alert the staff who want this topic (idempotent on notificationId)" })
   @ApiZodResponse(200, pushNotificationResponseSchema)
   notify(@ZodBody(pushNotificationRequestSchema) body: PushNotificationRequest) {

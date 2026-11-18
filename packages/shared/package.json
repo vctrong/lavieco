@@ -48,6 +48,16 @@
         "default": "./dist/media/index.cjs"
       }
     },
+    "./content": {
+      "import": {
+        "types": "./dist/content/index.d.ts",
+        "default": "./dist/content/index.js"
+      },
+      "require": {
+        "types": "./dist/content/index.d.cts",
+        "default": "./dist/content/index.cjs"
+      }
+    },
     "./shop": {
       "import": {
         "types": "./dist/shop/index.d.ts",

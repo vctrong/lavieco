@@ -24,13 +24,20 @@ async function generate() {
     CLOUDINARY_CLOUD_NAME: "openapi",
     CLOUDINARY_API_KEY: "openapi",
     CLOUDINARY_API_SECRET: "openapi",
+    IDENTITY_SERVICE_URL: "http://127.0.0.1:1",
+    SERVICE_TOKEN_PRIVATE_JWK: "openapi",
+    WEB_APP_URL: "http://127.0.0.1:1",
+    REVALIDATE_SECRET: Buffer.alloc(32).toString("base64"),
   });
   const logger = createLogger({ service: "content-service", level: "silent" });
-  const app = await NestFactory.create(AppModule.forRoot(env, { logger, runMediaSweeper: false }), {
-    preview: true,
-    abortOnError: false,
-    logger: false,
-  });
+  const app = await NestFactory.create(
+    AppModule.forRoot(env, { logger, runMediaSweeper: false, runHandbookWorker: false }),
+    {
+      preview: true,
+      abortOnError: false,
+      logger: false,
+    },
+  );
   const document = buildOpenApiDocument(app, {
     title: "content-service",
     version: "1",

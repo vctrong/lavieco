@@ -2,14 +2,28 @@
  * Upload rules of ADR-0020, shared so the admin/web pickers reject a file before it is
  * sent and the service enforces the very same numbers.
  */
-export const MEDIA_PURPOSES = ["event_cover", "event_gallery", "avatar", "product_image"] as const;
+export const MEDIA_PURPOSES = [
+  "event_cover",
+  "event_gallery",
+  "avatar",
+  "product_image",
+  /** One page of the Digital Green Handbook (ADR-0029), stored as a JPEG. */
+  "handbook_page",
+] as const;
 export type MediaPurpose = (typeof MEDIA_PURPOSES)[number];
 
 const MB = 1024 * 1024;
 
 export const MEDIA_LIMITS = {
   /** Bytes of the uploaded file, by purpose. */
-  maxBytes: { avatar: 2 * MB, event_cover: 8 * MB, event_gallery: 8 * MB, product_image: 8 * MB },
+  maxBytes: {
+    avatar: 2 * MB,
+    event_cover: 8 * MB,
+    event_gallery: 8 * MB,
+    product_image: 8 * MB,
+    // A designer PNG at 1748×2480 can be large; it is stored re-encoded as JPEG.
+    handbook_page: 25 * MB,
+  },
   /** Guards against decompression bombs: 40 megapixels. */
   maxPixels: 40_000_000,
   /** Images per event gallery (docs/03 §9.2). */

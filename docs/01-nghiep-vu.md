@@ -109,7 +109,7 @@ Bản thiết kế hiện có 8 màn hình. Bảng dưới ánh xạ giao diện
 | Chương trình | Bốn nấc thang giá trị, "Dành cho trường học / doanh nghiệp", form đăng ký | UC-06 |
 | Bộ sưu tập | Lọc 3 nhóm, thẻ tác phẩm, banner quà tặng doanh nghiệp | UC-03, 04 |
 | Chi tiết tác phẩm / combo | Thư viện ảnh, "Trong hộp có gì", story card, mã QR, tác phẩm liên quan, CTA | UC-03, 04 |
-| Cẩm nang xanh số | Giao diện sách lật trang, mục lục chương, ghi chú, đánh dấu, dark mode, cỡ chữ, tiến độ | UC-01, 02 |
+| Cẩm nang xanh số | Sổ lật trang từ các trang ảnh do nhóm đồ hoạ thiết kế, mục lục chương, tìm trong sổ, đánh dấu, điểm bấm, chế độ đọc, tiến độ (ADR-0029) | UC-01, 02 |
 | Hợp tác / Liên hệ | 5 nhóm đối tác, form thông tin | UC-05 |
 | Sắp ra mắt · 404 | Thu email nhận tin; trang không tìm thấy | UC-07, UC-01 (ngoại lệ) |
 
@@ -185,7 +185,7 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Chức năng | Guest | Member | Partner | Supplier | Super Admin | Content Editor | Coordinator | Auditor |
 |---|:-:|:-:|:-:|:-:|:-:|:-:|:-:|:-:|
 | Xem website, đọc cẩm nang | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
-| Ghi chú, đánh dấu, tiến độ đọc | ✓ (trên thiết bị) | ✓ (đồng bộ) | ✓ | ✓ | — | — | — | — |
+| Đánh dấu trang, nhớ trang đang đọc (Cẩm nang) | ✓ (trên thiết bị) | ✓ (GĐ2: đồng bộ) | ✓ | ✓ | — | — | — | — |
 | Gửi form (hợp tác, đăng ký, quà tặng, nhận tin) | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
 | Theo dõi yêu cầu/đơn của mình | — | ✓ | ✓ | ✓ | — | — | — | — |
 | Cổng đối tác (số lớp, xin lịch, báo cáo) | — | — | ✓ | — | — | — | — | — |
@@ -194,6 +194,9 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Xuất danh sách lead | — | — | — | — | ✓ | — | ✓ | — |
 | Soạn nội dung (cẩm nang, sản phẩm, story card) | — | — | — | — | ✓ | ✓ | đọc | đọc |
 | Duyệt & xuất bản nội dung | — | — | — | — | ✓ | ✓ (*) | — | — |
+| Cẩm nang: xem bản quản trị, lịch sử (`handbook:read`) | — | — | — | — | ✓ | ✓ | ✓ | ✓ |
+| Cẩm nang: tải trang, sửa chữ/điểm bấm (`handbook:write`) | — | — | — | — | ✓ | ✓ | — | — |
+| Cẩm nang: xuất bản, khôi phục phiên bản (`handbook:publish`, BR-26) | — | — | — | — | ✓ | ✓ | — | — |
 | Quản lý mã QR | — | — | — | — | ✓ | ✓ | đọc | đọc |
 | Chương trình, lịch, duyệt đăng ký | — | — | — | — | ✓ | đọc | ✓ | đọc |
 | Đăng ký chương trình, mua vé, tra cứu vé | ✓ | ✓ | ✓ | ✓ | — | — | — | — |
@@ -349,23 +352,25 @@ flowchart LR
 | | |
 |---|---|
 | **Vai trò** | Guest (hoặc Member) |
-| **Kích hoạt** | Từ QR (UC-01), từ menu, hoặc từ trang Chương trình |
-| **Tiền điều kiện** | Có ít nhất một chương đã xuất bản |
-| **Quy tắc** | BR-03, BR-05, BR-11 |
+| **Kích hoạt** | Từ QR (UC-01), từ menu, từ trang sản phẩm hoặc Chương trình |
+| **Tiền điều kiện** | Đã có một phiên bản Cẩm nang được xuất bản |
+| **Quy tắc** | BR-03, BR-11, BR-26 |
+
+Cẩm nang là **cuốn sổ lật trang**: mỗi trang là một ảnh do nhóm đồ hoạ thiết kế (khổ A5 dọc), kèm chữ của trang để tìm kiếm và đọc dạng văn bản (ADR-0029).
 
 **Luồng chính**
-1. Người dùng mở cẩm nang; hệ thống hiển thị mục lục chương (thiết kế hiện tại có 6 chương: *Câu chuyện của tác phẩm · Vỏ sò đến từ đâu · Rác thải đại dương · Kinh tế tuần hoàn trong một phút · Tự tay làm · Ghi chú của bạn*; danh sách có thể thay đổi).
-2. Người dùng chọn chương và đọc theo trang.
-3. Người dùng tương tác với khối đặc biệt (ví dụ "chạm để lật mở bí mật phế phẩm", sơ đồ minh họa).
-4. Người dùng tùy chỉnh trải nghiệm: **cỡ chữ**, **chế độ tối**.
-5. Người dùng **đánh dấu trang** và **viết ghi chú**; dữ liệu lưu **trên thiết bị**.
-6. Hệ thống hiển thị **tiến độ đọc** và ghi nhớ vị trí gần nhất trên thiết bị.
+1. Người dùng mở `/cam-nang` (trang bìa): sổ đóng, nút "Mở sổ", "Đọc tiếp trang X" (nếu đã đọc dở), các chương.
+2. Người dùng đọc ở `/cam-nang/doc?trang=N`: máy tính/máy tính bảng ngang thấy **2 trang mở**, điện thoại/màn dọc thấy **1 trang**; lật bằng nút, phím ←/→, vuốt; chụm để phóng to trên điện thoại.
+3. Người dùng mở mục lục theo chương, **tìm trong sổ** (không cần gõ dấu), **đánh dấu trang**, chia sẻ trang, bật tiếng lật giấy (mặc định tắt), xem toàn màn hình.
+4. Người dùng chạm **điểm bấm** trên trang: mở sản phẩm, lật tới trang khác, xem video, hoặc hỏi LaviAgent về trang đó.
+5. Hệ thống nhớ trang đang đọc và các trang đã đánh dấu **trên thiết bị** (GĐ2: đồng bộ theo tài khoản, `reader_states`).
+6. Mỗi trang có địa chỉ riêng `/cam-nang/trang/<mã>` hiển thị ảnh + chữ (chế độ đọc, SEO, chia sẻ).
 
 **Luồng phụ**
-- *Xóa dữ liệu trình duyệt / đổi thiết bị:* ghi chú trên thiết bị sẽ mất. Từ giai đoạn 2, người dùng đăng ký tài khoản để đồng bộ (UC-10).
-- *Chương chưa xuất bản:* không hiển thị công khai (BR-05).
+- *Chưa xuất bản phiên bản nào:* trang "sắp ra mắt".
+- *Người cần giảm chuyển động:* lật trang thành hiệu ứng mờ dần.
 
-**Kết quả:** người dùng hoàn thành một hoặc nhiều chương; hệ thống thống kê tỷ lệ đọc (ẩn danh).
+**Kết quả:** người dùng đọc, tìm và chia sẻ được nội dung giáo dục; sản phẩm chỉ là minh chứng qua điểm bấm (BR-01).
 
 #### UC-03: Duyệt bộ sưu tập, xem chi tiết tác phẩm
 
@@ -484,20 +489,18 @@ Vòng đời lead: xem §8.2.
 
 | | |
 |---|---|
-| **Vai trò** | Content Editor, Super Admin |
-| **Quy tắc** | BR-01, BR-03, BR-05 |
+| **Vai trò** | Content Editor, Super Admin (Coordinator/Auditor: chỉ xem) |
+| **Quy tắc** | BR-01, BR-03, BR-26 |
 
 **Luồng chính**
-1. Người soạn tạo chương mới hoặc mở chương để chỉnh sửa.
-2. Soạn nội dung theo trang: văn bản, ảnh, sơ đồ/infographic, trích dẫn, khối tương tác (ví dụ "bí mật phế phẩm"), gắn tác phẩm liên quan.
-3. Lưu **nháp**; xem trước trên giao diện thật (điện thoại và máy tính).
-4. **Gửi duyệt.**
-5. Người duyệt xem, **duyệt & xuất bản**, hoặc **trả lại** kèm nhận xét.
-6. Sắp xếp thứ tự chương; đặt mức truy cập (BR-03).
+1. Người soạn bấm "Bắt đầu chỉnh sửa": hệ thống tạo **bản nháp** chép từ phiên bản đang xuất bản (một bản nháp tại một thời điểm).
+2. Tải lên **một file PDF** (thay cả cuốn, hoặc thêm vào cuối chương) hoặc **nhiều ảnh** (PNG/JPG/WebP, khuyên 1748 × 2480 px). Hệ thống xử lý nền, hiện tiến độ hoặc vị trí trong hàng đợi; tách trang PDF thành ảnh và lấy chữ từng trang. Trang không lấy được chữ gắn nhãn **"Thiếu chữ"**; ảnh lệch khổ A5 được cảnh báo, không bị chặn.
+3. Sắp xếp: thêm/sửa/xoá chương (màu tab), kéo thả đổi thứ tự trang và chương, chuyển trang sang chương khác, thay một trang, xoá trang.
+4. Với từng trang: sửa tên, mô tả ảnh, **gõ chữ** khi thiếu, **vẽ điểm bấm** (kéo chuột trên ảnh) và gán đích (sản phẩm Cửa hàng, trang khác, video YouTube/TikTok, liên kết, LaviAgent).
+5. **Xem trước** bản nháp trên giao diện thật (tab mới, không cho máy tìm kiếm lập chỉ mục, liên kết hết hạn sau 10 phút).
+6. **Xuất bản** với **ghi chú phiên bản bắt buộc**; bạn đọc thấy ngay, cả nhóm nhận thông báo (BR-26). Dưới một nửa số trang có chữ thì cảnh báo trước.
 
-**Chức năng bổ sung:** thu hồi (đưa về lưu trữ); lịch sử phiên bản; chỉnh sửa nội dung đã xuất bản tạo bản nháp mới, bản đang chạy giữ nguyên đến khi duyệt.
-
-Vòng đời nội dung: xem §8.3.
+**Chức năng bổ sung:** **lịch sử phiên bản**; **khôi phục** một phiên bản cũ (xuất bản bản sao thành phiên bản mới, cũng có ghi chú và thông báo); bỏ bản nháp. Chỉ 3 phiên bản đã xuất bản gần nhất còn giữ ảnh để khôi phục. Không tải PDF về ở GĐ1.
 
 #### UC-23: Quản lý tác phẩm, story card, mã QR
 
@@ -621,6 +624,7 @@ Kế hoạch chi tiết, mô hình dữ liệu và giai đoạn ở `08-cua-hang
 | **BR-23** | Số liệu tác động trên sản phẩm (ví dụ gram vỏ tái chế) chỉ hiện khi **có nguồn** và đã được người có `impact:approve` duyệt (áp BR-09). Chưa duyệt thì ẩn phần đó, không chặn xuất bản. | Tránh greenwashing |
 | **BR-24** | Đánh giá sản phẩm chỉ từ **đơn đã giao**, một đánh giá cho một dòng đơn, chỉ chữ thuần, **duyệt trước khi hiện**, không hiện email/SĐT. | Đánh giá thật, riêng tư |
 | **BR-25** | Sản phẩm của thương hiệu đối tác ghi rõ thương hiệu. Tỉ lệ hoa hồng chụp lại trên dòng đơn, **không hiện công khai**; chi trả hoa hồng làm ngoài hệ thống. | Lớp Truyền thông, minh bạch nội bộ |
+| **BR-26** | **Cẩm nang tự xuất bản** (ngoại lệ của BR-05, ADR-0029): người có `handbook:publish` xuất bản bản nháp, **bắt buộc ghi chú phiên bản**; mỗi lần xuất bản hoặc khôi phục ghi nhật ký và **báo cho cả nhóm** (thông báo đẩy admin). Khôi phục bản cũ là một lần xuất bản mới. | Nhóm đồ hoạ tự làm trang; thay đổi nhanh nhưng minh bạch |
 
 ## 8. Thực thể khái niệm & vòng đời
 
@@ -699,7 +703,9 @@ stateDiagram-v2
   LuuTru --> [*]
 ```
 
-### 8.3 Vòng đời của nội dung (cẩm nang, tác phẩm)
+### 8.3 Vòng đời của nội dung (tác phẩm, trang)
+
+Cẩm nang không theo vòng đời này: nó có phiên bản cho cả cuốn và tự xuất bản (UC-22, BR-26, ADR-0029).
 
 ```mermaid
 stateDiagram-v2
@@ -812,3 +818,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.7 | 18/10/2026 | Phase 2b: UC-09 thêm ảnh đại diện tuỳ chọn của Member; UC-32 có ảnh bìa và thư viện ảnh (≤ 12, bắt buộc mô tả ảnh). Ảnh lưu ở Cloudinary, đã xoá EXIF (ADR-020) | V.C. Trọng |
 | v0.9 | 17/11/2026 | Phân hệ Cửa hàng (ADR-0028): sửa BR-10 (giá cố định), thêm BR-20 → 25, UC-35 → 40 (§6.3c), dòng mới trong ma trận §4.4 | V.C. Trọng |
 | v0.8 | 22/10/2026 | Trang Chương trình làm lại: UC-32 thêm trạng thái **Đã huỷ** (cuối; vô hiệu vé, đơn đã trả tiền chờ hoàn thủ công, email người đặt), banner/poster, "Bạn sẽ nhận", bảng chính sách huỷ, giới thiệu người hướng dẫn. "Miễn phí" = **mọi** loại vé 0đ; "Sắp hết chỗ" khi còn ≤ 20% hoặc ≤ 5 chỗ; chương trình quá giờ kết thúc tự vào mục "Đã diễn ra". Số người tham gia: vé đã check-in, hoặc số nhập tay của sự kiện lưu trữ sau khi Super Admin duyệt (BR-09, permission `impact:approve`) | V.C. Trọng |
+| v1.0 | 19/11/2026 | Cẩm nang là các trang ảnh có phiên bản (ADR-0029): viết lại UC-02, UC-22; thêm BR-26 (tự xuất bản, ghi chú bắt buộc, thông báo cả nhóm); permission `handbook:read|write|publish` trong ma trận §4.4; bỏ ghi chú cá nhân, cỡ chữ ở GĐ1 | V.C. Trọng |

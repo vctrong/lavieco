@@ -71,6 +71,11 @@ mediaSchema.index(
   },
 );
 mediaSchema.index({ "attachedTo.id": 1 }, { name: "idx_media_attached_to" });
+// Handbook pages: an identical page re-uploaded reuses the stored image (ADR-0029).
+mediaSchema.index(
+  { purpose: 1, sha256: 1 },
+  { name: "idx_media_purpose_sha256", partialFilterExpression: { live: true } },
+);
 
 export const mediaPersistence = MongooseModule.forFeature([
   { name: MEDIA_MODEL, schema: mediaSchema },

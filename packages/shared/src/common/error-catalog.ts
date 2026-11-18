@@ -125,6 +125,36 @@ export const ERROR_CATALOG = {
     title: "Image does not exist, was deleted or belongs elsewhere",
   },
 
+  "handbook.no_draft": { status: 409, title: "There is no draft of the handbook to edit" },
+  "handbook.draft_exists": {
+    status: 409,
+    title: "A draft is in progress; publish or discard it first",
+  },
+  "handbook.publish_blocked": {
+    status: 422,
+    title: "The draft cannot be published (no page, or a chapter without pages)",
+  },
+  "handbook.structure_invalid": {
+    status: 422,
+    title: "Chapters or pages are unknown, repeated or out of bounds",
+  },
+  "handbook.page_unknown": { status: 404, title: "This page is not in the draft" },
+  "handbook.version_unknown": { status: 404, title: "No such handbook version" },
+  "handbook.version_not_restorable": {
+    status: 409,
+    title: "The images of this version were cleaned up; it cannot be restored",
+  },
+  "handbook.upload_invalid": {
+    status: 422,
+    title: "Upload is unknown, incomplete, of the wrong kind or out of order",
+  },
+  "handbook.file_type_invalid": {
+    status: 415,
+    title: "Only PDF files, or JPEG, PNG and WebP images, are accepted",
+  },
+  "handbook.not_published": { status: 404, title: "The handbook is not published yet" },
+  "handbook.preview_invalid": { status: 404, title: "Preview link is invalid or expired" },
+
   "event_type.name_taken": { status: 409, title: "An event type with this name already exists" },
 
   "product.slug_taken": { status: 409, title: "Another product already uses this address" },

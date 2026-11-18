@@ -187,7 +187,7 @@ Sáu gói, **chỉ chứa hợp đồng và công cụ, không chứa logic nghi
 
 | Module (01) | Thành phần sở hữu | Ghi chú |
 |---|---|---|
-| M1 Cẩm nang xanh số | `content-service` (`handbook`, `qr`) | Ghi chú/đánh dấu lưu trên **thiết bị** ở GĐ1; GĐ2 đồng bộ qua collection `reader_states` **của `content-service`** (`03` §9.1) |
+| M1 Cẩm nang xanh số | `content-service` (`handbook`, `qr`) | Trang ảnh có phiên bản, nhập PDF bằng poppler trong service, worker nền một job một lúc (ADR-0029). Đánh dấu/trang đang đọc lưu trên **thiết bị** ở GĐ1; GĐ2 đồng bộ qua collection `reader_states` **của `content-service`** (`03` §9.1) |
 | M2 Bộ sưu tập & sản phẩm | `program-service` (`shop-*`, ADR-0028) | Sản phẩm bán, biến thể, tồn kho, giỏ, đơn, import. `content-service` `catalog` không dựng cho sản phẩm bán |
 | M3 Hợp tác & lead | `lead-service` | |
 | M4 Chương trình giáo dục | `content-service` (mô tả) + `program-service` (sự kiện, vé, check-in: GĐ1; lịch, buổi học: GĐ2) | ADR-014 |
@@ -552,6 +552,9 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `product:import` (import Excel hàng loạt) | ✓ | ✓ | ✓ | — |
 | `order:fulfill` (xác nhận COD, đóng gói, giao, huỷ đơn cửa hàng, duyệt đánh giá) | ✓ | — | ✓ | — |
 | `order:export` (xuất Excel đơn cửa hàng, step-up + audit) | ✓ | — | ✓ | — |
+| `handbook:read` (màn quản trị Cẩm nang, bản nháp, lịch sử, tiến độ nhập) | ✓ | ✓ | ✓ | ✓ |
+| `handbook:write` (tạo bản nháp, tải PDF/ảnh, sắp xếp, chữ, điểm bấm, bỏ bản nháp) | ✓ | ✓ | — | — |
+| `handbook:publish` (xuất bản, khôi phục phiên bản; BR-26, audit + thông báo cả nhóm) | ✓ | ✓ | — | — |
 
 (*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014); "Huỷ chương trình" dùng `program:write` + step-up + audit (22/10/2026). `impact:approve` có sớm từ GĐ1 (22/10/2026) cho số người tham gia của sự kiện lưu trữ; các permission GĐ2+ khác (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cho nội dung (cẩm nang, tác phẩm) cần `content:write`, tải ảnh chương trình cần `program:write`, avatar do chính member tải (`@RequireMember`, ADR-020); sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
 
@@ -868,3 +871,4 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 ## Phụ lục: luồng gửi email hàng loạt (ADR-0026)
 
 Admin soạn và gửi → `program-service` chốt danh sách vào `campaign_recipients` → scheduler mỗi phút lấy từng người bằng cập nhật nguyên tử, giữ một suất ở `campaign_daily_usage`, gửi qua `EmailSender` chung (Brevo, rồi Gmail dự phòng). Hết hạn mức ngày thì dừng tới hôm sau. OTP và email vé không đi qua hàng đợi này.
+| v0.9 | 19/11/2026 | Cẩm nang trang ảnh có phiên bản (ADR-0029): 3 permission `handbook:*`; `content-service` gửi audit và thông báo đẩy qua outbox → identity (như program-service), gọi `/api/revalidate` của web sau xuất bản; upload theo khúc 6 MB qua BFF admin; poppler trong image `content-service` | V.C. Trọng |

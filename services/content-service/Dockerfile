@@ -11,6 +11,13 @@ RUN npm ci --workspace @lavieco/content-service --include-workspace-root \
 
 FROM node:24-alpine
 ENV NODE_ENV=production
+# Handbook PDF imports (ADR-0029): poppler renders pages and reads their text; Liberation
+# fonts stand in for the standard PDF fonts a file may use without embedding them.
+# About +26 MB. Uploads wait in /var/lib/lavieco/handbook-uploads (mount a volume there
+# and set HANDBOOK_UPLOAD_DIR to it); files are removed after import, at most after 24 h.
+RUN apk add --no-cache poppler-utils font-liberation \
+  && mkdir -p /var/lib/lavieco/handbook-uploads \
+  && chown node:node /var/lib/lavieco/handbook-uploads
 WORKDIR /repo
 COPY --from=build /repo/node_modules ./node_modules
 COPY --from=build /repo/packages ./packages
