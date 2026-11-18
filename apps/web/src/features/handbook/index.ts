@@ -3,4 +3,5 @@ export { COVER_HREF, READER_HREF, pageHref, readerHref } from "./constants/confi
 export { HandbookCover } from "./components/handbook-cover";
 export { HandbookPreviewScreen, HandbookReaderScreen } from "./components/reader-screen";
 export { loadBook, loadPage, loadPreview } from "./server/handbook";
+export { handleHandbookSearch } from "./server/search";
 export { parsePage } from "./utils/book-math";

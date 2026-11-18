@@ -280,6 +280,8 @@ export function FlipBook({
   };
 
   const onPointerUp = (event: ReactPointerEvent) => {
+    // A press that began on a hotspot is the hotspot's click, not a tap on the page.
+    if (!pointers.current.has(event.pointerId)) return;
     pointers.current.delete(event.pointerId);
     const g = gesture.current;
     if (g.pinch) {

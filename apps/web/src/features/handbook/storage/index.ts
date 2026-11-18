@@ -47,7 +47,7 @@ export function bookmarks(slug: string): string[] {
 
 const listeners = new Set<() => void>();
 
-/** For `useSyncExternalStore`: bookmark changes in this tab or another one. */
+/** For `useSyncExternalStore`: changes in this tab or another one (bookmarks, sound). */
 export function subscribeBookmarks(onChange: () => void) {
   listeners.add(onChange);
   window.addEventListener("storage", onChange);
@@ -77,4 +77,5 @@ export function soundOn(slug: string): boolean {
 
 export function setSound(slug: string, on: boolean) {
   write(slug, { sound: on });
+  for (const listener of listeners) listener();
 }
