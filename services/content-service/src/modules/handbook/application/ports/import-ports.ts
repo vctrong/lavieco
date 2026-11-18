@@ -44,7 +44,12 @@ export type ImportWarning = {
 };
 
 export type ImportError =
-  "file_invalid" | "pdf_encrypted" | "too_many_pages" | "draft_changed" | "internal";
+  | "file_invalid"
+  | "pdf_encrypted"
+  | "pdf_tools_missing"
+  | "too_many_pages"
+  | "draft_changed"
+  | "internal";
 
 /** `handbook_import_jobs`: processed one at a time, in order (risks: queue on 2 vCPU). */
 export type ImportJobRecord = {
@@ -101,6 +106,11 @@ export interface UploadStore {
   remove(uploadId: string): Promise<void>;
   /** Removes files older than `cutoff`; returns how many. */
   sweep(cutoff: Date): Promise<number>;
+}
+
+/** The PDF tools are not installed on this server (poppler). Images still import. */
+export class PdfToolsMissingError extends Error {
+  override name = "PdfToolsMissingError";
 }
 
 export class PdfInvalidError extends Error {

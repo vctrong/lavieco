@@ -30,6 +30,7 @@ import { contentEnvSchema, type ContentEnv } from "../../config/env";
 import {
   HandbookWorker,
   PdfInvalidError,
+  PdfToolsMissingError,
   type PdfRenderer,
   type TextExtractor,
 } from "../../modules/handbook";
@@ -61,6 +62,7 @@ export class FakePdf implements PdfRenderer, TextExtractor {
   private pages(path: string) {
     const raw = readFileSync(path, "utf8");
     if (raw.includes("ENCRYPTED")) throw new PdfInvalidError("pdf_encrypted");
+    if (raw.includes("NO_TOOLS")) throw new PdfToolsMissingError("poppler not installed");
     const lines = raw.split("\n").slice(1).filter(Boolean);
     if (lines.length === 0) throw new PdfInvalidError("file_invalid");
     return lines.map((line) => {

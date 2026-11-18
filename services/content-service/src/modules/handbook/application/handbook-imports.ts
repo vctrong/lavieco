@@ -15,6 +15,7 @@ import type { EditorActor } from "./handbook-editor";
 import type { HandbookRepository } from "./ports/handbook-repository.port";
 import {
   PdfInvalidError,
+  PdfToolsMissingError,
   type ImportError,
   type ImportJobRecord,
   type ImportJobRepository,
@@ -191,9 +192,11 @@ export class HandbookImports {
           ? error.reason
           : error instanceof PdfInvalidError
             ? error.reason
-            : error instanceof DomainError && error.code.startsWith("media.")
-              ? "file_invalid"
-              : "internal";
+            : error instanceof PdfToolsMissingError
+              ? "pdf_tools_missing"
+              : error instanceof DomainError && error.code.startsWith("media.")
+                ? "file_invalid"
+                : "internal";
       await this.jobs.finish(job.id, { status: "failed", warnings: [], error: reason }, new Date());
       if (reason === "internal") throw error;
     } finally {

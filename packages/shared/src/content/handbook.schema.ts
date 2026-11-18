@@ -290,6 +290,8 @@ export const HANDBOOK_IMPORT_WARNINGS = ["aspect_off", "missing_text", "low_text
 export const HANDBOOK_IMPORT_ERRORS = [
   "file_invalid",
   "pdf_encrypted",
+  /** The server cannot open PDFs (poppler missing, e.g. a dev machine): images still work. */
+  "pdf_tools_missing",
   "too_many_pages",
   "draft_changed",
   "internal",

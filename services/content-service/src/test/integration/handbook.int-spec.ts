@@ -345,6 +345,10 @@ describe("handbook editing, import and publishing", () => {
       .expect(201);
     const job = await importInto([await upload("pdf", fakePdf(TEXT, "ENCRYPTED"))], "append");
     expect(job).toMatchObject({ status: "failed", error: "pdf_encrypted" });
+
+    // A server without poppler (a dev machine) says so instead of a generic failure.
+    const noTools = await importInto([await upload("pdf", fakePdf(TEXT, "NO_TOOLS"))], "append");
+    expect(noTools).toMatchObject({ status: "failed", error: "pdf_tools_missing" });
   });
 
   it("releases page images no kept version uses", async () => {
