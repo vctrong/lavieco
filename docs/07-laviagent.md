@@ -63,7 +63,7 @@ UI (client) ──fetch──▶ /api/laviagent/analyze ─┐
 | Route | Vào | Ra |
 |---|---|---|
 | `POST /api/laviagent/analyze` | multipart, trường `image` (JPEG/PNG/WebP theo magic bytes, ≤ 3 MB sau khi client thu nhỏ) | `{status:"ok", result}` · `{status:"offline"}` · `{status:"error", reason: invalid_image \| too_large \| rate_limited \| timeout \| unavailable}` |
-| `POST /api/laviagent/chat` | Giao thức `useChat` (`messages`, gồm cả data part `data-analysis`/`data-hazard`) + `context: { material?, ideaId? }`; tin cuối ≤ 500 ký tự | UI message stream (SSE). Lỗi: JSON `{status:"error", reason}` (400/429); lỗi model giữa stream là chunk `error` cùng dạng JSON |
+| `POST /api/laviagent/chat` | Giao thức `useChat` (`messages`, gồm cả data part `data-analysis`/`data-hazard`) + `context: { material?, ideaId?, handbookPage? }` (`handbookPage` = mã 8 ký tự của trang Cẩm nang, server tự lấy chữ trang đã xuất bản từ `content-service` và đưa vào "Tư liệu tham khảo", ADR-0029); tin cuối ≤ 500 ký tự | UI message stream (SSE). Lỗi: JSON `{status:"error", reason}` (400/429); lỗi model giữa stream là chunk `error` cùng dạng JSON |
 
 - `confidence < 0.55` → `unknown` (trừ khi `hazardous`). Đồ nguy hại (pin, bóng đèn, thủy tinh vỡ, rác y tế, hoá chất) → `safetyFlags.hazardous = true`, UI từ chối lịch sự + mẹo chung.
 - Hết 8 giây → `timeout`; client cũng tự huỷ ở 8 giây và đưa ra bộ chọn thủ công + ảnh mẫu.
@@ -134,7 +134,7 @@ Mọi tệp ở `apps/web/src/features/laviagent/data/` đều được kiểm t
 
 ## 6. Lộ trình nâng cấp
 
-1. **Cẩm nang xanh số (nội dung)** — `content-service` xuất bản chương Cẩm nang (đã có trong `docs/01`, BR-03). Chưa cần AI.
+1. **Cẩm nang xanh số (nội dung)** — **đã làm** (ADR-0029): trang ảnh có chữ, phiên bản cả cuốn. "Hỏi LaviAgent về trang này" mở `/laviagent?cam-nang=<mã trang>` (điểm bấm có thể thêm `&goi-y=<câu gợi ý>`, chỉ điền sẵn vào ô nhập, không tự gửi); chat gửi `context.handbookPage`, `handbookPagePassage` lấy chữ trang (tối đa 2 500 ký tự) qua `contentClient().getPublishedHandbookPage`. Toàn bộ chữ đã xuất bản có sẵn theo trang ở `GET /internal/v1/published-handbook/text` (`getHandbookText`) cho bước RAG dưới.
 2. **RAG trên Cẩm nang** (`TODO(laviagent-rag)`, `handbook-knowledge-source.ts`):
    - Job chia mỗi trang đã xuất bản thành đoạn ~300–500 token, giữ `chapterId`, `pageId`, `revision`, `accessLevel`, thẻ vật liệu.
    - Tạo embedding (Gemini hoặc mô hình riêng), lưu vào collection `handbook_chunks` với chỉ mục **MongoDB Atlas Vector Search** (đã dùng Atlas).

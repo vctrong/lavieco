@@ -441,6 +441,8 @@ export const TEXT = {
 | `/api/payments/payos/webhook` | Webhook payOS, chuyển raw body sang `program-service` (ADR-015) | Động | `checkout` |
 | **`/c/[code]`** | **Phân giải QR, trả `302`** | Động | `qr-resolver` |
 | `/api/leads` · `/api/waitlist` · `/api/handbook-stats` | BFF cho form và thống kê | Động | trong tính năng tương ứng |
+| `/api/cam-nang/tim` | BFF tìm trong Cẩm nang (`?q=`, 2–80 ký tự), chuyển sang `content-service`; cache công khai ngắn | Động | `handbook` |
+| `/sitemap.xml` | `app/sitemap.ts`: trang chính + bìa và mọi trang Cẩm nang đã xuất bản (`/cam-nang/trang/<key>`), làm lại tối đa mỗi giờ | ISR 1 giờ | `handbook` |
 | `/api/revalidate` | Webhook làm mới cache: HMAC-SHA256 trên `<timestamp>.<body>`, lệch ≤ 5 phút, chỉ nhận `tags` (hợp đồng `revalidateRequestSchema`) | Động | `lib/revalidate.ts` |
 
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).
@@ -1032,3 +1034,4 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.11 | 17/11/2026 | Admin PWA (ADR-0027): `features/pwa`, `public/sw.js`, khung mobile có thanh tab, `/shop`, `/more`, `/notifications`, ngoại lệ hex cho manifest; identity module `push`, program-service module `staff-alerts` | V.C. Trọng |
 | v0.13 | 19/11/2026 | Cẩm nang trang ảnh (ADR-0029): route web `/cam-nang`, `/cam-nang/doc`, `/cam-nang/trang/[key]`, `/xem-truoc/cam-nang/[token]` thay `/cam-nang/[chapterSlug]`; admin `/handbook`, `/handbook/history`, `/handbook/preview`, BFF `PUT /api/handbook/uploads/[id]/chunks/[index]`; lưu cục bộ Cẩm nang bằng `localStorage` | V.C. Trọng |
 | v0.14 | 19/11/2026 | Cẩm nang PR3: điểm bấm, tìm trong sổ (BFF `GET /api/cam-nang/tim`), chia sẻ (Web Share API / sao chép), tiếng lật giấy ở `public/sounds/`; `proxy.ts` của web mở `frame-src` cho `youtube-nocookie.com` và `tiktok.com` **chỉ** trên `/cam-nang*` và `/xem-truoc/cam-nang/*` | V.C. Trọng |
+| v0.15 | 19/11/2026 | Cẩm nang PR4: trang `/cam-nang/trang/[key]` (SSR ảnh + chữ, canonical, OG image là ảnh trang), `app/sitemap.ts`; LaviAgent nhận `?cam-nang=<mã trang>` và `context.handbookPage` | V.C. Trọng |

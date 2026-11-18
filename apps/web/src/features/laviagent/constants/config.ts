@@ -11,6 +11,14 @@ export const CONVERSATION_PARAM = "hoi-thoai";
 export const IDEA_PARAM = "y-tuong";
 /** `?vat-lieu=<material>`: start a conversation with that material's card. */
 export const MATERIAL_PARAM = "vat-lieu";
+/**
+ * `?cam-nang=<page key>`: asked from a handbook page. Only the key travels; the chat
+ * server loads the published page text itself (ADR-0029). `?goi-y=` is the question an
+ * editor suggested on a hotspot, offered in the composer (never sent by itself).
+ */
+export const HANDBOOK_PAGE_PARAM = "cam-nang";
+export const HANDBOOK_PROMPT_PARAM = "goi-y";
+export const HANDBOOK_PAGE_KEY = /^[0-9a-hjkmnp-tv-z]{8}$/;
 
 export const conversationHref = (conversationId: string) =>
   `${LAVIAGENT_HREF}?${CONVERSATION_PARAM}=${encodeURIComponent(conversationId)}`;

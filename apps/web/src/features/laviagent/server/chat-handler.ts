@@ -21,6 +21,7 @@ import type { ChatTurn, ImageInput } from "./ai/ai-provider";
 import { aiProvider } from "./ai/get-provider";
 import { staticData } from "./knowledge/catalog";
 import { knowledgeSource } from "./knowledge/composite-knowledge-source";
+import { handbookPagePassage } from "./knowledge/handbook-knowledge-source";
 import type { ChatKnowledge } from "./knowledge/knowledge-source";
 import { logOutcome, logProviderError } from "./log";
 import { TIMEOUT_REASONS, classifyStreamEnd, type StreamOutcome } from "./stream-outcome";
@@ -312,10 +313,11 @@ async function gatherKnowledge(
   const source = knowledgeSource();
   const focusIdea = context.ideaId ? await source.getIdea(context.ideaId) : null;
   const material = context.material ?? focusIdea?.material;
-  const [ideas, kits, passages] = await Promise.all([
+  const [ideas, kits, passages, page] = await Promise.all([
     material ? source.getIdeasByMaterial(material) : Promise.resolve([]),
     source.getKits(),
     source.searchContext(question, material),
+    context.handbookPage ? handbookPagePassage(context.handbookPage) : Promise.resolve(null),
   ]);
-  return { material, focusIdea, ideas, kits, passages };
+  return { material, focusIdea, ideas, kits, passages: page ? [page, ...passages] : passages };
 }

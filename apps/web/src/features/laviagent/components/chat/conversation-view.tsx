@@ -44,6 +44,9 @@ type ConversationViewProps = {
   conversationId: string;
   initialMessages: AgentMessage[];
   ideaId: string | null;
+  /** Handbook page the visitor asked from, and the text offered in the composer. */
+  handbookPage?: string | null;
+  initialInput?: string;
   /** Called after each settled change (never mid-stream). */
   onPersist: (messages: AgentMessage[]) => void;
 };
@@ -57,9 +60,11 @@ export function ConversationView({
   conversationId,
   initialMessages,
   ideaId,
+  handbookPage = null,
+  initialInput = "",
   onPersist,
 }: ConversationViewProps) {
-  const controls = useConversation(catalog, initialMessages, ideaId);
+  const controls = useConversation(catalog, initialMessages, ideaId, handbookPage);
   const { messages, status } = useChat({ chat: controls.chat, throttle: 50 });
   const [attachment, setAttachment] = useState<PreparedImage | null>(null);
   const [imageNotice, setImageNotice] = useState<PrepareFailure | null>(null);
@@ -253,6 +258,7 @@ export function ConversationView({
         busy={busy}
         locked={controls.failure === "rate_limited"}
         notice={notice}
+        initialInput={initialInput}
       />
     </div>
   );

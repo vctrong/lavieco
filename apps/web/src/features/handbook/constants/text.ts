@@ -98,6 +98,16 @@ export const TEXT = {
       noBookmarks:
         "Chưa có trang nào được đánh dấu. Bấm biểu tượng dấu trang ở thanh trên để lưu trang bạn thích.",
     },
+    reading: {
+      metaTitle: (page: string, book: string) => `${page} · ${book}`,
+      breadcrumb: "Vị trí trong sổ",
+      pageNumber: (n: number) => `Trang ${n}`,
+      openInBook: "Mở trang này trong sổ",
+      noText: "Trang này chủ yếu là hình. Mở trong sổ để xem trọn trang nhé!",
+      pagesNav: "Trang trước và trang sau",
+      previous: "Trang trước",
+      next: "Trang sau",
+    },
     hotspots: {
       product: (title: string) => `Xem sản phẩm: ${title}`,
       page: (n: number) => `Lật tới trang ${n}`,
