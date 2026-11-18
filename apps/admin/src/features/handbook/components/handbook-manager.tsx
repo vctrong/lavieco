@@ -29,6 +29,7 @@ import {
   movePageTo,
   pageNumbers,
   removeChapter,
+  removeCover,
   removePage,
   reorderChapters,
   reorderPages,
@@ -39,6 +40,7 @@ import {
   type StructureState,
 } from "../utils/structure";
 import { ChapterBoard } from "./chapter-board";
+import { CoversPanel } from "./covers-panel";
 import { HandbookHeader } from "./handbook-header";
 import { NotePanel } from "./note-panel";
 import { PageInspector, type InspectorFocus } from "./page-inspector";
@@ -274,6 +276,23 @@ export function HandbookManager({
           ) : null}
           <ImportStatus state={imports.state} onClose={imports.reset} />
 
+          {structure ? (
+            <CoversPanel
+              covers={draft.covers}
+              keepCovers={structure.keepCovers}
+              canWrite={canWrite}
+              busy={imports.busy || busy}
+              onUpload={(side, file) =>
+                void imports.start(
+                  [file],
+                  { mode: side === "front" ? "cover_front" : "cover_back" },
+                  draft.revision,
+                )
+              }
+              onRemove={(side) => setStructure((s) => s && removeCover(s, side))}
+            />
+          ) : null}
+
           <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_420px]">
             <div className="min-w-0">
               {structure ? (
@@ -294,6 +313,9 @@ export function HandbookManager({
                   }
                   onTintChapter={(id, tint) =>
                     setStructure((s) => s && updateChapter(s, id, { tint }))
+                  }
+                  onKindChapter={(id, kind) =>
+                    setStructure((s) => s && updateChapter(s, id, { kind }))
                   }
                   onRemoveChapter={(id) => setStructure((s) => s && removeChapter(s, id))}
                   onAddChapter={() =>

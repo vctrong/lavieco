@@ -340,7 +340,8 @@ Trang Cẩm nang là **ảnh** do nhóm đồ hoạ thiết kế (A5 dọc) kèm
 
 | Trường | Ghi chú |
 |---|---|
-| `chapters[]` | `{ id (UUID ổn định), slug, title, tint }`. `tint` ∈ `mint`·`canary`·`paper`·`emerald`·`deep-blue` (màu tab mép sổ). ≤ 30. Slug giữ nguyên khi đổi tên (sản phẩm liên kết theo slug chương). |
+| `covers` | `{ front, back }`, mỗi bên `{ mediaId, publicId, width, height }` hoặc `null`. Bìa không thuộc chương, không đánh số trang (ADR-0029 §11). Thiếu trường (bản cũ) đọc là `{ front: null, back: null }`. |
+| `chapters[]` | `{ id (UUID ổn định), slug, title, tint, kind }`. `kind` ∈ `front_matter`·`content`·`appendix` (mặc định `content`; mảng luôn xếp Mở đầu → Nội dung → Phụ lục). `tint` ∈ `mint`·`canary`·`paper`·`emerald`·`deep-blue` (màu tab mép sổ). ≤ 30. Slug giữ nguyên khi đổi tên (sản phẩm liên kết theo slug chương). |
 | `pages[]` | `{ id (UUID ổn định), key (8 ký tự Crockford ngẫu nhiên, địa chỉ `/cam-nang/trang/<key>`), chapterId, title, alt, image { mediaId, publicId, width, height }, text (≤ 8 000 ký tự), textSource (`pdf`·`manual`·`none`), hotspots[] }`. ≤ 300. Trang của một chương liền nhau, thứ tự mảng là thứ tự đọc. |
 | `pages[].hotspots[]` | `{ id, x, y, w, h (% của trang), label, target }`; `target` theo `type`: `product { productId, slug, title }` (bản chụp từ program-service), `page { pageId }`, `video { url }` (chỉ YouTube/TikTok), `url { url }` (https), `laviagent { prompt }`. ≤ 20/trang. |
 
@@ -910,4 +911,5 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 | v0.3 | 20/09/2026 | Bỏ khóa `team` và khối `team_members` khỏi `pages` (Đội ngũ là dữ liệu tĩnh); ghi chú ranh giới `media` và `public/` | V.C. Trọng |
 | v0.9 | 17/11/2026 | Cửa hàng (ADR-0028): §9.3 collection `product_categories`, `partner_brands`, `products`, `product_variants`, `stock_movements`, `carts`, `shop_orders`, `payment_refs`, `product_reviews`, `import_jobs`, `import_job_rows`, `shop_settings`; quyền `svc_program` | V.C. Trọng |
 | v0.8 | 17/11/2026 | Thông báo đẩy cho staff (ADR-0027): `push_subscriptions`, `push_preferences`, `push_deliveries` ở `lavieco_identity` (4.4c, migration `202611170001-push`); `events.seatAlerts` | V.C. Trọng |
+| v1.1 | 19/11/2026 | Cẩm nang: `handbook_versions.covers { front, back }` (bìa riêng, không đánh số) và `chapters[].kind` (`front_matter`·`content`·`appendix`); không cần migration (giá trị mặc định khi đọc) | V.C. Trọng |
 | v1.0 | 19/11/2026 | Cẩm nang trang ảnh có phiên bản (ADR-0029): §5.1 thay `handbook_chapters` (khối) bằng `handbooks` + `handbook_versions` + `handbook_uploads` + `handbook_import_jobs` + `handbook_preview_tokens`; `media` purpose `handbook_page`, index `idx_media_purpose_sha256`; migration `202611190001-handbook` | V.C. Trọng |

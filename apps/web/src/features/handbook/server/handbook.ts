@@ -22,14 +22,24 @@ export type PageResult =
   | { status: "not_found" }
   | { status: "error" };
 
-const cachedBook = unstable_cache(() => contentClient().getPublishedHandbook(), ["handbook-book"], {
-  tags: [HANDBOOK_CACHE_TAG],
-  revalidate: CACHE_SECONDS,
-});
+/**
+ * Bumped whenever the cached shape changes (v2: covers, chapter kinds), so a data cache
+ * left from an older build is never read as the new shape.
+ */
+const CACHE_SHAPE = "v2";
+
+const cachedBook = unstable_cache(
+  () => contentClient().getPublishedHandbook(),
+  ["handbook-book", CACHE_SHAPE],
+  {
+    tags: [HANDBOOK_CACHE_TAG],
+    revalidate: CACHE_SECONDS,
+  },
+);
 
 const cachedPage = unstable_cache(
   (key: string) => contentClient().getPublishedHandbookPage(key),
-  ["handbook-page"],
+  ["handbook-page", CACHE_SHAPE],
   { tags: [HANDBOOK_CACHE_TAG], revalidate: CACHE_SECONDS },
 );
 

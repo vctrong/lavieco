@@ -17,34 +17,39 @@ import { cn } from "@lavieco/ui";
 
 import { FADE_MS, FLIP_MS } from "../../constants/config";
 import type { PageSize } from "../../hooks/use-book-layout";
-import { pagesOfSpread, spreadCount, spreadIndexOf } from "../../utils/book-math";
+import { spreadAt, spreadCount, type Face, type Slot } from "../../utils/book-faces";
 import { PageFace } from "./page-face";
 
 export type TurnDirection = "next" | "prev";
 export type TurnFn = (direction: TurnDirection) => void;
 
-type Flip = { direction: TurnDirection };
+type Flip = { direction: TurnDirection; hard: boolean };
 
 const EASE = [0.3, 0.1, 0.2, 1] as const;
-
-type Position = { current: number; spread: boolean; total: number };
-
-function canTurnFrom({ current, spread, total }: Position, direction: TurnDirection) {
-  if (!spread) return direction === "next" ? current < total : current > 1;
-  const index = spreadIndexOf(current);
-  return direction === "next" ? index < spreadCount(total) - 1 : index > 0;
-}
-
-/** First page shown after turning (the left page of a spread when there is one). */
-function targetFrom({ current, spread, total }: Position, direction: TurnDirection) {
-  if (!spread) return current + (direction === "next" ? 1 : -1);
-  const target = pagesOfSpread(spreadIndexOf(current) + (direction === "next" ? 1 : -1), total);
-  return target.left ?? target.right ?? current;
-}
+/** A cover is board, not paper: it turns a little slower and casts a darker shadow. */
+const HARD_COVER_SLOWDOWN = 1.4;
 /** Past this angle a released drag completes the turn. */
 const COMMIT_ANGLE = 55;
 const TAP_SLOP = 10;
 const MAX_ZOOM = 3;
+
+const isCover = (slot: Slot) => Boolean(slot && slot.type === "cover");
+const pageOf = (slot: Slot): PublicHandbookPage | null =>
+  slot && slot.type === "page" ? slot.page : null;
+
+/** Whether the leaf about to turn is a cover (it then turns like board). */
+function coverTurns(
+  state: { index: number; spread: boolean; slots: readonly Slot[]; faces: readonly Face[] },
+  direction: TurnDirection,
+): boolean {
+  const { index: at, spread: two, slots, faces } = state;
+  if (!two) return isCover(direction === "next" ? faces[at] : faces[at - 1]);
+  const here = spreadAt(slots, at);
+  const there = spreadAt(slots, at + (direction === "next" ? 1 : -1));
+  return direction === "next"
+    ? isCover(here.right) || isCover(there.left)
+    : isCover(here.left) || isCover(there.right);
+}
 
 /** Darkness of a leaf and of the page under it, strongest when the leaf stands upright. */
 function useShade(angle: MotionValue<number>, max: number) {
@@ -60,16 +65,16 @@ function Leaf({
   spread,
   front,
   back,
+  hard,
   size,
-  renderOverlay,
 }: {
   angle: MotionValue<number>;
   direction: TurnDirection;
   spread: boolean;
-  front: PublicHandbookPage | null;
-  back: PublicHandbookPage | null;
+  front: Slot;
+  back: Slot;
+  hard: boolean;
   size: PageSize;
-  renderOverlay?: (page: PublicHandbookPage) => ReactNode;
 }) {
   // The leaf turns around the spine: left edge for "next" (and for a single page),
   // right edge when a left page turns back in a spread.
@@ -77,13 +82,16 @@ function Leaf({
   const rotateY = useTransform(angle, (value) =>
     aroundRight ? value : !spread && direction === "prev" ? -(180 - value) : -value,
   );
-  const shade = useShade(angle, 0.32);
+  const shade = useShade(angle, hard ? 0.2 : 0.32);
   const frontSide = spread ? (aroundRight ? "left" : "right") : "single";
   const backSide = spread ? (aroundRight ? "right" : "left") : "single";
   return (
     <motion.div
       aria-hidden="true"
-      className="absolute top-0 z-20 [transform-style:preserve-3d] will-change-transform"
+      className={cn(
+        "absolute top-0 z-20 [transform-style:preserve-3d] will-change-transform",
+        hard && "drop-shadow-xl",
+      )}
       style={{
         width: size.width,
         height: size.height,
@@ -93,20 +101,19 @@ function Leaf({
       }}
     >
       <div className="absolute inset-0 [backface-visibility:hidden]">
-        <PageFace
-          page={front}
-          widthPx={size.width}
-          side={frontSide}
-          eager
-          overlay={front && renderOverlay?.(front)}
-        />
+        <PageFace slot={front ?? null} widthPx={size.width} side={frontSide} eager />
         <motion.span
           className="pointer-events-none absolute inset-0 bg-charcoal"
           style={{ opacity: shade }}
         />
       </div>
       <div className="absolute inset-0 [backface-visibility:hidden] [transform:rotateY(180deg)]">
-        <PageFace page={spread ? back : null} widthPx={size.width} side={backSide} eager />
+        <PageFace
+          slot={spread ? (back ?? null) : null}
+          widthPx={size.width}
+          side={backSide}
+          eager
+        />
         <motion.span
           className="pointer-events-none absolute inset-0 bg-charcoal"
           style={{ opacity: shade }}
@@ -117,17 +124,21 @@ function Leaf({
 }
 
 /**
- * The open book (02-doc layout). Turning a page animates only `transform` (rotateY of
- * one leaf) and `opacity` (its shading), so it stays at 60 fps on a mid-range phone.
- * Only the visible spread, the turning leaf and the next pages are mounted; neighbours
- * are kept in a hidden layer so their images are already loaded when they turn.
- * With reduced motion the pages crossfade instead.
+ * The open book (02-doc layout), face by face: covers, pages and the blank insides of
+ * the covers (`utils/book-faces`). Turning animates only `transform` (rotateY of one
+ * leaf) and `opacity` (its shading), so it stays at 60 fps on a mid-range phone; a
+ * cover turns like board (slower, darker shadow). Only the visible spread, the turning
+ * leaf and the next faces are mounted; neighbours wait in a hidden layer so their
+ * images are loaded before they turn. With reduced motion the pages crossfade.
+ *
+ * `index` is a spread index (two pages) or a face index (one page).
  */
 export function FlipBook({
-  pages,
+  faces,
+  slots,
   spread,
   size,
-  current,
+  index,
   reduced,
   turnRef,
   onTurned,
@@ -136,32 +147,35 @@ export function FlipBook({
   renderOverlay,
   zoomEnabled,
 }: {
-  pages: readonly PublicHandbookPage[];
+  faces: readonly Face[];
+  slots: readonly Slot[];
   spread: boolean;
   size: PageSize;
-  current: number;
+  index: number;
   reduced: boolean;
   turnRef: RefObject<TurnFn | null>;
-  onTurned: (page: number) => void;
+  onTurned: (index: number) => void;
   onTap: (zone: "left" | "middle" | "right") => void;
   onTurnStart?: () => void;
   renderOverlay?: (page: PublicHandbookPage) => ReactNode;
   zoomEnabled: boolean;
 }) {
-  const total = pages.length;
-  const pageAt = (n: number | null) => (n && n >= 1 && n <= total ? pages[n - 1]! : null);
+  const count = spread ? spreadCount(slots) : faces.length;
   const angle = useMotionValue(0);
   const [flip, setFlip] = useState<Flip | null>(null);
   const busy = useRef(false);
   const surface = useRef<HTMLDivElement>(null);
 
-  // --- where we are, and where a turn leads ---
-  const spreadIndex = spreadIndexOf(current);
-  const latest = useRef({ current, spread, total, reduced, onTurned, onTurnStart });
+  const latest = useRef({ index, count, spread, slots, faces, reduced, onTurned, onTurnStart });
   useLayoutEffect(() => {
-    latest.current = { current, spread, total, reduced, onTurned, onTurnStart };
+    latest.current = { index, count, spread, slots, faces, reduced, onTurned, onTurnStart };
   });
-  const canTurn = (direction: TurnDirection) => canTurnFrom(latest.current, direction);
+  const canTurn = (direction: TurnDirection) => {
+    const { index: at, count: total } = latest.current;
+    return direction === "next" ? at < total - 1 : at > 0;
+  };
+  const hardTurn = (direction: TurnDirection) => coverTurns(latest.current, direction);
+
   // --- zoom (one page, phones): pinch, double tap, pan ---
   const [zoom, setZoom] = useState({ scale: 1, x: 0, y: 0 });
   const zoomed = zoom.scale > 1.01;
@@ -169,19 +183,20 @@ export function FlipBook({
   useLayoutEffect(() => {
     zoomedRef.current = zoomed;
   });
-  // A new page always opens unzoomed.
-  const [zoomedPage, setZoomedPage] = useState(current);
-  if (zoomedPage !== current) {
-    setZoomedPage(current);
+  // A new face always opens unzoomed.
+  const [zoomedAt, setZoomedAt] = useState(index);
+  if (zoomedAt !== index) {
+    setZoomedAt(index);
     setZoom({ scale: 1, x: 0, y: 0 });
   }
 
   const finish = useCallback(
-    (direction: TurnDirection, commit: boolean) => {
+    (direction: TurnDirection, commit: boolean, hard: boolean) => {
       const remaining = commit ? 180 - angle.get() : angle.get();
-      const duration = Math.max(0.12, (FLIP_MS / 1000) * (remaining / 180));
+      const full = (FLIP_MS / 1000) * (hard ? HARD_COVER_SLOWDOWN : 1);
+      const duration = Math.max(0.12, full * (remaining / 180));
       void animate(angle, commit ? 180 : 0, { duration, ease: EASE }).then(() => {
-        if (commit) latest.current.onTurned(targetFrom(latest.current, direction));
+        if (commit) latest.current.onTurned(latest.current.index + (direction === "next" ? 1 : -1));
         setFlip(null);
         angle.set(0);
         busy.current = false;
@@ -192,16 +207,19 @@ export function FlipBook({
 
   const turn = useCallback<TurnFn>(
     (direction) => {
-      if (busy.current || !canTurnFrom(latest.current, direction) || zoomedRef.current) return;
+      const { index: at, count: total } = latest.current;
+      const possible = direction === "next" ? at < total - 1 : at > 0;
+      if (busy.current || !possible || zoomedRef.current) return;
       latest.current.onTurnStart?.();
       if (latest.current.reduced) {
-        latest.current.onTurned(targetFrom(latest.current, direction));
+        latest.current.onTurned(at + (direction === "next" ? 1 : -1));
         return;
       }
+      const hard = coverTurns(latest.current, direction);
       busy.current = true;
       angle.set(0);
-      setFlip({ direction });
-      requestAnimationFrame(() => finish(direction, true));
+      setFlip({ direction, hard });
+      requestAnimationFrame(() => finish(direction, true, hard));
     },
     [angle, finish],
   );
@@ -216,7 +234,7 @@ export function FlipBook({
     startX: number;
     startY: number;
     moved: boolean;
-    turning: TurnDirection | null;
+    turning: Flip | null;
     pinch: { distance: number; scale: number } | null;
     pan: { x: number; y: number; zx: number; zy: number } | null;
     lastTap: number;
@@ -267,14 +285,14 @@ export function FlipBook({
     if (!g.turning && g.moved && Math.abs(dx) > Math.abs(dy)) {
       const direction: TurnDirection = dx < 0 ? "next" : "prev";
       if (!canTurn(direction) || reduced) return;
-      g.turning = direction;
+      g.turning = { direction, hard: hardTurn(direction) };
       busy.current = true;
       latest.current.onTurnStart?.();
-      setFlip({ direction });
+      setFlip(g.turning);
     }
     if (g.turning) {
       const travel = spread ? size.width : size.width * 0.9;
-      const progress = (g.turning === "next" ? -dx : dx) / travel;
+      const progress = (g.turning.direction === "next" ? -dx : dx) / travel;
       angle.set(Math.min(180, Math.max(0, progress * 180)));
     }
   };
@@ -289,9 +307,9 @@ export function FlipBook({
       return;
     }
     if (g.turning) {
-      const direction = g.turning;
+      const { direction, hard } = g.turning;
       g.turning = null;
-      finish(direction, angle.get() > COMMIT_ANGLE);
+      finish(direction, angle.get() > COMMIT_ANGLE, hard);
       return;
     }
     if (g.pan) {
@@ -318,50 +336,48 @@ export function FlipBook({
   };
 
   // --- what each layer shows ---
-  const here = spread ? pagesOfSpread(spreadIndex, total) : null;
-  const next = spread ? pagesOfSpread(spreadIndex + 1, total) : null;
-  const prev = spread ? pagesOfSpread(spreadIndex - 1, total) : null;
-
-  let baseLeft: number | null = null;
-  let baseRight: number | null = null;
-  let front: number | null = null;
-  let back: number | null = null;
-  let baseSingle = current;
-  if (spread && here) {
+  let baseLeft: Slot;
+  let baseRight: Slot;
+  let baseSingle: Slot = faces[index];
+  let front: Slot;
+  let back: Slot;
+  let preload: Slot[];
+  if (spread) {
+    const here = spreadAt(slots, index);
+    const next = spreadAt(slots, index + 1);
+    const prev = spreadAt(slots, index - 1);
     baseLeft = here.left;
     baseRight = here.right;
-    if (flip?.direction === "next" && next) {
+    if (flip?.direction === "next") {
       baseRight = next.right;
       front = here.right;
       back = next.left;
-    } else if (flip?.direction === "prev" && prev) {
+    } else if (flip?.direction === "prev") {
       baseLeft = prev.left;
       front = here.left;
       back = prev.right;
     }
-  } else if (flip) {
-    if (flip.direction === "next") {
-      baseSingle = current + 1;
-      front = current;
-    } else {
-      front = current - 1;
+    const after = spreadAt(slots, index + 2);
+    preload = [next.left, next.right, prev.left, prev.right, after.left, after.right];
+  } else {
+    if (flip?.direction === "next") {
+      baseSingle = faces[index + 1];
+      front = faces[index];
+    } else if (flip?.direction === "prev") {
+      front = faces[index - 1];
     }
+    preload = [faces[index + 1], faces[index + 2], faces[index - 1]];
   }
 
   const underShade = useShade(angle, 0.22);
   const bookWidth = spread ? size.width * 2 : size.width;
   // Pages already turned make the left block thicker, like a real book.
-  const read = total > 1 ? (current - 1) / (total - 1) : 0;
+  const read = count > 1 ? index / (count - 1) : 0;
   const edge = (share: number) => Math.round(2 + share * 10);
-  const preload = spread
-    ? [
-        next?.left,
-        next?.right,
-        prev?.left,
-        prev?.right,
-        ...Object.values(pagesOfSpread(spreadIndex + 2, total)),
-      ]
-    : [current + 1, current + 2, current - 1];
+  const overlayFor = (slot: Slot) => {
+    const page = pageOf(slot);
+    return !flip && !zoomed && page ? renderOverlay?.(page) : null;
+  };
 
   return (
     <div className="relative" style={{ width: bookWidth, height: size.height }}>
@@ -370,12 +386,20 @@ export function FlipBook({
           <span
             aria-hidden="true"
             className="absolute inset-y-1 rounded-l-md bg-[repeating-linear-gradient(90deg,var(--color-paper-edge)_0_1px,var(--color-paper)_1px_3px)]"
-            style={{ width: edge(read), left: -edge(read), opacity: here?.left ? 1 : 0 }}
+            style={{
+              width: edge(read),
+              left: -edge(read),
+              opacity: baseLeft === undefined ? 0 : 1,
+            }}
           />
           <span
             aria-hidden="true"
             className="absolute inset-y-1 rounded-r-md bg-[repeating-linear-gradient(90deg,var(--color-paper)_0_2px,var(--color-paper-edge)_2px_3px)]"
-            style={{ width: edge(1 - read), right: -edge(1 - read), opacity: here?.right ? 1 : 0 }}
+            style={{
+              width: edge(1 - read),
+              right: -edge(1 - read),
+              opacity: baseRight === undefined ? 0 : 1,
+            }}
           />
         </>
       ) : null}
@@ -392,7 +416,7 @@ export function FlipBook({
         )}
       >
         <motion.div
-          key={reduced ? (spread ? spreadIndex : current) : "book"}
+          key={reduced ? index : "book"}
           initial={reduced ? { opacity: 0 } : false}
           animate={{ opacity: 1 }}
           transition={{ duration: FADE_MS / 1000 }}
@@ -407,18 +431,19 @@ export function FlipBook({
           }
         >
           {spread ? (
-            <div className="flex h-full shadow-gallery">
-              <div className="relative h-full" style={{ width: size.width }}>
-                {baseLeft ? (
-                  <PageFace
-                    page={pageAt(baseLeft)}
-                    widthPx={size.width}
-                    side="left"
-                    eager
-                    overlay={!flip && pageAt(baseLeft) ? renderOverlay?.(pageAt(baseLeft)!) : null}
-                  />
-                ) : null}
-                {flip?.direction === "prev" ? (
+            <div className="flex h-full">
+              <div
+                className={cn("relative h-full", baseLeft !== undefined && "shadow-gallery")}
+                style={{ width: size.width }}
+              >
+                <PageFace
+                  slot={baseLeft}
+                  widthPx={size.width}
+                  side="left"
+                  eager
+                  overlay={overlayFor(baseLeft)}
+                />
+                {flip?.direction === "prev" && baseLeft !== undefined ? (
                   <motion.span
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 bg-charcoal"
@@ -426,19 +451,18 @@ export function FlipBook({
                   />
                 ) : null}
               </div>
-              <div className="relative h-full" style={{ width: size.width }}>
-                {baseRight ? (
-                  <PageFace
-                    page={pageAt(baseRight)}
-                    widthPx={size.width}
-                    side="right"
-                    eager
-                    overlay={
-                      !flip && pageAt(baseRight) ? renderOverlay?.(pageAt(baseRight)!) : null
-                    }
-                  />
-                ) : null}
-                {flip?.direction === "next" ? (
+              <div
+                className={cn("relative h-full", baseRight !== undefined && "shadow-gallery")}
+                style={{ width: size.width }}
+              >
+                <PageFace
+                  slot={baseRight}
+                  widthPx={size.width}
+                  side="right"
+                  eager
+                  overlay={overlayFor(baseRight)}
+                />
+                {flip?.direction === "next" && baseRight !== undefined ? (
                   <motion.span
                     aria-hidden="true"
                     className="pointer-events-none absolute inset-0 bg-charcoal"
@@ -450,29 +474,25 @@ export function FlipBook({
           ) : (
             <div className="relative h-full w-full shadow-gallery">
               <PageFace
-                page={pageAt(baseSingle)}
+                slot={baseSingle ?? null}
                 widthPx={zoomed ? size.width * zoom.scale : size.width}
                 side="single"
                 eager
-                overlay={
-                  !flip && !zoomed && pageAt(baseSingle)
-                    ? renderOverlay?.(pageAt(baseSingle)!)
-                    : null
-                }
+                overlay={overlayFor(baseSingle)}
               />
             </div>
           )}
         </motion.div>
 
-        {flip && front !== null ? (
+        {flip && front !== undefined ? (
           <Leaf
             angle={angle}
             direction={flip.direction}
             spread={spread}
-            front={pageAt(front)}
-            back={pageAt(back)}
+            front={front}
+            back={back}
+            hard={flip.hard}
             size={size}
-            renderOverlay={undefined}
           />
         ) : null}
       </div>
@@ -484,10 +504,10 @@ export function FlipBook({
         style={{ width: size.width, height: size.height }}
       >
         {preload
-          .filter((n): n is number => typeof n === "number" && n >= 1 && n <= total)
-          .map((n) => (
-            <div key={n} className="absolute inset-0">
-              <PageFace page={pageAt(n)} widthPx={size.width} side="single" eager />
+          .filter((slot): slot is Face => Boolean(slot))
+          .map((slot) => (
+            <div key={slot.id} className="absolute inset-0">
+              <PageFace slot={slot} widthPx={size.width} side="single" eager />
             </div>
           ))}
       </div>

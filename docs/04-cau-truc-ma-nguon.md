@@ -427,7 +427,7 @@ export const TEXT = {
 | `/bo-suu-tap/[slug]` | Chi tiết tác phẩm/combo | ISR | `collection` |
 | `/tac-dong` | Từ Cần Thơ ra biển lớn | ISR | `impact` |
 | `/cam-nang` | Trang bìa Cẩm nang: sổ đóng, "Mở sổ", "Đọc tiếp trang X", các chương (ADR-0029) | Động + cache tag `content:handbook` | `handbook` |
-| `/cam-nang/doc?trang=N` | Màn đọc sổ lật trang (2 trang ngang / 1 trang dọc), mục lục, tìm, đánh dấu, điểm bấm; `noindex`; khung `(reader)` không navbar/footer/nút LaviAgent nổi | Động + cache tag, client | `handbook` |
+| `/cam-nang/doc?trang=N` | Màn đọc sổ lật trang (2 trang ngang / 1 trang dọc), bìa trước/sau riêng (`?trang=bia`, `?trang=bia-sau`), tab chương theo loại, mục lục, tìm, đánh dấu, điểm bấm; `noindex`; khung `(reader)` không navbar/footer/nút LaviAgent nổi | Động + cache tag, client | `handbook` |
 | `/cam-nang/trang/[key]` | Một trang: ảnh + chữ (chế độ đọc, SEO, chia sẻ, OG image là ảnh trang); có trong sitemap | ISR, tag `content:handbook` | `handbook` |
 | `/xem-truoc/cam-nang/[token]` | Xem trước bản nháp Cẩm nang bằng token 10 phút, `noindex` | Động, không cache | `handbook` |
 | `/hop-tac` | Form hợp tác, 5 nhóm đối tác | ISR + form | `contact` |
@@ -1035,3 +1035,4 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.13 | 19/11/2026 | Cẩm nang trang ảnh (ADR-0029): route web `/cam-nang`, `/cam-nang/doc`, `/cam-nang/trang/[key]`, `/xem-truoc/cam-nang/[token]` thay `/cam-nang/[chapterSlug]`; admin `/handbook`, `/handbook/history`, `/handbook/preview`, BFF `PUT /api/handbook/uploads/[id]/chunks/[index]`; lưu cục bộ Cẩm nang bằng `localStorage` | V.C. Trọng |
 | v0.14 | 19/11/2026 | Cẩm nang PR3: điểm bấm, tìm trong sổ (BFF `GET /api/cam-nang/tim`), chia sẻ (Web Share API / sao chép), tiếng lật giấy ở `public/sounds/`; `proxy.ts` của web mở `frame-src` cho `youtube-nocookie.com` và `tiktok.com` **chỉ** trên `/cam-nang*` và `/xem-truoc/cam-nang/*` | V.C. Trọng |
 | v0.15 | 19/11/2026 | Cẩm nang PR4: trang `/cam-nang/trang/[key]` (SSR ảnh + chữ, canonical, OG image là ảnh trang), `app/sitemap.ts`; LaviAgent nhận `?cam-nang=<mã trang>` và `context.handbookPage` | V.C. Trọng |
+| v0.16 | 19/11/2026 | Cẩm nang: bìa trước/sau riêng và loại chương; `features/handbook/utils/book-faces.ts` (mặt giấy, `?trang=bia|bia-sau`) thay phần lớn `book-math.ts`; admin `covers-panel.tsx` | V.C. Trọng |

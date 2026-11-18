@@ -1,5 +1,7 @@
 import {
+  HANDBOOK_CHAPTER_KINDS,
   HANDBOOK_CHAPTER_TINTS,
+  type HandbookChapterKind,
   type HandbookChapterTint,
   type HandbookStructureUpdate,
   type HandbookVersion,
@@ -11,14 +13,35 @@ import {
  * kept together, in chapter order, whenever the structure is saved.
  */
 
-export type ChapterDraft = { id: string; title: string; tint: HandbookChapterTint };
+export type ChapterDraft = {
+  id: string;
+  title: string;
+  tint: HandbookChapterTint;
+  kind: HandbookChapterKind;
+};
 export type StructureState = {
   title: string;
   description: string;
   chapters: ChapterDraft[];
   /** Page ids grouped by chapter id, in display order. */
   pagesByChapter: Record<string, string[]>;
+  /** False once the editor removed that cover (saved with the structure). */
+  keepCovers: { front: boolean; back: boolean };
 };
+
+const KIND_RANK = new Map(HANDBOOK_CHAPTER_KINDS.map((kind, index) => [kind, index]));
+
+/** Front matter first, appendices last, editor order inside each kind (as the service does). */
+function sortByKind(chapters: ChapterDraft[]): ChapterDraft[] {
+  return chapters
+    .map((chapter, index) => ({ chapter, index }))
+    .sort(
+      (a, b) =>
+        (KIND_RANK.get(a.chapter.kind) ?? 1) - (KIND_RANK.get(b.chapter.kind) ?? 1) ||
+        a.index - b.index,
+    )
+    .map(({ chapter }) => chapter);
+}
 
 export function structureOf(version: HandbookVersion): StructureState {
   const pagesByChapter: Record<string, string[]> = {};
@@ -27,8 +50,9 @@ export function structureOf(version: HandbookVersion): StructureState {
   return {
     title: version.title,
     description: version.description,
-    chapters: version.chapters.map(({ id, title, tint }) => ({ id, title, tint })),
+    chapters: version.chapters.map(({ id, title, tint, kind }) => ({ id, title, tint, kind })),
     pagesByChapter,
+    keepCovers: { front: true, back: true },
   };
 }
 
@@ -40,6 +64,7 @@ export function toStructureUpdate(
     revision,
     title: state.title,
     description: state.description,
+    keepCovers: state.keepCovers,
     chapters: state.chapters,
     pages: state.chapters.flatMap((chapter) =>
       (state.pagesByChapter[chapter.id] ?? []).map((id) => ({ id, chapterId: chapter.id })),
@@ -65,7 +90,7 @@ export function addChapter(state: StructureState, id: string, title: string): St
   const tint = HANDBOOK_CHAPTER_TINTS[state.chapters.length % HANDBOOK_CHAPTER_TINTS.length]!;
   return {
     ...state,
-    chapters: [...state.chapters, { id, title, tint }],
+    chapters: sortByKind([...state.chapters, { id, title, tint, kind: "content" }]),
     pagesByChapter: { ...state.pagesByChapter, [id]: [] },
   };
 }
@@ -77,8 +102,8 @@ export function updateChapter(
 ): StructureState {
   return {
     ...state,
-    chapters: state.chapters.map((chapter) =>
-      chapter.id === id ? { ...chapter, ...change } : chapter,
+    chapters: sortByKind(
+      state.chapters.map((chapter) => (chapter.id === id ? { ...chapter, ...change } : chapter)),
     ),
   };
 }
@@ -104,7 +129,8 @@ export function reorderChapters(state: StructureState, from: number, to: number)
   const [moved] = chapters.splice(from, 1);
   if (!moved) return state;
   chapters.splice(to, 0, moved);
-  return { ...state, chapters };
+  // A chapter cannot leave its kind's place: front matter first, appendices last.
+  return { ...state, chapters: sortByKind(chapters) };
 }
 
 export function reorderPages(
@@ -140,4 +166,9 @@ export function removePage(state: StructureState, pageId: string): StructureStat
     pagesByChapter[id] = pages.filter((page) => page !== pageId);
   }
   return { ...state, pagesByChapter };
+}
+
+/** Removes a cover when the structure is saved ("Gỡ bìa"). */
+export function removeCover(state: StructureState, side: "front" | "back"): StructureState {
+  return { ...state, keepCovers: { ...state.keepCovers, [side]: false } };
 }

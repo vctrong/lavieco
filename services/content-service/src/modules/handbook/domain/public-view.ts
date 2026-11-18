@@ -62,6 +62,12 @@ function publicHotspots(
   return spots;
 }
 
+const coverOf = (image: { publicId: string; width: number; height: number }) => ({
+  publicId: image.publicId,
+  width: image.width,
+  height: image.height,
+});
+
 function positionsOf(version: Pick<VersionRecord, "pages">) {
   return new Map(version.pages.map((page, i) => [page.id, { key: page.key, number: i + 1 }]));
 }
@@ -100,6 +106,7 @@ export function toPublicHandbook(
             slug: chapter.slug,
             title: chapter.title,
             tint: chapter.tint,
+            kind: chapter.kind,
             firstPage: first.number,
             pageCount: own.length,
           },
@@ -113,6 +120,10 @@ export function toPublicHandbook(
     accessLevel,
     versionNumber: version.number,
     publishedAt: (version.publishedAt ?? version.updatedAt).toISOString(),
+    covers: {
+      front: version.covers.front ? coverOf(version.covers.front) : null,
+      back: version.covers.back ? coverOf(version.covers.back) : null,
+    },
     chapters,
     pages,
   };

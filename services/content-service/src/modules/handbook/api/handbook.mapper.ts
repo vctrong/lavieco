@@ -26,6 +26,7 @@ export function toVersionDto(version: VersionRecord): HandbookVersion {
     note: version.note,
     basedOnNumber: version.basedOnNumber,
     revision: version.revision,
+    covers: version.covers,
     chapters: version.chapters,
     pages: version.pages.map((page) => ({
       ...page,

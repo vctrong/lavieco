@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { isoDateTimeSchema, objectIdSchema } from "../common/object-id";
 import {
+  HANDBOOK_CHAPTER_KINDS,
   HANDBOOK_CHAPTER_TINTS,
   HANDBOOK_IMPORT_MODES,
   HANDBOOK_IMPORT_STATUSES,
@@ -24,6 +25,7 @@ const slug = z
 export const handbookPageKeySchema = z.string().regex(/^[0-9a-hjkmnp-tv-z]{8}$/);
 
 export const handbookChapterTintSchema = z.enum(HANDBOOK_CHAPTER_TINTS);
+export const handbookChapterKindSchema = z.enum(HANDBOOK_CHAPTER_KINDS);
 export const handbookVersionStatusSchema = z.enum(HANDBOOK_VERSION_STATUSES);
 export const handbookTextSourceSchema = z.enum(HANDBOOK_TEXT_SOURCES);
 export const handbookImportModeSchema = z.enum(HANDBOOK_IMPORT_MODES);
@@ -45,6 +47,7 @@ export const handbookChapterSchema = z.object({
   slug,
   title,
   tint: handbookChapterTintSchema,
+  kind: handbookChapterKindSchema,
 });
 export type HandbookChapter = z.infer<typeof handbookChapterSchema>;
 
@@ -105,6 +108,16 @@ export const handbookPageImageSchema = z.object({
 });
 export type HandbookPageImage = z.infer<typeof handbookPageImageSchema>;
 
+/**
+ * Front and back covers live outside the chapters and carry no page number: chapter
+ * tabs and "Trang N" only count the pages inside (ADR-0029 amendment).
+ */
+export const handbookCoversSchema = z.object({
+  front: handbookPageImageSchema.nullable(),
+  back: handbookPageImageSchema.nullable(),
+});
+export type HandbookCovers = z.infer<typeof handbookCoversSchema>;
+
 /** One page as the editor sees it. */
 export const handbookPageSchema = z.object({
   /** UUID stable across versions (hotspots and bookmarks point to it). */
@@ -133,6 +146,7 @@ export const handbookVersionSchema = z.object({
   note: z.string(),
   basedOnNumber: z.number().int().positive().nullable(),
   revision: z.number().int().positive(),
+  covers: handbookCoversSchema,
   chapters: z.array(handbookChapterSchema).max(L.chaptersMax),
   pages: z.array(handbookPageSchema).max(L.pagesMax),
   createdBy: handbookActorSchema,
@@ -187,11 +201,16 @@ export const handbookStructureUpdateSchema = z.object({
         title,
         slug: slug.optional(),
         tint: handbookChapterTintSchema,
+        kind: handbookChapterKindSchema.default("content"),
       }),
     )
     .min(1)
     .max(L.chaptersMax),
   pages: z.array(z.object({ id: z.uuid(), chapterId: z.uuid() })).max(L.pagesMax),
+  /** `false` removes that cover; covers are uploaded through imports. */
+  keepCovers: z
+    .object({ front: z.boolean().default(true), back: z.boolean().default(true) })
+    .default({ front: true, back: true }),
 });
 export type HandbookStructureUpdate = z.infer<typeof handbookStructureUpdateSchema>;
 
@@ -279,10 +298,12 @@ export const handbookImportCreateSchema = z
     message: "pageId is required to replace a page",
     path: ["pageId"],
   })
-  .refine((input) => input.mode !== "replace_page" || input.uploadIds.length === 1, {
-    message: "A page is replaced by exactly one file",
-    path: ["uploadIds"],
-  });
+  .refine(
+    (input) =>
+      !["replace_page", "cover_front", "cover_back"].includes(input.mode) ||
+      input.uploadIds.length === 1,
+    { message: "A page or a cover is replaced by exactly one file", path: ["uploadIds"] },
+  );
 export type HandbookImportCreate = z.infer<typeof handbookImportCreateSchema>;
 
 export const HANDBOOK_IMPORT_WARNINGS = ["aspect_off", "missing_text", "low_text_ratio"] as const;
@@ -367,11 +388,19 @@ export const publicHandbookPageSchema = z.object({
 });
 export type PublicHandbookPage = z.infer<typeof publicHandbookPageSchema>;
 
+const publicCoverSchema = z.object({
+  publicId: z.string(),
+  width: z.number().int().positive(),
+  height: z.number().int().positive(),
+});
+export type PublicHandbookCover = z.infer<typeof publicCoverSchema>;
+
 export const publicHandbookChapterSchema = z.object({
   id: z.string(),
   slug: z.string(),
   title: z.string(),
   tint: handbookChapterTintSchema,
+  kind: handbookChapterKindSchema,
   /** Number of its first page; chapters without pages are not published. */
   firstPage: z.number().int().positive(),
   pageCount: z.number().int().positive(),
@@ -386,6 +415,8 @@ export const publicHandbookSchema = z.object({
   accessLevel: handbookAccessLevelSchema,
   versionNumber: z.number().int().positive(),
   publishedAt: isoDateTimeSchema,
+  /** Outside the pages: no number, no chapter (ADR-0029 amendment). */
+  covers: z.object({ front: publicCoverSchema.nullable(), back: publicCoverSchema.nullable() }),
   chapters: z.array(publicHandbookChapterSchema),
   pages: z.array(publicHandbookPageSchema),
 });

@@ -8,6 +8,11 @@ Dành cho nhóm đồ hoạ. Mỗi trang sổ là một ảnh; web lấy **chữ
 - Mỗi trang PDF là **một trang sổ**. Không ghép hai trang thành một trang đôi.
 - Ảnh rời: **1748 × 2480 px** (A5 ở 300 dpi), PNG hoặc JPG, tối đa 25 MB/ảnh. Đặt tên theo thứ tự đọc: `01.png`, `02.png`, … (admin sắp theo tên).
 
+## Bìa và chương
+
+- **Bìa trước** và **bìa sau** xuất thành **file riêng** (một ảnh hoặc PDF một trang mỗi bìa), tải ở khung "Bìa sổ" trong admin. Không đặt bìa trong PDF nội dung: trang 1 của PDF là trang 1 của sổ (sau bìa).
+- Lời mở đầu, mục lục in, phụ lục, tài liệu tham khảo: để trong PDF như trang thường, rồi trong admin tạo chương loại **Mở đầu** hoặc **Phụ lục** và chuyển các trang đó vào. Admin luôn xếp Mở đầu trước, Phụ lục sau cùng.
+
 ## Giữ chữ là chữ (quan trọng)
 
 Chữ chỉ lấy được khi nó **còn là chữ** trong PDF:
