@@ -134,7 +134,15 @@ export class OutboxWorker implements OnModuleInit, OnApplicationShutdown {
         },
       );
     } catch (error) {
-      const errorCode = error instanceof Error ? error.name : "unknown";
+      // A call to another service failed: its problem code ("common.unauthenticated"…)
+      // says why, the class name alone ("ServiceProblemError") does not. Never a message.
+      const problem = (error as { code?: unknown } | null)?.code;
+      const errorCode =
+        error instanceof Error
+          ? typeof problem === "string" && /^[a-z_]+\.[a-z_]+$/.test(problem)
+            ? `${error.name}:${problem}`
+            : error.name
+          : "unknown";
       const dead = !handler || job.attempts >= this.options.maxAttempts;
       await this.model.updateOne(
         { _id: job._id },
