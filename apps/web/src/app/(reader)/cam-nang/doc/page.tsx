@@ -9,6 +9,12 @@ import {
   parsePage,
 } from "@/features/handbook";
 
+/**
+ * Rendered per request from the cached book (tag `content:handbook`): the build never
+ * calls content-service (CI and Docker builds have no service environment).
+ */
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   searchParams,
 }: PageProps<"/cam-nang/doc">): Promise<Metadata> {

@@ -442,7 +442,7 @@ export const TEXT = {
 | **`/c/[code]`** | **Phân giải QR, trả `302`** | Động | `qr-resolver` |
 | `/api/leads` · `/api/waitlist` · `/api/handbook-stats` | BFF cho form và thống kê | Động | trong tính năng tương ứng |
 | `/api/cam-nang/tim` | BFF tìm trong Cẩm nang (`?q=`, 2–80 ký tự), chuyển sang `content-service`; cache công khai ngắn | Động | `handbook` |
-| `/sitemap.xml` | `app/sitemap.ts`: trang chính + bìa và mọi trang Cẩm nang đã xuất bản (`/cam-nang/trang/<key>`), làm lại tối đa mỗi giờ | ISR 1 giờ | `handbook` |
+| `/sitemap.xml` | `app/sitemap.ts`: trang chính + bìa và mọi trang Cẩm nang đã xuất bản (`/cam-nang/trang/<key>`), dựng theo request từ dữ liệu đã cache | Động + cache tag | `handbook` |
 | `/api/revalidate` | Webhook làm mới cache: HMAC-SHA256 trên `<timestamp>.<body>`, lệch ≤ 5 phút, chỉ nhận `tags` (hợp đồng `revalidateRequestSchema`) | Động | `lib/revalidate.ts` |
 
 - **`/c/[code]` nằm ngoài nhánh ngôn ngữ.** URL in trên QR không kèm mã ngôn ngữ, để **không bao giờ đổi** khi cấu trúc i18n thay đổi (BR-02, ADR-007).

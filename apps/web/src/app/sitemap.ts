@@ -3,8 +3,11 @@ import type { MetadataRoute } from "next";
 import { handbookSitemap, loadBook } from "@/features/handbook";
 import { siteUrl } from "@/lib/site-url";
 
-/** Rebuilt at most hourly; a handbook publish shows up on the next rebuild. */
-export const revalidate = 3600;
+/**
+ * Built per request from the cached book (tag `content:handbook`, revalidated on publish):
+ * the build never calls content-service, which CI and Docker builds cannot reach.
+ */
+export const dynamic = "force-dynamic";
 
 /** Public pages worth indexing. Handbook pages come from the published version. */
 const STATIC_PATHS = ["/", "/chuong-trinh", "/bo-suu-tap", "/laviagent"] as const;
