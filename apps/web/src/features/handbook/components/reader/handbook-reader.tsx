@@ -48,11 +48,18 @@ const r = TEXT.vi.reader;
 const SPREAD_RESERVE = 220;
 const SINGLE_RESERVE = 16;
 
+/** What extras may do with the reader. */
+export type ReaderApi = {
+  go: (page: number) => void;
+  /** True for a moment after a tap on a page: hotspots show where they are. */
+  reveal: boolean;
+};
+
 export type ReaderExtras = {
-  /** Extra icon buttons of the top bar (search, sound, share: PR3). */
-  topActions?: (page: PublicHandbookPage) => ReactNode;
-  /** Layer drawn over a page (hotspots: PR3). */
-  renderOverlay?: (page: PublicHandbookPage) => ReactNode;
+  /** Extra icon buttons of the top bar (search, sound, share). */
+  topActions?: (page: PublicHandbookPage, api: ReaderApi) => ReactNode;
+  /** Layer drawn over a page (hotspots). */
+  renderOverlay?: (page: PublicHandbookPage, api: ReaderApi) => ReactNode;
   /** Called when a page starts turning (page-turn sound). */
   onTurnStart?: () => void;
   /** Where "Hỏi LaviAgent" leads for this page. */
@@ -76,8 +83,8 @@ export function HandbookReader({
   initialPage: number;
   preview?: boolean;
   extras?: ReaderExtras;
-  /** A panel opened by an extra (search), shown like the table of contents. */
-  panel?: ReactNode;
+  /** A panel opened by an extra (search, video), shown over the reader. */
+  panel?: (api: ReaderApi) => ReactNode;
   onPanelClose?: () => void;
 }) {
   const total = book.pages.length;
@@ -99,6 +106,13 @@ export function HandbookReader({
   );
   const marks = useMemo(() => (marksSnapshot ? marksSnapshot.split(",") : []), [marksSnapshot]);
   const turn = useRef<TurnFn | null>(null);
+  const [reveal, setReveal] = useState(false);
+  const revealTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const showHotspots = () => {
+    setReveal(true);
+    if (revealTimer.current) clearTimeout(revealTimer.current);
+    revealTimer.current = setTimeout(() => setReveal(false), 1600);
+  };
 
   const visible = spread ? pagesOfSpread(spreadIndexOf(page), total) : { left: page, right: null };
   const shown = book.pages[(spread ? firstPageOf(visible) : page) - 1] ?? first;
@@ -124,13 +138,14 @@ export function HandbookReader({
   // Keyboard: ←/→ turn, Esc closes a panel.
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
-      const target = event.target as HTMLElement | null;
-      if (target?.closest("input, textarea, select, [contenteditable=true]")) return;
+      // Esc always closes a panel, even while typing in the search field.
       if (event.key === "Escape") {
         setTocOpen(false);
         onPanelClose?.();
         return;
       }
+      const target = event.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, [contenteditable=true]")) return;
       if (tocOpen || panel) return;
       if (event.key === "ArrowRight") turn.current?.("next");
       if (event.key === "ArrowLeft") turn.current?.("prev");
@@ -150,6 +165,7 @@ export function HandbookReader({
     else void document.documentElement.requestFullscreen?.().catch(() => undefined);
   };
 
+  const api: ReaderApi = { go, reveal };
   const pageLabel = spread ? r.spreadOf(visible.left, visible.right, total) : r.pageOf(page, total);
   const barsHidden = controlsHidden && !spread;
 
@@ -184,7 +200,7 @@ export function HandbookReader({
         <IconButton label={r.toc} onClick={() => setTocOpen(true)}>
           <FiList aria-hidden="true" size={19} />
         </IconButton>
-        {shown ? extras.topActions?.(shown) : null}
+        {shown ? extras.topActions?.(shown, api) : null}
         {shown && !preview ? (
           <IconButton
             label={bookmarked ? r.unbookmark : r.bookmark}
@@ -250,9 +266,12 @@ export function HandbookReader({
                 turnRef={turn}
                 onTurned={setPage}
                 onTurnStart={extras.onTurnStart}
-                renderOverlay={extras.renderOverlay}
+                renderOverlay={
+                  extras.renderOverlay ? (item) => extras.renderOverlay?.(item, api) : undefined
+                }
                 zoomEnabled={!spread}
                 onTap={(zone) => {
+                  showHotspots();
                   if (spread && zone === "left") turn.current?.("prev");
                   else if (spread && zone === "right") turn.current?.("next");
                   else if (!spread) setControlsHidden((hidden) => !hidden);
@@ -354,7 +373,7 @@ export function HandbookReader({
           onClose={() => setTocOpen(false)}
         />
       ) : null}
-      {panel}
+      {panel?.(api)}
     </div>
   );
 }

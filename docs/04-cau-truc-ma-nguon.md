@@ -338,6 +338,7 @@ Có hai loại chữ, đi hai đường khác nhau:
 | **Chữ cố định của giao diện** | Nhãn nút "Gửi lời nhắn", tên ô nhập, thông báo lỗi, nhãn menu, chữ trạng thái | `features/<tên>/constants/text.ts` **[kế thừa]** |
 | **Nội dung biên tập** | Thông điệp trang chủ, chương cẩm nang, mô tả tác phẩm, story card | `content-service` (đội nội dung sửa được, `03` §5) |
 | **Dữ liệu và ảnh tĩnh cứng trong code** | Logo, thông tin và ảnh sáu thành viên, hình trang trí | Dữ liệu ở `constants/` của tính năng (ví dụ `features/team/constants/members.ts`), ảnh ở `public/images/` (mục 5.1); đổi bằng Pull Request, không qua CMS |
+| **Âm thanh giao diện** | Tiếng lật giấy của Cẩm nang | `public/sounds/<tên>.wav` (< 30 KB); nguồn và giấy phép ghi ở `docs/brand/am-thanh.md`; luôn **mặc định tắt**, chỉ tải khi người dùng bật; đổi âm thanh thì đổi tên tệp |
 
 Cấu trúc `text.ts` (sẵn sàng thêm tiếng Anh, A7 ở `01`):
 
@@ -1030,3 +1031,4 @@ Từ v0.2, các điểm dưới đây đã được áp dụng:
 | v0.12 | 17/11/2026 | Xuất Excel có định dạng chung (`ExcelWorkbookWriter` nhận `Workbook` có kiểu cột: số, tiền VND, ngày giờ Việt Nam, mã giữ nguyên, trạng thái tô màu; tiêu đề Deep Blue + bộ lọc, cố định dòng đầu và 2 cột đầu, dòng xen màu, sheet "Tổng quan"); bản sao token `sheet-tokens.ts` | V.C. Trọng |
 | v0.11 | 17/11/2026 | Admin PWA (ADR-0027): `features/pwa`, `public/sw.js`, khung mobile có thanh tab, `/shop`, `/more`, `/notifications`, ngoại lệ hex cho manifest; identity module `push`, program-service module `staff-alerts` | V.C. Trọng |
 | v0.13 | 19/11/2026 | Cẩm nang trang ảnh (ADR-0029): route web `/cam-nang`, `/cam-nang/doc`, `/cam-nang/trang/[key]`, `/xem-truoc/cam-nang/[token]` thay `/cam-nang/[chapterSlug]`; admin `/handbook`, `/handbook/history`, `/handbook/preview`, BFF `PUT /api/handbook/uploads/[id]/chunks/[index]`; lưu cục bộ Cẩm nang bằng `localStorage` | V.C. Trọng |
+| v0.14 | 19/11/2026 | Cẩm nang PR3: điểm bấm, tìm trong sổ (BFF `GET /api/cam-nang/tim`), chia sẻ (Web Share API / sao chép), tiếng lật giấy ở `public/sounds/`; `proxy.ts` của web mở `frame-src` cho `youtube-nocookie.com` và `tiktok.com` **chỉ** trên `/cam-nang*` và `/xem-truoc/cam-nang/*` | V.C. Trọng |

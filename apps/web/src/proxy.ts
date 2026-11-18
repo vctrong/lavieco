@@ -7,6 +7,12 @@ const ACCOUNT_PREFIX = "/tai-khoan";
 const SIGN_IN_PAGES = new Set(["/dang-nhap", "/dang-ky"]);
 /** Event preview (D2): opened in its own tab, must never reach a search index. */
 const PREVIEW_PREFIX = "/xem-truoc/";
+/**
+ * Handbook pages play video hotspots in an embedded player: only YouTube (privacy-enhanced
+ * domain) and TikTok may be framed there (ADR-0029). Other pages keep no frame-src.
+ */
+const HANDBOOK_PREFIXES = ["/cam-nang", "/xem-truoc/cam-nang/"];
+const HANDBOOK_FRAME_SRC = "frame-src https://www.youtube-nocookie.com https://www.tiktok.com";
 
 const SECURITY_HEADERS: Record<string, string> = {
   "x-content-type-options": "nosniff",
@@ -40,7 +46,11 @@ export function proxy(request: NextRequest) {
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) response.headers.set(name, value);
   // Every page refuses to be framed.
   response.headers.set("x-frame-options", "DENY");
-  response.headers.set("content-security-policy", "frame-ancestors 'none'");
+  const handbook = HANDBOOK_PREFIXES.some((prefix) => pathname.startsWith(prefix));
+  response.headers.set(
+    "content-security-policy",
+    handbook ? `frame-ancestors 'none'; ${HANDBOOK_FRAME_SRC}` : "frame-ancestors 'none'",
+  );
   if (pathname.startsWith(PREVIEW_PREFIX)) {
     response.headers.set("x-robots-tag", "noindex, nofollow");
   }
