@@ -1,0 +1,105 @@
+/**
+ * Cẩm nang Xanh số (UC-02, ADR-0029). Voice: friendly, for kids, families and young
+ * makers. No academic words. Editorial content (page text, chapter titles) comes from
+ * content-service; this file holds only the interface words.
+ */
+export const TEXT = {
+  vi: {
+    meta: {
+      title: "Cẩm nang Xanh số",
+      description:
+        "Cuốn sổ lật trang của LAVIECO: cùng nhau biến đồ bỏ đi thành đồ thủ công xinh xắn, đọc miễn phí trên điện thoại và máy tính.",
+      readerTitle: (page: number) => `Trang ${page} · Cẩm nang Xanh số`,
+      previewTitle: "Xem trước Cẩm nang",
+    },
+    cover: {
+      eyebrow: "Cẩm nang Xanh số",
+      open: "Mở sổ",
+      resume: (page: number) => `Đọc tiếp trang ${page}`,
+      bookAlt: (title: string) => `Bìa ${title}`,
+      facts: {
+        pages: "Số trang",
+        pagesValue: (n: number) => `${n} trang A5`,
+        chapters: "Chương",
+        chaptersValue: (n: number) => `${n} chương`,
+        updated: "Cập nhật",
+        price: "Giá",
+        priceValue: "Miễn phí",
+      },
+      chaptersHeading: "Các chương trong sổ",
+      chaptersLead: "Chọn một chương để mở thẳng tới đó. Đọc theo thứ tự hay nhảy cóc đều được!",
+      chapterLabel: (n: number) => `Chương ${n}`,
+      pageRange: (from: number, to: number) =>
+        from === to ? `Trang ${from}` : `Trang ${from}–${to}`,
+      pageCount: (n: number) => `${n} trang`,
+      openChapter: (title: string) => `Mở chương ${title}`,
+      more: {
+        heading: "Làm tiếp cùng LAVIECO",
+        kit: {
+          eyebrow: "Bộ DIY KIT",
+          title: "Tự tay làm tại nhà",
+          body: "Bộ dụng cụ có sẵn vật liệu và hướng dẫn, làm cùng cả nhà trong một buổi chiều.",
+          cta: "Xem Bộ sưu tập",
+        },
+        agent: {
+          eyebrow: "Hỏi LaviAgent",
+          title: "Đồ cũ này làm được gì?",
+          body: "Chụp hoặc kể món đồ bạn định bỏ đi, LaviAgent gợi ý cách biến nó thành đồ dùng mới.",
+          cta: "Trò chuyện với LaviAgent",
+        },
+        workshop: {
+          eyebrow: "Workshop",
+          title: "Làm cùng mọi người",
+          body: "Tham gia một buổi làm thủ công từ vật liệu tái chế, có người hướng dẫn tận tay.",
+          cta: "Xem lịch workshop",
+        },
+      },
+    },
+    reader: {
+      backToCover: "Về trang bìa",
+      toc: "Mục lục",
+      search: "Tìm trong sổ",
+      bookmark: "Đánh dấu trang này",
+      unbookmark: "Bỏ đánh dấu trang này",
+      soundOn: "Bật tiếng lật giấy",
+      soundOff: "Tắt tiếng lật giấy",
+      fullscreen: "Toàn màn hình",
+      exitFullscreen: "Thoát toàn màn hình",
+      share: "Chia sẻ trang",
+      previous: "Trang trước",
+      next: "Trang sau",
+      pageOf: (page: number, total: number) => `Trang ${page} / ${total}`,
+      spreadOf: (left: number | null, right: number | null, total: number) =>
+        left && right ? `Trang ${left}–${right} / ${total}` : `Trang ${left ?? right} / ${total}`,
+      progress: "Tiến độ đọc",
+      thumbnails: "Các trang",
+      goTo: (page: number) => `Tới trang ${page}`,
+      current: "Đang đọc",
+      askAgent: "Hỏi LaviAgent về trang này",
+      askAgentShort: "Hỏi LaviAgent",
+      chapterTabs: "Các chương",
+      bookRole: "cuốn sổ",
+      tapHint: "Chạm vào trang để ẩn hoặc hiện nút",
+      zoomIn: "Phóng to",
+      zoomOut: "Thu nhỏ",
+      pageLabel: (page: number, title: string) => `Trang ${page}: ${title}`,
+      blankPage: "Mặt trong bìa",
+      readingMode: "Đọc dạng chữ",
+      noJs: "Bật JavaScript để lật sổ, hoặc đọc từng trang ở chế độ chữ:",
+      preview: "Bạn đang xem bản nháp. Bạn đọc chưa thấy bản này.",
+    },
+    toc: {
+      title: "Mục lục",
+      tabs: { chapters: "Các chương", bookmarks: "Đã đánh dấu" },
+      close: "Đóng",
+      pages: (n: number) => `${n} trang`,
+      page: (n: number) => `Tr. ${n}`,
+      reading: "Đang đọc",
+      noBookmarks:
+        "Chưa có trang nào được đánh dấu. Bấm biểu tượng dấu trang ở thanh trên để lưu trang bạn thích.",
+    },
+    errors: {
+      unavailable: "Cẩm nang đang được cập nhật, bạn quay lại sau ít phút nhé.",
+    },
+  },
+} as const;

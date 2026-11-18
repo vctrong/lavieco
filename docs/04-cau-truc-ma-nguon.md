@@ -425,8 +425,8 @@ export const TEXT = {
 | `/bo-suu-tap` | Bộ sưu tập, lọc theo nhóm | ISR | `collection` |
 | `/bo-suu-tap/[slug]` | Chi tiết tác phẩm/combo | ISR | `collection` |
 | `/tac-dong` | Từ Cần Thơ ra biển lớn | ISR | `impact` |
-| `/cam-nang` | Trang bìa Cẩm nang: sổ đóng, "Mở sổ", "Đọc tiếp trang X", các chương (ADR-0029) | ISR, tag `content:handbook` | `handbook` |
-| `/cam-nang/doc?trang=N` | Màn đọc sổ lật trang (2 trang ngang / 1 trang dọc), mục lục, tìm, đánh dấu, điểm bấm; `noindex` (canonical là trang SEO) | ISR + client | `handbook` |
+| `/cam-nang` | Trang bìa Cẩm nang: sổ đóng, "Mở sổ", "Đọc tiếp trang X", các chương (ADR-0029) | Động + cache tag `content:handbook` | `handbook` |
+| `/cam-nang/doc?trang=N` | Màn đọc sổ lật trang (2 trang ngang / 1 trang dọc), mục lục, tìm, đánh dấu, điểm bấm; `noindex`; khung `(reader)` không navbar/footer/nút LaviAgent nổi | Động + cache tag, client | `handbook` |
 | `/cam-nang/trang/[key]` | Một trang: ảnh + chữ (chế độ đọc, SEO, chia sẻ, OG image là ảnh trang); có trong sitemap | ISR, tag `content:handbook` | `handbook` |
 | `/xem-truoc/cam-nang/[token]` | Xem trước bản nháp Cẩm nang bằng token 10 phút, `noindex` | Động, không cache | `handbook` |
 | `/hop-tac` | Form hợp tác, 5 nhóm đối tác | ISR + form | `contact` |

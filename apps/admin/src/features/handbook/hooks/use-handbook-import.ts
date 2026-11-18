@@ -60,9 +60,18 @@ export function useHandbookImport(onImported: () => void, initialJob: HandbookIm
       if (job.status === "failed") {
         setState({ phase: "failed", message: u.errors[job.error ?? "internal"] });
       } else {
+        // One line per kind: a 48-page book without text must not list 48 lines.
+        const pagesWith = (code: "aspect_off" | "missing_text") =>
+          job.warnings.filter((w) => w.code === code).map((w) => w.page ?? 0);
+        const missing = pagesWith("missing_text");
+        const aspect = pagesWith("aspect_off");
         const notes = [
           ...aspectNotes.current,
-          ...job.warnings.map((warning) => u.warnings[warning.code](warning.page)),
+          ...(aspect.length ? [u.warnings.aspect_off(aspect)] : []),
+          ...(missing.length ? [u.warnings.missing_text(missing)] : []),
+          ...(job.warnings.some((w) => w.code === "low_text_ratio")
+            ? [u.warnings.low_text_ratio()]
+            : []),
         ];
         setState({ phase: "done", job, notes });
       }
