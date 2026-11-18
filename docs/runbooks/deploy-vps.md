@@ -60,7 +60,7 @@ sudo dpkg-reconfigure -plow unattended-upgrades
 sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
 sudo systemctl reload ssh
 
-# Swap 2 GB: BẮT BUỘC với 2 GB RAM. Tổng mem_limit của stack ≈ 1,8 GB; lúc migrate
+# Swap 2 GB: BẮT BUỘC với 2 GB RAM. Tổng mem_limit của stack ≈ 1,9 GB; lúc migrate
 # (thêm 192 MB) hoặc lúc pull/giải nén image, máy dễ chạm trần.
 sudo fallocate -l 2G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
 echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab

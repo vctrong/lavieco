@@ -148,9 +148,13 @@ services:
     healthcheck:
       <<: *healthcheck
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:4002/health/ready"]
-    # Uploads up to 8 MB are decoded by sharp outside the V8 heap (ADR-0020): the largest
-    # gap between heap cap and container limit.
-    mem_limit: 448m
+    # Handbook uploads wait here until imported (ADR-0029); removed after import, 24 h at most.
+    volumes:
+      - handbook_uploads:/var/lib/lavieco/handbook-uploads
+    # Uploads up to 8 MB are decoded by sharp outside the V8 heap (ADR-0020), and handbook
+    # PDF pages are rendered by poppler child processes (one page at a time, ~150 MB peak)
+    # inside the same container: the largest gap between heap cap and container limit.
+    mem_limit: 512m
 
   program-service:
     <<: *node
@@ -201,3 +205,4 @@ networks:
 volumes:
   caddy_data:
   caddy_config:
+  handbook_uploads:
