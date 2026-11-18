@@ -65,6 +65,8 @@ export const TEXT = {
       errors: {
         file_invalid: "File không đọc được. Hãy xuất lại PDF hoặc ảnh rồi thử lại.",
         pdf_encrypted: "PDF đang đặt mật khẩu. Hãy xuất bản không mật khẩu.",
+        pdf_tools_missing:
+          "Máy chủ chưa cài công cụ đọc PDF (poppler) nên chưa nhập được PDF. Bạn vẫn tải được ảnh PNG/JPG; kỹ thuật cài poppler theo docs/dev-local.md.",
         too_many_pages: "Cuốn sổ vượt quá 300 trang.",
         draft_changed: "Bản nháp đã bị bỏ hoặc trang đã bị xoá trong lúc xử lý. Hãy tải lại.",
         internal: "Máy chủ gặp lỗi khi xử lý file. Thử lại sau ít phút.",

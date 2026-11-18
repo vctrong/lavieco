@@ -10,6 +10,9 @@ import {
   IDEA_PARAM,
   LAVIAGENT_HREF,
   MATERIAL_PARAM,
+  HANDBOOK_PAGE_KEY,
+  HANDBOOK_PAGE_PARAM,
+  HANDBOOK_PROMPT_PARAM,
   conversationHref,
 } from "../constants/config";
 import { TEXT } from "../constants/text";
@@ -106,6 +109,13 @@ export function LaviAgentApp({ catalog }: { catalog: Catalog }) {
   const requested = params.get(CONVERSATION_PARAM);
   const ideaParam = params.get(IDEA_PARAM);
   const materialParam = params.get(MATERIAL_PARAM);
+  // Asked from a handbook page: only a new conversation carries the page.
+  const pageParam = params.get(HANDBOOK_PAGE_PARAM);
+  const handbookPage =
+    !requested && pageParam && HANDBOOK_PAGE_KEY.test(pageParam) ? pageParam : null;
+  const handbookInput = handbookPage
+    ? params.get(HANDBOOK_PROMPT_PARAM)?.trim().slice(0, 200) || t.handbook.question
+    : "";
 
   const refresh = useCallback(() => {
     void store.list().then(setConversations);
@@ -240,6 +250,8 @@ export function LaviAgentApp({ catalog }: { catalog: Catalog }) {
               conversationId={active.id}
               initialMessages={active.initialMessages}
               ideaId={active.ideaId}
+              handbookPage={handbookPage}
+              initialInput={handbookInput}
               onPersist={persist}
             />
           ) : (

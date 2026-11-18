@@ -131,6 +131,7 @@ type Callbacks = {
 class AgentConversation {
   readonly chat: Chat<AgentMessage>;
   private ideaId: string | null;
+  private readonly handbookPage: string | null;
   private recovered = false;
   private stoppedByUser = false;
   /** Learnt from the first answer: an offline demo skips the analyze call afterwards. */
@@ -142,8 +143,10 @@ class AgentConversation {
     ideaId: string | null,
     private readonly catalog: Catalog,
     private readonly callbacks: Callbacks,
+    handbookPage: string | null = null,
   ) {
     this.ideaId = ideaId;
+    this.handbookPage = handbookPage;
     this.chat = new Chat<AgentMessage>({
       messages: initialMessages,
       transport: new DefaultChatTransport({
@@ -154,6 +157,7 @@ class AgentConversation {
             context: {
               material: currentMaterial(messages) ?? undefined,
               ideaId: this.ideaId ?? undefined,
+              handbookPage: this.handbookPage ?? undefined,
             },
           },
         }),
@@ -361,17 +365,24 @@ export function useConversation(
   catalog: Catalog,
   initialMessages: AgentMessage[],
   ideaId: string | null,
+  handbookPage: string | null = null,
 ) {
   const [degraded, setDegraded] = useState(false);
   const [failure, setFailure] = useState<ChatFailure | null>(null);
   const [analyzing, setAnalyzing] = useState<{ thumbnail: string | null } | null>(null);
   const [conversation] = useState(
     () =>
-      new AgentConversation(initialMessages, ideaId, catalog, {
-        onDegraded: () => setDegraded(true),
-        onFailure: setFailure,
-        onAnalyzing: (thumbnail) => setAnalyzing(thumbnail === false ? null : { thumbnail }),
-      }),
+      new AgentConversation(
+        initialMessages,
+        ideaId,
+        catalog,
+        {
+          onDegraded: () => setDegraded(true),
+          onFailure: setFailure,
+          onAnalyzing: (thumbnail) => setAnalyzing(thumbnail === false ? null : { thumbnail }),
+        },
+        handbookPage,
+      ),
   );
 
   const ask = useCallback(

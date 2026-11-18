@@ -17,7 +17,7 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useRef, useState, type ReactNode } from "react";
+import { useId, useRef, useState, type ReactNode } from "react";
 import {
   FiAlertTriangle,
   FiMove,
@@ -365,6 +365,9 @@ export function ChapterBoard({
   actions: PageActions;
 }) {
   const sensors = useBoardSensors();
+  // dnd-kit numbers its screen-reader ids with a global counter, which differs between
+  // the server render and the browser: stable ids keep hydration consistent.
+  const dndId = useId();
   const [filter, setFilter] = useState<string | null>(null);
   const total = numbers.size;
 
@@ -407,7 +410,12 @@ export function ChapterBoard({
         </div>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={chapterDragEnd}>
+      <DndContext
+        id={`${dndId}-chapters`}
+        sensors={sensors}
+        collisionDetection={closestCenter}
+        onDragEnd={chapterDragEnd}
+      >
         <SortableContext
           items={visible.map((chapter) => chapter.id)}
           strategy={verticalListSortingStrategy}
@@ -431,6 +439,7 @@ export function ChapterBoard({
                   </p>
                 ) : (
                   <DndContext
+                    id={`${dndId}-${chapter.id}`}
                     sensors={sensors}
                     collisionDetection={closestCenter}
                     onDragEnd={(event) => {

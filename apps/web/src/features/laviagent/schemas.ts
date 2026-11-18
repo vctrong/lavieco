@@ -148,4 +148,9 @@ export const analyzeResponseSchema = z.discriminatedUnion("status", [
 export const chatContextSchema = z.object({
   material: materialIdSchema.optional(),
   ideaId: idSchema.optional(),
+  /** Key of the handbook page the visitor asked from (its text is loaded server side). */
+  handbookPage: z
+    .string()
+    .regex(/^[0-9a-hjkmnp-tv-z]{8}$/)
+    .optional(),
 });

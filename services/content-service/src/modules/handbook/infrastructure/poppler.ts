@@ -4,6 +4,7 @@ import { HANDBOOK_PAGE_PIXELS } from "@lavieco/shared/content";
 
 import {
   PdfInvalidError,
+  PdfToolsMissingError,
   type PdfRenderer,
   type TextExtractor,
 } from "../application/ports/import-ports";
@@ -37,12 +38,13 @@ function run(command: string, args: string[], maxBuffer: number): Promise<Run> {
       (error, stdout, stderr) => {
         const text = stderr.toString("utf8");
         if (error) {
-          const missing = (error as NodeJS.ErrnoException).code === "ENOENT";
-          reject(
-            Object.assign(new PopplerError(missing ? "poppler not installed" : "poppler failed"), {
-              stderr: text,
-            }),
-          );
+          // ENOENT: the program is not on PATH; 127: `nice` could not find it (Linux).
+          const code = (error as { code?: unknown }).code;
+          if (code === "ENOENT" || code === 127) {
+            reject(new PdfToolsMissingError("poppler not installed"));
+            return;
+          }
+          reject(Object.assign(new PopplerError("poppler failed"), { stderr: text }));
           return;
         }
         resolve({ stdout, stderr: text });
@@ -60,7 +62,7 @@ export class PopplerPdfRenderer implements PdfRenderer {
     try {
       output = await run("pdfinfo", [path], 1024 * 1024);
     } catch (error) {
-      if (error instanceof PopplerError && error.message === "poppler not installed") throw error;
+      if (error instanceof PdfToolsMissingError) throw error;
       // A user password is needed to open it: we cannot read it, say so explicitly.
       if (/password/i.test(stderrOf(error))) throw new PdfInvalidError("pdf_encrypted");
       throw new PdfInvalidError("file_invalid");
@@ -122,7 +124,7 @@ export class PopplerTextExtractor implements TextExtractor {
       );
       return tidyPdfText(stdout.toString("utf8"));
     } catch (error) {
-      if (error instanceof PopplerError && error.message === "poppler not installed") throw error;
+      if (error instanceof PdfToolsMissingError) throw error;
       // Text is a bonus: a page without readable text is still imported, flagged.
       return "";
     }

@@ -26,6 +26,8 @@ type ComposerProps = {
   locked: boolean;
   /** A friendly notice (failure, image problem), shown above the field. */
   notice: string | null;
+  /** Text already in the field (a question suggested from the handbook). */
+  initialInput?: string;
 };
 
 /**
@@ -42,8 +44,9 @@ export function Composer({
   busy,
   locked,
   notice,
+  initialInput = "",
 }: ComposerProps) {
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(initialInput);
   const [tooLong, setTooLong] = useState(false);
   const inputId = useId();
 

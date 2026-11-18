@@ -195,6 +195,10 @@ export const TEXT = {
       fallback: "Chọn ảnh từ máy",
     },
 
+    handbook: {
+      /** Offered in the composer when asking from a handbook page (never sent by itself). */
+      question: "Trang Cẩm nang mình đang đọc hướng dẫn làm gì vậy? Mình nên bắt đầu từ đâu?",
+    },
     history: {
       title: "Lịch sử trò chuyện",
       open: "Mở lịch sử trò chuyện",
