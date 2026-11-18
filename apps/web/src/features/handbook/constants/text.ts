@@ -12,6 +12,12 @@ export const TEXT = {
       readerTitle: (page: number) => `Trang ${page} · Cẩm nang Xanh số`,
       previewTitle: "Xem trước Cẩm nang",
     },
+    /** How a chapter is named by kind (ADR-0029): numbered content, front matter, appendix. */
+    chapterKind: {
+      content: (n: number) => `Chương ${n}`,
+      front_matter: "Mở đầu",
+      appendix: (n: number) => (n > 0 ? `Phụ lục ${n}` : "Phụ lục"),
+    },
     cover: {
       eyebrow: "Cẩm nang Xanh số",
       open: "Mở sổ",
@@ -28,7 +34,6 @@ export const TEXT = {
       },
       chaptersHeading: "Các chương trong sổ",
       chaptersLead: "Chọn một chương để mở thẳng tới đó. Đọc theo thứ tự hay nhảy cóc đều được!",
-      chapterLabel: (n: number) => `Chương ${n}`,
       pageRange: (from: number, to: number) =>
         from === to ? `Trang ${from}` : `Trang ${from}–${to}`,
       pageCount: (n: number) => `${n} trang`,
@@ -84,6 +89,8 @@ export const TEXT = {
       zoomOut: "Thu nhỏ",
       pageLabel: (page: number, title: string) => `Trang ${page}: ${title}`,
       blankPage: "Mặt trong bìa",
+      frontCover: "Bìa trước",
+      backCover: "Bìa sau",
       readingMode: "Đọc dạng chữ",
       noJs: "Bật JavaScript để lật sổ, hoặc đọc từng trang ở chế độ chữ:",
       preview: "Bạn đang xem bản nháp. Bạn đọc chưa thấy bản này.",
@@ -95,6 +102,7 @@ export const TEXT = {
       pages: (n: number) => `${n} trang`,
       page: (n: number) => `Tr. ${n}`,
       reading: "Đang đọc",
+      covers: "Bìa sổ",
       noBookmarks:
         "Chưa có trang nào được đánh dấu. Bấm biểu tượng dấu trang ở thanh trên để lưu trang bạn thích.",
     },

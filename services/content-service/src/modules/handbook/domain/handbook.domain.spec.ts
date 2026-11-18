@@ -8,6 +8,7 @@ import {
   aspectIsOff,
   assertPublishable,
   keptVersionIds,
+  mediaIdsInUse,
   newPageKey,
   publishWarnings,
   textIsMissing,
@@ -48,9 +49,10 @@ const page = (id: string, chapterId: string, extra: Partial<PageRecord> = {}): P
 const content = (): VersionContent => ({
   title: "Cẩm nang",
   description: "",
+  covers: { front: null, back: null },
   chapters: [
-    { id: C1, slug: "lam-quen", title: "Làm quen", tint: "mint" },
-    { id: C2, slug: "tu-tay-lam", title: "Tự tay làm", tint: "canary" },
+    { id: C1, slug: "lam-quen", title: "Làm quen", tint: "mint", kind: "content" },
+    { id: C2, slug: "tu-tay-lam", title: "Tự tay làm", tint: "canary", kind: "content" },
   ],
   pages: [page(P1, C1), page(P2, C1), page(P3, C2)],
 });
@@ -65,6 +67,46 @@ const expectCode = (fn: () => unknown, code: string) => {
   }
   throw new Error(`expected ${code}`);
 };
+
+describe("covers and chapter kinds", () => {
+  it("keeps front matter first and appendices last, pages following their chapter", () => {
+    const next = applyStructure(content(), {
+      revision: 1,
+      title: "Cẩm nang",
+      description: "",
+      keepCovers: { front: true, back: true },
+      chapters: [
+        { id: C1, title: "Phụ lục", tint: "paper", kind: "appendix" },
+        { id: C2, title: "Lời mở đầu", tint: "mint", kind: "front_matter" },
+      ],
+      pages: [
+        { id: P1, chapterId: C1 },
+        { id: P3, chapterId: C2 },
+        { id: P2, chapterId: C1 },
+      ],
+    });
+    expect(next.chapters.map((c) => c.kind)).toEqual(["front_matter", "appendix"]);
+    expect(next.pages.map((p) => p.id)).toEqual([P3, P1, P2]);
+  });
+
+  it("sets a cover from an import and removes it on request", () => {
+    const withCover = applyImport(content(), { mode: "cover_front" }, [
+      { image: image("cover"), text: "" },
+    ]);
+    expect(withCover.covers.front?.mediaId).toBe("cover");
+    expect(withCover.pages).toHaveLength(3);
+    expect([...mediaIdsInUse([withCover])]).toContain("cover");
+    const removed = applyStructure(withCover, {
+      revision: 1,
+      title: "x",
+      description: "",
+      keepCovers: { front: false, back: true },
+      chapters: withCover.chapters.map(({ id, title, tint, kind }) => ({ id, title, tint, kind })),
+      pages: withCover.pages.map(({ id, chapterId }) => ({ id, chapterId })),
+    });
+    expect(removed.covers.front).toBeNull();
+  });
+});
 
 describe("page key", () => {
   it("is 8 Crockford characters and random", () => {
@@ -92,9 +134,10 @@ describe("applyStructure", () => {
       revision: 1,
       title: "Cẩm nang",
       description: "",
+      keepCovers: { front: true, back: true },
       chapters: [
-        { id: C2, title: "Tự tay làm", tint: "canary" },
-        { id: C1, title: "Làm quen", tint: "mint" },
+        { id: C2, title: "Tự tay làm", tint: "canary", kind: "content" },
+        { id: C1, title: "Làm quen", tint: "mint", kind: "content" },
       ],
       pages: [
         { id: P3, chapterId: C2 },
@@ -112,7 +155,8 @@ describe("applyStructure", () => {
       revision: 1,
       title: "x",
       description: "",
-      chapters: [{ id: C1, title: "a", tint: "mint" as const }],
+      keepCovers: { front: true, back: true },
+      chapters: [{ id: C1, title: "a", tint: "mint" as const, kind: "content" as const }],
     };
     expectCode(
       () =>
@@ -148,7 +192,8 @@ describe("applyStructure", () => {
       revision: 1,
       title: "x",
       description: "",
-      chapters: [{ id: C1, title: "a", tint: "mint" }],
+      keepCovers: { front: true, back: true },
+      chapters: [{ id: C1, title: "a", tint: "mint", kind: "content" }],
       pages: [{ id: P1, chapterId: C1 }],
     });
     expect(next.pages[0]!.hotspots).toEqual([]);
@@ -273,6 +318,7 @@ describe("public view", () => {
       slug: "trong",
       title: "Trống",
       tint: "paper",
+      kind: "content",
     });
     start.pages[0]!.hotspots = [
       {

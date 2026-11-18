@@ -66,6 +66,13 @@ export function applyImport(
   const lastChapter = content.chapters[content.chapters.length - 1];
   if (!lastChapter) throw new DomainError("handbook.structure_invalid");
 
+  if (target.mode === "cover_front" || target.mode === "cover_back") {
+    const cover = imported[0];
+    if (!cover || imported.length !== 1) throw new DomainError("handbook.structure_invalid");
+    const side = target.mode === "cover_front" ? "front" : "back";
+    return { ...content, covers: { ...content.covers, [side]: cover.image } };
+  }
+
   if (target.mode === "replace_page") {
     const index = content.pages.findIndex((page) => page.id === target.pageId);
     const replacement = imported[0];

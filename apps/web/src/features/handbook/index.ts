@@ -6,4 +6,4 @@ export { loadBook, loadPage, loadPreview } from "./server/handbook";
 export { handleHandbookSearch } from "./server/search";
 export { handbookSitemap, pageMetadata } from "./server/seo";
 export { ReadingPage } from "./components/reading-page";
-export { parsePage } from "./utils/book-math";
+export { parseLocation } from "./utils/book-faces";

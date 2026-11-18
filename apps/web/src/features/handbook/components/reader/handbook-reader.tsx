@@ -27,17 +27,23 @@ import { cn } from "@lavieco/ui";
 
 import { MediaImage } from "@/shared/components/media-image";
 
-import { COVER_HREF, TINT_CLASS, readerHref } from "../../constants/config";
+import { COVER_HREF, READER_HREF, TINT_CLASS } from "../../constants/config";
 import { TEXT } from "../../constants/text";
 import { usePageSize, useSpreadLayout } from "../../hooks/use-book-layout";
 import { bookmarksSnapshot, rememberPage, subscribeBookmarks, toggleBookmark } from "../../storage";
 import {
-  chapterOfPage,
-  firstPageOf,
-  pagesOfSpread,
-  progressOf,
-  spreadIndexOf,
-} from "../../utils/book-math";
+  chapterTabLabels,
+  locationParam,
+  mainFace,
+  pageFaceId,
+  singleFaces,
+  spreadAt,
+  spreadOf,
+  spreadSlots,
+  type Face,
+  type Slot,
+} from "../../utils/book-faces";
+import { chapterOfPage } from "../../utils/book-math";
 import { FlipBook, type TurnFn } from "./flip-book";
 import { IconButton } from "./icon-button";
 import { TocPanel } from "./toc-panel";
@@ -56,7 +62,7 @@ export type ReaderApi = {
 };
 
 export type ReaderExtras = {
-  /** Extra icon buttons of the top bar (search, sound, share). */
+  /** Extra icon buttons of the top bar (search, sound, share); only on a page. */
   topActions?: (page: PublicHandbookPage, api: ReaderApi) => ReactNode;
   /** Layer drawn over a page (hotspots). */
   renderOverlay?: (page: PublicHandbookPage, api: ReaderApi) => ReactNode;
@@ -66,21 +72,37 @@ export type ReaderExtras = {
   agentHref?: (page: PublicHandbookPage) => string;
 };
 
+const pageOfFace = (face: Slot): PublicHandbookPage | null =>
+  face && face.type === "page" ? face.page : null;
+
+/** "Trang 4–5 / 48", "Bìa trước"…: what the counter says for the faces on screen. */
+function labelOf(faces: readonly Slot[], total: number): string {
+  const [first, second] = faces
+    .map((face) => pageOfFace(face)?.number)
+    .filter((n): n is number => n !== undefined);
+  if (first !== undefined && second !== undefined) return r.spreadOf(first, second, total);
+  if (first !== undefined) return r.pageOf(first, total);
+  const cover = faces.find((face) => face && face.type === "cover");
+  return cover && cover.type === "cover" && cover.side === "back" ? r.backCover : r.frontCover;
+}
+
 /**
  * `/cam-nang/doc` (UC-02): the reading screen. Two pages on wide landscape screens,
- * one page on phones and portrait tablets, switching live on rotation. ←/→ turn pages,
- * Esc closes panels, a tap in the middle of a page hides or shows the bars on phones.
+ * one page on phones and portrait tablets, switching live on rotation. The front and
+ * back covers sit outside the numbered pages and turn like board. ←/→ turn pages, Esc
+ * closes panels, a tap in the middle of a page hides or shows the bars on phones.
  */
 export function HandbookReader({
   book,
-  initialPage,
+  initialLocation,
   preview = false,
   extras = {},
   panel,
   onPanelClose,
 }: {
   book: PublicHandbook;
-  initialPage: number;
+  /** Face id to open on: a page (`p12`) or a cover (`cover-front`). */
+  initialLocation: string;
   preview?: boolean;
   extras?: ReaderExtras;
   /** A panel opened by an extra (search, video), shown over the reader. */
@@ -91,11 +113,13 @@ export function HandbookReader({
   const spread = useSpreadLayout();
   const reduced = useReducedMotion() ?? false;
   const stage = useRef<HTMLDivElement>(null);
-  const first = book.pages[0];
-  const ratio = first ? first.image.height / first.image.width : Math.SQRT2;
+  const faces = useMemo(() => singleFaces(book), [book]);
+  const slots = useMemo(() => spreadSlots(book), [book]);
+  const sample = book.covers.front ?? book.pages[0]?.image;
+  const ratio = sample ? sample.height / sample.width : Math.SQRT2;
   const size = usePageSize(stage, spread ? 2 : 1, ratio, spread ? SPREAD_RESERVE : SINGLE_RESERVE);
 
-  const [page, setPage] = useState(initialPage);
+  const [location, setLocation] = useState(initialLocation);
   const [tocOpen, setTocOpen] = useState(false);
   const [controlsHidden, setControlsHidden] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -114,25 +138,53 @@ export function HandbookReader({
     revealTimer.current = setTimeout(() => setReveal(false), 1600);
   };
 
-  const visible = spread ? pagesOfSpread(spreadIndexOf(page), total) : { left: page, right: null };
-  const shown = book.pages[(spread ? firstPageOf(visible) : page) - 1] ?? first;
-  const chapter = chapterOfPage(book.chapters, page);
+  // Where the book is open, in the current layout.
+  const faceIndex = Math.max(
+    0,
+    faces.findIndex((face) => face.id === location),
+  );
+  const spreadIndex = spreadOf(slots, location);
+  const index = spread ? spreadIndex : faceIndex;
+  const visibleFaces: Slot[] = spread
+    ? [spreadAt(slots, spreadIndex).left, spreadAt(slots, spreadIndex).right]
+    : [faces[faceIndex]];
+  // The face jumped to stays "current" while it is on screen (a chapter starting on a
+  // right-hand page); otherwise the spread's first page.
+  const current: Face | null = spread
+    ? (visibleFaces.find((face): face is Face => Boolean(face) && face?.id === location) ??
+      mainFace(spreadAt(slots, spreadIndex)))
+    : (faces[faceIndex] ?? null);
+  const shown = pageOfFace(current);
+  const chapter = shown ? chapterOfPage(book.chapters, shown.number) : null;
   const bookmarked = shown ? marks.includes(shown.key) : false;
+  const tabLabels = useMemo(() => chapterTabLabels(book.chapters), [book.chapters]);
 
-  // Address bar and "đọc tiếp" follow the page, without a navigation.
+  // Address bar and "đọc tiếp" follow the book, without a navigation.
   useEffect(() => {
-    if (preview) return;
-    document.title = TEXT.vi.meta.readerTitle(page);
-    window.history.replaceState(window.history.state, "", readerHref(page));
-    rememberPage(book.slug, page);
-  }, [page, preview, book.slug]);
+    if (preview || !current) return;
+    document.title = shown ? TEXT.vi.meta.readerTitle(shown.number) : TEXT.vi.meta.title;
+    window.history.replaceState(
+      window.history.state,
+      "",
+      `${READER_HREF}?trang=${locationParam(current)}`,
+    );
+    if (shown) rememberPage(book.slug, shown.number);
+  }, [current, shown, preview, book.slug]);
 
   const go = useCallback(
-    (target: number) => {
-      setPage(Math.min(Math.max(1, target), total));
+    (page: number) => {
+      setLocation(pageFaceId(Math.min(Math.max(1, page), total)));
       setTocOpen(false);
     },
     [total],
+  );
+
+  const onTurned = useCallback(
+    (next: number) => {
+      const face = spread ? mainFace(spreadAt(slots, next)) : faces[next];
+      if (face) setLocation(face.id);
+    },
+    [spread, slots, faces],
   );
 
   // Keyboard: ←/→ turn, Esc closes a panel.
@@ -166,8 +218,11 @@ export function HandbookReader({
   };
 
   const api: ReaderApi = { go, reveal };
-  const pageLabel = spread ? r.spreadOf(visible.left, visible.right, total) : r.pageOf(page, total);
+  const pageLabel = labelOf(visibleFaces, total);
   const barsHidden = controlsHidden && !spread;
+  const last = (spread ? Math.ceil((slots.length - 1) / 2) + 1 : faces.length) - 1;
+  const progress = faces.length > 1 ? faceIndex / (faces.length - 1) : 1;
+  const openSpread = spread && spreadAt(slots, spreadIndex).left !== undefined;
 
   return (
     <div className="fixed inset-0 flex flex-col overflow-hidden bg-soft-white">
@@ -239,7 +294,7 @@ export function HandbookReader({
               <IconButton
                 label={r.previous}
                 onClick={() => turn.current?.("prev")}
-                disabled={page <= 1}
+                disabled={index <= 0}
                 className="bg-white shadow-ambient"
               >
                 <FiChevronLeft aria-hidden="true" size={22} />
@@ -251,20 +306,21 @@ export function HandbookReader({
               aria-label={book.title}
               className="relative"
             >
-              {spread && visible.left !== null ? (
+              {openSpread && spreadAt(slots, spreadIndex).right !== undefined ? (
                 <span
                   aria-hidden="true"
                   className="absolute -top-2 left-1/2 z-30 h-20 w-3.5 -translate-x-1/2 rounded-b-sm bg-emerald-brand shadow-sm"
                 />
               ) : null}
               <FlipBook
-                pages={book.pages}
+                faces={faces}
+                slots={slots}
                 spread={spread}
                 size={size}
-                current={page}
+                index={index}
                 reduced={reduced}
                 turnRef={turn}
-                onTurned={setPage}
+                onTurned={onTurned}
                 onTurnStart={extras.onTurnStart}
                 renderOverlay={
                   extras.renderOverlay ? (item) => extras.renderOverlay?.(item, api) : undefined
@@ -282,7 +338,7 @@ export function HandbookReader({
                   aria-label={r.chapterTabs}
                   className="absolute inset-y-6 left-full ml-3.5 flex w-11 flex-col gap-1.5"
                 >
-                  {book.chapters.map((item, index) => {
+                  {book.chapters.map((item) => {
                     const active = item.id === chapter?.id;
                     return (
                       <button
@@ -294,13 +350,14 @@ export function HandbookReader({
                         className={cn(
                           "group/tab relative flex min-h-0 max-h-16 flex-1 items-center justify-center rounded-r-lg text-meta shadow-sm transition-transform motion-reduce:transition-none",
                           TINT_CLASS[item.tint],
+                          item.kind !== "content" && "italic",
                           active
                             ? "translate-x-1 ring-2 ring-emerald-ink"
                             : "hover:translate-x-0.5",
                         )}
                       >
-                        {String(index + 1).padStart(2, "0")}
-                        <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-2 hidden -translate-y-1/2 whitespace-nowrap rounded-lg bg-charcoal px-2 py-1 text-meta text-soft-white group-hover/tab:block group-focus-visible/tab:block">
+                        {tabLabels.get(item.id)}
+                        <span className="pointer-events-none absolute left-full top-1/2 z-30 ml-2 hidden -translate-y-1/2 whitespace-nowrap rounded-lg bg-charcoal px-2 py-1 text-meta not-italic text-soft-white group-hover/tab:block group-focus-visible/tab:block">
                           {item.title}
                         </span>
                       </button>
@@ -313,7 +370,7 @@ export function HandbookReader({
               <IconButton
                 label={r.next}
                 onClick={() => turn.current?.("next")}
-                disabled={spread ? visible.right === null || visible.right >= total : page >= total}
+                disabled={index >= last}
                 className="ml-12 bg-white shadow-ambient"
               >
                 <FiChevronRight aria-hidden="true" size={22} />
@@ -334,19 +391,24 @@ export function HandbookReader({
         )}
       >
         <div className="mx-auto flex max-w-6xl items-center gap-3 md:gap-5">
-          <Thumbnails book={book} visible={visible} onGo={go} reduced={reduced} />
+          <Thumbnails
+            faces={faces}
+            visibleIds={visibleFaces.filter((f): f is Face => Boolean(f)).map((f) => f.id)}
+            onGo={setLocation}
+            reduced={reduced}
+          />
           <div className="hidden min-w-[9rem] flex-col gap-1 sm:flex">
             <div
               role="progressbar"
               aria-label={r.progress}
-              aria-valuemin={1}
-              aria-valuemax={total}
-              aria-valuenow={page}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={Math.round(progress * 100)}
               className="h-1.5 w-full overflow-hidden rounded-full bg-mint-mist"
             >
               <div
                 className="h-full origin-left rounded-full bg-emerald-brand transition-transform motion-reduce:transition-none"
-                style={{ transform: `scaleX(${Math.max(0.02, progressOf(page, total))})` }}
+                style={{ transform: `scaleX(${Math.max(0.02, progress)})` }}
               />
             </div>
             <span className="text-body-sm text-deep-blue">{pageLabel}</span>
@@ -367,9 +429,14 @@ export function HandbookReader({
       {tocOpen ? (
         <TocPanel
           book={book}
-          current={page}
+          current={shown?.number ?? null}
           bookmarkKeys={marks}
+          tabLabels={tabLabels}
           onGo={go}
+          onCover={(side) => {
+            setLocation(side === "front" ? "cover-front" : "cover-back");
+            setTocOpen(false);
+          }}
           onClose={() => setTocOpen(false)}
         />
       ) : null}
@@ -379,20 +446,20 @@ export function HandbookReader({
 }
 
 function Thumbnails({
-  book,
-  visible,
+  faces,
+  visibleIds,
   onGo,
   reduced,
 }: {
-  book: PublicHandbook;
-  visible: { left: number | null; right: number | null };
-  onGo: (page: number) => void;
+  faces: readonly Face[];
+  visibleIds: readonly string[];
+  onGo: (faceId: string) => void;
   reduced: boolean;
 }) {
   const list = useRef<HTMLOListElement>(null);
-  const anchor = visible.left ?? visible.right ?? 1;
+  const anchor = visibleIds[0] ?? "";
   useEffect(() => {
-    list.current?.querySelector<HTMLElement>(`[data-page="${anchor}"]`)?.scrollIntoView({
+    list.current?.querySelector<HTMLElement>(`[data-face="${anchor}"]`)?.scrollIntoView({
       block: "nearest",
       inline: "center",
       behavior: reduced ? "auto" : "smooth",
@@ -404,22 +471,30 @@ function Thumbnails({
       aria-label={r.thumbnails}
       className="flex min-w-0 flex-1 gap-1.5 overflow-x-auto py-1 [scrollbar-width:none]"
     >
-      {book.pages.map((item) => {
-        const current = item.number === visible.left || item.number === visible.right;
+      {faces.map((face) => {
+        const current = visibleIds.includes(face.id);
+        const image = face.type === "page" ? face.page.image : face.image;
+        const label =
+          face.type === "page"
+            ? r.goTo(face.page.number)
+            : face.side === "front"
+              ? r.frontCover
+              : r.backCover;
         return (
-          <li key={item.key} data-page={item.number} className="shrink-0">
+          <li key={face.id} data-face={face.id} className="shrink-0">
             <button
               type="button"
-              onClick={() => onGo(item.number)}
-              aria-label={r.goTo(item.number)}
+              onClick={() => onGo(face.id)}
+              aria-label={label}
               aria-current={current ? "page" : undefined}
               className={cn(
-                "relative block h-14 w-10 overflow-hidden rounded-md bg-paper ring-offset-1 md:h-16 md:w-11",
+                "relative block h-14 w-10 overflow-hidden bg-paper ring-offset-1 md:h-16 md:w-11",
+                face.type === "cover" ? "rounded-lg" : "rounded-md",
                 current ? "ring-2 ring-emerald-brand" : "opacity-70 hover:opacity-100",
               )}
             >
               <MediaImage
-                publicId={item.image.publicId}
+                publicId={image.publicId}
                 alt=""
                 fill
                 loading="lazy"

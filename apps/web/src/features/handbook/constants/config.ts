@@ -2,7 +2,8 @@ import type { HandbookChapterTint } from "@lavieco/shared/content";
 
 export const COVER_HREF = "/cam-nang";
 export const READER_HREF = "/cam-nang/doc";
-export const readerHref = (page: number) => `${READER_HREF}?trang=${page}`;
+/** A page number, or a cover ("bia", "bia-sau"). */
+export const readerHref = (location: number | string) => `${READER_HREF}?trang=${location}`;
 export const pageHref = (key: string) => `/cam-nang/trang/${key}`;
 
 /** "Làm tiếp" cards on the cover. */

@@ -8,6 +8,7 @@ import {
   handbookUploadSchema,
   publicHandbookPageDetailSchema,
   publicHandbookSchema,
+  type HandbookImportMode,
   type HandbookOverview,
 } from "@lavieco/shared/content";
 
@@ -75,7 +76,7 @@ async function upload(kind: "pdf" | "image", bytes: Buffer) {
 
 async function importInto(
   uploadIds: string[],
-  mode: "append" | "replace_all" | "replace_page",
+  mode: HandbookImportMode,
   extra: Record<string, string> = {},
 ) {
   const draft = (await overview()).draft!;
@@ -362,6 +363,56 @@ describe("handbook editing, import and publishing", () => {
     const released = await handbookEditor.cleanupMedia(new Date(Date.now() + 2 * 24 * 3600 * 1000));
     expect(released).toBeGreaterThanOrEqual(1);
     await drainOutbox(t);
+  });
+
+  it("takes covers outside the pages and keeps appendices at the end", async () => {
+    const cover = await importInto([await upload("image", await pageImage(90))], "cover_front");
+    expect(cover.status).toBe("done");
+    expect(cover.warnings).toEqual([]);
+    const back = await importInto([await upload("image", await pageImage(91))], "cover_back");
+    expect(back.status).toBe("done");
+
+    const draft = (await overview()).draft!;
+    expect(draft.covers.front).not.toBeNull();
+    expect(draft.covers.back).not.toBeNull();
+    const pageCount = draft.pages.length;
+    const [first, ...rest] = draft.chapters;
+    const appendixId = "44444444-4444-4444-8444-444444444444";
+    await t
+      .http()
+      .put("/internal/v1/handbook/draft/structure")
+      .set("authorization", editor)
+      .send({
+        revision: draft.revision,
+        title: draft.title,
+        description: "",
+        chapters: [
+          { id: appendixId, title: "Phụ lục", tint: "paper", kind: "appendix" },
+          ...[first!, ...rest].map(({ id, title, tint, kind }) => ({ id, title, tint, kind })),
+        ],
+        pages: draft.pages.map(({ id, chapterId }, i) => ({
+          id,
+          chapterId: i === draft.pages.length - 1 ? appendixId : chapterId,
+        })),
+      })
+      .expect(200);
+
+    await publish("Thêm bìa và phụ lục");
+    const book = publicHandbookSchema.parse(
+      (
+        await t
+          .http()
+          .get("/internal/v1/published-handbook")
+          .set("authorization", await web())
+          .expect(200)
+      ).body,
+    );
+    expect(book.covers.front).not.toBeNull();
+    expect(book.covers.back).not.toBeNull();
+    // Covers carry no page number: the pages are numbered as before.
+    expect(book.pages).toHaveLength(pageCount);
+    expect(book.pages[0]!.number).toBe(1);
+    expect(book.chapters.at(-1)?.kind).toBe("appendix");
   });
 
   it("never logs page text or the publisher's name", () => {

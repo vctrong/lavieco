@@ -6,8 +6,9 @@ import { cn } from "@lavieco/ui";
 
 import { MediaImage } from "@/shared/components/media-image";
 
-import { MORE_LINKS, TINT_CLASS, readerHref } from "../constants/config";
+import { MORE_LINKS, READER_HREF, TINT_CLASS, readerHref } from "../constants/config";
 import { TEXT } from "../constants/text";
+import { chapterKindName, chapterOrdinals } from "../utils/book-faces";
 import { ResumeLink } from "./resume-link";
 
 const c = TEXT.vi.cover;
@@ -25,7 +26,9 @@ const MORE = [
 
 /** `/cam-nang` (01-bia layout): the closed book, how to start, the chapters, what next. */
 export function HandbookCover({ book }: { book: PublicHandbook }) {
-  const cover = book.pages[0];
+  // The designed front cover; a book without one shows its first page closed.
+  const cover = book.covers.front ?? book.pages[0]?.image;
+  const ordinals = chapterOrdinals(book.chapters);
   const facts = [
     { label: c.facts.pages, value: c.facts.pagesValue(book.pages.length) },
     { label: c.facts.chapters, value: c.facts.chaptersValue(book.chapters.length) },
@@ -37,7 +40,7 @@ export function HandbookCover({ book }: { book: PublicHandbook }) {
     <div className="bg-soft-white pb-24 pt-dock-clearance">
       <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-10 md:px-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:py-16">
         <Link
-          href={readerHref(1)}
+          href={READER_HREF}
           aria-label={c.open}
           className="group mx-auto block w-full max-w-[22rem] [perspective:1600px]"
         >
@@ -50,7 +53,7 @@ export function HandbookCover({ book }: { book: PublicHandbook }) {
             <div className="relative aspect-[1/1.414] overflow-hidden rounded-r-xl rounded-l-sm bg-paper shadow-gallery">
               {cover ? (
                 <MediaImage
-                  publicId={cover.image.publicId}
+                  publicId={cover.publicId}
                   alt={c.bookAlt(book.title)}
                   fill
                   priority
@@ -80,7 +83,7 @@ export function HandbookCover({ book }: { book: PublicHandbook }) {
           ) : null}
           <div className="mt-8 flex flex-wrap items-center gap-3">
             <Link
-              href={readerHref(1)}
+              href={READER_HREF}
               className="inline-flex min-h-12 items-center gap-2 rounded-full bg-emerald-brand px-7 text-sm font-bold text-charcoal shadow-emerald-cta transition-transform hover:scale-[1.02] motion-reduce:transition-none"
             >
               <FiBookOpen aria-hidden="true" size={18} />
@@ -112,7 +115,7 @@ export function HandbookCover({ book }: { book: PublicHandbook }) {
           </h2>
           <p className="mt-3 max-w-2xl text-body-md text-charcoal/75">{c.chaptersLead}</p>
           <ol className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-            {book.chapters.map((chapter, index) => {
+            {book.chapters.map((chapter) => {
               const first = book.pages[chapter.firstPage - 1];
               const last = chapter.firstPage + chapter.pageCount - 1;
               return (
@@ -138,7 +141,11 @@ export function HandbookCover({ book }: { book: PublicHandbook }) {
                           TINT_CLASS[chapter.tint],
                         )}
                       >
-                        {c.chapterLabel(index + 1)}
+                        {chapterKindName(
+                          chapter,
+                          ordinals.get(chapter.id) ?? 0,
+                          TEXT.vi.chapterKind,
+                        )}
                       </span>
                     </span>
                     <span className="flex flex-1 flex-col gap-2 p-4">

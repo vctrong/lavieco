@@ -2,6 +2,7 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { Schema } from "mongoose";
 
 import {
+  HANDBOOK_CHAPTER_KINDS,
   HANDBOOK_CHAPTER_TINTS,
   HANDBOOK_IMPORT_MODES,
   HANDBOOK_IMPORT_STATUSES,
@@ -47,6 +48,18 @@ const chapterSchema = new Schema(
     slug: { type: String, required: true },
     title: { type: String, required: true },
     tint: { type: String, required: true, enum: HANDBOOK_CHAPTER_TINTS },
+    // Versions written before covers/kinds read as "content" (no migration needed).
+    kind: { type: String, enum: HANDBOOK_CHAPTER_KINDS, default: "content" },
+  },
+  { _id: false },
+);
+
+const imageSchema = new Schema(
+  {
+    mediaId: { type: String, required: true },
+    publicId: { type: String, required: true },
+    width: { type: Number, required: true },
+    height: { type: Number, required: true },
   },
   { _id: false },
 );
@@ -94,6 +107,13 @@ export const handbookVersionSchema = new Schema(
     note: { type: String, default: "" },
     basedOnNumber: { type: Number, default: null },
     revision: { type: Number, required: true, default: 1 },
+    covers: {
+      type: new Schema(
+        { front: { type: imageSchema, default: null }, back: { type: imageSchema, default: null } },
+        { _id: false },
+      ),
+      default: () => ({ front: null, back: null }),
+    },
     chapters: { type: [chapterSchema], default: [] },
     pages: { type: [pageSchema], default: [] },
     createdBy: { type: actorSchema, required: true },

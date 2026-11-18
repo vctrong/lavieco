@@ -29,7 +29,11 @@ import {
   FiType,
 } from "react-icons/fi";
 
-import { HANDBOOK_CHAPTER_TINTS, type HandbookPage } from "@lavieco/shared/content";
+import {
+  HANDBOOK_CHAPTER_KINDS,
+  HANDBOOK_CHAPTER_TINTS,
+  type HandbookPage,
+} from "@lavieco/shared/content";
 import { cn } from "@lavieco/ui";
 
 import { MediaImage } from "@/shared/components/media-image";
@@ -250,6 +254,7 @@ function ChapterCard({
   removable,
   onRename,
   onTint,
+  onKind,
   onRemove,
   children,
 }: {
@@ -259,6 +264,7 @@ function ChapterCard({
   removable: boolean;
   onRename: (title: string) => void;
   onTint: (tint: ChapterDraft["tint"]) => void;
+  onKind: (kind: ChapterDraft["kind"]) => void;
   onRemove: () => void;
   children: ReactNode;
 }) {
@@ -295,11 +301,30 @@ function ChapterCard({
             className="w-full rounded-xl border border-transparent bg-transparent px-2 py-1 font-display text-xl text-deep-blue hover:border-hairline focus:border-emerald-brand focus:outline-none md:text-2xl"
           />
         </label>
+        {chapter.kind !== "content" ? (
+          <span className="rounded-full bg-deep-blue px-2.5 py-1 text-[12px] font-semibold text-soft-white">
+            {TEXT.vi.kinds[chapter.kind]}
+          </span>
+        ) : null}
         <span className="rounded-full bg-mint-mist px-2.5 py-1 text-[12px] font-semibold text-deep-blue">
           {b.pages(pageCount)}
         </span>
         {canWrite ? (
           <>
+            <label className="text-[12px] text-deep-blue/70" title={TEXT.vi.kinds.hint}>
+              <span className="sr-only">{TEXT.vi.kinds.label}</span>
+              <select
+                value={chapter.kind}
+                onChange={(event) => onKind(event.target.value as ChapterDraft["kind"])}
+                className="min-h-11 rounded-full border border-hairline bg-white px-3 text-base text-deep-blue md:text-[13px]"
+              >
+                {HANDBOOK_CHAPTER_KINDS.map((kind) => (
+                  <option key={kind} value={kind}>
+                    {TEXT.vi.kinds[kind]}
+                  </option>
+                ))}
+              </select>
+            </label>
             <label className="text-[12px] text-deep-blue/70">
               <span className="sr-only">{b.tint}</span>
               <select
@@ -347,6 +372,7 @@ export function ChapterBoard({
   onReorderPages,
   onRenameChapter,
   onTintChapter,
+  onKindChapter,
   onRemoveChapter,
   onAddChapter,
   actions,
@@ -360,6 +386,7 @@ export function ChapterBoard({
   onReorderPages: (chapterId: string, from: number, to: number) => void;
   onRenameChapter: (chapterId: string, title: string) => void;
   onTintChapter: (chapterId: string, tint: ChapterDraft["tint"]) => void;
+  onKindChapter: (chapterId: string, kind: ChapterDraft["kind"]) => void;
   onRemoveChapter: (chapterId: string) => void;
   onAddChapter: () => void;
   actions: PageActions;
@@ -431,6 +458,7 @@ export function ChapterBoard({
                 removable={canRemoveChapter(structure, chapter.id)}
                 onRename={(title) => onRenameChapter(chapter.id, title)}
                 onTint={(tint) => onTintChapter(chapter.id, tint)}
+                onKind={(kind) => onKindChapter(chapter.id, kind)}
                 onRemove={() => onRemoveChapter(chapter.id)}
               >
                 {pageIds.length === 0 ? (

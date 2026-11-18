@@ -217,13 +217,15 @@ export class HandbookImports {
       if (!upload) throw new ImportFailed("file_invalid");
       if (upload.kind === "pdf") {
         const { pages } = await this.renderer.inspect(this.store.pathOf(upload.id));
-        // Replacing one page takes the first page of the file.
-        const count = job.mode === "replace_page" ? 1 : pages;
+        // Replacing one page or a cover takes the first page of the file.
+        const single = ["replace_page", "cover_front", "cover_back"].includes(job.mode);
+        const count = single ? 1 : pages;
         sources.push({ upload, pages: Array.from({ length: count }, (_, i) => i + 1) });
       } else {
         sources.push({ upload, pages: [1] });
       }
     }
+    const cover = job.mode === "cover_front" || job.mode === "cover_back";
     const total = sources.reduce((sum, source) => sum + source.pages.length, 0);
     if (total === 0) throw new ImportFailed("file_invalid");
     if (total > HANDBOOK_LIMITS.pagesMax) throw new ImportFailed("too_many_pages");
@@ -248,7 +250,8 @@ export class HandbookImports {
         const number = imported.length + 1;
         if (aspectIsOff(record.width, record.height))
           warnings.push({ code: "aspect_off", page: number });
-        if (textIsMissing(text)) warnings.push({ code: "missing_text", page: number });
+        // A cover needs no text: it is never searched nor read as a page.
+        if (!cover && textIsMissing(text)) warnings.push({ code: "missing_text", page: number });
         imported.push({
           image: {
             mediaId: record.id,
@@ -261,7 +264,7 @@ export class HandbookImports {
         await this.jobs.progress(job.id, { done: imported.length, leaseUntil: this.lease() });
       }
     }
-    if (textRatio(imported) < HANDBOOK_LIMITS.lowTextRatio) {
+    if (!cover && textRatio(imported) < HANDBOOK_LIMITS.lowTextRatio) {
       warnings.push({ code: "low_text_ratio", page: null });
     }
     await this.applyToDraft(job, imported);

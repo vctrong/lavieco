@@ -360,8 +360,8 @@ Cẩm nang là **cuốn sổ lật trang**: mỗi trang là một ảnh do nhóm
 
 **Luồng chính**
 1. Người dùng mở `/cam-nang` (trang bìa): sổ đóng, nút "Mở sổ", "Đọc tiếp trang X" (nếu đã đọc dở), các chương.
-2. Người dùng đọc ở `/cam-nang/doc?trang=N`: máy tính/máy tính bảng ngang thấy **2 trang mở**, điện thoại/màn dọc thấy **1 trang**; lật bằng nút, phím ←/→, vuốt; chụm để phóng to trên điện thoại.
-3. Người dùng mở mục lục theo chương, **tìm trong sổ** (không cần gõ dấu), **đánh dấu trang**, chia sẻ trang, bật tiếng lật giấy (mặc định tắt), xem toàn màn hình.
+2. Người dùng đọc ở `/cam-nang/doc?trang=N`: máy tính/máy tính bảng ngang thấy **2 trang mở**, điện thoại/màn dọc thấy **1 trang**; lật bằng nút, phím ←/→, vuốt; chụm để phóng to trên điện thoại. Sổ mở từ **bìa trước** và khép ở **bìa sau** (lật như bìa cứng); bìa không tính vào số trang (`?trang=bia`, `?trang=bia-sau`).
+3. Người dùng chọn tab chương ở mép sổ (Mở đầu, chương 01, 02…, Phụ lục) để nhảy thẳng tới trang đầu chương, mở mục lục theo chương, **tìm trong sổ** (không cần gõ dấu), **đánh dấu trang**, chia sẻ trang, bật tiếng lật giấy (mặc định tắt), xem toàn màn hình.
 4. Người dùng chạm **điểm bấm** trên trang: mở sản phẩm, lật tới trang khác, xem video, hoặc hỏi LaviAgent về trang đó.
 5. Hệ thống nhớ trang đang đọc và các trang đã đánh dấu **trên thiết bị** (GĐ2: đồng bộ theo tài khoản, `reader_states`).
 6. Mỗi trang có địa chỉ riêng `/cam-nang/trang/<mã>` hiển thị ảnh + chữ (chế độ đọc, SEO, chia sẻ).
@@ -495,7 +495,7 @@ Vòng đời lead: xem §8.2.
 **Luồng chính**
 1. Người soạn bấm "Bắt đầu chỉnh sửa": hệ thống tạo **bản nháp** chép từ phiên bản đang xuất bản (một bản nháp tại một thời điểm).
 2. Tải lên **một file PDF** (thay cả cuốn, hoặc thêm vào cuối chương) hoặc **nhiều ảnh** (PNG/JPG/WebP, khuyên 1748 × 2480 px). Hệ thống xử lý nền, hiện tiến độ hoặc vị trí trong hàng đợi; tách trang PDF thành ảnh và lấy chữ từng trang. Trang không lấy được chữ gắn nhãn **"Thiếu chữ"**; ảnh lệch khổ A5 được cảnh báo, không bị chặn.
-3. Sắp xếp: thêm/sửa/xoá chương (màu tab), kéo thả đổi thứ tự trang và chương, chuyển trang sang chương khác, thay một trang, xoá trang.
+3. Tải **bìa trước** và **bìa sau** riêng (không thuộc chương, không đánh số trang; có thể gỡ). Sắp xếp: thêm/sửa/xoá chương (màu tab, loại **Mở đầu / Nội dung / Phụ lục**: luôn xếp theo thứ tự đó), kéo thả đổi thứ tự trang và chương, chuyển trang sang chương khác, thay một trang, xoá trang.
 4. Với từng trang: sửa tên, mô tả ảnh, **gõ chữ** khi thiếu, **vẽ điểm bấm** (kéo chuột trên ảnh) và gán đích (sản phẩm Cửa hàng, trang khác, video YouTube/TikTok, liên kết, LaviAgent).
 5. **Xem trước** bản nháp trên giao diện thật (tab mới, không cho máy tìm kiếm lập chỉ mục, liên kết hết hạn sau 10 phút).
 6. **Xuất bản** với **ghi chú phiên bản bắt buộc**; bạn đọc thấy ngay, cả nhóm nhận thông báo (BR-26). Dưới một nửa số trang có chữ thì cảnh báo trước.
@@ -819,3 +819,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.9 | 17/11/2026 | Phân hệ Cửa hàng (ADR-0028): sửa BR-10 (giá cố định), thêm BR-20 → 25, UC-35 → 40 (§6.3c), dòng mới trong ma trận §4.4 | V.C. Trọng |
 | v0.8 | 22/10/2026 | Trang Chương trình làm lại: UC-32 thêm trạng thái **Đã huỷ** (cuối; vô hiệu vé, đơn đã trả tiền chờ hoàn thủ công, email người đặt), banner/poster, "Bạn sẽ nhận", bảng chính sách huỷ, giới thiệu người hướng dẫn. "Miễn phí" = **mọi** loại vé 0đ; "Sắp hết chỗ" khi còn ≤ 20% hoặc ≤ 5 chỗ; chương trình quá giờ kết thúc tự vào mục "Đã diễn ra". Số người tham gia: vé đã check-in, hoặc số nhập tay của sự kiện lưu trữ sau khi Super Admin duyệt (BR-09, permission `impact:approve`) | V.C. Trọng |
 | v1.0 | 19/11/2026 | Cẩm nang là các trang ảnh có phiên bản (ADR-0029): viết lại UC-02, UC-22; thêm BR-26 (tự xuất bản, ghi chú bắt buộc, thông báo cả nhóm); permission `handbook:read|write|publish` trong ma trận §4.4; bỏ ghi chú cá nhân, cỡ chữ ở GĐ1 | V.C. Trọng |
+| v1.1 | 19/11/2026 | UC-02, UC-22: bìa trước/sau riêng (không đánh số trang, lật như bìa cứng), chương loại Mở đầu / Nội dung / Phụ lục, tab chương nhảy tới trang đầu chương | V.C. Trọng |

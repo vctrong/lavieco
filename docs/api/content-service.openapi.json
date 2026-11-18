@@ -811,6 +811,80 @@
                           "exclusiveMinimum": true,
                           "maximum": 9007199254740991
                         },
+                        "covers": {
+                          "type": "object",
+                          "properties": {
+                            "front": {
+                              "nullable": true,
+                              "type": "object",
+                              "properties": {
+                                "mediaId": {
+                                  "type": "string",
+                                  "pattern": "^[0-9a-f]{24}$"
+                                },
+                                "publicId": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                },
+                                "height": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              "required": [
+                                "mediaId",
+                                "publicId",
+                                "width",
+                                "height"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "back": {
+                              "nullable": true,
+                              "type": "object",
+                              "properties": {
+                                "mediaId": {
+                                  "type": "string",
+                                  "pattern": "^[0-9a-f]{24}$"
+                                },
+                                "publicId": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                },
+                                "height": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              "required": [
+                                "mediaId",
+                                "publicId",
+                                "width",
+                                "height"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "front",
+                            "back"
+                          ],
+                          "additionalProperties": false
+                        },
                         "chapters": {
                           "maxItems": 30,
                           "type": "array",
@@ -841,13 +915,22 @@
                                   "emerald",
                                   "deep-blue"
                                 ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "front_matter",
+                                  "content",
+                                  "appendix"
+                                ]
                               }
                             },
                             "required": [
                               "id",
                               "slug",
                               "title",
-                              "tint"
+                              "tint",
+                              "kind"
                             ],
                             "additionalProperties": false
                           }
@@ -1179,6 +1262,7 @@
                         "note",
                         "basedOnNumber",
                         "revision",
+                        "covers",
                         "chapters",
                         "pages",
                         "createdBy",
@@ -1236,6 +1320,80 @@
                           "exclusiveMinimum": true,
                           "maximum": 9007199254740991
                         },
+                        "covers": {
+                          "type": "object",
+                          "properties": {
+                            "front": {
+                              "nullable": true,
+                              "type": "object",
+                              "properties": {
+                                "mediaId": {
+                                  "type": "string",
+                                  "pattern": "^[0-9a-f]{24}$"
+                                },
+                                "publicId": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                },
+                                "height": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              "required": [
+                                "mediaId",
+                                "publicId",
+                                "width",
+                                "height"
+                              ],
+                              "additionalProperties": false
+                            },
+                            "back": {
+                              "nullable": true,
+                              "type": "object",
+                              "properties": {
+                                "mediaId": {
+                                  "type": "string",
+                                  "pattern": "^[0-9a-f]{24}$"
+                                },
+                                "publicId": {
+                                  "type": "string"
+                                },
+                                "width": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                },
+                                "height": {
+                                  "type": "integer",
+                                  "minimum": 0,
+                                  "exclusiveMinimum": true,
+                                  "maximum": 9007199254740991
+                                }
+                              },
+                              "required": [
+                                "mediaId",
+                                "publicId",
+                                "width",
+                                "height"
+                              ],
+                              "additionalProperties": false
+                            }
+                          },
+                          "required": [
+                            "front",
+                            "back"
+                          ],
+                          "additionalProperties": false
+                        },
                         "chapters": {
                           "maxItems": 30,
                           "type": "array",
@@ -1266,13 +1424,22 @@
                                   "emerald",
                                   "deep-blue"
                                 ]
+                              },
+                              "kind": {
+                                "type": "string",
+                                "enum": [
+                                  "front_matter",
+                                  "content",
+                                  "appendix"
+                                ]
                               }
                             },
                             "required": [
                               "id",
                               "slug",
                               "title",
-                              "tint"
+                              "tint",
+                              "kind"
                             ],
                             "additionalProperties": false
                           }
@@ -1604,6 +1771,7 @@
                         "note",
                         "basedOnNumber",
                         "revision",
+                        "covers",
                         "chapters",
                         "pages",
                         "createdBy",
@@ -1814,6 +1982,80 @@
                       "exclusiveMinimum": true,
                       "maximum": 9007199254740991
                     },
+                    "covers": {
+                      "type": "object",
+                      "properties": {
+                        "front": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "back": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "front",
+                        "back"
+                      ],
+                      "additionalProperties": false
+                    },
                     "chapters": {
                       "maxItems": 30,
                       "type": "array",
@@ -1844,13 +2086,22 @@
                               "emerald",
                               "deep-blue"
                             ]
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "front_matter",
+                              "content",
+                              "appendix"
+                            ]
                           }
                         },
                         "required": [
                           "id",
                           "slug",
                           "title",
-                          "tint"
+                          "tint",
+                          "kind"
                         ],
                         "additionalProperties": false
                       }
@@ -2182,6 +2433,7 @@
                     "note",
                     "basedOnNumber",
                     "revision",
+                    "covers",
                     "chapters",
                     "pages",
                     "createdBy",
@@ -2265,6 +2517,15 @@
                             "emerald",
                             "deep-blue"
                           ]
+                        },
+                        "kind": {
+                          "default": "content",
+                          "type": "string",
+                          "enum": [
+                            "front_matter",
+                            "content",
+                            "appendix"
+                          ]
                         }
                       },
                       "required": [
@@ -2295,6 +2556,23 @@
                         "id",
                         "chapterId"
                       ]
+                    }
+                  },
+                  "keepCovers": {
+                    "default": {
+                      "front": true,
+                      "back": true
+                    },
+                    "type": "object",
+                    "properties": {
+                      "front": {
+                        "default": true,
+                        "type": "boolean"
+                      },
+                      "back": {
+                        "default": true,
+                        "type": "boolean"
+                      }
                     }
                   }
                 },
@@ -2359,6 +2637,80 @@
                       "exclusiveMinimum": true,
                       "maximum": 9007199254740991
                     },
+                    "covers": {
+                      "type": "object",
+                      "properties": {
+                        "front": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "back": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "front",
+                        "back"
+                      ],
+                      "additionalProperties": false
+                    },
                     "chapters": {
                       "maxItems": 30,
                       "type": "array",
@@ -2389,13 +2741,22 @@
                               "emerald",
                               "deep-blue"
                             ]
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "front_matter",
+                              "content",
+                              "appendix"
+                            ]
                           }
                         },
                         "required": [
                           "id",
                           "slug",
                           "title",
-                          "tint"
+                          "tint",
+                          "kind"
                         ],
                         "additionalProperties": false
                       }
@@ -2727,6 +3088,7 @@
                     "note",
                     "basedOnNumber",
                     "revision",
+                    "covers",
                     "chapters",
                     "pages",
                     "createdBy",
@@ -3016,6 +3378,80 @@
                       "exclusiveMinimum": true,
                       "maximum": 9007199254740991
                     },
+                    "covers": {
+                      "type": "object",
+                      "properties": {
+                        "front": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "back": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "mediaId": {
+                              "type": "string",
+                              "pattern": "^[0-9a-f]{24}$"
+                            },
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "mediaId",
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "front",
+                        "back"
+                      ],
+                      "additionalProperties": false
+                    },
                     "chapters": {
                       "maxItems": 30,
                       "type": "array",
@@ -3046,13 +3482,22 @@
                               "emerald",
                               "deep-blue"
                             ]
+                          },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "front_matter",
+                              "content",
+                              "appendix"
+                            ]
                           }
                         },
                         "required": [
                           "id",
                           "slug",
                           "title",
-                          "tint"
+                          "tint",
+                          "kind"
                         ],
                         "additionalProperties": false
                       }
@@ -3384,6 +3829,7 @@
                     "note",
                     "basedOnNumber",
                     "revision",
+                    "covers",
                     "chapters",
                     "pages",
                     "createdBy",
@@ -4094,7 +4540,9 @@
                     "enum": [
                       "append",
                       "replace_all",
-                      "replace_page"
+                      "replace_page",
+                      "cover_front",
+                      "cover_back"
                     ]
                   },
                   "pageId": {
@@ -4143,7 +4591,9 @@
                       "enum": [
                         "append",
                         "replace_all",
-                        "replace_page"
+                        "replace_page",
+                        "cover_front",
+                        "cover_back"
                       ]
                     },
                     "queuePosition": {
@@ -4197,6 +4647,7 @@
                       "enum": [
                         "file_invalid",
                         "pdf_encrypted",
+                        "pdf_tools_missing",
                         "too_many_pages",
                         "draft_changed",
                         "internal"
@@ -4276,7 +4727,9 @@
                             "enum": [
                               "append",
                               "replace_all",
-                              "replace_page"
+                              "replace_page",
+                              "cover_front",
+                              "cover_back"
                             ]
                           },
                           "queuePosition": {
@@ -4330,6 +4783,7 @@
                             "enum": [
                               "file_invalid",
                               "pdf_encrypted",
+                              "pdf_tools_missing",
                               "too_many_pages",
                               "draft_changed",
                               "internal"
@@ -4422,7 +4876,9 @@
                       "enum": [
                         "append",
                         "replace_all",
-                        "replace_page"
+                        "replace_page",
+                        "cover_front",
+                        "cover_back"
                       ]
                     },
                     "queuePosition": {
@@ -4476,6 +4932,7 @@
                       "enum": [
                         "file_invalid",
                         "pdf_encrypted",
+                        "pdf_tools_missing",
                         "too_many_pages",
                         "draft_changed",
                         "internal"
@@ -4562,6 +5019,70 @@
                       "format": "date-time",
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                     },
+                    "covers": {
+                      "type": "object",
+                      "properties": {
+                        "front": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "back": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "front",
+                        "back"
+                      ],
+                      "additionalProperties": false
+                    },
                     "chapters": {
                       "type": "array",
                       "items": {
@@ -4586,6 +5107,14 @@
                               "deep-blue"
                             ]
                           },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "front_matter",
+                              "content",
+                              "appendix"
+                            ]
+                          },
                           "firstPage": {
                             "type": "integer",
                             "minimum": 0,
@@ -4604,6 +5133,7 @@
                           "slug",
                           "title",
                           "tint",
+                          "kind",
                           "firstPage",
                           "pageCount"
                         ],
@@ -4839,6 +5369,7 @@
                     "accessLevel",
                     "versionNumber",
                     "publishedAt",
+                    "covers",
                     "chapters",
                     "pages"
                   ],
@@ -5487,6 +6018,70 @@
                       "format": "date-time",
                       "pattern": "^(?:(?:\\d\\d[2468][048]|\\d\\d[13579][26]|\\d\\d0[48]|[02468][048]00|[13579][26]00)-02-29|\\d{4}-(?:(?:0[13578]|1[02])-(?:0[1-9]|[12]\\d|3[01])|(?:0[469]|11)-(?:0[1-9]|[12]\\d|30)|(?:02)-(?:0[1-9]|1\\d|2[0-8])))T(?:(?:[01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d(?:\\.\\d+)?(?:Z))$"
                     },
+                    "covers": {
+                      "type": "object",
+                      "properties": {
+                        "front": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "back": {
+                          "nullable": true,
+                          "type": "object",
+                          "properties": {
+                            "publicId": {
+                              "type": "string"
+                            },
+                            "width": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            },
+                            "height": {
+                              "type": "integer",
+                              "minimum": 0,
+                              "exclusiveMinimum": true,
+                              "maximum": 9007199254740991
+                            }
+                          },
+                          "required": [
+                            "publicId",
+                            "width",
+                            "height"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "front",
+                        "back"
+                      ],
+                      "additionalProperties": false
+                    },
                     "chapters": {
                       "type": "array",
                       "items": {
@@ -5511,6 +6106,14 @@
                               "deep-blue"
                             ]
                           },
+                          "kind": {
+                            "type": "string",
+                            "enum": [
+                              "front_matter",
+                              "content",
+                              "appendix"
+                            ]
+                          },
                           "firstPage": {
                             "type": "integer",
                             "minimum": 0,
@@ -5529,6 +6132,7 @@
                           "slug",
                           "title",
                           "tint",
+                          "kind",
                           "firstPage",
                           "pageCount"
                         ],
@@ -5764,6 +6368,7 @@
                     "accessLevel",
                     "versionNumber",
                     "publishedAt",
+                    "covers",
                     "chapters",
                     "pages"
                   ],

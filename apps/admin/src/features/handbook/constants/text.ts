@@ -1,4 +1,8 @@
-import type { HandbookChapterTint, HandbookHotspotType } from "@lavieco/shared/content";
+import type {
+  HandbookChapterKind,
+  HandbookChapterTint,
+  HandbookHotspotType,
+} from "@lavieco/shared/content";
 
 /** "Cẩm nang" in the back office (UC-22, ADR-0029). */
 export const TEXT = {
@@ -105,6 +109,26 @@ export const TEXT = {
       },
       deleteConfirm: (n: number) => `Xoá trang ${n} khỏi bản nháp?`,
       pageLabel: (n: number, title: string) => `Trang ${n}: ${title}`,
+    },
+    kinds: {
+      label: "Loại",
+      front_matter: "Mở đầu",
+      content: "Nội dung",
+      appendix: "Phụ lục",
+      hint: "Phần mở đầu luôn đứng đầu sổ, phụ lục luôn ở cuối.",
+    } satisfies Record<HandbookChapterKind, string> & { label: string; hint: string },
+    covers: {
+      heading: "Bìa sổ",
+      hint: "Bìa nằm ngoài các chương và không tính số trang. Trong màn đọc, bìa lật như bìa cứng.",
+      front: "Bìa trước",
+      back: "Bìa sau",
+      upload: "Tải bìa",
+      replace: "Thay bìa",
+      remove: "Gỡ bìa",
+      removed: "Sẽ gỡ khi lưu nháp",
+      emptyFront: "Chưa có bìa trước. Khi chưa có, trang 1 được dùng làm bìa ở trang giới thiệu.",
+      emptyBack: "Chưa có bìa sau.",
+      imageAlt: (side: string) => `Ảnh ${side.toLowerCase()}`,
     },
     tints: {
       mint: "Bạc hà",

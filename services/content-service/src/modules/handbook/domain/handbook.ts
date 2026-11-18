@@ -2,10 +2,12 @@ import { randomBytes, randomUUID } from "node:crypto";
 
 import { DomainError, toSlug } from "@lavieco/shared";
 import {
+  HANDBOOK_CHAPTER_KINDS,
   HANDBOOK_CHAPTER_TINTS,
   HANDBOOK_LIMITS,
   type HandbookAccessLevel,
   type HandbookActor,
+  type HandbookChapterKind,
   type HandbookChapterTint,
   type HandbookHotspot,
   type HandbookPageUpdate,
@@ -26,9 +28,16 @@ export type ChapterRecord = {
   slug: string;
   title: string;
   tint: HandbookChapterTint;
+  /** Front matter, content or appendix: decides its place in the book. */
+  kind: HandbookChapterKind;
 };
 
 export type PageImage = { mediaId: string; publicId: string; width: number; height: number };
+
+/** Covers sit outside chapters and page numbers; either may be missing. */
+export type Covers = { front: PageImage | null; back: PageImage | null };
+
+export const NO_COVERS: Covers = { front: null, back: null };
 
 export type PageRecord = {
   id: string;
@@ -52,6 +61,7 @@ export type VersionRecord = {
   note: string;
   basedOnNumber: number | null;
   revision: number;
+  covers: Covers;
   chapters: ChapterRecord[];
   pages: PageRecord[];
   createdBy: HandbookActor;
@@ -73,7 +83,32 @@ export type HandbookRecord = {
 };
 
 /** What a version's content is, without its identity and lifecycle. */
-export type VersionContent = Pick<VersionRecord, "title" | "description" | "chapters" | "pages">;
+export type VersionContent = Pick<
+  VersionRecord,
+  "title" | "description" | "covers" | "chapters" | "pages"
+>;
+
+const KIND_RANK = new Map(HANDBOOK_CHAPTER_KINDS.map((kind, index) => [kind, index]));
+
+/**
+ * Chapters in book order: front matter, then content, then appendices, keeping the
+ * editor's order inside each kind; pages follow their chapter so chapters stay
+ * contiguous.
+ */
+export function inBookOrder(content: Pick<VersionContent, "chapters" | "pages">) {
+  const chapters = content.chapters
+    .map((chapter, index) => ({ chapter, index }))
+    .sort(
+      (a, b) =>
+        (KIND_RANK.get(a.chapter.kind) ?? 1) - (KIND_RANK.get(b.chapter.kind) ?? 1) ||
+        a.index - b.index,
+    )
+    .map(({ chapter }) => chapter);
+  const pages = chapters.flatMap((chapter) =>
+    content.pages.filter((page) => page.chapterId === chapter.id),
+  );
+  return { chapters, pages };
+}
 
 const CROCKFORD = "0123456789abcdefghjkmnpqrstvwxyz";
 
@@ -92,7 +127,10 @@ export function emptyContent(): VersionContent {
   return {
     title: DEFAULT_TITLE,
     description: "",
-    chapters: [{ id: randomUUID(), slug: "chuong-1", title: "Chương 1", tint: "mint" }],
+    covers: NO_COVERS,
+    chapters: [
+      { id: randomUUID(), slug: "chuong-1", title: "Chương 1", tint: "mint", kind: "content" },
+    ],
     pages: [],
   };
 }
@@ -145,6 +183,7 @@ export function applyStructure(
       id: chapter.id,
       title: chapter.title,
       tint: chapter.tint,
+      kind: chapter.kind,
       slug: uniqueSlug(wanted, taken),
     };
   });
@@ -159,11 +198,16 @@ export function applyStructure(
     seen.add(id);
     return { ...page, chapterId };
   });
+  const ordered = inBookOrder({ chapters, pages });
   return {
     title: input.title,
     description: input.description,
-    chapters,
-    pages: dropDanglingPageLinks(pages),
+    covers: {
+      front: input.keepCovers.front ? current.covers.front : null,
+      back: input.keepCovers.back ? current.covers.back : null,
+    },
+    chapters: ordered.chapters,
+    pages: dropDanglingPageLinks(ordered.pages),
   };
 }
 
@@ -251,11 +295,15 @@ export function keptVersionIds(
   return kept;
 }
 
-/** Media ids still needed: those of every kept version. */
-export function mediaIdsInUse(versions: readonly Pick<VersionRecord, "pages">[]): Set<string> {
+/** Media ids still needed: pages and covers of every kept version. */
+export function mediaIdsInUse(
+  versions: readonly Pick<VersionRecord, "pages" | "covers">[],
+): Set<string> {
   const ids = new Set<string>();
   for (const version of versions) {
     for (const page of version.pages) ids.add(page.image.mediaId);
+    if (version.covers.front) ids.add(version.covers.front.mediaId);
+    if (version.covers.back) ids.add(version.covers.back.mediaId);
   }
   return ids;
 }
@@ -265,6 +313,7 @@ export function copyContent(version: VersionContent): VersionContent {
   return structuredClone({
     title: version.title,
     description: version.description,
+    covers: version.covers,
     chapters: version.chapters,
     pages: version.pages,
   });

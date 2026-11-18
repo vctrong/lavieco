@@ -64,11 +64,28 @@ export const HANDBOOK_HOTSPOT_TYPES = ["product", "page", "video", "url", "lavia
 export type HandbookHotspotType = (typeof HANDBOOK_HOTSPOT_TYPES)[number];
 
 /** How an import lands in the draft. */
-export const HANDBOOK_IMPORT_MODES = ["append", "replace_all", "replace_page"] as const;
+/** `cover_front`/`cover_back`: the file becomes a cover (first page of a PDF). */
+export const HANDBOOK_IMPORT_MODES = [
+  "append",
+  "replace_all",
+  "replace_page",
+  "cover_front",
+  "cover_back",
+] as const;
 export type HandbookImportMode = (typeof HANDBOOK_IMPORT_MODES)[number];
 
 export const HANDBOOK_IMPORT_STATUSES = ["queued", "running", "done", "failed"] as const;
 export type HandbookImportStatus = (typeof HANDBOOK_IMPORT_STATUSES)[number];
+
+/**
+ * Kind of a chapter (part of the book): front matter (foreword, printed contents),
+ * content chapters, appendices. The book always keeps them in this order.
+ */
+export const HANDBOOK_CHAPTER_KINDS = ["front_matter", "content", "appendix"] as const;
+export type HandbookChapterKind = (typeof HANDBOOK_CHAPTER_KINDS)[number];
+
+export const HANDBOOK_COVER_SIDES = ["front", "back"] as const;
+export type HandbookCoverSide = (typeof HANDBOOK_COVER_SIDES)[number];
 
 export const HANDBOOK_UPLOAD_KINDS = ["pdf", "image"] as const;
 export type HandbookUploadKind = (typeof HANDBOOK_UPLOAD_KINDS)[number];

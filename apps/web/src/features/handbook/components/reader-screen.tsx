@@ -12,6 +12,7 @@ import type {
 import { pageHref } from "../constants/config";
 import { TEXT } from "../constants/text";
 import { useFlipSound } from "../hooks/use-flip-sound";
+import { parseLocation } from "../utils/book-faces";
 import { agentHrefFor } from "../utils/links";
 import { sharePage } from "../utils/share";
 import { HandbookReader, type ReaderApi } from "./reader/handbook-reader";
@@ -32,11 +33,12 @@ type Video = PublicHandbookHotspot & {
 /** The reading screen with everything the published book offers. */
 export function HandbookReaderScreen({
   book,
-  initialPage,
+  initialLocation,
   preview = false,
 }: {
   book: PublicHandbook;
-  initialPage: number;
+  /** Face to open on (`p12`, `cover-front`): see `parseLocation`. */
+  initialLocation: string;
   preview?: boolean;
 }) {
   const sound = useFlipSound(book.slug);
@@ -74,7 +76,7 @@ export function HandbookReaderScreen({
     <>
       <HandbookReader
         book={book}
-        initialPage={initialPage}
+        initialLocation={initialLocation}
         preview={preview}
         onPanelClose={() => {
           setSearchOpen(false);
@@ -158,5 +160,7 @@ export function HandbookReaderScreen({
 
 /** The draft in preview: same reader, nothing remembered, no address changes. */
 export function HandbookPreviewScreen({ book }: { book: PublicHandbook }) {
-  return <HandbookReaderScreen book={book} initialPage={1} preview />;
+  return (
+    <HandbookReaderScreen book={book} initialLocation={parseLocation(undefined, book)} preview />
+  );
 }

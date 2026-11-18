@@ -20,6 +20,7 @@ import type {
 import type {
   ChapterRecord,
   HandbookRecord,
+  PageImage,
   PageRecord,
   VersionContent,
   VersionRecord,
@@ -46,7 +47,8 @@ type VersionDoc = {
   note: string;
   basedOnNumber: number | null;
   revision: number;
-  chapters: ChapterRecord[];
+  covers?: { front?: PageImage | null; back?: PageImage | null } | null;
+  chapters: (Omit<ChapterRecord, "kind"> & { kind?: ChapterRecord["kind"] })[];
   pages: (Omit<PageRecord, "hotspots"> & { hotspots: unknown[] })[];
   createdBy: HandbookActor;
   publishedBy: HandbookActor | null;
@@ -84,11 +86,13 @@ function toVersion(doc: VersionDoc): VersionRecord {
     note: doc.note ?? "",
     basedOnNumber: doc.basedOnNumber ?? null,
     revision: doc.revision,
+    covers: { front: imageOf(doc.covers?.front), back: imageOf(doc.covers?.back) },
     chapters: (doc.chapters ?? []).map((chapter) => ({
       id: chapter.id,
       slug: chapter.slug,
       title: chapter.title,
       tint: chapter.tint,
+      kind: chapter.kind ?? "content",
     })),
     pages: (doc.pages ?? []).map((page) => ({
       id: page.id,
@@ -115,9 +119,15 @@ function toVersion(doc: VersionDoc): VersionRecord {
   };
 }
 
+const imageOf = (image: PageImage | null | undefined): PageImage | null =>
+  image
+    ? { mediaId: image.mediaId, publicId: image.publicId, width: image.width, height: image.height }
+    : null;
+
 const contentFields = (content: VersionContent) => ({
   title: content.title,
   description: content.description,
+  covers: content.covers,
   chapters: content.chapters,
   pages: content.pages,
 });
