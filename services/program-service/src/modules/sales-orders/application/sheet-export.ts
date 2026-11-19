@@ -8,7 +8,45 @@ import { vnDay, type SalesOrderRecord } from "../domain/sales-order";
  * stays text, never a formula.
  */
 export type SheetCell = string | number;
-export type SheetTab = { name: "DonHang" | "ChiTiet" | "DonGia"; rows: SheetCell[][] };
+
+/** How a cell is highlighted; colours come from the sheet tokens (infrastructure). */
+export type SheetTone = "done" | "muted" | "attention" | "alert";
+
+/**
+ * Highlight of a data cell: equal to a label, or a custom formula written for the first
+ * data row (row 3) in the spreadsheet's own syntax (`;` separators, Vietnamese locale).
+ */
+export type SheetRule =
+  | { column: number; equals: string; tone: SheetTone }
+  | { column: number; formula: string; tone: SheetTone };
+
+/** Presentation of a tab, applied after every rewrite so the Sheet always looks the same. */
+export type SheetLayout = {
+  /** Width of each column in pixels; also the number of columns. */
+  widths: number[];
+  /** Columns holding VND amounts: `#,##0`, right aligned. */
+  money: number[];
+  /** Long text columns that wrap (address, note). */
+  wrap: number[];
+  /** Columns kept on screen when scrolling sideways. */
+  frozenColumns: number;
+  rules: SheetRule[];
+};
+
+export type SheetTab = {
+  name: "DonHang" | "ChiTiet" | "DonGia";
+  rows: SheetCell[][];
+  layout: SheetLayout;
+};
+
+/** First data row (rows 1 and 2 are the title and the header). */
+export const SHEET_DATA_ROW = 3;
+
+const STATUS_RULES = (column: number): SheetRule[] => [
+  { column, equals: "Hoàn thành", tone: "done" },
+  { column, equals: "Đã hủy", tone: "muted" },
+  { column, equals: "Mới", tone: "attention" },
+];
 
 const TYPE = { in_stock: "Có sẵn", made_to_order: "Đặt làm", wholesale: "Sỉ" } as const;
 const STATUS = {
@@ -63,13 +101,16 @@ export function buildSheetTabs(
   priceItems: readonly PriceItemRecord[],
   now: Date,
 ): SheetTab[] {
-  const stamp: SheetCell[] = ["Cập nhật lúc", stampOf(now), "Chỉ xem: sửa đơn trong admin"];
+  // Row 1, merged across the tab: what it is, when it was written, that it is read only.
+  const title = (tab: string): SheetCell[] => [
+    `LAVIECO · Sổ đơn hàng — ${tab}   ·   Cập nhật lúc ${stampOf(now)}   ·   Chỉ xem: muốn sửa, vào admin → Đơn hàng`,
+  ];
   const sorted = [...orders].sort(byCode);
   return [
     {
       name: "DonHang",
       rows: [
-        stamp,
+        title("Đơn hàng"),
         [
           "Mã đơn",
           "Loại đơn",
@@ -113,11 +154,38 @@ export function buildSheetTabs(
           SOURCE[order.source],
         ]),
       ],
+      layout: {
+        widths: [
+          92, 76, 170, 110, 92, 240, 86, 96, 76, 82, 100, 110, 124, 104, 104, 140, 220, 66, 76,
+        ],
+        money: [7, 8, 9, 10],
+        wrap: [5, 16],
+        frozenColumns: 1,
+        rules: [
+          ...STATUS_RULES(13),
+          { column: 12, equals: "Chưa thanh toán", tone: "alert" },
+          { column: 12, equals: "Đã cọc", tone: "attention" },
+          { column: 12, equals: "Đã thanh toán", tone: "done" },
+          // Late: due day passed and the order is still open (days are dd/mm/yyyy text).
+          {
+            column: 14,
+            formula:
+              '=AND($O3<>"";$N3<>"Hoàn thành";$N3<>"Đã hủy";DATE(RIGHT($O3;4);MID($O3;4;2);LEFT($O3;2))<TODAY())',
+            tone: "alert",
+          },
+          // Open order with no due day yet.
+          {
+            column: 14,
+            formula: '=AND($A3<>"";$O3="";$N3<>"Hoàn thành";$N3<>"Đã hủy")',
+            tone: "attention",
+          },
+        ],
+      },
     },
     {
       name: "ChiTiet",
       rows: [
-        stamp,
+        title("Chi tiết món"),
         ["Mã đơn", "Sản phẩm", "Số lượng", "Đơn giá (VNĐ)", "Thành tiền (VNĐ)"],
         ...sorted.flatMap((order) =>
           order.items.map((item) => [
@@ -129,11 +197,18 @@ export function buildSheetTabs(
           ]),
         ),
       ],
+      layout: {
+        widths: [100, 240, 84, 110, 120],
+        money: [3, 4],
+        wrap: [1],
+        frozenColumns: 1,
+        rules: [],
+      },
     },
     {
       name: "DonGia",
       rows: [
-        stamp,
+        title("Danh mục đơn giá"),
         ["Sản phẩm", "Đơn giá (VNĐ)", "Đang bán", "Ghi chú"],
         ...priceItems.map((item) => [
           item.name,
@@ -142,6 +217,16 @@ export function buildSheetTabs(
           item.note,
         ]),
       ],
+      layout: {
+        widths: [240, 110, 90, 260],
+        money: [1],
+        wrap: [3],
+        frozenColumns: 1,
+        rules: [
+          { column: 2, equals: "Không", tone: "muted" },
+          { column: 2, equals: "Có", tone: "done" },
+        ],
+      },
     },
   ];
 }
