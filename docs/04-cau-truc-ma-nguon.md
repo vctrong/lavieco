@@ -597,7 +597,7 @@ flowchart LR
 | Service | Module (`src/modules/`) |
 |---|---|
 | `identity-service` | `auth` (staff 2 bước, member, Google) · `users` · `invitations` · `sessions` · `otp` · `security` · `signing-keys` · `audit` · `outbox` (đã dựng, Phase 1) |
-| `program-service` | `events` · `event-types` · `ticketing` · `outbox` (đã dựng, Phase 2) · `orders` · `tickets` · `checkin` · `registrations` · `payments` · `idempotency` · `jobs` (Phase 3 → 6, ADR-014). Use case loại vé nằm ở `events` (chủ sở hữu sự kiện); `ticketing` giữ repository và quy tắc chỗ ngồi. **Cửa hàng** (ADR-0028): `shop-catalog` · `shop-inventory` · `shop-carts` · `shop-orders` · `shop-imports` · `shop-reviews`; `payments` định tuyến webhook qua `payment_refs` |
+| `program-service` | `events` · `event-types` · `ticketing` · `outbox` (đã dựng, Phase 2) · `orders` · `tickets` · `checkin` · `registrations` · `payments` · `idempotency` · `jobs` (Phase 3 → 6, ADR-014). Use case loại vé nằm ở `events` (chủ sở hữu sự kiện); `ticketing` giữ repository và quy tắc chỗ ngồi. **Cửa hàng** (ADR-0028): `shop-catalog` · `shop-inventory` · `shop-carts` · `shop-orders` · `shop-imports` · `shop-reviews`; `payments` định tuyến webhook qua `payment_refs`. **Sổ đơn hàng** (ADR-0030): `sales-orders` (đơn tay, danh mục đơn giá, phản chiếu đơn shop qua `MirroringShopOrderRepository`, đồng bộ Google Sheet); CLI `sales:import-legacy`, `sales:mirror-web` |
 | `content-service` | `handbook` · `catalog` (tác phẩm, nhóm, story card) · `qr` · `programs-public` · `pages` · `site-settings` · `media` · `consent` · `outbox` |
 | `lead-service` | `leads` · `gift-requests` · `waitlist` · `internal-notes` · `idempotency` · `outbox` |
 

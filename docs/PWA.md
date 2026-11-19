@@ -70,7 +70,7 @@ Mất mạng thì app hiện trang "Đang mất kết nối" với nút **Thử 
 
 ## Phụ lục kỹ thuật (cho người phát triển)
 
-**Tệp:** `apps/admin/src/app/manifest.ts` → `features/pwa` (manifest, màu, đăng ký service worker, gợi ý cài) · `public/sw.js` · `public/offline.html` · `public/icons/` · `src/app/icon.png`, `src/app/apple-icon.png` · `features/notifications` (màn `/notifications`) · `features/shell` (thanh tab dưới đáy, `/more`).
+**Tệp:** `apps/admin/src/app/manifest.ts` → `features/pwa` (manifest, màu, đăng ký service worker, gợi ý cài) · `public/sw.js` · `public/offline.html` · `public/icons/` · `src/app/icon.png`, `src/app/apple-icon.png` · `features/notifications` (màn `/notifications`) · `features/shell` (thanh tab dưới đáy: Sự kiện · Đơn hàng · Check-in · Shop · Thêm; đơn vé nằm trong Thêm, `/more`).
 
 **Service worker** (`public/sw.js`, viết tay):
 
