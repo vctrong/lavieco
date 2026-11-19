@@ -22,6 +22,7 @@ import {
   type ProductRepository,
 } from "../shop-catalog";
 import { VOUCHER_LEDGER, VouchersModule, type VoucherLedger } from "../vouchers";
+import { MirroringShopOrderRepository } from "./infrastructure/mirroring-shop-order.repository";
 import { ShopOrdersAdminController } from "./api/shop-orders-admin.controller";
 import { ShopOrdersPublicController } from "./api/shop-orders-public.controller";
 import {
@@ -57,6 +58,8 @@ export class ShopOrdersModule {
     orders: DynamicModule;
     shopCatalog: DynamicModule;
     shopCarts: DynamicModule;
+    /** The order book: every saved shop order is mirrored there (ADR-0030). */
+    sales: DynamicModule;
     expiry: ShopExpiryOptions;
   }): DynamicModule {
     return {
@@ -66,11 +69,12 @@ export class ShopOrdersModule {
         deps.orders,
         deps.shopCatalog,
         deps.shopCarts,
+        deps.sales,
         VouchersModule,
       ],
       controllers: [ShopOrdersPublicController, ShopOrdersAdminController],
       providers: [
-        { provide: SHOP_ORDER_REPOSITORY, useClass: MongoShopOrderRepository },
+        { provide: SHOP_ORDER_REPOSITORY, useClass: MirroringShopOrderRepository },
         { provide: SHOP_EXPIRY_OPTIONS, useValue: deps.expiry },
         {
           provide: SHOP_ORDER_MAILER,

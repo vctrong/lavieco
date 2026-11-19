@@ -1,4 +1,5 @@
 export const SALES_ORDER_SERVICE = Symbol("SALES_ORDER_SERVICE");
 export const PRICE_LIST_SERVICE = Symbol("PRICE_LIST_SERVICE");
 export const SALES_SHEET_QUEUE = Symbol("SALES_SHEET_QUEUE");
+export const WEB_ORDER_MIRROR = Symbol("WEB_ORDER_MIRROR");
 export const LEGACY_IMPORT_SERVICE = Symbol("LEGACY_IMPORT_SERVICE");

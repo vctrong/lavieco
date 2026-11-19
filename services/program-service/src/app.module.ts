@@ -77,10 +77,12 @@ export class AppModule {
     const surveys = SurveysModule.forRoot(events, orders);
     const shopCatalog = ShopCatalogModule.forRoot(overrides.productMedia);
     const shopCarts = ShopCartsModule.forRoot(shopCatalog);
+    const sales = SalesOrdersModule.forRoot({ staffDirectory: overrides.staffDirectory });
     const shopOrders = ShopOrdersModule.forRoot({
       orders,
       shopCatalog,
       shopCarts,
+      sales,
       expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
     });
     return {
@@ -126,7 +128,7 @@ export class AppModule {
         shopCarts,
         shopOrders,
         ShopReviewsModule.forRoot({ orders, shopCatalog, shopOrders }),
-        SalesOrdersModule.forRoot({ staffDirectory: overrides.staffDirectory }),
+        sales,
         ProgramOutboxModule.forRoot(events, shopCatalog, overrides.revalidateFetch),
       ],
     };

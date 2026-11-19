@@ -1,5 +1,10 @@
 export { SalesOrdersModule, type SalesOrdersOptions } from "./sales-orders.module";
-export { LEGACY_IMPORT_SERVICE, SALES_ORDER_SERVICE } from "./sales-orders.tokens";
+export {
+  LEGACY_IMPORT_SERVICE,
+  SALES_ORDER_SERVICE,
+  WEB_ORDER_MIRROR,
+} from "./sales-orders.tokens";
+export type { MirrorableShopOrder, WebOrderMirror } from "./application/web-order-mirror";
 export {
   PRICE_ITEM_REPOSITORY,
   SALES_ORDER_REPOSITORY,

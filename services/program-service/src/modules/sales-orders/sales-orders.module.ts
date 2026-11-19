@@ -19,6 +19,7 @@ import { LegacyImportService } from "./application/legacy-import-service";
 import { PriceListService } from "./application/price-list-service";
 import { noSheetQueue, type SalesSheetQueue } from "./application/sales-jobs";
 import { SalesOrderService } from "./application/sales-order-service";
+import { SalesWebOrderMirror } from "./application/web-order-mirror";
 import { createIdentityStaffDirectory } from "./infrastructure/identity-staff-directory";
 import { MongoPriceItemRepository } from "./infrastructure/price-item.repository";
 import { MongoSalesOrderRepository } from "./infrastructure/sales-order.repository";
@@ -28,6 +29,7 @@ import {
   PRICE_LIST_SERVICE,
   SALES_ORDER_SERVICE,
   SALES_SHEET_QUEUE,
+  WEB_ORDER_MIRROR,
 } from "./sales-orders.tokens";
 
 export type SalesOrdersOptions = {
@@ -78,6 +80,12 @@ export class SalesOrdersModule {
           ],
         },
         {
+          provide: WEB_ORDER_MIRROR,
+          useFactory: (orders: SalesOrderRepository, sheet: SalesSheetQueue) =>
+            new SalesWebOrderMirror(orders, sheet),
+          inject: [SALES_ORDER_REPOSITORY, SALES_SHEET_QUEUE],
+        },
+        {
           provide: LEGACY_IMPORT_SERVICE,
           useFactory: (
             orders: SalesOrderRepository,
@@ -112,6 +120,7 @@ export class SalesOrdersModule {
         PRICE_ITEM_REPOSITORY,
         SALES_ORDER_SERVICE,
         LEGACY_IMPORT_SERVICE,
+        WEB_ORDER_MIRROR,
       ],
     };
   }
