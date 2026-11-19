@@ -32,11 +32,11 @@
     - Không nhập tồn kho. Giữ, trừ, nhả hàng chỉ đếm `sold` (cập nhật có điều kiện trong MongoDB) và không bao giờ hết hàng.
     - `products.leadTimeDays` hiện trên trang sản phẩm, và đặt ngày giao đầu tiên cho bản phản chiếu (loại `made_to_order`).
 11. **Google Sheet chỉ xem.**
-    - Sau mỗi thay đổi, một job outbox ghi lại **toàn bộ** 3 tab: một lần `batchClear` và một lần `batchUpdate`, ghi kiểu `RAW` để giữ số 0 đầu SĐT và không chạy công thức. Dòng 1 ghi thời điểm cập nhật, dòng 2 là tiêu đề.
+    - Sau mỗi thay đổi, một job outbox ghi lại **toàn bộ** 3 tab: một lần `batchClear` và một lần `batchUpdate`, ghi kiểu `RAW` để giữ số 0 đầu SĐT và không chạy công thức. Dòng 1 là dải tiêu đề gộp ô, chữ lớn, ghi thời điểm cập nhật (kèm dòng nhỏ "chỉ xem"); dòng 2 là tiêu đề cột. Sau mỗi lần ghi, một `spreadsheets.batchUpdate` đặt lại định dạng: cố định 2 dòng đầu (không cố định cột, vì Google không cho gộp ô cắt qua cột cố định), độ rộng, canh lề, `#,##0`, dropdown chip đúng các nhãn app ghi (Người phụ trách là họ tên đầy đủ của tài khoản staff), màu trạng thái, dòng xen kẽ. Field mask phải là đường dẫn đầy đủ (`userEnteredFormat.a,…`).
     - Có lịch chạy lại định kỳ (`SALES_SHEET_SYNC_MINUTES`). Nhiều thay đổi dồn lại chỉ ghi một lần.
     - Xác thực bằng service account: JWT ký bằng `jose` có sẵn, không thêm SDK Google. Chỉ service account được quyền sửa, cả đội chỉ xem.
     - **Sheet chứa PII khách hàng** (tên, SĐT, địa chỉ), đã được đội đồng ý ngày 20/11/2026. Tắt khi chưa đặt đủ `SALES_SHEET_*`.
-12. **Dữ liệu cũ** nhập bằng `sales:import-legacy` từ JSON của 3 tab (không bao giờ đọc `sheet1`). Mặc định là chạy thử; chạy lại an toàn theo `legacyCode`. Kiểm tra từng tổng tiền và tổng 1.000.000đ, đánh số `LV-0001…` theo ngày đặt, khớp tên người phụ trách với tài khoản.
+12. **Dữ liệu cũ** nhập bằng `sales:import-legacy` từ JSON của 3 tab (không bao giờ đọc `sheet1`). Mặc định là chạy thử; chạy lại an toàn theo `legacyCode`. Kiểm tra từng tổng tiền và tổng 1.000.000đ, đánh số `LV-0001…` theo ngày đặt, khớp tên người phụ trách với tài khoản (theo họ tên đầy đủ: "Xuân Anh" → "Nguyễn Đình Xuân Anh"). `--reassign` điền người phụ trách cho đơn đã import mà còn trống, khi tài khoản được tạo sau; không ghi đè lựa chọn đã sửa trong admin.
 
 ## Hệ quả
 

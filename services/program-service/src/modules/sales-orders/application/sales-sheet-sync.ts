@@ -1,6 +1,6 @@
 import type { OutboxPort, TxContext } from "@lavieco/service-kit/ports";
 
-import type { PriceItemRepository, SalesOrderRepository } from "./ports";
+import type { PriceItemRepository, SalesOrderRepository, StaffDirectory } from "./ports";
 import { SALES_SHEET_SYNC_JOB, type SalesSheetQueue } from "./sales-jobs";
 import { buildSheetTabs, type SheetTab } from "./sheet-export";
 
@@ -20,6 +20,7 @@ export class SalesSheetSync {
   constructor(
     private readonly orders: SalesOrderRepository,
     private readonly priceItems: PriceItemRepository,
+    private readonly staff: StaffDirectory,
     private readonly writer: SheetWriter,
   ) {}
 
@@ -34,7 +35,12 @@ export class SalesSheetSync {
         this.orders.listAllForExport(),
         this.priceItems.list(),
       ]);
-      await this.writer.write(buildSheetTabs(orders, items, now));
+      // Full staff names for the assignee dropdown; identity down only shortens the list.
+      const staffNames = await this.staff
+        .list()
+        .then((staff) => staff.map((entry) => entry.name))
+        .catch(() => []);
+      await this.writer.write(buildSheetTabs(orders, items, now, staffNames));
     })();
     try {
       await this.running;

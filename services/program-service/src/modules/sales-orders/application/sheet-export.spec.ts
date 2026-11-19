@@ -87,3 +87,14 @@ describe("buildSheetTabs", () => {
     expect(sheetDay(null)).toBe("");
   });
 });
+
+describe("assignee dropdown", () => {
+  it("lists the full staff names plus any name still on an order", () => {
+    const [donHang] = buildSheetTabs([], [], new Date("2026-11-20T02:30:00Z"), [
+      "Nguyễn Đình Xuân Anh",
+      "Võ Chí Trọng",
+    ]);
+    const assignee = donHang!.layout.choices.find((choice) => choice.column === 15);
+    expect(assignee?.values).toEqual(["Nguyễn Đình Xuân Anh", "Võ Chí Trọng"]);
+  });
+});

@@ -2,15 +2,15 @@ import type { PriceItemRecord } from "../domain/price-item";
 import { vnDay, type SalesOrderRecord } from "../domain/sales-order";
 
 /**
- * The read-only Google Sheet (ADR-0030): three tabs rewritten whole from MongoDB. Row 1
- * tells when; row 2 is the header (the old sheet's columns, plus the old code and the
- * source). Values go in RAW: a phone keeps its leading zero and a name starting with `=`
- * stays text, never a formula.
+ * The read-only Google Sheet (ADR-0030, BR-29): three tabs rewritten whole from MongoDB.
+ * Row 1 is a large title band with the update time; row 2 is the header (the old sheet's
+ * columns, plus the old code and the source). Values go in RAW: a phone keeps its leading
+ * zero and a name starting with `=` stays text, never a formula.
  */
 export type SheetCell = string | number;
 
 /** How a cell is highlighted; colours come from the sheet tokens (infrastructure). */
-export type SheetTone = "done" | "muted" | "attention" | "alert";
+export type SheetTone = "done" | "muted" | "attention" | "alert" | "info";
 
 /**
  * Highlight of a data cell: equal to a label, or a custom formula written for the first
@@ -26,27 +26,27 @@ export type SheetLayout = {
   widths: number[];
   /** Columns holding VND amounts: `#,##0`, right aligned. */
   money: number[];
+  /** Short labels, days and codes: centred. */
+  center: number[];
   /** Long text columns that wrap (address, note). */
   wrap: number[];
   /** Columns kept on screen when scrolling sideways. */
   frozenColumns: number;
+  /** Category columns shown as dropdown chips with the exact labels the app writes. */
+  choices: { column: number; values: string[] }[];
   rules: SheetRule[];
 };
 
 export type SheetTab = {
   name: "DonHang" | "ChiTiet" | "DonGia";
+  /** Row 1: `main` in large type, `sub` smaller on the same line. */
+  title: { main: string; sub: string };
   rows: SheetCell[][];
   layout: SheetLayout;
 };
 
 /** First data row (rows 1 and 2 are the title and the header). */
 export const SHEET_DATA_ROW = 3;
-
-const STATUS_RULES = (column: number): SheetRule[] => [
-  { column, equals: "Hoàn thành", tone: "done" },
-  { column, equals: "Đã hủy", tone: "muted" },
-  { column, equals: "Mới", tone: "attention" },
-];
 
 const TYPE = { in_stock: "Có sẵn", made_to_order: "Đặt làm", wholesale: "Sỉ" } as const;
 const STATUS = {
@@ -96,21 +96,39 @@ function byCode(a: SalesOrderRecord, b: SalesOrderRecord) {
   return (a.orderDay ?? "").localeCompare(b.orderDay ?? "") || a.code.localeCompare(b.code);
 }
 
+const values = (labels: Record<string, string>) => Object.values(labels);
+
+/**
+ * @param staffNames full names of the staff accounts (assignee dropdown); names still on
+ * orders are added so a former member never shows as invalid.
+ */
 export function buildSheetTabs(
   orders: readonly SalesOrderRecord[],
   priceItems: readonly PriceItemRecord[],
   now: Date,
+  staffNames: readonly string[] = [],
 ): SheetTab[] {
-  // Row 1, merged across the tab: what it is, when it was written, that it is read only.
-  const title = (tab: string): SheetCell[] => [
-    `LAVIECO · Sổ đơn hàng — ${tab}   ·   Cập nhật lúc ${stampOf(now)}   ·   Chỉ xem: muốn sửa, vào admin → Đơn hàng`,
-  ];
+  const title = (tab: string) => ({
+    main: `Sổ đơn hàng LAVIECO · ${tab} · Cập nhật lúc ${stampOf(now)}`,
+    sub: "      Chỉ xem: muốn thêm hay sửa đơn, vào admin → Đơn hàng",
+  });
+  const titleRow = (tab: string): SheetCell[] => {
+    const { main, sub } = title(tab);
+    return [main + sub];
+  };
   const sorted = [...orders].sort(byCode);
+  const assignees = [
+    ...new Set([
+      ...staffNames,
+      ...sorted.map((order) => order.assignee?.name ?? "").filter((name) => name !== ""),
+    ]),
+  ].sort((a, b) => a.localeCompare(b, "vi"));
   return [
     {
       name: "DonHang",
+      title: title("Đơn hàng"),
       rows: [
-        title("Đơn hàng"),
+        titleRow("Đơn hàng"),
         [
           "Mã đơn",
           "Loại đơn",
@@ -156,16 +174,31 @@ export function buildSheetTabs(
       ],
       layout: {
         widths: [
-          92, 76, 170, 110, 92, 240, 86, 96, 76, 82, 100, 110, 124, 104, 104, 140, 220, 66, 76,
+          104, 96, 180, 118, 100, 250, 108, 108, 92, 100, 116, 140, 150, 130, 116, 180, 240, 72, 96,
         ],
         money: [7, 8, 9, 10],
+        center: [0, 1, 3, 4, 6, 11, 12, 13, 14, 17, 18],
         wrap: [5, 16],
-        frozenColumns: 1,
+        frozenColumns: 0,
+        choices: [
+          { column: 1, values: values(TYPE) },
+          { column: 6, values: values(CHANNEL) },
+          { column: 11, values: values(METHOD) },
+          { column: 12, values: values(PAYMENT) },
+          { column: 13, values: values(STATUS) },
+          { column: 15, values: assignees },
+          { column: 18, values: values(SOURCE) },
+        ],
         rules: [
-          ...STATUS_RULES(13),
+          { column: 13, equals: "Hoàn thành", tone: "done" },
+          { column: 13, equals: "Đã hủy", tone: "muted" },
+          { column: 13, equals: "Mới", tone: "attention" },
+          { column: 13, equals: "Đang làm", tone: "info" },
+          { column: 13, equals: "Đang giao", tone: "info" },
           { column: 12, equals: "Chưa thanh toán", tone: "alert" },
           { column: 12, equals: "Đã cọc", tone: "attention" },
           { column: 12, equals: "Đã thanh toán", tone: "done" },
+          { column: 1, equals: "Đặt làm", tone: "info" },
           // Late: due day passed and the order is still open (days are dd/mm/yyyy text).
           {
             column: 14,
@@ -184,8 +217,9 @@ export function buildSheetTabs(
     },
     {
       name: "ChiTiet",
+      title: title("Chi tiết món"),
       rows: [
-        title("Chi tiết món"),
+        titleRow("Chi tiết món"),
         ["Mã đơn", "Sản phẩm", "Số lượng", "Đơn giá (VNĐ)", "Thành tiền (VNĐ)"],
         ...sorted.flatMap((order) =>
           order.items.map((item) => [
@@ -198,17 +232,20 @@ export function buildSheetTabs(
         ),
       ],
       layout: {
-        widths: [100, 240, 84, 110, 120],
+        widths: [110, 280, 96, 130, 140],
         money: [3, 4],
+        center: [0, 2],
         wrap: [1],
-        frozenColumns: 1,
+        frozenColumns: 0,
+        choices: [],
         rules: [],
       },
     },
     {
       name: "DonGia",
+      title: title("Danh mục đơn giá"),
       rows: [
-        title("Danh mục đơn giá"),
+        titleRow("Danh mục đơn giá"),
         ["Sản phẩm", "Đơn giá (VNĐ)", "Đang bán", "Ghi chú"],
         ...priceItems.map((item) => [
           item.name,
@@ -218,10 +255,12 @@ export function buildSheetTabs(
         ]),
       ],
       layout: {
-        widths: [240, 110, 90, 260],
+        widths: [260, 130, 110, 300],
         money: [1],
-        wrap: [3],
-        frozenColumns: 1,
+        center: [2],
+        wrap: [0, 3],
+        frozenColumns: 0,
+        choices: [{ column: 2, values: ["Có", "Không"] }],
         rules: [
           { column: 2, equals: "Không", tone: "muted" },
           { column: 2, equals: "Có", tone: "done" },

@@ -14,6 +14,8 @@ export type LegacyImportReport = {
   priceItemsKept: number;
   ordersCreated: number;
   ordersKept: number;
+  /** Orders already imported whose empty assignee was filled in (`reassign`). */
+  assigneesFilled: number;
   /** Sheet names with no single matching staff account (left unassigned). */
   unmatchedAssignees: string[];
   /** `LV-…` codes already used by another order: the import stops before writing. */
@@ -44,6 +46,39 @@ export class LegacyImportService {
     return this.run(plan, true, actorUserId, now);
   }
 
+  /**
+   * Fills the assignee of orders already imported and still unassigned, once their
+   * account exists (an import made before it only left them empty). Never overwrites a
+   * choice made since in the admin; `write: false` only counts.
+   */
+  async reassign(plan: LegacyPlan, write: boolean) {
+    const staff = await this.staff.list();
+    const unmatched = new Set<string>();
+    let filled = 0;
+    for (const order of plan.orders) {
+      if (!order.assigneeName) continue;
+      const found = matchStaff(order.assigneeName, staff);
+      if (!found) {
+        unmatched.add(order.assigneeName);
+        continue;
+      }
+      const current = await this.orders.findByLegacyCode(order.legacyCode);
+      if (!current || current.assignee) continue;
+      filled += 1;
+      if (!write) continue;
+      await this.unitOfWork.run(async (tx) => {
+        const saved = await this.orders.update(
+          current.id,
+          current.revision,
+          { assignee: found },
+          tx,
+        );
+        if (saved) await this.sheet.queue(tx);
+      });
+    }
+    return { filled, unmatched: [...unmatched] };
+  }
+
   private async run(
     plan: LegacyPlan,
     write: boolean,
@@ -56,6 +91,7 @@ export class LegacyImportService {
       priceItemsKept: 0,
       ordersCreated: 0,
       ordersKept: 0,
+      assigneesFilled: 0,
       unmatchedAssignees: [],
       codeClashes: [],
     };
