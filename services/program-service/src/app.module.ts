@@ -32,6 +32,7 @@ import { ShopCartsModule } from "./modules/shop-carts";
 import { ShopImportsModule } from "./modules/shop-imports";
 import { ShopOrdersModule } from "./modules/shop-orders";
 import { ShopReviewsModule } from "./modules/shop-reviews";
+import { SalesOrdersModule, type StaffDirectory } from "./modules/sales-orders";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
 export type AppOverrides = {
@@ -56,6 +57,8 @@ export type AppOverrides = {
   runOrderExpiry?: boolean;
   /** Off in tests that drive the campaign queue themselves. */
   runCampaignWorker?: boolean;
+  /** Stands in for identity-service staff directory (order assignees). */
+  staffDirectory?: StaffDirectory;
 };
 
 const ORDER_EXPIRY_INTERVAL_MS = 60_000;
@@ -123,6 +126,7 @@ export class AppModule {
         shopCarts,
         shopOrders,
         ShopReviewsModule.forRoot({ orders, shopCatalog, shopOrders }),
+        SalesOrdersModule.forRoot({ staffDirectory: overrides.staffDirectory }),
         ProgramOutboxModule.forRoot(events, shopCatalog, overrides.revalidateFetch),
       ],
     };

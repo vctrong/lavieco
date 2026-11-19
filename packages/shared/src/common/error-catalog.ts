@@ -211,6 +211,31 @@ export const ERROR_CATALOG = {
     status: 409,
     title: "This action is not possible in the order's status",
   },
+  // Sales orders: the team's order book (docs/09).
+  "sales_order.due_day_required": {
+    status: 422,
+    title: "A made-to-order order needs a due date",
+  },
+  "sales_order.totals_invalid": {
+    status: 422,
+    title: "The discount is larger than the order amount",
+  },
+  "sales_order.web_order_locked": {
+    status: 409,
+    title: "Orders from the website change status in the shop screens",
+  },
+  "sales_order.unknown_assignee": {
+    status: 422,
+    title: "The assignee is not an active staff account",
+  },
+  "sales_order.unknown_price_item": {
+    status: 422,
+    title: "An item refers to a price list entry that does not exist",
+  },
+  "address.invalid": {
+    status: 422,
+    title: "The province or ward is not in the administrative unit list",
+  },
 } as const satisfies Record<string, { status: number; title: string }>;
 
 export type ErrorCode = keyof typeof ERROR_CATALOG;

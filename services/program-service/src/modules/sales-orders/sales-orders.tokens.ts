@@ -1,0 +1,3 @@
+export const SALES_ORDER_SERVICE = Symbol("SALES_ORDER_SERVICE");
+export const PRICE_LIST_SERVICE = Symbol("PRICE_LIST_SERVICE");
+export const SALES_SHEET_QUEUE = Symbol("SALES_SHEET_QUEUE");
