@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { ComponentType } from "react";
-import { FiCalendar, FiCamera, FiGrid, FiShoppingBag, FiTag } from "react-icons/fi";
+import { FiCalendar, FiCamera, FiClipboard, FiGrid, FiShoppingBag } from "react-icons/fi";
 
 import { cn } from "@lavieco/ui";
 
@@ -14,7 +14,7 @@ type Icon = ComponentType<{ size?: number; "aria-hidden"?: boolean | "true" }>;
 
 const ICONS: Record<MobileTab["id"], Icon> = {
   events: FiCalendar,
-  orders: FiTag,
+  sales: FiClipboard,
   checkin: FiCamera,
   shop: FiShoppingBag,
   more: FiGrid,

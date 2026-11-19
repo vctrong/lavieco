@@ -21,6 +21,8 @@ export const NAV_GROUPS: readonly NavGroup[] = [
     id: "operations",
     items: [
       { id: "overview", href: "/", permission: null, available: true },
+      // The team order book (ADR-0030): manual and website orders in one list.
+      { id: "sales", href: "/sales", permission: "sales:read", available: true },
       { id: "events", href: "/events", permission: "program:read", available: true },
       { id: "vouchers", href: "/vouchers", permission: "voucher:write", available: true },
       { id: "surveys", href: "/surveys", permission: "survey:read", available: true },
@@ -58,7 +60,7 @@ export const NAV_GROUPS: readonly NavGroup[] = [
 ];
 
 export type MobileTab = {
-  id: "events" | "orders" | "checkin" | "shop" | "more";
+  id: "events" | "sales" | "checkin" | "shop" | "more";
   href: string;
   permission: Permission | null;
 };
@@ -69,7 +71,8 @@ export type MobileTab = {
  */
 export const MOBILE_TABS: readonly MobileTab[] = [
   { id: "events", href: "/events", permission: "program:read" },
-  { id: "orders", href: "/orders", permission: "order:read" },
+  // Ticket orders stay one tap away in "Thêm" and on each event page.
+  { id: "sales", href: "/sales", permission: "sales:read" },
   { id: "checkin", href: "/checkin", permission: "checkin:perform" },
   { id: "shop", href: "/shop", permission: "product:read" },
   { id: "more", href: "/more", permission: null },

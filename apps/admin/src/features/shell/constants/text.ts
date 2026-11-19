@@ -13,11 +13,12 @@ export const TEXT = {
     },
     items: {
       overview: "Tổng quan",
+      sales: "Đơn hàng",
       events: "Chương trình",
       vouchers: "Ưu đãi",
       surveys: "Khảo sát",
       campaigns: "Email",
-      orders: "Đơn hàng & payOS",
+      orders: "Đơn vé & payOS",
       checkin: "Quét check-in",
       handbook: "Cẩm nang",
       works: "Tác phẩm",
@@ -35,7 +36,7 @@ export const TEXT = {
     tabsLabel: "Điều hướng nhanh",
     tabs: {
       events: "Sự kiện",
-      orders: "Vé",
+      sales: "Đơn hàng",
       checkin: "Check-in",
       shop: "Shop",
       more: "Thêm",
