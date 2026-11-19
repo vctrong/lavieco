@@ -39,7 +39,13 @@ export type ProgramAuditAction =
   | "shop_order.export"
   | "shop.category"
   | "shop.brand"
-  | "shop.settings";
+  | "shop.settings"
+  | "sales_order.bulk_status"
+  | "sales_order.delete"
+  | "sales_order.restore"
+  | "sales_order.import"
+  | "sales_price.create"
+  | "sales_price.update";
 
 export type AuditEntry = {
   action: ProgramAuditAction;

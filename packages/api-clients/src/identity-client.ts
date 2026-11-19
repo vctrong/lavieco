@@ -14,6 +14,7 @@ import {
   otpChallengeVerifyResponseSchema,
   staffLoginResponseSchema,
   staffProfileSchema,
+  staffDirectorySchema,
   stepUpResponseSchema,
   tokenPairSchema,
   type InvitationAcceptRequest,
@@ -248,6 +249,16 @@ export function createIdentityClient(options: IdentityClientOptions) {
         body,
         schema: pushNotificationResponseSchema,
         idempotent: true,
+        requestId,
+      }),
+
+    /** Active staff, id and name: order assignees (program-service, ADR-0030). */
+    listStaffDirectory: (requestId?: string) =>
+      http.call({
+        method: "GET",
+        path: `${V1}/staff-directory`,
+        auth: service,
+        schema: staffDirectorySchema,
         requestId,
       }),
 

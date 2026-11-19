@@ -47,6 +47,10 @@ const toBrand = (doc: BrandDoc): BrandRecord => ({
 const toSettings = (doc: SettingsDoc): ShopSettingsRecord => ({
   shippingFee: doc.shippingFee,
   freeShippingFrom: doc.freeShippingFrom ?? null,
+  // Documents saved before 20/11/2026 have no list: the default zone applies.
+  freeShippingWardCodes: doc.freeShippingWardCodes ?? [
+    ...SHOP_SETTINGS_DEFAULTS.freeShippingWardCodes,
+  ],
   pickup: {
     enabled: doc.pickup?.enabled ?? false,
     address: doc.pickup?.address ?? "",

@@ -12,6 +12,7 @@ import { callAction } from "@/shared/call-action";
 
 import { createCategory, saveBrand, saveShopSettings, updateCategory } from "../actions/shop";
 import { TEXT } from "../constants/text";
+import { FreeWardsField } from "./free-wards-field";
 import { failureText } from "../utils/failure";
 import { ShopShell } from "./shop-shell";
 
@@ -338,6 +339,7 @@ export function ShopSettingsPage({ settings }: { settings: ShopSettings }) {
   const [v, setV] = useState({
     shippingFee: String(settings.shippingFee),
     freeFrom: settings.freeShippingFrom === null ? "" : String(settings.freeShippingFrom),
+    freeWards: settings.freeShippingWardCodes,
     pickupEnabled: settings.pickup.enabled,
     pickupAddress: settings.pickup.address,
     pickupNote: settings.pickup.note,
@@ -355,6 +357,7 @@ export function ShopSettingsPage({ settings }: { settings: ShopSettings }) {
       saveShopSettings({
         shippingFee: toInt(v.shippingFee),
         freeShippingFrom: v.freeFrom.trim() ? toInt(v.freeFrom) : null,
+        freeShippingWardCodes: v.freeWards,
         pickup: { enabled: v.pickupEnabled, address: v.pickupAddress, note: v.pickupNote },
         cod: { enabled: v.codEnabled, maxAmount: toInt(v.codMax) },
         holdMinutes: toInt(v.hold),
@@ -390,6 +393,11 @@ export function ShopSettingsPage({ settings }: { settings: ShopSettings }) {
             value={v.freeFrom}
             disabled={busy}
             onChange={(e) => set({ freeFrom: e.target.value })}
+          />
+          <FreeWardsField
+            value={v.freeWards}
+            disabled={busy}
+            onChange={(freeWards) => set({ freeWards })}
           />
           <CheckboxField
             tone="light"

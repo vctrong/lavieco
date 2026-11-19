@@ -50,6 +50,10 @@ export const PERMISSIONS = [
   "handbook:write",
   /** Publish or restore a version: self-publish, no second reviewer (BR-26). */
   "handbook:publish",
+  // Sales orders, the team order book (ADR-0030): manual orders, web mirrors, price list.
+  "sales:read",
+  /** Create, edit, soft-delete and restore orders; edit the internal price list. */
+  "sales:write",
 ] as const;
 
 export type Permission = (typeof PERMISSIONS)[number];

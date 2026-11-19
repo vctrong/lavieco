@@ -32,6 +32,7 @@ import { ShopCartsModule } from "./modules/shop-carts";
 import { ShopImportsModule } from "./modules/shop-imports";
 import { ShopOrdersModule } from "./modules/shop-orders";
 import { ShopReviewsModule } from "./modules/shop-reviews";
+import { SalesOrdersModule, type StaffDirectory } from "./modules/sales-orders";
 import type { EmailSender } from "@lavieco/service-kit/ports";
 
 export type AppOverrides = {
@@ -56,6 +57,8 @@ export type AppOverrides = {
   runOrderExpiry?: boolean;
   /** Off in tests that drive the campaign queue themselves. */
   runCampaignWorker?: boolean;
+  /** Stands in for identity-service staff directory (order assignees). */
+  staffDirectory?: StaffDirectory;
 };
 
 const ORDER_EXPIRY_INTERVAL_MS = 60_000;
@@ -74,10 +77,12 @@ export class AppModule {
     const surveys = SurveysModule.forRoot(events, orders);
     const shopCatalog = ShopCatalogModule.forRoot(overrides.productMedia);
     const shopCarts = ShopCartsModule.forRoot(shopCatalog);
+    const sales = SalesOrdersModule.forRoot({ staffDirectory: overrides.staffDirectory });
     const shopOrders = ShopOrdersModule.forRoot({
       orders,
       shopCatalog,
       shopCarts,
+      sales,
       expiry: { run: overrides.runOrderExpiry ?? true, intervalMs: ORDER_EXPIRY_INTERVAL_MS },
     });
     return {
@@ -123,6 +128,7 @@ export class AppModule {
         shopCarts,
         shopOrders,
         ShopReviewsModule.forRoot({ orders, shopCatalog, shopOrders }),
+        sales,
         ProgramOutboxModule.forRoot(events, shopCatalog, overrides.revalidateFetch),
       ],
     };

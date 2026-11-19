@@ -299,6 +299,15 @@ export function ProductEditor({
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <TextField tone="light" label={t.fields.dimensions} {...field("dimensions")} />
+              {values.variants.some((variant) => variant.madeToOrder) ? (
+                <TextField
+                  tone="light"
+                  inputMode="numeric"
+                  label={t.fields.leadTimeDays}
+                  hint={t.fields.leadTimeHint}
+                  {...field("leadTimeDays")}
+                />
+              ) : null}
               <TextField
                 tone="light"
                 label={t.fields.sortOrder}
@@ -438,7 +447,22 @@ export function ProductEditor({
                         />
                         {t.variants.active}
                       </label>
+                      <label className="flex min-h-11 items-center gap-2 text-[13px]">
+                        <input
+                          type="checkbox"
+                          className={choiceControlClass("light")}
+                          checked={variant.madeToOrder}
+                          disabled={busy}
+                          onChange={(event) =>
+                            setVariant(index, { madeToOrder: event.target.checked })
+                          }
+                        />
+                        {t.variants.madeToOrder}
+                      </label>
                     </div>
+                    {variant.madeToOrder ? (
+                      <p className="text-[13px] text-charcoal/70">{t.variants.madeToOrderNote}</p>
+                    ) : null}
                     <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
                       <TextField
                         tone="light"
@@ -473,7 +497,7 @@ export function ProductEditor({
                           setVariant(index, { compareAtPrice: event.target.value })
                         }
                       />
-                      {variant.id ? (
+                      {variant.madeToOrder ? null : variant.id ? (
                         <TextField
                           tone="light"
                           inputMode="numeric"
@@ -498,7 +522,11 @@ export function ProductEditor({
                       )}
                     </div>
                     <div className="flex flex-wrap items-center justify-between gap-2">
-                      {saved ? <StockAdjust variant={saved} disabled={busy} /> : <span />}
+                      {saved && !variant.madeToOrder ? (
+                        <StockAdjust variant={saved} disabled={busy} />
+                      ) : (
+                        <span />
+                      )}
                       {values.variants.length > 1 ? (
                         <button
                           type="button"

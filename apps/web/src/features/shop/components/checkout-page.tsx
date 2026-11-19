@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { FiLock, FiTag } from "react-icons/fi";
 
+import { VN_PROVINCES } from "@lavieco/shared/geo";
 import type { PublicShopSettings, ShopQuote } from "@lavieco/shared/shop";
 import {
+  AddressPicker,
   Button,
   CheckboxField,
   Container,
@@ -43,12 +45,18 @@ const FIELD_ORDER = [
   "phone",
   "recipientName",
   "recipientPhone",
+  "provinceCode",
+  "wardCode",
   "line",
-  "ward",
-  "province",
   "consent",
 ];
-const id = (name: string) => `checkout-${name}`;
+/** The address fields are the picker's: `checkout-province`, `-ward`, `-detail`. */
+const ADDRESS_IDS: Record<string, string> = {
+  provinceCode: "checkout-province",
+  wardCode: "checkout-ward",
+  line: "checkout-detail",
+};
+const id = (name: string) => ADDRESS_IDS[name] ?? `checkout-${name}`;
 
 type Values = Omit<ShopCheckoutForm, "consent" | "website" | "turnstileToken"> & {
   consent: boolean;
@@ -80,8 +88,8 @@ export function CheckoutPage({
     recipientName: "",
     recipientPhone: "",
     line: "",
-    ward: "",
-    province: "",
+    provinceCode: null,
+    wardCode: null,
     note: "",
     paymentMethod: "payos",
     voucherCode: "",
@@ -120,7 +128,12 @@ export function CheckoutPage({
   useEffect(() => {
     let active = true;
     void callAction(() =>
-      quoteCheckout({ method: values.method, voucherCode: applied, email: emailRef.current }),
+      quoteCheckout({
+        method: values.method,
+        voucherCode: applied,
+        email: emailRef.current,
+        wardCode: values.wardCode,
+      }),
     ).then((result) => {
       if (!active) return;
       if (result.status === "ok") {
@@ -131,7 +144,7 @@ export function CheckoutPage({
     return () => {
       active = false;
     };
-  }, [values.method, applied]);
+  }, [values.method, applied, values.wardCode]);
 
   // COD only when the server says the amount allows it (Q-S4).
   const paymentMethod = quote && !quote.codAvailable ? "payos" : values.paymentMethod;
@@ -276,7 +289,12 @@ export function CheckoutPage({
                         {method === "pickup" && settings
                           ? t.pickupAt(settings.pickup.address)
                           : settings
-                            ? formatMoney(settings.shippingFee)
+                            ? [
+                                formatMoney(settings.shippingFee),
+                                settings.freeShippingWardCodes.length ? t.freeWards : "",
+                              ]
+                                .filter(Boolean)
+                                .join(" · ")
                             : ""}
                       </span>
                     </span>
@@ -284,13 +302,40 @@ export function CheckoutPage({
                 ))}
             </div>
             {values.method === "delivery" ? (
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="md:col-span-2">
-                  {field("line", t.line, { required: true, autoComplete: "street-address" })}
-                </div>
-                {field("ward", t.ward, { required: true })}
-                {field("province", t.province, { required: true, autoComplete: "address-level1" })}
-              </div>
+              <AddressPicker
+                idPrefix="checkout"
+                tone="light"
+                required
+                provinces={VN_PROVINCES}
+                value={{
+                  provinceCode: values.provinceCode,
+                  wardCode: values.wardCode,
+                  detail: values.line,
+                }}
+                onChange={(address) =>
+                  setValues((current) => ({
+                    ...current,
+                    provinceCode:
+                      typeof address.provinceCode === "number" ? address.provinceCode : null,
+                    wardCode: address.wardCode,
+                    line: address.detail,
+                  }))
+                }
+                errors={{
+                  province: errors.provinceCode,
+                  ward: errors.wardCode,
+                  detail: errors.line,
+                }}
+                text={{
+                  province: t.province,
+                  ward: t.ward,
+                  choose: t.choose,
+                  other: t.choose,
+                  detail: t.line,
+                  detailHint: t.lineHint,
+                  detailOther: t.line,
+                }}
+              />
             ) : null}
             <CheckboxField
               tone="light"

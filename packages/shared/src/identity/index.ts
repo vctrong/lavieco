@@ -109,3 +109,9 @@ export {
   type PushTopicsUpdateRequest,
   type PushUnsubscribeRequest,
 } from "./push.schema";
+export {
+  staffDirectoryEntrySchema,
+  staffDirectorySchema,
+  type StaffDirectory,
+  type StaffDirectoryEntry,
+} from "./staff-directory.schema";

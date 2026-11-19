@@ -16,6 +16,58 @@
         ]
       }
     },
+    "/internal/v1/staff-directory": {
+      "get": {
+        "operationId": "StaffDirectoryController_list",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "items": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "name"
+                        ],
+                        "additionalProperties": false
+                      }
+                    }
+                  },
+                  "required": [
+                    "items"
+                  ],
+                  "additionalProperties": false
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Active staff accounts: id and display name only",
+        "tags": [
+          "staff"
+        ]
+      }
+    },
     "/internal/v1/audit-events": {
       "post": {
         "operationId": "AuditEventsController_create",
@@ -904,7 +956,9 @@
                           "order:export",
                           "handbook:read",
                           "handbook:write",
-                          "handbook:publish"
+                          "handbook:publish",
+                          "sales:read",
+                          "sales:write"
                         ]
                       }
                     }

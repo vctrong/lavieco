@@ -87,6 +87,7 @@ export const productSchema = new Schema(
     materials: { type: [String], default: [] },
     care: { type: String, default: "" },
     dimensions: { type: String, default: "" },
+    leadTimeDays: { type: Number, default: null },
     options: { type: [optionSchema], default: [] },
     images: {
       type: [
@@ -144,6 +145,7 @@ export const productVariantSchema = new Schema(
     lowStockThreshold: { type: Number, required: true, default: 3 },
     weightGrams: { type: Number, default: null },
     status: { type: String, enum: ["active", "archived"], required: true, default: "active" },
+    madeToOrder: { type: Boolean, default: false },
     sortOrder: { type: Number, default: 0 },
     stock: {
       onHand: { type: Number, required: true, default: 0 },
@@ -192,6 +194,7 @@ export const shopSettingsSchema = new Schema(
     schemaVersion: { type: Number, required: true, default: 1 },
     shippingFee: { type: Number, required: true },
     freeShippingFrom: { type: Number, default: null },
+    freeShippingWardCodes: { type: [Number], default: undefined },
     pickup: { enabled: Boolean, address: String, note: String },
     cod: { enabled: Boolean, maxAmount: Number },
     holdMinutes: { type: Number, required: true },

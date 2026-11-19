@@ -21,6 +21,8 @@ export type VariantValues = {
   lowStockThreshold: string;
   initialStock: string;
   active: boolean;
+  /** Handmade on demand: no stock field. */
+  madeToOrder: boolean;
 };
 
 export type ImpactValues = { label: string; value: string; unit: string; source: string };
@@ -36,6 +38,8 @@ export type ProductFormValues = {
   materialsText: string;
   care: string;
   dimensions: string;
+  /** Days to make a made-to-order piece. */
+  leadTimeDays: string;
   badges: ProductBadge[];
   sortOrder: string;
   message: string;
@@ -85,6 +89,7 @@ export function emptyVariant(optionValues: Record<string, string> = {}): Variant
     lowStockThreshold: String(SHOP_LIMITS.lowStockDefault),
     initialStock: "0",
     active: true,
+    madeToOrder: false,
   };
 }
 
@@ -131,6 +136,7 @@ export function toProductRequest(values: ProductFormValues): ProductCreateReques
       .filter(Boolean),
     care: values.care.trim(),
     dimensions: values.dimensions.trim(),
+    leadTimeDays: values.leadTimeDays.trim() ? int(values.leadTimeDays) : null,
     options: toOptions(values.options),
     variants: values.variants.map((variant) => ({
       ...(variant.id ? { id: variant.id } : {}),
@@ -141,7 +147,8 @@ export function toProductRequest(values: ProductFormValues): ProductCreateReques
       lowStockThreshold: int(variant.lowStockThreshold || "0"),
       weightGrams: null,
       active: variant.active,
-      initialStock: variant.id ? 0 : int(variant.initialStock || "0"),
+      madeToOrder: variant.madeToOrder,
+      initialStock: variant.id || variant.madeToOrder ? 0 : int(variant.initialStock || "0"),
     })),
     images: values.images.map((image) => ({
       mediaId: image.mediaId,
@@ -173,6 +180,7 @@ export function emptyProductValues(categoryId: string): ProductFormValues {
     materialsText: "",
     care: "",
     dimensions: "",
+    leadTimeDays: "",
     badges: [],
     sortOrder: "0",
     message: "",
@@ -200,6 +208,7 @@ export function productToValues(product: ProductView): ProductFormValues {
     materialsText: product.materials.join("\n"),
     care: product.care,
     dimensions: product.dimensions,
+    leadTimeDays: product.leadTimeDays === null ? "" : String(product.leadTimeDays),
     badges: product.badges,
     sortOrder: String(product.sortOrder),
     message: product.story.message,
@@ -220,6 +229,7 @@ export function productToValues(product: ProductView): ProductFormValues {
       lowStockThreshold: String(variant.lowStockThreshold),
       initialStock: "0",
       active: variant.active,
+      madeToOrder: variant.madeToOrder,
     })),
     images: product.images.map((image) => ({ ...image })),
     impactItems: product.impact.items.map((item) => ({ ...item })),

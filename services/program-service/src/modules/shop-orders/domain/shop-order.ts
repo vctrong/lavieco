@@ -1,7 +1,11 @@
 import { randomInt } from "node:crypto";
 
+import { DomainError } from "@lavieco/shared";
+import { findProvince, findWard } from "@lavieco/shared/geo";
+
 import type {
   ShippingAddress,
+  ShippingAddressInput,
   ShippingMethod,
   ShopOrderAction,
   ShopOrderStatus,
@@ -21,6 +25,9 @@ export type ShopOrderItem = {
   image: { mediaId: string; publicId: string; width: number; height: number; alt: string } | null;
   unitPrice: number;
   quantity: number;
+  /** Made on demand: days to make it, snapshotted (sets the order book's due day). */
+  madeToOrder?: boolean;
+  leadTimeDays?: number | null;
   /** Snapshot of the brand's commission (‰) at order time; never public (BR-25). */
   partnerBrandId: string | null;
   commissionRate: number | null;
@@ -80,12 +87,19 @@ export function newPublicCode(): string {
 }
 
 /** Delivery fee from the settings (BR-21): pickup is free, then the free threshold. */
+/**
+ * Delivery fee (BR-21, computed here only): pickup is free, so is delivery to the wards
+ * listed in the settings (the former Ninh Kiều district by default) and orders above the
+ * free-delivery amount when one is set.
+ */
 export function shippingFeeOf(
   settings: ShopSettingsInput,
   method: ShippingMethod,
   subtotal: number,
+  wardCode: number | null = null,
 ) {
   if (method === "pickup") return 0;
+  if (wardCode !== null && settings.freeShippingWardCodes.includes(wardCode)) return 0;
   if (settings.freeShippingFrom !== null && subtotal >= settings.freeShippingFrom) return 0;
   return settings.shippingFee;
 }
@@ -161,4 +175,18 @@ export function addressText(shipping: ShopOrderRecord["shipping"], pickupAddress
   if (shipping.method === "pickup") return pickupAddress;
   const a = shipping.address;
   return a ? [a.line, a.ward, a.province].filter(Boolean).join(", ") : "";
+}
+
+/** Names of the chosen province and ward, kept next to their codes on the order. */
+export function resolveShippingAddress(input: ShippingAddressInput): ShippingAddress {
+  const province = findProvince(input.provinceCode);
+  const ward = findWard(input.provinceCode, input.wardCode);
+  if (!province || ward === null) throw new DomainError("address.invalid");
+  return {
+    line: input.line,
+    ward,
+    province: province.name,
+    provinceCode: province.code,
+    wardCode: input.wardCode,
+  };
 }

@@ -46,6 +46,8 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "handbook:read",
     "handbook:write",
     "handbook:publish",
+    "sales:read",
+    "sales:write",
   ],
   content_editor: [
     "content:read",
@@ -63,6 +65,8 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "handbook:read",
     "handbook:write",
     "handbook:publish",
+    "sales:read",
+    "sales:write",
   ],
   coordinator: [
     "content:read",
@@ -87,6 +91,8 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "order:fulfill",
     "order:export",
     "handbook:read",
+    "sales:read",
+    "sales:write",
   ],
   auditor: [
     "survey:read",
@@ -100,6 +106,7 @@ export const ROLE_PERMISSIONS: Readonly<Record<Role, readonly Permission[]>> = {
     "order:read",
     "product:read",
     "handbook:read",
+    "sales:read",
   ],
 };
 

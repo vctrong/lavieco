@@ -11,6 +11,7 @@ export const STAFF_COOKIES = {
  * sign-in may return to besides "/". A test keeps this list in sync with the folders.
  */
 export const RETURN_SECTIONS = [
+  "/sales",
   "/events",
   "/orders",
   "/vouchers",

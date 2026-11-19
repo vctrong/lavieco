@@ -23,6 +23,7 @@ export {
   type ProgramClient,
   type ProgramClientOptions,
 } from "./program-client";
+export type { SalesOrderListParams } from "./program-sales";
 export {
   createSessionRefresher,
   type SessionRefresher,

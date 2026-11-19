@@ -10,6 +10,8 @@ export default defineConfig((options) => ({
     "media/index": "src/media/index.ts",
     "content/index": "src/content/index.ts",
     "shop/index": "src/shop/index.ts",
+    "sales/index": "src/sales/index.ts",
+    "geo/index": "src/geo/index.ts",
   },
   format: ["esm", "cjs"],
   dts: true,

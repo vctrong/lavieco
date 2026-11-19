@@ -810,6 +810,20 @@ Quy tắc dữ liệu:
 - **Lưu giữ (DQ8)**: như đơn vé; `buyer`, `shipping` là PII (24 tháng sau khi đơn hoàn tất rồi ẩn danh), phần tài chính giữ 10 năm. `TODO(dq8-anonymize)` dùng chung job.
 - Ảnh sản phẩm: `media.purpose = product_image` (≤8 MB), `attachedTo = { kind: product }` (ADR-0020).
 
+### 9.4 Danh mục hành chính (`@lavieco/shared/geo`)
+
+Không phải collection: ảnh chụp 34 tỉnh/thành và 3.321 phường/xã/đặc khu sau 01/07/2025 (mã GSO, nguồn provinces.open-api.vn v2, tải 20/11/2026) trong `packages/shared/src/geo/vn-admin-units.data.ts`. Địa chỉ lưu **mã kèm tên** lúc chọn (`provinceCode`, `provinceName`, `wardCode`, `wardName`, `detail`, `full`) nên đọc lại được dù danh mục đổi. `shop_orders.shipping.address` có thêm `provinceCode`, `wardCode` (đơn cũ không có). `shop_settings.freeShippingWardCodes` (mặc định 4 phường Ninh Kiều cũ) và `products.leadTimeDays`, `product_variants.madeToOrder` (§9.3, biến thể làm theo đơn chỉ đếm `stock.sold`).
+
+### 9.5 Sổ đơn hàng trong `lavieco_program` (ADR-0030)
+
+| Collection | Nội dung chính | Index |
+|---|---|---|
+| `sales_orders` | `code` (`LV-0001` đơn tay, `LVS-…` đơn website), `legacyCode` (mã Sheet cũ), `source` `manual`·`web`, `shopOrderId`, `orderType`, `customer { name, phone, phoneNormalized, address }` (**PII**), `channel`, `items[] { priceItemId, name, unitPrice, quantity }` ≤ 50 (bản chụp), `subtotal`, `shippingFee`, `discount`, `total` (tính ở service), `paymentMethod`, `paymentStatus`, `status`, `orderDay`, `dueDay` (`YYYY-MM-DD` giờ Việt Nam), `assignee { id, name }`, `note`, `search.key`, `createdBy`, `updatedBy`, `deletedAt` (xoá mềm), `revision` | `idx_sales_orders_code_uq`, `_legacy_code_uq` và `_shop_order_id_uq` (partial theo `$type: string`), `_deleted_at_status`, `_due_day`, `_payment_status`, `_assignee_id`, `_order_day`, `_customer_phone_normalized_order_day` |
+| `price_list_items` | `name`, `nameKey` (không dấu), `price`, `active`, `note`, `sortOrder`, `revision`. Không xoá, chỉ tắt | `idx_price_list_items_sort_order`, `idx_price_list_items_name_key` |
+| `counters` | `{ _id: "sales_order", seq }`, tăng bằng `$inc` trong giao dịch tạo đơn | (chỉ `_id`) |
+
+Migration: `202611200001-sales-orders.cjs` (index), `202611200002-shop-pickup-free-wards.cjs` (dữ liệu: điểm nhận ĐH FPT Cần Thơ nếu vẫn là "Cần Thơ", thêm `freeShippingWardCodes` nếu chưa có). Lưu giữ PII: theo DQ8 khi job ẩn danh được làm (`TODO(dq8-anonymize)`).
+
 ## 10. Vận hành: migration, index, quyền truy cập
 
 ### 10.1 Migration
@@ -912,4 +926,5 @@ Các điều chỉnh mà bản v0.1 của tài liệu này đề xuất cho `02`
 | v0.9 | 17/11/2026 | Cửa hàng (ADR-0028): §9.3 collection `product_categories`, `partner_brands`, `products`, `product_variants`, `stock_movements`, `carts`, `shop_orders`, `payment_refs`, `product_reviews`, `import_jobs`, `import_job_rows`, `shop_settings`; quyền `svc_program` | V.C. Trọng |
 | v0.8 | 17/11/2026 | Thông báo đẩy cho staff (ADR-0027): `push_subscriptions`, `push_preferences`, `push_deliveries` ở `lavieco_identity` (4.4c, migration `202611170001-push`); `events.seatAlerts` | V.C. Trọng |
 | v1.1 | 19/11/2026 | Cẩm nang: `handbook_versions.covers { front, back }` (bìa riêng, không đánh số) và `chapters[].kind` (`front_matter`·`content`·`appendix`); không cần migration (giá trị mặc định khi đọc) | V.C. Trọng |
+| v1.2 | 20/11/2026 | §9.4 danh mục hành chính, địa chỉ có mã; §9.5 sổ đơn hàng (`sales_orders`, `price_list_items`, `counters`, ADR-0030); `product_variants.madeToOrder`, `products.leadTimeDays`, `shop_settings.freeShippingWardCodes` | V.C. Trọng |
 | v1.0 | 19/11/2026 | Cẩm nang trang ảnh có phiên bản (ADR-0029): §5.1 thay `handbook_chapters` (khối) bằng `handbooks` + `handbook_versions` + `handbook_uploads` + `handbook_import_jobs` + `handbook_preview_tokens`; `media` purpose `handbook_page`, index `idx_media_purpose_sha256`; migration `202611190001-handbook` | V.C. Trọng |

@@ -33,7 +33,8 @@ export const productPublishBlockerSchema = z.enum(PRODUCT_PUBLISH_BLOCKERS);
 export type ProductPublishBlocker = z.infer<typeof productPublishBlockerSchema>;
 
 /** Public availability: visitors never see raw stock counts beyond "Còn N" when low. */
-export const AVAILABILITIES = ["in_stock", "low", "out"] as const;
+/** `made_to_order`: no stock, made once ordered (always orderable while active). */
+export const AVAILABILITIES = ["in_stock", "low", "out", "made_to_order"] as const;
 export const availabilitySchema = z.enum(AVAILABILITIES);
 export type Availability = z.infer<typeof availabilitySchema>;
 
@@ -202,6 +203,11 @@ export const variantInputSchema = z.object({
   lowStockThreshold: z.number().int().min(0).max(1_000).default(SHOP_LIMITS.lowStockDefault),
   weightGrams: z.number().int().min(0).max(100_000).nullable().default(null),
   active: z.boolean().default(true),
+  /**
+   * Handmade on demand: no stock to count, nothing held or taken off a shelf, never
+   * sold out; the product's `leadTimeDays` says when it ships (20/11/2026).
+   */
+  madeToOrder: z.boolean().default(false),
   /** Only read for a new variant; later changes go through stock adjustments. */
   initialStock: z.number().int().min(0).max(SHOP_LIMITS.stockMax).default(0),
 });
@@ -226,6 +232,8 @@ const productShape = {
     .default([]),
   care: text(SHOP_LIMITS.careMax).default(""),
   dimensions: text(SHOP_LIMITS.dimensionsMax).default(""),
+  /** Days to make a made-to-order piece; shown on the page, sets the order's due day. */
+  leadTimeDays: z.number().int().min(1).max(90).nullable().default(null),
   options: z.array(productOptionSchema).max(SHOP_LIMITS.optionsMax).default([]),
   variants: z.array(variantInputSchema).min(1).max(SHOP_LIMITS.variantsMax),
   /** In display order; the first is the cover. */
@@ -277,6 +285,7 @@ export const productVariantSchema = z.object({
   lowStockThreshold: z.number().int(),
   weightGrams: z.number().int().nullable(),
   active: z.boolean(),
+  madeToOrder: z.boolean(),
   stock: variantStockSchema,
 });
 export type ProductVariant = z.infer<typeof productVariantSchema>;
@@ -293,6 +302,7 @@ export const productSchema = z.object({
   materials: z.array(z.string()),
   care: z.string(),
   dimensions: z.string(),
+  leadTimeDays: z.number().int().nullable(),
   options: z.array(productOptionSchema),
   variants: z.array(productVariantSchema),
   images: z.array(productImageSchema),
@@ -418,6 +428,8 @@ export const publicProductSchema = publicProductCardSchema.extend({
   materials: z.array(z.string()),
   care: z.string(),
   dimensions: z.string(),
+  /** Days to make a made-to-order variant; null when nothing is made to order. */
+  leadTimeDays: z.number().int().nullable(),
   options: z.array(productOptionSchema),
   variants: z.array(publicVariantSchema),
   images: z.array(productImageSchema),

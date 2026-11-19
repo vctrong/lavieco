@@ -221,6 +221,8 @@ Ký hiệu: **✓** được làm · **đọc** chỉ xem · **—** không có 
 | Hoàn tiền, huỷ đơn đã trả tiền | — | — | — | — | ✓ | — | ✓ | — |
 | Xuất Excel đơn hàng | — | — | — | — | ✓ | — | ✓ | — |
 | Duyệt số liệu tác động trên sản phẩm (BR-23) | — | — | — | — | ✓ | — | — | — |
+| Sổ đơn hàng: xem đơn tay và đơn website, tổng hợp (`sales:read`, ADR-0030) | — | — | — | — | ✓ | ✓ | ✓ | đọc |
+| Sổ đơn hàng: tạo/sửa/xoá mềm/khôi phục đơn tay, đổi trạng thái, danh mục đơn giá (`sales:write`) | — | — | — | — | ✓ | ✓ | ✓ | — |
 | Yêu cầu/đơn quà tặng | — | — | — | — | ✓ | — | ✓ | đọc |
 | Nhập số liệu tác động | — | — | — | — | ✓ | — | ✓ | đọc |
 | Duyệt & công bố báo cáo tác động | — | — | — | — | ✓ | — | — | đọc |
@@ -568,6 +570,17 @@ Kế hoạch chi tiết, mô hình dữ liệu và giai đoạn ở `08-cua-hang
 | UC-39 | Admin **import sản phẩm hàng loạt** từ Excel/CSV kèm thư mục ảnh: xem trước, báo lỗi từng dòng, sửa hoặc bỏ dòng, tải ảnh có tiến độ, tạo mới hoặc cập nhật theo SKU/slug, chạy lại không tạo trùng; xuất sản phẩm cùng định dạng. | BR-20 |
 | UC-40 | Admin xử lý đơn (desktop và PWA): xác nhận COD, đóng gói, giao (mã vận đơn), đã giao, huỷ, hoàn tiền thủ công (step-up); xuất Excel đơn (step-up + audit); duyệt đánh giá. | BR-04, BR-15, BR-24 |
 
+### 6.3d Use case sổ đơn hàng nội bộ (ADR-0030, tóm tắt)
+
+Đơn nhận tay (Facebook, Zalo, Threads, TikTok, trực tiếp) và bản phản chiếu của mọi đơn website nằm chung một danh sách. Thay cho Google Sheet cũ; Sheet giờ chỉ để xem.
+
+| Mã | Luồng chính tóm tắt | Quy tắc |
+|---|---|---|
+| UC-41 | Xem sổ đơn hàng: chip lọc nhanh có số đếm (Cần làm · Trễ hạn · Đang giao · Chưa thu tiền · Tất cả), tìm theo tên/SĐT/mã (cả mã cũ), lọc theo trạng thái, thanh toán, loại, người phụ trách, ngày; ngày giao đỏ khi trễ, nổi bật khi là hôm nay. Desktop: bảng sắp xếp được, chọn nhiều để đổi trạng thái hàng loạt, chi tiết mở bên cạnh. | BR-27 |
+| UC-42 | Chi tiết đơn: đổi trạng thái / thanh toán một chạm, gọi SĐT, chép địa chỉ, xoá (hỏi lại, có Hoàn tác) và khôi phục. Đơn website chỉ sửa người phụ trách, ngày giao, ghi chú. | BR-27, BR-29 |
+| UC-43 | Tạo/sửa đơn tay: SĐT khách cũ tự điền tên và địa chỉ; chọn món từ danh mục đơn giá (− / ＋) hoặc món ngoài danh mục; địa chỉ chọn tỉnh → phường/xã hoặc "Khác"; chip cho kênh, thanh toán, trạng thái, người phụ trách; tổng tiền do hệ thống tính. | BR-27, BR-28 |
+| UC-44 | Danh mục đơn giá (sửa tên/giá ngay trên dòng, bật tắt "đang bán") và trang tổng hợp theo **kỳ chọn được** (tháng này, 2, 3, 6, 12 tháng gần nhất, tất cả; theo ngày đặt): doanh thu, số đơn, số đơn huỷ, trung bình mỗi đơn, chưa thu, theo trạng thái, doanh thu theo tháng; đơn đang mở và trễ hạn luôn là tình trạng hiện tại. | BR-28 |
+
 ### 6.4 Use case giai đoạn 2–3 (tóm tắt)
 
 | Mã | Vai trò | Mô tả & luồng chính tóm tắt | Quy tắc |
@@ -625,6 +638,9 @@ Kế hoạch chi tiết, mô hình dữ liệu và giai đoạn ở `08-cua-hang
 | **BR-24** | Đánh giá sản phẩm chỉ từ **đơn đã giao**, một đánh giá cho một dòng đơn, chỉ chữ thuần, **duyệt trước khi hiện**, không hiện email/SĐT. | Đánh giá thật, riêng tư |
 | **BR-25** | Sản phẩm của thương hiệu đối tác ghi rõ thương hiệu. Tỉ lệ hoa hồng chụp lại trên dòng đơn, **không hiện công khai**; chi trả hoa hồng làm ngoài hệ thống. | Lớp Truyền thông, minh bạch nội bộ |
 | **BR-26** | **Cẩm nang tự xuất bản** (ngoại lệ của BR-05, ADR-0029): người có `handbook:publish` xuất bản bản nháp, **bắt buộc ghi chú phiên bản**; mỗi lần xuất bản hoặc khôi phục ghi nhật ký và **báo cho cả nhóm** (thông báo đẩy admin). Khôi phục bản cũ là một lần xuất bản mới. | Nhóm đồ hoạ tự làm trang; thay đổi nhanh nhưng minh bạch |
+| **BR-27** | **Sổ đơn hàng** (ADR-0030): đơn tay mã `LV-0001` tăng dần, đơn website giữ mã `LVS-…`. Đơn website phản chiếu trạng thái, tiền, thanh toán của cửa hàng (không sửa ở sổ); checkout payOS bỏ dở không vào sổ. Xoá chỉ là xoá mềm, khôi phục được; xoá, khôi phục, đổi hàng loạt ghi nhật ký. Đơn **đặt làm** phải có ngày giao dự kiến (trừ khi đã huỷ). | Một nơi cho mọi đơn, không mất đơn (tinh thần BR-04) |
+| **BR-28** | Tiền đơn tay do hệ thống tính: `tổng = Σ đơn giá × số lượng + phí giao − giảm giá`; tên và đơn giá từng món **chốt lúc tạo đơn**, đổi danh mục đơn giá không đổi đơn cũ. Doanh thu không tính đơn đã huỷ. | Số liệu đúng, không sửa tay tổng |
+| **BR-29** | Google Sheet sổ đơn hàng **chỉ để xem** (chỉ service account của hệ thống được ghi), ghi lại toàn bộ sau mỗi thay đổi; có PII khách hàng (đội đồng ý 20/11/2026), chia sẻ chỉ cho thành viên. Không đọc, không sửa tab `sheet1` (dữ liệu gốc). | Đội quen xem Sheet; một nguồn sự thật là MongoDB |
 
 ## 8. Thực thể khái niệm & vòng đời
 
@@ -820,3 +836,4 @@ Các mục tiêu dưới đây là **đề xuất**, chi tiết kỹ thuật ở
 | v0.8 | 22/10/2026 | Trang Chương trình làm lại: UC-32 thêm trạng thái **Đã huỷ** (cuối; vô hiệu vé, đơn đã trả tiền chờ hoàn thủ công, email người đặt), banner/poster, "Bạn sẽ nhận", bảng chính sách huỷ, giới thiệu người hướng dẫn. "Miễn phí" = **mọi** loại vé 0đ; "Sắp hết chỗ" khi còn ≤ 20% hoặc ≤ 5 chỗ; chương trình quá giờ kết thúc tự vào mục "Đã diễn ra". Số người tham gia: vé đã check-in, hoặc số nhập tay của sự kiện lưu trữ sau khi Super Admin duyệt (BR-09, permission `impact:approve`) | V.C. Trọng |
 | v1.0 | 19/11/2026 | Cẩm nang là các trang ảnh có phiên bản (ADR-0029): viết lại UC-02, UC-22; thêm BR-26 (tự xuất bản, ghi chú bắt buộc, thông báo cả nhóm); permission `handbook:read|write|publish` trong ma trận §4.4; bỏ ghi chú cá nhân, cỡ chữ ở GĐ1 | V.C. Trọng |
 | v1.1 | 19/11/2026 | UC-02, UC-22: bìa trước/sau riêng (không đánh số trang, lật như bìa cứng), chương loại Mở đầu / Nội dung / Phụ lục, tab chương nhảy tới trang đầu chương | V.C. Trọng |
+| v1.2 | 20/11/2026 | Sổ đơn hàng nội bộ (ADR-0030): UC-41 → 44 (§6.3d), BR-27 → 29, hai dòng `sales:*` trong ma trận §4.4. Cửa hàng: địa chỉ chọn tỉnh → phường/xã (danh mục sau 01/07/2025), miễn phí giao các phường Ninh Kiều cũ (sửa được), nhận trực tiếp ở ĐH FPT Cần Thơ miễn phí, biến thể **làm theo đơn** không tính tồn kho | V.C. Trọng |

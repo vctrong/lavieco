@@ -555,6 +555,8 @@ Bộ permission Giai đoạn 1 (khớp ma trận §4.4 của `01`):
 | `handbook:read` (màn quản trị Cẩm nang, bản nháp, lịch sử, tiến độ nhập) | ✓ | ✓ | ✓ | ✓ |
 | `handbook:write` (tạo bản nháp, tải PDF/ảnh, sắp xếp, chữ, điểm bấm, bỏ bản nháp) | ✓ | ✓ | — | — |
 | `handbook:publish` (xuất bản, khôi phục phiên bản; BR-26, audit + thông báo cả nhóm) | ✓ | ✓ | — | — |
+| `sales:read` (sổ đơn hàng: đơn tay + đơn website, tổng hợp, danh mục đơn giá; ADR-0030) | ✓ | ✓ | ✓ | ✓ |
+| `sales:write` (tạo/sửa/xoá mềm/khôi phục đơn tay, đổi trạng thái, sửa danh mục đơn giá; audit khi xoá/khôi phục/hàng loạt) | ✓ | ✓ | ✓ | — |
 
 (*) Chỉ duyệt nội dung **do người khác soạn**, ràng buộc kiểm tra ở `content-service` (Q1 ở `01`). Sáu permission phân hệ Chương trình được thêm ở GĐ1 (ADR-014); "Huỷ chương trình" dùng `program:write` + step-up + audit (22/10/2026). `impact:approve` có sớm từ GĐ1 (22/10/2026) cho số người tham gia của sự kiện lưu trữ; các permission GĐ2+ khác (`impact:*`, ...) bổ sung khi các service tương ứng ra đời. Member không có permission nào; dữ liệu của Member được giới hạn theo chủ sở hữu. Ánh xạ bổ sung theo `03`: tải media cho nội dung (cẩm nang, tác phẩm) cần `content:write`, tải ảnh chương trình cần `program:write`, avatar do chính member tải (`@RequireMember`, ADR-020); sửa `work_categories` cần `content:publish`; ghi `consent_texts` cần `site:system`; tài liệu `site_settings` "public" cần `site:write`, tài liệu "system" cần `site:system`.
 
@@ -872,3 +874,4 @@ Từ v0.2, `README.md`, `01`, `03`, `04` và `CLAUDE.md` đã được đồng b
 
 Admin soạn và gửi → `program-service` chốt danh sách vào `campaign_recipients` → scheduler mỗi phút lấy từng người bằng cập nhật nguyên tử, giữ một suất ở `campaign_daily_usage`, gửi qua `EmailSender` chung (Brevo, rồi Gmail dự phòng). Hết hạn mức ngày thì dừng tới hôm sau. OTP và email vé không đi qua hàng đợi này.
 | v0.9 | 19/11/2026 | Cẩm nang trang ảnh có phiên bản (ADR-0029): 3 permission `handbook:*`; `content-service` gửi audit và thông báo đẩy qua outbox → identity (như program-service), gọi `/api/revalidate` của web sau xuất bản; upload theo khúc 6 MB qua BFF admin; poppler trong image `content-service` | V.C. Trọng |
+| v1.0 | 20/11/2026 | Sổ đơn hàng (ADR-0030): module `sales-orders` trong `program-service`, phản chiếu đơn shop trong cùng giao dịch, permission `sales:read|write`; `identity` mở `GET /internal/v1/staff-directory` cho `program-service`; đồng bộ Google Sheet chỉ-xem qua outbox (service account, gọi ra ngoài từ `program-service`) | V.C. Trọng |

@@ -262,6 +262,10 @@ Dùng cho `npm run dev:infra` (Docker Compose: MongoDB replica set, Mailpit). Kh
 | `PAYOS_CLIENT_ID` | Tuỳ chọn (trống = tắt payOS; đủ cả ba mới bật) | Không (nhưng đừng công bố) | Client ID của kênh thanh toán payOS | my.payos.vn → Kênh thanh toán → chọn kênh → Thông tin tích hợp | **Kênh riêng** cho dev và prod (`docs/runbooks/payos.md`) | `gia-client-id-0000` |
 | `PAYOS_API_KEY` | Tuỳ chọn (như trên) | **Có** | API key gọi payOS (tạo link, đối soát, huỷ link) | Như trên | Như trên | `gia-api-key-0000` |
 | `PAYOS_CHECKSUM_KEY` | Tuỳ chọn (như trên) | **Có** | Khoá HMAC xác minh chữ ký webhook; **chỉ ở program-service** | Như trên | Như trên; lộ thì đổi ngay trên my.payos.vn | `gia-checksum-key-0000` |
+| `SALES_SHEET_ID` | Tuỳ chọn (trống = tắt đồng bộ Sheet; đủ ba biến `SALES_SHEET_*` mới bật) | Không | Id Google Sheet chỉ-xem của sổ đơn hàng (ADR-0030): đoạn giữa `/d/` và `/edit` trong link | Mở Sheet → copy từ URL | Dev: một bản sao Sheet để thử, **không** dùng Sheet thật | `1AbC…xyz` |
+| `SALES_SHEET_SERVICE_ACCOUNT_EMAIL` | Tuỳ chọn (như trên) | Không | Email service account được quyền **Editor** trên Sheet (người khác chỉ **Viewer**) | Google Cloud Console → IAM & Admin → Service Accounts → tạo account, bật Google Sheets API; chia sẻ Sheet cho email này | Account riêng cho dev và prod | `lavieco-sheet@du-an.iam.gserviceaccount.com` |
+| `SALES_SHEET_PRIVATE_KEY` | Tuỳ chọn (như trên) | **Có** | Khoá riêng PEM của service account (trường `private_key` trong file JSON), một dòng, giữ nguyên `\n` | Service account → Keys → Add key → JSON | Như trên; lộ thì xoá key trong Cloud Console rồi tạo key mới | `-----BEGIN PRIVATE KEY-----\nMIIE…\n-----END PRIVATE KEY-----\n` |
+| `SALES_SHEET_SYNC_MINUTES` | Tuỳ chọn (mặc định `30`) | Không | Ghi lại toàn bộ Sheet mỗi N phút, phòng khi một lần đồng bộ lỗi; `0` = chỉ đồng bộ khi có thay đổi | Tự đặt | | `30` |
 
 ## Production trên máy chủ (`infra/env/prod`, ADR-022 đang đề xuất)
 
@@ -312,3 +316,4 @@ Dưới đây chỉ liệt kê các biến **mới** của hạ tầng triển k
 | 17/11/2026 | `identity-service`: `WEB_PUSH_VAPID_PUBLIC_KEY`, `WEB_PUSH_VAPID_PRIVATE_KEY`, `WEB_PUSH_SUBJECT` | Thêm (thông báo đẩy cho staff, ADR-0027) | `feat/admin-pwa` |
 | 17/11/2026 | `identity-service`: `STAFF_REFRESH_TTL_HOURS` | Đổi mặc định `12` → `72` (phiên admin trượt 72 giờ, app cài trên điện thoại) | `feat/admin-pwa` |
 | 19/11/2026 | `content-service`: `IDENTITY_SERVICE_URL`, `SERVICE_TOKEN_PRIVATE_JWK`, `WEB_APP_URL`, `REVALIDATE_SECRET`, `HANDBOOK_UPLOAD_DIR`; `content-service` `SERVICE_TOKEN_TRUSTED_KEYS` thêm `web`; `identity-service` `SERVICE_TOKEN_TRUSTED_KEYS` thêm `content-service` | Thêm | Cẩm nang Xanh số (ADR-0029), `feat/handbook-data-upload-admin` |
+| 20/11/2026 | `program-service`: `SALES_SHEET_ID`, `SALES_SHEET_SERVICE_ACCOUNT_EMAIL`, `SALES_SHEET_PRIVATE_KEY`, `SALES_SHEET_SYNC_MINUTES` | Thêm (đồng bộ Google Sheet chỉ-xem của sổ đơn hàng, ADR-0030) | `feat/program-service-sales-orders` |

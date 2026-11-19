@@ -54,7 +54,8 @@ export function toVariantDto(v: VariantRecord): ProductVariant {
     lowStockThreshold: v.lowStockThreshold,
     weightGrams: v.weightGrams,
     active: v.status === "active",
-    stock: { ...v.stock, available: available(v) },
+    madeToOrder: v.madeToOrder,
+    stock: { ...v.stock, available: v.madeToOrder ? 0 : available(v) },
   };
 }
 
@@ -84,6 +85,7 @@ export function toProductDto({ product, variants }: ProductBundle): ProductView 
     materials: product.materials,
     care: product.care,
     dimensions: product.dimensions,
+    leadTimeDays: product.leadTimeDays,
     options: product.options,
     variants: variants.filter((v) => v.status === "active").map(toVariantDto),
     images: product.images,
@@ -119,8 +121,9 @@ export function toProductListItemDto({ product, variants }: ProductBundle): Prod
     priceMin: product.priceMin,
     priceMax: product.priceMax,
     variantCount: active.length,
-    available: active.reduce((sum, v) => sum + available(v), 0),
-    lowStock: active.some((v) => availabilityOf(v) !== "in_stock"),
+    // Made-to-order variants have no shelf: they count neither as stock nor as short.
+    available: active.filter((v) => !v.madeToOrder).reduce((sum, v) => sum + available(v), 0),
+    lowStock: active.some((v) => ["low", "out"].includes(availabilityOf(v))),
     publishBlockers: publishBlockers(product, variants),
     impactStatus: product.impact.status,
     updatedAt: product.updatedAt.toISOString(),
@@ -181,6 +184,7 @@ export function toPublicProductDto(bundle: PublicProductBundle): PublicProduct {
     materials: product.materials,
     care: product.care,
     dimensions: product.dimensions,
+    leadTimeDays: variants.some((v) => v.madeToOrder) ? product.leadTimeDays : null,
     options: product.options,
     variants: variants.map(toPublicVariant),
     images: product.images,

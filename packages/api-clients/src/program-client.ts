@@ -80,6 +80,7 @@ import {
 import { STEP_UP_HEADER } from "@lavieco/shared/identity";
 
 import { createHttpClient, type HttpClientOptions } from "./http-client";
+import { salesMethods } from "./program-sales";
 import { shopMethods } from "./program-shop";
 
 const V1 = "/internal/v1";
@@ -849,6 +850,9 @@ export function createProgramClient(options: ProgramClientOptions) {
 
     // --- shop (ADR-0028) ---
     ...shopMethods(http),
+
+    // --- sales order book (ADR-0030) ---
+    ...salesMethods(http),
   };
 }
 

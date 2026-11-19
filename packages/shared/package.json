@@ -68,6 +68,26 @@
         "default": "./dist/shop/index.cjs"
       }
     },
+    "./sales": {
+      "import": {
+        "types": "./dist/sales/index.d.ts",
+        "default": "./dist/sales/index.js"
+      },
+      "require": {
+        "types": "./dist/sales/index.d.cts",
+        "default": "./dist/sales/index.cjs"
+      }
+    },
+    "./geo": {
+      "import": {
+        "types": "./dist/geo/index.d.ts",
+        "default": "./dist/geo/index.js"
+      },
+      "require": {
+        "types": "./dist/geo/index.d.cts",
+        "default": "./dist/geo/index.cjs"
+      }
+    },
     "./identity": {
       "import": {
         "types": "./dist/identity/index.d.ts",

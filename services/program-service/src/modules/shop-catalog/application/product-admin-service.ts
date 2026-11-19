@@ -304,9 +304,12 @@ export class ProductAdminService {
         lowStockThreshold: variant.lowStockThreshold,
         weightGrams: variant.weightGrams,
         status: variant.active ? "active" : "archived",
+        madeToOrder: variant.madeToOrder,
         sortOrder: index,
       };
-      return { write, isNew: !variant.id, initialStock: variant.id ? 0 : variant.initialStock };
+      // A made-to-order variant has no shelf: an initial count would mean nothing.
+      const initialStock = variant.id || variant.madeToOrder ? 0 : variant.initialStock;
+      return { write, isNew: !variant.id, initialStock };
     });
   }
 

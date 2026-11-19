@@ -65,6 +65,7 @@ function toProduct(doc: ProductDoc): ProductRecord {
     materials: doc.materials ?? [],
     care: doc.care ?? "",
     dimensions: doc.dimensions ?? "",
+    leadTimeDays: doc.leadTimeDays ?? null,
     options: (doc.options ?? []).map((o) => ({
       key: o.key,
       name: o.name,
@@ -113,6 +114,7 @@ const toVariant = (doc: VariantDoc): VariantRecord => ({
   lowStockThreshold: doc.lowStockThreshold ?? 0,
   weightGrams: doc.weightGrams ?? null,
   status: doc.status,
+  madeToOrder: doc.madeToOrder ?? false,
   sortOrder: doc.sortOrder ?? 0,
   stock: {
     onHand: doc.stock?.onHand ?? 0,
@@ -163,6 +165,14 @@ async function unique<T>(run: () => Promise<T>): Promise<T> {
     throw error;
   }
 }
+
+/**
+ * Pipeline expression moving a shelf counter (`onHand`, `held`) by `delta`, except on a
+ * made-to-order variant where it stays as it is.
+ */
+const shelf = (field: string, delta: number) => ({
+  $cond: [{ $eq: ["$madeToOrder", true] }, field, { $add: [field, delta] }],
+});
 
 @Injectable()
 export class MongoProductRepository implements ProductRepository {
@@ -298,7 +308,7 @@ export class MongoProductRepository implements ProductRepository {
         : { $and: [{ $gt: [available, 0] }, { $lte: [available, "$lowStockThreshold"] }] };
     const rows = await this.variants
       .aggregate<{ _id: Types.ObjectId }>([
-        { $match: { status: "active", $expr: condition } },
+        { $match: { status: "active", madeToOrder: { $ne: true }, $expr: condition } },
         { $group: { _id: "$productId" } },
       ])
       .exec();
@@ -452,9 +462,12 @@ export class MongoProductRepository implements ProductRepository {
         {
           _id: oid(variantId),
           status: "active",
-          $expr: { $gte: [{ $subtract: ["$stock.onHand", "$stock.held"] }, quantity] },
+          $or: [
+            { madeToOrder: true },
+            { $expr: { $gte: [{ $subtract: ["$stock.onHand", "$stock.held"] }, quantity] } },
+          ],
         },
-        { $inc: { "stock.held": quantity } },
+        [{ $set: { "stock.held": shelf("$stock.held", quantity) } }],
         { session: sessionOf(tx) },
       )
       .exec();
@@ -465,7 +478,15 @@ export class MongoProductRepository implements ProductRepository {
     await this.variants
       .updateOne(
         { _id: oid(variantId) },
-        { $inc: { "stock.held": -quantity, "stock.onHand": -quantity, "stock.sold": quantity } },
+        [
+          {
+            $set: {
+              "stock.held": shelf("$stock.held", -quantity),
+              "stock.onHand": shelf("$stock.onHand", -quantity),
+              "stock.sold": { $add: ["$stock.sold", quantity] },
+            },
+          },
+        ],
         { session: sessionOf(tx) },
       )
       .exec();
@@ -475,7 +496,7 @@ export class MongoProductRepository implements ProductRepository {
     await this.variants
       .updateOne(
         { _id: oid(variantId) },
-        { $inc: { "stock.held": -quantity } },
+        [{ $set: { "stock.held": shelf("$stock.held", -quantity) } }],
         { session: sessionOf(tx) },
       )
       .exec();
@@ -485,7 +506,14 @@ export class MongoProductRepository implements ProductRepository {
     await this.variants
       .updateOne(
         { _id: oid(variantId) },
-        { $inc: { "stock.onHand": quantity, "stock.sold": -quantity } },
+        [
+          {
+            $set: {
+              "stock.onHand": shelf("$stock.onHand", quantity),
+              "stock.sold": { $add: ["$stock.sold", -quantity] },
+            },
+          },
+        ],
         { session: sessionOf(tx) },
       )
       .exec();
@@ -496,9 +524,19 @@ export class MongoProductRepository implements ProductRepository {
       .updateOne(
         {
           _id: oid(variantId),
-          $expr: { $gte: [{ $subtract: ["$stock.onHand", "$stock.held"] }, quantity] },
+          $or: [
+            { madeToOrder: true },
+            { $expr: { $gte: [{ $subtract: ["$stock.onHand", "$stock.held"] }, quantity] } },
+          ],
         },
-        { $inc: { "stock.onHand": -quantity, "stock.sold": quantity } },
+        [
+          {
+            $set: {
+              "stock.onHand": shelf("$stock.onHand", -quantity),
+              "stock.sold": { $add: ["$stock.sold", quantity] },
+            },
+          },
+        ],
         { session: sessionOf(tx) },
       )
       .exec();
