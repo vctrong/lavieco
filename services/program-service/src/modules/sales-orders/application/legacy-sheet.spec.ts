@@ -202,6 +202,7 @@ describe("matchStaff", () => {
   it("matches the given name without accents", () => {
     expect(matchStaff("Trọng", staff)?.id).toBe("1");
     expect(matchStaff("Xuân Anh", staff)?.id).toBe("2");
+    expect(matchStaff("Xuân Anh", [{ id: "9", name: "Nguyễn Đình Xuân Anh" }])?.id).toBe("9");
   });
   it("refuses an ambiguous or unknown name", () => {
     expect(matchStaff("Anh", staff)).toBeNull();

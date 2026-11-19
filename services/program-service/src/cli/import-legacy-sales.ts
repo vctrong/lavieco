@@ -34,11 +34,13 @@ const DEFAULT_EXPECTED_TOTAL = 1_000_000;
 async function main() {
   const file = process.argv[2];
   const apply = process.argv.includes("--apply");
+  // Orders already imported: only fill the assignees still empty (accounts created later).
+  const reassign = process.argv.includes("--reassign");
   const expectedArg = process.argv.find((arg) => arg.startsWith("--expected="));
   const EXPECTED_TOTAL = expectedArg ? Number(expectedArg.slice(11)) : DEFAULT_EXPECTED_TOTAL;
   if (!file || file.startsWith("--")) {
     console.error(
-      "Usage: npm run sales:import-legacy -- <tabs.json> [--apply] [--expected=1000000]",
+      "Usage: npm run sales:import-legacy -- <tabs.json> [--apply] [--reassign] [--expected=1000000]",
     );
     process.exitCode = 1;
     return;
@@ -66,6 +68,16 @@ async function main() {
   );
   try {
     const importer = app.get<LegacyImportService>(LEGACY_IMPORT_SERVICE);
+    if (reassign) {
+      const result = await importer.reassign(plan, apply);
+      console.log(
+        apply ? "Đã gán người phụ trách:" : "Chạy thử gán người phụ trách (thêm --apply để ghi):",
+      );
+      console.log(`  đơn được điền người phụ trách: ${result.filled}`);
+      if (result.unmatched.length)
+        console.log(`  ⚠ Vẫn chưa có tài khoản khớp: ${result.unmatched.join(", ")}`);
+      return;
+    }
     const report = apply ? await importer.apply(plan, null) : await importer.preview(plan);
     console.log(apply ? "Đã ghi:" : "Chạy thử (thêm --apply để ghi):");
     console.log(

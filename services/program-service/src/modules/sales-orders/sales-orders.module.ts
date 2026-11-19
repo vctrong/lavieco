@@ -90,11 +90,13 @@ export class SalesOrdersModule {
             options: SalesSheetOptions,
             orders: SalesOrderRepository,
             prices: PriceItemRepository,
+            staff: StaffDirectory,
           ) =>
             options.enabled
               ? new SalesSheetSync(
                   orders,
                   prices,
+                  staff,
                   new GoogleSheetWriter({
                     spreadsheetId: env.SALES_SHEET_ID,
                     clientEmail: env.SALES_SHEET_SERVICE_ACCOUNT_EMAIL,
@@ -107,6 +109,7 @@ export class SalesOrdersModule {
             SALES_SHEET_OPTIONS,
             SALES_ORDER_REPOSITORY,
             PRICE_ITEM_REPOSITORY,
+            STAFF_DIRECTORY,
           ],
         },
         SalesSheetWorkers,
