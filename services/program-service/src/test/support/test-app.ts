@@ -179,6 +179,13 @@ export async function createTestApp(
   overrides: Omit<AppOverrides, "logger" | "userKeyResolver" | "emailSender"> = {},
 ): Promise<TestApp> {
   const identity = await generateKeyPair("EdDSA", { crv: "Ed25519" });
+  // program-service signs its own calls (content-service, identity): modules build their
+  // clients at start-up, so the key must be a real JWK even when no test calls out.
+  const own = await generateKeyPair("EdDSA", { crv: "Ed25519", extractable: true });
+  const ownJwk = JSON.stringify({
+    ...(await exportJWK(own.privateKey)),
+    kid: "program-service-test",
+  });
   const web = await callerKey("web");
   const admin = await callerKey("admin");
   const callers: Partial<Record<ServiceName, CallerKey>> = { web: web.key, admin: admin.key };
@@ -196,7 +203,7 @@ export async function createTestApp(
     WEB_APP_URL: "http://web.test",
     REVALIDATE_SECRET: randomBytes(32).toString("base64"),
     CONTENT_SERVICE_URL: "http://content.test",
-    SERVICE_TOKEN_PRIVATE_JWK: "unused-in-tests",
+    SERVICE_TOKEN_PRIVATE_JWK: ownJwk,
     TICKET_LINK_SECRET: randomBytes(32).toString("base64"),
     SMTP_HOST: "localhost",
     SMTP_PORT: "1025",

@@ -202,7 +202,8 @@ describe("registrations and Excel export (step-up + audit)", () => {
     );
     const sheet = workbook.worksheets[0]!;
     expect(sheet.getRow(1).getCell(2).value).toBe("Họ tên");
-    expect(sheet.getRow(1).font?.bold).toBe(true);
+    // The writer styles each header cell (not the row): check every one of them.
+    sheet.getRow(1).eachCell((cell) => expect(cell.font?.bold).toBe(true));
     expect(sheet.views[0]).toMatchObject({ state: "frozen", ySplit: 1 });
     expect(String(sheet.getRow(2).getCell(2).value)).toBe(
       `'=HYPERLINK("http://evil.example","bam")`,
