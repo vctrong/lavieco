@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { isServiceProblem, type SalesOrderListParams } from "@lavieco/api-clients";
 import type { ErrorCode } from "@lavieco/shared";
+import type { SalesSummaryPeriod } from "@lavieco/shared/sales";
 
 import { failureKind, refOf } from "@/lib/action-errors";
 import { requestId } from "@/lib/request-meta";
@@ -51,8 +52,8 @@ export async function loadSalesOrderPanel(orderId: string | undefined) {
   }
 }
 
-export const loadSalesSummary = (path: string, months = 6) =>
-  read(path, (token, id) => programClient().getSalesSummary(token, months, id));
+export const loadSalesSummary = (path: string, period: SalesSummaryPeriod = "6") =>
+  read(path, (token, id) => programClient().getSalesSummary(token, period, id));
 
 export const loadPriceItems = (path: string) =>
   read(path, async (token, id) => (await programClient().listPriceItems(token, id)).items);

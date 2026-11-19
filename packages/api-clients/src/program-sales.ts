@@ -15,6 +15,7 @@ import {
   type SalesOrderQuickUpdateRequest,
   type SalesOrderTeamFieldsRequest,
   type SalesOrderUpdateRequest,
+  type SalesSummaryPeriod,
 } from "@lavieco/shared/sales";
 
 import type { createHttpClient } from "./http-client";
@@ -167,10 +168,10 @@ export function salesMethods(http: Http) {
         schema: salesAssigneeListSchema,
         requestId,
       }),
-    getSalesSummary: (accessToken: string, months: number, requestId?: string) =>
+    getSalesSummary: (accessToken: string, period: SalesSummaryPeriod, requestId?: string) =>
       http.call({
         method: "GET",
-        path: `${V1}/summary${queryString({ months })}`,
+        path: `${V1}/summary${queryString({ period })}`,
         auth: user(accessToken),
         schema: salesSummarySchema,
         requestId,

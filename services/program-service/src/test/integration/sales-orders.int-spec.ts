@@ -235,7 +235,7 @@ describe("finding orders", () => {
       (
         await t
           .http()
-          .get("/internal/v1/sales/summary?months=24")
+          .get("/internal/v1/sales/summary?period=all")
           .set("authorization", await editor())
           .expect(200)
       ).body,
@@ -245,7 +245,7 @@ describe("finding orders", () => {
       (
         await t
           .http()
-          .get("/internal/v1/sales/summary?months=24")
+          .get("/internal/v1/sales/summary?period=all")
           .set("authorization", await editor())
           .expect(200)
       ).body,
@@ -254,6 +254,34 @@ describe("finding orders", () => {
       s.revenueByMonth.find((m) => m.month === "2026-10")?.revenue;
     expect(october(after)).toBe(october(before));
     expect(after.byStatus.cancelled).toBe(before.byStatus.cancelled + 1);
+  });
+});
+
+describe("summary by period", () => {
+  it("counts only the orders of the period, today's views whatever the period", async () => {
+    const get = async (period: string) =>
+      salesSummarySchema.parse(
+        (
+          await t
+            .http()
+            .get(`/internal/v1/sales/summary?period=${period}`)
+            .set("authorization", await editor())
+            .expect(200)
+        ).body,
+      );
+    const beforeAll = await get("all");
+    const beforeMonth = await get("1");
+    await create({ orderDay: "2024-03-01", status: "completed", discount: 0 });
+    const afterAll = await get("all");
+    const afterMonth = await get("1");
+    expect(afterAll.totals.orders).toBe(beforeAll.totals.orders + 1);
+    expect(afterAll.totals.revenue).toBe(beforeAll.totals.revenue + 370_000);
+    expect(afterMonth.totals).toEqual(beforeMonth.totals);
+    expect(afterMonth.period.from).toMatch(/^\d{4}-\d{2}-01$/);
+    expect(afterMonth.revenueByMonth).toHaveLength(1);
+    expect(afterAll.period.from).toBeNull();
+    expect(afterAll.revenueByMonth.map((m) => m.month)).toContain("2024-03");
+    expect(afterMonth.views).toEqual(afterAll.views);
   });
 });
 

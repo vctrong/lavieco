@@ -36442,14 +36442,20 @@
         "operationId": "SalesOrdersAdminController_summary",
         "parameters": [
           {
-            "name": "months",
+            "name": "period",
             "required": false,
             "in": "query",
             "schema": {
-              "default": 6,
-              "type": "integer",
-              "minimum": 1,
-              "maximum": 24
+              "default": "6",
+              "type": "string",
+              "enum": [
+                "1",
+                "2",
+                "3",
+                "6",
+                "12",
+                "all"
+              ]
             }
           }
         ],
@@ -36461,6 +36467,64 @@
                 "schema": {
                   "type": "object",
                   "properties": {
+                    "period": {
+                      "type": "object",
+                      "properties": {
+                        "key": {
+                          "type": "string",
+                          "enum": [
+                            "1",
+                            "2",
+                            "3",
+                            "6",
+                            "12",
+                            "all"
+                          ]
+                        },
+                        "from": {
+                          "nullable": true,
+                          "type": "string",
+                          "pattern": "^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12]\\d|3[01])$"
+                        }
+                      },
+                      "required": [
+                        "key",
+                        "from"
+                      ],
+                      "additionalProperties": false
+                    },
+                    "totals": {
+                      "type": "object",
+                      "properties": {
+                        "orders": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "cancelled": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "revenue": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        },
+                        "averageOrder": {
+                          "type": "integer",
+                          "minimum": -9007199254740991,
+                          "maximum": 9007199254740991
+                        }
+                      },
+                      "required": [
+                        "orders",
+                        "cancelled",
+                        "revenue",
+                        "averageOrder"
+                      ],
+                      "additionalProperties": false
+                    },
                     "byStatus": {
                       "type": "object",
                       "additionalProperties": {
@@ -36543,6 +36607,8 @@
                     }
                   },
                   "required": [
+                    "period",
+                    "totals",
                     "byStatus",
                     "views",
                     "outstanding",
@@ -36560,7 +36626,7 @@
             "bearer": []
           }
         ],
-        "summary": "Counts by status and view, money not yet in, revenue by month",
+        "summary": "Figures of a period (1, 2, 3, 6, 12 months or all) and today's quick views",
         "tags": [
           "sales"
         ]

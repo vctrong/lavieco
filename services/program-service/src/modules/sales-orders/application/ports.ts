@@ -60,9 +60,14 @@ export interface SalesOrderRepository {
     today: string,
   ): Promise<{ items: SalesOrderRecord[]; nextCursor: string | null; total: number }>;
   countViews(today: string): Promise<Record<SalesOrderView, number>>;
-  countByStatus(): Promise<Record<SalesOrderStatus, number>>;
-  outstanding(): Promise<{ orders: number; amount: number }>;
-  revenueByMonth(fromMonth: string): Promise<MonthRevenue[]>;
+  /** `fromDay` limits to orders of that day or later (by order day); null = all. */
+  countByStatus(fromDay: string | null): Promise<Record<SalesOrderStatus, number>>;
+  outstanding(fromDay: string | null): Promise<{ orders: number; amount: number }>;
+  /** Revenue of non-cancelled orders, undated ones included when `fromDay` is null. */
+  revenueTotal(fromDay: string | null): Promise<number>;
+  revenueByMonth(fromDay: string | null): Promise<MonthRevenue[]>;
+  /** Month (`YYYY-MM`) of the oldest dated order, for the `all` chart. */
+  firstOrderMonth(): Promise<string | null>;
   latestByPhone(
     phoneNormalized: string,
   ): Promise<{ order: SalesOrderRecord; orders: number } | null>;

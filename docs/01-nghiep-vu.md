@@ -579,7 +579,7 @@ Kế hoạch chi tiết, mô hình dữ liệu và giai đoạn ở `08-cua-hang
 | UC-41 | Xem sổ đơn hàng: chip lọc nhanh có số đếm (Cần làm · Trễ hạn · Đang giao · Chưa thu tiền · Tất cả), tìm theo tên/SĐT/mã (cả mã cũ), lọc theo trạng thái, thanh toán, loại, người phụ trách, ngày; ngày giao đỏ khi trễ, nổi bật khi là hôm nay. Desktop: bảng sắp xếp được, chọn nhiều để đổi trạng thái hàng loạt, chi tiết mở bên cạnh. | BR-27 |
 | UC-42 | Chi tiết đơn: đổi trạng thái / thanh toán một chạm, gọi SĐT, chép địa chỉ, xoá (hỏi lại, có Hoàn tác) và khôi phục. Đơn website chỉ sửa người phụ trách, ngày giao, ghi chú. | BR-27, BR-29 |
 | UC-43 | Tạo/sửa đơn tay: SĐT khách cũ tự điền tên và địa chỉ; chọn món từ danh mục đơn giá (− / ＋) hoặc món ngoài danh mục; địa chỉ chọn tỉnh → phường/xã hoặc "Khác"; chip cho kênh, thanh toán, trạng thái, người phụ trách; tổng tiền do hệ thống tính. | BR-27, BR-28 |
-| UC-44 | Danh mục đơn giá (sửa tên/giá ngay trên dòng, bật tắt "đang bán") và trang tổng hợp: chưa thu, doanh thu tháng, đơn đang mở, trễ hạn, theo trạng thái, doanh thu theo tháng. | BR-28 |
+| UC-44 | Danh mục đơn giá (sửa tên/giá ngay trên dòng, bật tắt "đang bán") và trang tổng hợp theo **kỳ chọn được** (tháng này, 2, 3, 6, 12 tháng gần nhất, tất cả; theo ngày đặt): doanh thu, số đơn, số đơn huỷ, trung bình mỗi đơn, chưa thu, theo trạng thái, doanh thu theo tháng; đơn đang mở và trễ hạn luôn là tình trạng hiện tại. | BR-28 |
 
 ### 6.4 Use case giai đoạn 2–3 (tóm tắt)
 

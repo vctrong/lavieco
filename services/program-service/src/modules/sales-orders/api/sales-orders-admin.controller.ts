@@ -35,6 +35,7 @@ import {
   type SalesOrderRevisionRequest,
   type SalesOrderTeamFieldsRequest,
   type SalesOrderUpdateRequest,
+  type SalesSummaryQuery,
 } from "@lavieco/shared/sales";
 
 import type { SalesActor, SalesOrderService } from "../application/sales-order-service";
@@ -74,10 +75,12 @@ export class SalesOrdersAdminController {
 
   @Get("summary")
   @RequirePermission("sales:read")
-  @ApiOperation({ summary: "Counts by status and view, money not yet in, revenue by month" })
+  @ApiOperation({
+    summary: "Figures of a period (1, 2, 3, 6, 12 months or all) and today's quick views",
+  })
   @ApiZodResponse(200, salesSummarySchema)
-  summary(@ZodQuery(salesSummaryQuerySchema) query: { months: number }) {
-    return this.orders.summary(query.months);
+  summary(@ZodQuery(salesSummaryQuerySchema) query: SalesSummaryQuery) {
+    return this.orders.summary(query.period);
   }
 
   @Get("customers")

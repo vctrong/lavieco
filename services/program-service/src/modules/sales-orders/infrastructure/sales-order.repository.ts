@@ -113,6 +113,9 @@ function viewFilter(view: SalesOrderView, today: string): FilterQuery<OrderDoc> 
 }
 
 const ALIVE = { deletedAt: null };
+/** Orders of the period: by order day; `null` keeps everything, undated ones too. */
+const since = (fromDay: string | null): FilterQuery<OrderDoc> =>
+  fromDay === null ? ALIVE : { ...ALIVE, orderDay: { $type: "string", $gte: fromDay } };
 const NOT_CANCELLED = { status: { $ne: "cancelled" } };
 
 @Injectable()
@@ -307,10 +310,10 @@ export class MongoSalesOrderRepository implements SalesOrderRepository {
     >;
   }
 
-  async countByStatus() {
+  async countByStatus(fromDay: string | null) {
     const rows = await this.model
       .aggregate<{ _id: SalesOrderStatus; count: number }>([
-        { $match: ALIVE },
+        { $match: since(fromDay) },
         { $group: { _id: "$status", count: { $sum: 1 } } },
       ])
       .exec();
@@ -322,20 +325,51 @@ export class MongoSalesOrderRepository implements SalesOrderRepository {
     return out;
   }
 
-  async outstanding() {
+  async outstanding(fromDay: string | null) {
     const [row] = await this.model
       .aggregate<{ orders: number; amount: number }>([
-        { $match: { ...ALIVE, ...NOT_CANCELLED, paymentStatus: { $in: OUTSTANDING_PAYMENTS } } },
+        {
+          $match: {
+            ...since(fromDay),
+            ...NOT_CANCELLED,
+            paymentStatus: { $in: OUTSTANDING_PAYMENTS },
+          },
+        },
         { $group: { _id: null, orders: { $sum: 1 }, amount: { $sum: "$total" } } },
       ])
       .exec();
     return { orders: row?.orders ?? 0, amount: row?.amount ?? 0 };
   }
 
-  async revenueByMonth(fromMonth: string): Promise<MonthRevenue[]> {
+  async revenueTotal(fromDay: string | null) {
+    const [row] = await this.model
+      .aggregate<{ revenue: number }>([
+        { $match: { ...since(fromDay), ...NOT_CANCELLED } },
+        { $group: { _id: null, revenue: { $sum: "$total" } } },
+      ])
+      .exec();
+    return row?.revenue ?? 0;
+  }
+
+  async firstOrderMonth() {
+    const doc = await this.model
+      .findOne({ ...ALIVE, orderDay: { $type: "string" } }, { orderDay: 1 })
+      .sort({ orderDay: 1 })
+      .lean<{ orderDay: string }>()
+      .exec();
+    return doc ? doc.orderDay.slice(0, 7) : null;
+  }
+
+  async revenueByMonth(fromDay: string | null): Promise<MonthRevenue[]> {
     return this.model
       .aggregate<MonthRevenue>([
-        { $match: { ...ALIVE, ...NOT_CANCELLED, orderDay: { $type: "string", $gte: fromMonth } } },
+        {
+          $match: {
+            ...ALIVE,
+            ...NOT_CANCELLED,
+            orderDay: fromDay === null ? { $type: "string" } : { $type: "string", $gte: fromDay },
+          },
+        },
         {
           $group: {
             _id: { $substrBytes: ["$orderDay", 0, 7] },

@@ -18,6 +18,25 @@ const t = TEXT.vi.summary;
 export function RevenueChart({ months }: { months: SalesSummary["revenueByMonth"] }) {
   const [active, setActive] = useState<number | null>(null);
   const max = Math.max(1, ...months.map((month) => month.revenue));
+  const step = Math.ceil(months.length / 12);
+  const numbers = (
+    <table className="mt-4 w-full text-[13.5px]">
+      <caption className="sr-only">{t.revenue}</caption>
+      <tbody className="divide-y divide-hairline">
+        {months.map((month) => (
+          <tr key={month.month}>
+            <th scope="row" className="py-1.5 text-left font-normal text-charcoal/70">
+              {t.month(month.month)}
+            </th>
+            <td className="py-1.5 text-right text-charcoal/70">{t.orders(month.orders)}</td>
+            <td className="py-1.5 text-right font-semibold text-charcoal">
+              {money(month.revenue)}
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
   return (
     <figure>
       <figcaption className="sr-only">{t.chartLabel}</figcaption>
@@ -51,29 +70,25 @@ export function RevenueChart({ months }: { months: SalesSummary["revenueByMonth"
           })}
         </div>
         <div className="mt-2 flex gap-[2px]">
-          {months.map((month) => (
+          {months.map((month, index) => (
             <span key={month.month} className="flex-1 text-center text-[12.5px] text-charcoal/60">
-              {t.month(month.month)}
+              {/* Long periods: one label every few months, always the last one. */}
+              {index % step === 0 || index === months.length - 1 ? t.month(month.month) : ""}
             </span>
           ))}
         </div>
       </div>
-      <table className="mt-4 w-full text-[13.5px]">
-        <caption className="sr-only">{t.revenue}</caption>
-        <tbody className="divide-y divide-hairline">
-          {months.map((month) => (
-            <tr key={month.month}>
-              <th scope="row" className="py-1.5 text-left font-normal text-charcoal/70">
-                {t.month(month.month)}
-              </th>
-              <td className="py-1.5 text-right text-charcoal/70">{t.orders(month.orders)}</td>
-              <td className="py-1.5 text-right font-semibold text-charcoal">
-                {money(month.revenue)}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      {months.length > 12 ? (
+        // A long period keeps the chart readable: the numbers fold under a summary line.
+        <details className="mt-4">
+          <summary className="flex min-h-11 cursor-pointer items-center text-[14px] font-medium text-deep-blue">
+            {t.showTable}
+          </summary>
+          {numbers}
+        </details>
+      ) : (
+        numbers
+      )}
     </figure>
   );
 }

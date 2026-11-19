@@ -4,10 +4,11 @@ import { FiAlertCircle } from "react-icons/fi";
 import { SALES_ORDER_STATUSES, type SalesSummary } from "@lavieco/shared/sales";
 
 import { TEXT } from "../constants/text";
-import { money } from "../utils/format";
+import { money, shortDay } from "../utils/format";
+import { PeriodSelect } from "./period-select";
 import { StatusPill } from "./pills";
-import { SalesShell } from "./sales-shell";
 import { RevenueChart } from "./revenue-chart";
+import { SalesShell } from "./sales-shell";
 
 const t = TEXT.vi.summary;
 
@@ -47,28 +48,49 @@ function Stat({
   );
 }
 
-/** `/sales/summary`: stat tiles everywhere; the monthly revenue chart from 768 px. */
+/**
+ * `/sales/summary` (UC-44): figures of the chosen period (this month… everything); the
+ * open and overdue tiles are always today's state. Monthly chart from 768 px.
+ */
 export function SummaryPage({ summary }: { summary: SalesSummary }) {
-  const current = summary.revenueByMonth.at(-1);
-  const open = summary.byStatus.new + summary.byStatus.in_progress + summary.byStatus.shipping;
+  const { totals, period } = summary;
+  const open = summary.views.todo + summary.views.shipping;
+  const scope = period.from ? t.since(shortDay(period.from, Number.NaN)) : t.allTime;
+  // The list filters by order day as well, so a status tile opens the same orders.
+  const fromQuery = period.from ? `&from=${period.from}` : "";
   return (
-    <SalesShell section="summary" title={t.title} intro={t.intro}>
-      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <SalesShell
+      section="summary"
+      title={t.title}
+      intro={t.intro}
+      actions={<PeriodSelect value={period.key} />}
+    >
+      <p className="mb-3 text-[14px] font-medium text-deep-blue" aria-live="polite">
+        {t.periods[period.key]} · {scope}
+      </p>
+      <div className="mb-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <Stat
+          label={t.revenueMonth}
+          value={money(totals.revenue)}
+          note={t.ordersMonth(totals.orders - totals.cancelled)}
+        />
+        <Stat
+          label={t.orderCount}
+          value={String(totals.orders)}
+          note={t.cancelled(totals.cancelled)}
+        />
+        <Stat label={t.average} value={money(totals.averageOrder)} />
         <Stat
           label={t.outstanding}
           value={money(summary.outstanding.amount)}
           note={t.outstandingOrders(summary.outstanding.orders)}
-          href="/sales?view=unpaid"
+          href={`/sales?view=unpaid${fromQuery}`}
         />
-        <Stat
-          label={t.revenueMonth}
-          value={money(current?.revenue ?? 0)}
-          note={t.ordersMonth(current?.orders ?? 0)}
-        />
-        <Stat label={t.openOrders} value={String(open)} href="/sales?view=todo" />
+        <Stat label={t.openOrders} value={String(open)} note={t.openNote} href="/sales?view=todo" />
         <Stat
           label={t.overdue}
           value={String(summary.views.overdue)}
+          note={t.openNote}
           href="/sales?view=overdue"
           tone={summary.views.overdue > 0 ? "alert" : "default"}
         />
@@ -80,7 +102,7 @@ export function SummaryPage({ summary }: { summary: SalesSummary }) {
           {SALES_ORDER_STATUSES.map((status) => (
             <li key={status}>
               <Link
-                href={`/sales?status=${status}`}
+                href={`/sales?status=${status}${fromQuery}`}
                 className="flex min-h-11 items-center justify-between gap-2 rounded-2xl border border-hairline px-3 py-2 hover:border-emerald-brand"
               >
                 <StatusPill status={status} />

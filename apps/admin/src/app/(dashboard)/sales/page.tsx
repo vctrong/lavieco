@@ -58,7 +58,7 @@ export default async function SalesRoute({ searchParams }: PageProps<"/sales">) 
       deleted: filters.deleted,
       cursor: first(params.cursor)?.slice(0, 200),
     }),
-    loadSalesSummary("/sales", 1),
+    loadSalesSummary("/sales", "1"),
     loadAssignees("/sales"),
     loadSalesOrderPanel(filters.id),
   ]);

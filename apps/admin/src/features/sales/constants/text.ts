@@ -7,6 +7,7 @@ import type {
   SalesOrderView,
   SalesPaymentMethod,
   SalesPaymentStatus,
+  SalesSummaryPeriod,
 } from "@lavieco/shared/sales";
 
 /** Copy of the order book (ADR-0030). Values stay English in data, labels live here. */
@@ -243,14 +244,31 @@ export const TEXT = {
     },
     summary: {
       title: "Tổng hợp",
-      intro: "Số liệu tính từ mọi đơn chưa xoá; doanh thu không gồm đơn đã hủy.",
+      intro: "Tính trên các đơn chưa xoá, theo ngày đặt; doanh thu không gồm đơn đã hủy.",
+      period: "Kỳ tổng hợp",
+      periods: {
+        "1": "Tháng này",
+        "2": "2 tháng gần nhất",
+        "3": "3 tháng gần nhất",
+        "6": "6 tháng gần nhất",
+        "12": "12 tháng gần nhất",
+        all: "Tất cả",
+      } satisfies Record<SalesSummaryPeriod, string>,
+      apply: "Xem",
+      since: (day: string) => `Từ ${day} đến nay`,
+      allTime: "Mọi đơn từ trước tới nay",
       outstanding: "Chưa thu",
       outstandingOrders: (count: number) => `${count} đơn chưa thanh toán đủ`,
-      revenueMonth: "Doanh thu tháng này",
-      ordersMonth: (count: number) => `${count} đơn`,
+      revenueMonth: "Doanh thu",
+      ordersMonth: (count: number) => `${count} đơn không tính đơn hủy`,
+      orderCount: "Số đơn",
+      cancelled: (count: number) => `${count} đơn đã hủy`,
+      average: "Trung bình mỗi đơn",
       openOrders: "Đơn đang mở",
+      openNote: "Hiện tại, không theo kỳ",
       overdue: "Trễ hạn",
       byStatus: "Theo trạng thái",
+      showTable: "Xem bảng số liệu",
       revenue: "Doanh thu theo tháng",
       month: (month: string) => {
         const [year, m] = month.split("-");

@@ -306,17 +306,39 @@ export type SalesCustomer = z.infer<typeof salesCustomerSchema>;
 export const salesAssigneeListSchema = z.object({ items: z.array(staffRefSchema) });
 export type SalesAssigneeList = z.infer<typeof salesAssigneeListSchema>;
 
+/**
+ * Window of the summary: the current month and the N-1 before it, or everything. Orders
+ * without an order day (a few old ones) only count in `all`.
+ */
+export const SALES_SUMMARY_PERIODS = ["1", "2", "3", "6", "12", "all"] as const;
+export const salesSummaryPeriodSchema = z.enum(SALES_SUMMARY_PERIODS);
+export type SalesSummaryPeriod = z.infer<typeof salesSummaryPeriodSchema>;
+
 export const salesSummaryQuerySchema = z.object({
-  /** Months of revenue to return, ending with the current one. */
-  months: z.coerce.number().int().min(1).max(24).default(6),
+  period: salesSummaryPeriodSchema.default("6"),
 });
+export type SalesSummaryQuery = z.infer<typeof salesSummaryQuerySchema>;
 
 export const salesSummarySchema = z.object({
+  period: z.object({
+    key: salesSummaryPeriodSchema,
+    /** First day counted; null for `all`. */
+    from: calendarDaySchema.nullable(),
+  }),
+  /** Orders of the period: count, cancelled, revenue of the others and its average. */
+  totals: z.object({
+    orders: z.number().int(),
+    cancelled: z.number().int(),
+    revenue: z.number().int(),
+    averageOrder: z.number().int(),
+  }),
+  /** Orders of the period by status. */
   byStatus: z.record(salesOrderStatusSchema, z.number().int()),
+  /** Quick views of the list: today's state, never limited to the period. */
   views: z.record(salesOrderViewSchema, z.number().int()),
-  /** Orders not cancelled whose money is not fully in (`unpaid` or `deposit_paid`). */
+  /** Orders of the period not cancelled whose money is not fully in. */
   outstanding: z.object({ orders: z.number().int(), amount: z.number().int() }),
-  /** Revenue of non-cancelled orders by order month (`YYYY-MM`), oldest first. */
+  /** Revenue of non-cancelled orders by order month (`YYYY-MM`), oldest first, no gap. */
   revenueByMonth: z.array(
     z.object({ month: z.string(), orders: z.number().int(), revenue: z.number().int() }),
   ),

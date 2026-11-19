@@ -11,6 +11,7 @@ import {
   type SalesOrderTeamFieldsRequest,
   type SalesOrderUpdateRequest,
   type SalesSummary,
+  type SalesSummaryPeriod,
   type StaffRef,
 } from "@lavieco/shared/sales";
 
@@ -43,11 +44,18 @@ export function toAddress(input: AddressInput | null): Address | null {
   }
 }
 
-const monthsBack = (today: string, months: number) => {
-  const [year, month] = today.split("-").map(Number) as [number, number];
-  const index = year * 12 + (month - 1) - (months - 1);
-  return `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`;
+const monthIndex = (month: string) => {
+  const [year, m] = month.split("-").map(Number) as [number, number];
+  return year * 12 + (m - 1);
 };
+const monthOf = (index: number) =>
+  `${Math.floor(index / 12)}-${String((index % 12) + 1).padStart(2, "0")}`;
+/** `YYYY-MM` of the month `months - 1` before today's (1 = this month). */
+const monthsBack = (today: string, months: number) =>
+  monthOf(monthIndex(today.slice(0, 7)) - (months - 1));
+
+/** Longest chart for `all`: five years of months. */
+const ALL_MONTHS_MAX = 60;
 
 /**
  * The team's order book (UC-41..44, ADR-0030). Manual orders are fully editable by anyone
@@ -176,24 +184,49 @@ export class SalesOrderService {
     };
   }
 
-  async summary(months: number, now = new Date()): Promise<SalesSummary> {
+  /**
+   * Figures of a period (this month and the ones before, or everything): orders, revenue
+   * without cancelled ones (BR-28), money not yet in, by status and by month. The quick
+   * views stay today's state whatever the period.
+   */
+  async summary(period: SalesSummaryPeriod, now = new Date()): Promise<SalesSummary> {
     const today = vnDay(now);
-    const from = monthsBack(today, months);
-    const [byStatus, views, outstanding, revenue] = await Promise.all([
-      this.orders.countByStatus(),
+    const fromDay = period === "all" ? null : `${monthsBack(today, Number(period))}-01`;
+    const firstMonth = period === "all" ? await this.orders.firstOrderMonth() : null;
+    const [byStatus, views, outstanding, revenue, revenueTotal] = await Promise.all([
+      this.orders.countByStatus(fromDay),
       this.orders.countViews(today),
-      this.orders.outstanding(),
-      this.orders.revenueByMonth(from),
+      this.orders.outstanding(fromDay),
+      this.orders.revenueByMonth(fromDay),
+      this.orders.revenueTotal(fromDay),
     ]);
+    const thisMonth = monthIndex(today.slice(0, 7));
+    const startMonth =
+      period !== "all"
+        ? thisMonth - (Number(period) - 1)
+        : Math.max(
+            thisMonth - (ALL_MONTHS_MAX - 1),
+            firstMonth ? monthIndex(firstMonth) : thisMonth,
+          );
     // Every month of the window, including the empty ones, so a chart has no gaps.
-    const revenueByMonth = Array.from({ length: months }, (_, index) => {
-      const month = monthsBack(today, months - index);
+    const revenueByMonth = Array.from({ length: thisMonth - startMonth + 1 }, (_, index) => {
+      const month = monthOf(startMonth + index);
       return revenue.find((entry) => entry.month === month) ?? { month, orders: 0, revenue: 0 };
     });
+    const counts = Object.fromEntries(
+      SALES_ORDER_STATUSES.map((status) => [status, byStatus[status] ?? 0]),
+    ) as SalesSummary["byStatus"];
+    const orders = SALES_ORDER_STATUSES.reduce((sum, status) => sum + counts[status], 0);
+    const kept = orders - counts.cancelled;
     return {
-      byStatus: Object.fromEntries(
-        SALES_ORDER_STATUSES.map((status) => [status, byStatus[status] ?? 0]),
-      ) as SalesSummary["byStatus"],
+      period: { key: period, from: fromDay },
+      totals: {
+        orders,
+        cancelled: counts.cancelled,
+        revenue: revenueTotal,
+        averageOrder: kept > 0 ? Math.round(revenueTotal / kept) : 0,
+      },
+      byStatus: counts,
       views,
       outstanding,
       revenueByMonth,
