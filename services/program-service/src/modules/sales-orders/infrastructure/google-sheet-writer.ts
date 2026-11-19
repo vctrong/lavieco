@@ -2,6 +2,7 @@ import { SignJWT, importPKCS8 } from "jose";
 
 import type { SheetWriter } from "../application/sales-sheet-sync";
 import type { SheetTab } from "../application/sheet-export";
+import { formatRequests } from "./google-sheet-format";
 
 const TOKEN_URL = "https://oauth2.googleapis.com/token";
 const SCOPE = "https://www.googleapis.com/auth/spreadsheets";
@@ -36,6 +37,35 @@ export class GoogleSheetWriter implements SheetWriter {
       valueInputOption: "RAW",
       data: tabs.map((tab) => ({ range: `${tab.name}!A1`, values: tab.rows })),
     });
+    await this.format(tabs, token);
+  }
+
+  /** Title band, header, widths, colours: one GET (ids, rule counts) and one batchUpdate. */
+  private async format(tabs: SheetTab[], token: string) {
+    const id = encodeURIComponent(this.options.spreadsheetId);
+    const fields =
+      "sheets(properties(sheetId,title),conditionalFormats(booleanRule(condition(type))))";
+    const response = await fetch(`${API}/${id}?fields=${encodeURIComponent(fields)}`, {
+      headers: { authorization: `Bearer ${token}` },
+      signal: AbortSignal.timeout(TIMEOUT_MS),
+    });
+    if (!response.ok) throw new Error(`google sheets: status ${response.status}`);
+    const body = (await response.json()) as {
+      sheets?: {
+        properties?: { sheetId?: number; title?: string };
+        conditionalFormats?: unknown[];
+      }[];
+    };
+    const requests = tabs.flatMap((tab) => {
+      const sheet = body.sheets?.find((entry) => entry.properties?.title === tab.name);
+      const sheetId = sheet?.properties?.sheetId;
+      if (sheetId === undefined) return [];
+      return formatRequests(tab, {
+        sheetId,
+        conditionalFormats: sheet?.conditionalFormats?.length ?? 0,
+      });
+    });
+    if (requests.length) await this.call(`${API}/${id}:batchUpdate`, token, { requests });
   }
 
   private async accessToken() {

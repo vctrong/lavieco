@@ -57,7 +57,8 @@ describe("buildSheetTabs", () => {
 
   it("writes the three tabs with the update time in row 1", () => {
     expect(tabs.map((tab) => tab.name)).toEqual(["DonHang", "ChiTiet", "DonGia"]);
-    for (const tab of tabs) expect(tab.rows[0]![1]).toBe("20/11/2026 09:30");
+    for (const tab of tabs)
+      expect(String(tab.rows[0]![0])).toContain("Cập nhật lúc 20/11/2026 09:30");
   });
 
   it("lists manual orders by number first, then website ones", () => {
