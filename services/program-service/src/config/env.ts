@@ -39,6 +39,16 @@ export const programEnvSchema = baseServiceEnvSchema.extend(mailEnvSchema.shape)
   PAYOS_CLIENT_ID: z.string().default(""),
   PAYOS_API_KEY: z.string().default(""),
   PAYOS_CHECKSUM_KEY: z.string().default(""),
+  /**
+   * Read-only Google Sheet of the order book (ADR-0030): the spreadsheet id and the
+   * service account allowed to write it. All three or none (none = sync off). The private
+   * key is the PEM of the service account JSON, `\n` kept escaped on one line.
+   */
+  SALES_SHEET_ID: z.string().default(""),
+  SALES_SHEET_SERVICE_ACCOUNT_EMAIL: z.string().default(""),
+  SALES_SHEET_PRIVATE_KEY: z.string().default(""),
+  /** Safety net when a sync failed: rewrite the Sheet every N minutes (0 = never). */
+  SALES_SHEET_SYNC_MINUTES: z.coerce.number().int().min(0).max(1_440).default(30),
   /** content-service on the private network: attaches and releases event images (ADR-0020). */
   CONTENT_SERVICE_URL: z.url(),
   /**
