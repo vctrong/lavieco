@@ -194,6 +194,7 @@ export const TEXT = {
       increase: (name: string) => `Thêm một ${name}`,
       removeItem: (name: string) => `Bỏ ${name}`,
       unitPrice: (name: string) => `Đơn giá ${name}`,
+      quantity: (name: string) => `Số lượng ${name}`,
       noItems: "Chưa có món nào.",
       details: "Thông tin đơn",
       type: "Loại đơn",

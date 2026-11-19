@@ -8,6 +8,7 @@ import { FiMinus, FiPlus, FiX } from "react-icons/fi";
 import { VN_PROVINCES } from "@lavieco/shared/geo";
 import {
   SALES_CHANNELS,
+  SALES_LIMITS,
   SALES_ORDER_STATUSES,
   SALES_ORDER_TYPES,
   SALES_PAYMENT_METHODS,
@@ -130,6 +131,46 @@ function Section({
       <h2 className="text-[17px] font-semibold text-deep-blue">{title}</h2>
       {children}
     </section>
+  );
+}
+
+/**
+ * Typed quantity next to − / ＋ (a hundred taps is not a way to order 100 pieces). The
+ * text stays free while typing; an empty or zero entry goes back to the last quantity on
+ * blur instead of removing the line (removing is the − button at 1, or ×).
+ */
+function QuantityInput({
+  name,
+  quantity,
+  onChange,
+}: {
+  name: string;
+  quantity: number;
+  onChange: (quantity: number) => void;
+}) {
+  const [text, setText] = useState(String(quantity));
+  const [focused, setFocused] = useState(false);
+  const shown = focused ? text : String(quantity);
+  return (
+    <input
+      aria-label={f.quantity(name)}
+      inputMode="numeric"
+      pattern="[0-9]*"
+      value={shown}
+      onFocus={(event) => {
+        setText(String(quantity));
+        setFocused(true);
+        event.currentTarget.select();
+      }}
+      onChange={(event) => {
+        const digits = event.target.value.replace(/\D/g, "").slice(0, 4);
+        setText(digits);
+        const value = Number(digits);
+        if (value >= 1) onChange(Math.min(value, SALES_LIMITS.quantityMax));
+      }}
+      onBlur={() => setFocused(false)}
+      className="h-11 w-14 rounded-xl border border-hairline text-center text-[16px] font-semibold focus-visible:outline-2 focus-visible:outline-deep-blue"
+    />
   );
 }
 
@@ -459,12 +500,11 @@ export function OrderForm({
                           <FiMinus aria-hidden="true" />
                         )}
                       </button>
-                      <span
-                        className="w-8 text-center text-[16px] font-semibold"
-                        aria-live="polite"
-                      >
-                        {line.quantity}
-                      </span>
+                      <QuantityInput
+                        name={line.name}
+                        quantity={line.quantity}
+                        onChange={(quantity) => changeLine(line.key, { quantity })}
+                      />
                       <button
                         type="button"
                         aria-label={f.increase(line.name)}
