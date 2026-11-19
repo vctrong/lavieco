@@ -138,6 +138,17 @@ export class MongoSalesOrderRepository implements SalesOrderRepository {
     return doc!.seq;
   }
 
+  async raiseSeq(seq: number, tx?: TxContext) {
+    await this.counters
+      .updateOne({ _id: SEQ_ID }, { $max: { seq } }, { upsert: true, session: sessionOf(tx) })
+      .exec();
+  }
+
+  async findByCode(code: string) {
+    const doc = await this.model.findOne({ code }).lean<OrderDoc>().exec();
+    return doc ? toRecord(doc) : null;
+  }
+
   async insert(record: SalesOrderWrite, tx?: TxContext) {
     const { id, ...rest } = record;
     const [doc] = await this.model.create(

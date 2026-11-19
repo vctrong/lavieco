@@ -27,6 +27,9 @@ export interface SalesOrderRepository {
   newId(): string;
   /** Next manual order number (`counters`, `_id: "sales_order"`), inside the transaction. */
   nextSeq(tx: TxContext): Promise<number>;
+  /** Moves the counter up to at least `seq` (legacy import keeps LV-0001…). */
+  raiseSeq(seq: number, tx?: TxContext): Promise<void>;
+  findByCode(code: string): Promise<SalesOrderRecord | null>;
   insert(record: SalesOrderWrite, tx?: TxContext): Promise<SalesOrderRecord>;
   findById(id: string): Promise<SalesOrderRecord | null>;
   findByLegacyCode(legacyCode: string): Promise<SalesOrderRecord | null>;

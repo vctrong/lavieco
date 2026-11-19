@@ -16,6 +16,7 @@
     "mail:test": "node --env-file-if-exists=.env.local dist/cli/mail-test.js",
     "mail:preview": "node -r @swc-node/register src/test/mail-preview.ts",
     "payos:webhook": "node --env-file-if-exists=.env.local dist/cli/payos-webhook.js",
+    "sales:import-legacy": "node --env-file-if-exists=.env.local dist/cli/import-legacy-sales.js",
     "gen:openapi": "node dist/openapi.js"
   },
   "dependencies": {

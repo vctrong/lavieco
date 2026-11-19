@@ -15,6 +15,7 @@ import {
   type SalesOrderRepository,
   type StaffDirectory,
 } from "./application/ports";
+import { LegacyImportService } from "./application/legacy-import-service";
 import { PriceListService } from "./application/price-list-service";
 import { noSheetQueue, type SalesSheetQueue } from "./application/sales-jobs";
 import { SalesOrderService } from "./application/sales-order-service";
@@ -22,7 +23,12 @@ import { createIdentityStaffDirectory } from "./infrastructure/identity-staff-di
 import { MongoPriceItemRepository } from "./infrastructure/price-item.repository";
 import { MongoSalesOrderRepository } from "./infrastructure/sales-order.repository";
 import { salesPersistence } from "./infrastructure/sales.models";
-import { PRICE_LIST_SERVICE, SALES_ORDER_SERVICE, SALES_SHEET_QUEUE } from "./sales-orders.tokens";
+import {
+  LEGACY_IMPORT_SERVICE,
+  PRICE_LIST_SERVICE,
+  SALES_ORDER_SERVICE,
+  SALES_SHEET_QUEUE,
+} from "./sales-orders.tokens";
 
 export type SalesOrdersOptions = {
   /** Tests stand in for identity-service. */
@@ -72,6 +78,25 @@ export class SalesOrdersModule {
           ],
         },
         {
+          provide: LEGACY_IMPORT_SERVICE,
+          useFactory: (
+            orders: SalesOrderRepository,
+            prices: PriceItemRepository,
+            staff: StaffDirectory,
+            unitOfWork: UnitOfWork,
+            audit: AuditTrail,
+            sheet: SalesSheetQueue,
+          ) => new LegacyImportService(orders, prices, staff, unitOfWork, audit, sheet),
+          inject: [
+            SALES_ORDER_REPOSITORY,
+            PRICE_ITEM_REPOSITORY,
+            STAFF_DIRECTORY,
+            UNIT_OF_WORK,
+            AUDIT_TRAIL,
+            SALES_SHEET_QUEUE,
+          ],
+        },
+        {
           provide: PRICE_LIST_SERVICE,
           useFactory: (
             prices: PriceItemRepository,
@@ -82,7 +107,12 @@ export class SalesOrdersModule {
           inject: [PRICE_ITEM_REPOSITORY, UNIT_OF_WORK, AUDIT_TRAIL, SALES_SHEET_QUEUE],
         },
       ],
-      exports: [SALES_ORDER_REPOSITORY, PRICE_ITEM_REPOSITORY, SALES_ORDER_SERVICE],
+      exports: [
+        SALES_ORDER_REPOSITORY,
+        PRICE_ITEM_REPOSITORY,
+        SALES_ORDER_SERVICE,
+        LEGACY_IMPORT_SERVICE,
+      ],
     };
   }
 }
