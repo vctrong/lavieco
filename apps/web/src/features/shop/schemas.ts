@@ -2,6 +2,7 @@ import "@/shared/zod-vi";
 
 import { z } from "zod";
 
+import { findWard } from "@lavieco/shared/geo";
 import { shippingMethodSchema, shopPaymentMethodSchema } from "@lavieco/shared/shop";
 
 /** Checkout form (client for feedback, server again in the action). */
@@ -18,8 +19,9 @@ export const shopCheckoutFormSchema = z
     recipientName: z.string().trim().max(100),
     recipientPhone: z.string().trim().max(15),
     line: z.string().trim().max(200),
-    ward: z.string().trim().max(100),
-    province: z.string().trim().max(100),
+    /** Province and ward from the list (two levels since July 2025). */
+    provinceCode: z.number().int().positive().nullable(),
+    wardCode: z.number().int().positive().nullable(),
     note: z.string().trim().max(500),
     paymentMethod: shopPaymentMethodSchema,
     voucherCode: z.string().trim().max(30),
@@ -32,9 +34,11 @@ export const shopCheckoutFormSchema = z
       if (!ok) ctx.addIssue({ code: "custom", path: [path], message: "required" });
     };
     if (value.method === "delivery") {
+      require("provinceCode", value.provinceCode !== null);
+      require("wardCode", value.provinceCode !== null &&
+        value.wardCode !== null &&
+        findWard(value.provinceCode, value.wardCode) !== null);
       require("line", value.line.length >= 3);
-      require("ward", value.ward.length >= 1);
-      require("province", value.province.length >= 1);
     }
     if (!value.sameRecipient) {
       require("recipientName", value.recipientName.length >= 2);

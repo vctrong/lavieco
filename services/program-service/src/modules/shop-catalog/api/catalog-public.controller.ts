@@ -64,6 +64,7 @@ export class CatalogPublicController {
     return {
       shippingFee: s.shippingFee,
       freeShippingFrom: s.freeShippingFrom,
+      freeShippingWardCodes: s.freeShippingWardCodes,
       pickup: s.pickup,
       cod: s.cod,
       returnDays: s.returnDays,

@@ -192,6 +192,7 @@ export const shopSettingsSchema = new Schema(
     schemaVersion: { type: Number, required: true, default: 1 },
     shippingFee: { type: Number, required: true },
     freeShippingFrom: { type: Number, default: null },
+    freeShippingWardCodes: { type: [Number], default: undefined },
     pickup: { enabled: Boolean, address: String, note: String },
     cod: { enabled: Boolean, maxAmount: Number },
     holdMinutes: { type: Number, required: true },

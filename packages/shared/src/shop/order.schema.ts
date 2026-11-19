@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { isoDateTimeSchema, objectIdSchema } from "../common/object-id";
 import { cursorPageQuerySchema, cursorPageSchema } from "../common/pagination";
+import { findWard } from "../geo/address";
 import { emailSchema } from "../identity/password";
 import { mediaImageSchema } from "../media/media.schema";
 import { cartLineSchema, cartTokenSchema } from "./cart.schema";
@@ -58,19 +59,39 @@ const phoneSchema = z
   .trim()
   .regex(/^(\+84|0)\d{9,10}$/, "Vietnamese phone number");
 
+/**
+ * Stored and returned delivery address: names as chosen, plus the codes of the
+ * administrative unit list (`@lavieco/shared/geo`). Orders placed before the picker
+ * have no codes.
+ */
 export const shippingAddressSchema = z.object({
   line: z.string().trim().min(3).max(200),
   ward: z.string().trim().min(1).max(100),
   province: z.string().trim().min(1).max(100),
+  provinceCode: z.number().int().nullable().optional(),
+  wardCode: z.number().int().nullable().optional(),
 });
 export type ShippingAddress = z.infer<typeof shippingAddressSchema>;
+
+/** What the checkout sends: province and ward from the list, the street typed. */
+export const shippingAddressInputSchema = z
+  .object({
+    line: z.string().trim().min(3).max(200),
+    provinceCode: z.number().int().positive(),
+    wardCode: z.number().int().positive(),
+  })
+  .refine((value) => findWard(value.provinceCode, value.wardCode) !== null, {
+    path: ["wardCode"],
+    message: "Unknown ward",
+  });
+export type ShippingAddressInput = z.infer<typeof shippingAddressInputSchema>;
 
 export const shopShippingInputSchema = z
   .object({
     method: shippingMethodSchema,
     recipientName: z.string().trim().min(2).max(100),
     recipientPhone: phoneSchema,
-    address: shippingAddressSchema.nullable(),
+    address: shippingAddressInputSchema.nullable(),
     note: z.string().trim().max(SHOP_ORDER_LIMITS.noteMax).default(""),
   })
   .refine((value) => value.method === "pickup" || value.address !== null, {
@@ -82,6 +103,8 @@ export type ShopShippingInput = z.infer<typeof shopShippingInputSchema>;
 export const shopQuoteRequestSchema = z.object({
   cartToken: cartTokenSchema,
   shippingMethod: shippingMethodSchema,
+  /** Ward of the delivery address once chosen: some wards are delivered free. */
+  wardCode: z.number().int().positive().optional(),
   voucherCode: z.string().trim().toUpperCase().max(30).optional(),
   /** The buyer's email when known, for member-only or per-customer vouchers. */
   email: emailSchema.optional(),

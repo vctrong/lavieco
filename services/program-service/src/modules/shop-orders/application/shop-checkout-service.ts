@@ -18,6 +18,7 @@ import {
   shippingFeeOf,
   type ShopOrderItem,
   type ShopOrderRecord,
+  resolveShippingAddress,
 } from "../domain/shop-order";
 import type { ShopOrderRepository } from "./ports";
 import { SHOP_ORDER_JOBS } from "./shop-order-jobs";
@@ -61,6 +62,7 @@ export class ShopCheckoutService {
       userId: null,
       now,
       strictVoucher: false,
+      wardCode: input.wardCode ?? null,
     });
     return priced.quote;
   }
@@ -90,6 +92,7 @@ export class ShopCheckoutService {
         userId,
         now,
         strictVoucher: true,
+        wardCode: input.shipping.address?.wardCode ?? null,
       },
     );
     if (items.length === 0) throw new DomainError("shop_order.cart_empty");
@@ -128,7 +131,10 @@ export class ShopCheckoutService {
         method: input.shipping.method,
         recipientName: input.shipping.recipientName,
         recipientPhone: input.shipping.recipientPhone,
-        address: input.shipping.method === "delivery" ? input.shipping.address : null,
+        address:
+          input.shipping.method === "delivery" && input.shipping.address
+            ? resolveShippingAddress(input.shipping.address)
+            : null,
         note: input.shipping.note,
       },
       items,
@@ -282,14 +288,21 @@ export class ShopCheckoutService {
     cartToken: string,
     method: "delivery" | "pickup",
     code: string | undefined,
-    customer: { email: string | null; userId: string | null; now: Date; strictVoucher: boolean },
+    customer: {
+      email: string | null;
+      userId: string | null;
+      now: Date;
+      strictVoucher: boolean;
+      wardCode: number | null;
+    },
   ): Promise<Priced> {
     const cart = await this.carts.view(cartToken);
     const settings = await this.catalog.getSettings();
     const lines = cart.lines.filter((line) => line.quantity > 0);
     const hasIssues = cart.lines.some((line) => line.issue !== null);
     const subtotal = lines.reduce((sum, line) => sum + line.lineTotal, 0);
-    const shippingFee = lines.length > 0 ? shippingFeeOf(settings, method, subtotal) : 0;
+    const shippingFee =
+      lines.length > 0 ? shippingFeeOf(settings, method, subtotal, customer.wardCode) : 0;
     let voucher: VoucherQuote | null = null;
     let voucherRefused = false;
     if (code && lines.length > 0) {

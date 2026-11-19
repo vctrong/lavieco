@@ -10,6 +10,7 @@ import {
   maskPhone,
   newPublicCode,
   newShopOrderCode,
+  resolveShippingAddress,
   shippingFeeOf,
 } from "./shop-order";
 
@@ -25,6 +26,32 @@ describe("shippingFeeOf (BR-21)", () => {
     expect(shippingFeeOf(settings, "delivery", 100_000)).toBe(20_000);
     expect(shippingFeeOf(settings, "pickup", 100_000)).toBe(0);
     expect(shippingFeeOf(settings, "delivery", 300_000)).toBe(0);
+  });
+
+  it("delivers free to the listed wards only (former Ninh Kiều district)", () => {
+    expect(shippingFeeOf(settings, "delivery", 50_000, 31135)).toBe(0);
+    expect(shippingFeeOf(settings, "delivery", 50_000, 31186)).toBe(20_000);
+    expect(shippingFeeOf(settings, "delivery", 50_000, null)).toBe(20_000);
+  });
+});
+
+describe("resolveShippingAddress", () => {
+  it("stores the names of the chosen province and ward with their codes", () => {
+    expect(
+      resolveShippingAddress({ line: "1 Hoà Bình", provinceCode: 92, wardCode: 31135 }),
+    ).toEqual({
+      line: "1 Hoà Bình",
+      ward: "Phường Ninh Kiều",
+      province: "Thành phố Cần Thơ",
+      provinceCode: 92,
+      wardCode: 31135,
+    });
+  });
+
+  it("refuses a ward of another province", () => {
+    expect(() =>
+      resolveShippingAddress({ line: "x y z", provinceCode: 1, wardCode: 31135 }),
+    ).toThrow("address.invalid");
   });
 });
 

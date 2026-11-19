@@ -81,6 +81,7 @@ export async function quoteCheckout(input: {
   method: unknown;
   voucherCode: unknown;
   email: unknown;
+  wardCode?: unknown;
 }): Promise<CheckoutResult<ShopQuote>> {
   const id = await requestId();
   const token = await readCartToken();
@@ -90,6 +91,13 @@ export async function quoteCheckout(input: {
       {
         cartToken: token,
         shippingMethod: input.method === "pickup" ? "pickup" : "delivery",
+        // Free delivery depends on the ward: the server decides (BR-21).
+        ...(input.method !== "pickup" &&
+        typeof input.wardCode === "number" &&
+        Number.isInteger(input.wardCode) &&
+        input.wardCode > 0
+          ? { wardCode: input.wardCode }
+          : {}),
         voucherCode:
           typeof input.voucherCode === "string" && input.voucherCode.trim()
             ? input.voucherCode.trim().toUpperCase()
@@ -135,8 +143,8 @@ async function place(form: ShopCheckoutForm, verificationToken: string, id: stri
           recipientName: form.sameRecipient ? form.fullName : form.recipientName,
           recipientPhone: form.sameRecipient ? form.phone : form.recipientPhone,
           address:
-            form.method === "delivery"
-              ? { line: form.line, ward: form.ward, province: form.province }
+            form.method === "delivery" && form.provinceCode !== null && form.wardCode !== null
+              ? { line: form.line, provinceCode: form.provinceCode, wardCode: form.wardCode }
               : null,
           note: form.note,
         },
