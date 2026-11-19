@@ -32,6 +32,7 @@ export const TEXT = {
       sale: "Giảm giá",
       soldOut: "Tạm hết",
       low: "Sắp hết",
+      madeToOrder: "Làm theo đơn",
       partner: (brand: string) => `Đối tác: ${brand}`,
       badges: { new: "Mới", limited: "Số lượng có hạn", handmade: "Làm thủ công" },
     },
@@ -58,6 +59,10 @@ export const TEXT = {
       viewCart: "Xem giỏ",
       soldOut: "Tạm hết hàng",
       left: (n: number) => `Chỉ còn ${n}`,
+      madeToOrder: (days: number | null) =>
+        days
+          ? `Làm thủ công theo đơn: gửi đi sau khoảng ${days} ngày kể từ khi đặt.`
+          : "Làm thủ công theo đơn: đội sẽ báo ngày gửi khi xác nhận.",
       storyTitle: "Câu chuyện phía sau",
       message: "Thông điệp",
       story: "Câu chuyện",

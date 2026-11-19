@@ -82,6 +82,10 @@ export function ProductCard({
               <span className="rounded-full bg-soft-white/95 px-2.5 py-1 text-[11px] font-semibold text-deep-blue">
                 {t.low}
               </span>
+            ) : product.availability === "made_to_order" ? (
+              <span className="rounded-full bg-soft-white/95 px-2.5 py-1 text-[11px] font-semibold text-deep-blue">
+                {t.madeToOrder}
+              </span>
             ) : null}
           </span>
         </ProductFrame>

@@ -180,6 +180,8 @@ function Purchase({ product }: { product: PublicProduct }) {
 
         {variant?.availability === "low" && variant.left ? (
           <p className="text-[14px] font-semibold text-deep-blue">{t.left(variant.left)}</p>
+        ) : variant?.availability === "made_to_order" ? (
+          <p className="text-[14px] text-deep-blue">{t.madeToOrder(product.leadTimeDays)}</p>
         ) : null}
 
         <div className="flex flex-wrap items-center gap-3">

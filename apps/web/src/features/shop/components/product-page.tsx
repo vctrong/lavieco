@@ -54,7 +54,9 @@ export function ProductPage({
             availability:
               product.availability === "out"
                 ? "https://schema.org/OutOfStock"
-                : "https://schema.org/InStock",
+                : product.availability === "made_to_order"
+                  ? "https://schema.org/MadeToOrder"
+                  : "https://schema.org/InStock",
           },
         }}
       />

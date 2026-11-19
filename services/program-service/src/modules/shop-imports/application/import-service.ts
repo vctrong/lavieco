@@ -455,6 +455,7 @@ export class ImportService {
           lowStockThreshold: v.lowStockThreshold,
           weightGrams: v.weightGrams,
           active: true,
+          madeToOrder: v.madeToOrder,
           initialStock: 0,
         })),
     ];

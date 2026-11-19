@@ -76,6 +76,17 @@ describe("web order mirror", () => {
     expect(orders.upsertMirror.mock.calls[0]![2]).toMatchObject({ status: "cancelled" });
   });
 
+  it("marks an order with a piece made on demand and gives it a first due day", async () => {
+    const orders = repo(false);
+    const made = order("paid");
+    made.items = [{ ...made.items[0]!, madeToOrder: true, leadTimeDays: 5 }];
+    await new SalesWebOrderMirror(orders, sheet).sync(made, tx);
+    expect(orders.upsertMirror.mock.calls[0]![1]).toMatchObject({
+      orderType: "made_to_order",
+      dueDay: "2026-11-25",
+    });
+  });
+
   it("names a line with its option and keeps the address with its codes", () => {
     const fields = mirrorFields(order("packing"));
     expect(fields.items[0]!.name).toBe("Phone charm (Vỏ ốc)");

@@ -36,6 +36,7 @@ export type ProductRecord = {
   materials: string[];
   care: string;
   dimensions: string;
+  leadTimeDays: number | null;
   options: ProductOption[];
   images: ProductImageRecord[];
   impact: {
@@ -67,6 +68,8 @@ export type VariantRecord = {
   lowStockThreshold: number;
   weightGrams: number | null;
   status: "active" | "archived";
+  /** No stock: every unit is made after the order (counts `sold` only). */
+  madeToOrder: boolean;
   sortOrder: number;
   stock: { onHand: number; held: number; sold: number };
   createdAt: Date;
@@ -89,14 +92,21 @@ export type ProductChanges = Omit<
   | "priceMax"
 > & { impactItems: ImpactItem[]; searchKey: string };
 
-export const available = (variant: Pick<VariantRecord, "stock">) =>
-  Math.max(0, variant.stock.onHand - variant.stock.held);
+/** Units that can be ordered now; a made-to-order variant is never short. */
+export const MADE_TO_ORDER_AVAILABLE = 999;
+
+export const available = (variant: Pick<VariantRecord, "stock"> & { madeToOrder?: boolean }) =>
+  variant.madeToOrder
+    ? MADE_TO_ORDER_AVAILABLE
+    : Math.max(0, variant.stock.onHand - variant.stock.held);
 
 /** "Còn N" once the available stock is at or below the variant's threshold. */
 export function availabilityOf(
-  variant: Pick<VariantRecord, "stock" | "lowStockThreshold" | "status">,
+  variant: Pick<VariantRecord, "stock" | "lowStockThreshold" | "status" | "madeToOrder">,
 ): Availability {
-  const left = variant.status === "active" ? available(variant) : 0;
+  if (variant.status !== "active") return "out";
+  if (variant.madeToOrder) return "made_to_order";
+  const left = available(variant);
   if (left === 0) return "out";
   return left <= variant.lowStockThreshold ? "low" : "in_stock";
 }
@@ -105,6 +115,7 @@ export function availabilityOf(
 export function productAvailability(variants: readonly VariantRecord[]): Availability {
   const states = variants.map(availabilityOf);
   if (states.includes("in_stock")) return "in_stock";
+  if (states.includes("made_to_order")) return "made_to_order";
   return states.includes("low") ? "low" : "out";
 }
 
@@ -181,6 +192,9 @@ export function toProductChanges(input: ProductCreateRequest): ProductChanges {
     materials: input.materials,
     care: input.care,
     dimensions: input.dimensions,
+    leadTimeDays: input.variants.some((variant) => variant.madeToOrder)
+      ? (input.leadTimeDays ?? 7)
+      : input.leadTimeDays,
     options: input.options,
     impactItems: input.impactItems,
     seo: input.seo,

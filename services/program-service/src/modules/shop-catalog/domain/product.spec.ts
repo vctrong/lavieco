@@ -5,6 +5,7 @@ import type { ProductOption, VariantInput } from "@lavieco/shared/shop";
 import {
   assertImages,
   assertVariants,
+  available,
   availabilityOf,
   nextImpact,
   optionKeyOf,
@@ -32,6 +33,7 @@ const variant = (over: Partial<VariantInput> = {}): VariantInput => ({
   lowStockThreshold: 3,
   weightGrams: null,
   active: true,
+  madeToOrder: false,
   initialStock: 0,
   ...over,
 });
@@ -39,8 +41,9 @@ const variant = (over: Partial<VariantInput> = {}): VariantInput => ({
 const stock = (
   onHand: number,
   held = 0,
-): Pick<VariantRecord, "stock" | "lowStockThreshold" | "status"> => ({
+): Pick<VariantRecord, "stock" | "lowStockThreshold" | "status" | "madeToOrder"> => ({
   stock: { onHand, held, sold: 0 },
+  madeToOrder: false,
   lowStockThreshold: 3,
   status: "active",
 });
@@ -129,6 +132,12 @@ describe("availability", () => {
     expect(availabilityOf(stock(3))).toBe("low");
     expect(availabilityOf(stock(10, 2))).toBe("in_stock");
     expect(availabilityOf({ ...stock(10), status: "archived" })).toBe("out");
+  });
+
+  it("never runs out on a made-to-order variant, and counts no shelf for it", () => {
+    expect(availabilityOf({ ...stock(0), madeToOrder: true })).toBe("made_to_order");
+    expect(available({ ...stock(0), madeToOrder: true })).toBeGreaterThan(100);
+    expect(availabilityOf({ ...stock(0), madeToOrder: true, status: "archived" })).toBe("out");
   });
 
   it("takes the best variant for the product card", () => {

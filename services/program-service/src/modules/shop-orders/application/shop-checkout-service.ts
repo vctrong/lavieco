@@ -332,7 +332,8 @@ export class ShopCheckoutService {
     const byVariant = new Map(variants.map((v) => [v.id, v]));
     const byProduct = new Map(products.map((p) => [p.id, p]));
     const items: ShopOrderItem[] = lines.map((line) => {
-      const product = byProduct.get(byVariant.get(line.variantId)?.productId ?? "");
+      const variant = byVariant.get(line.variantId);
+      const product = byProduct.get(variant?.productId ?? "");
       const brand = product?.partnerBrandId
         ? brands.find((b) => b.id === product.partnerBrandId)
         : undefined;
@@ -346,6 +347,8 @@ export class ShopCheckoutService {
         image: line.image,
         unitPrice: line.unitPrice,
         quantity: line.quantity,
+        madeToOrder: variant?.madeToOrder ?? false,
+        leadTimeDays: variant?.madeToOrder ? (product?.leadTimeDays ?? null) : null,
         partnerBrandId: brand?.id ?? null,
         commissionRate: brand?.commissionRate ?? null,
       };

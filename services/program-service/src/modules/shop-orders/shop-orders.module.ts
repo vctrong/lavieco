@@ -35,10 +35,7 @@ import { ShopCheckoutService } from "./application/shop-checkout-service";
 import { ShopOrderAdminService } from "./application/shop-order-admin-service";
 import { ShopSettlementService } from "./application/shop-settlement-service";
 import { SmtpShopOrderMailer } from "./infrastructure/shop-order-email";
-import {
-  MongoShopOrderRepository,
-  shopOrderPersistence,
-} from "./infrastructure/shop-order.repository";
+import { shopOrderPersistence } from "./infrastructure/shop-order.repository";
 import {
   ShopOrderExpiryScheduler,
   ShopOrderJobHandlers,

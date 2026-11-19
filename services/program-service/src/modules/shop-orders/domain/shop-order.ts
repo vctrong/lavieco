@@ -25,6 +25,9 @@ export type ShopOrderItem = {
   image: { mediaId: string; publicId: string; width: number; height: number; alt: string } | null;
   unitPrice: number;
   quantity: number;
+  /** Made on demand: days to make it, snapshotted (sets the order book's due day). */
+  madeToOrder?: boolean;
+  leadTimeDays?: number | null;
   /** Snapshot of the brand's commission (‰) at order time; never public (BR-25). */
   partnerBrandId: string | null;
   commissionRate: number | null;

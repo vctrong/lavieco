@@ -25,7 +25,14 @@ export type MirrorableShopOrder = {
       wardCode?: number | null;
     } | null;
   };
-  items: { title: string; optionLabel: string; unitPrice: number; quantity: number }[];
+  items: {
+    title: string;
+    optionLabel: string;
+    unitPrice: number;
+    quantity: number;
+    madeToOrder?: boolean;
+    leadTimeDays?: number | null;
+  }[];
   subtotal: number;
   discount: { amount: number } | null;
   shippingFee: number;
@@ -57,6 +64,7 @@ export class SalesWebOrderMirror implements WebOrderMirror {
       if (!existing) return;
     }
     const mirrored = mirrorFields(order);
+    const made = madeToOrderDue(order);
     await this.orders.upsertMirror(
       order.id,
       {
@@ -66,9 +74,10 @@ export class SalesWebOrderMirror implements WebOrderMirror {
         legacyCode: null,
         source: "web",
         shopOrderId: order.id,
-        orderType: "in_stock",
+        orderType: made ? "made_to_order" : "in_stock",
         channel: "website",
-        dueDay: null,
+        // A first due day for pieces made on demand; the team may move it afterwards.
+        dueDay: made?.dueDay ?? null,
         assignee: null,
         note: "",
         createdBy: null,
@@ -80,6 +89,14 @@ export class SalesWebOrderMirror implements WebOrderMirror {
     );
     await this.sheet.queue(tx);
   }
+}
+
+/** Ordered day + the longest lead time of its made-to-order lines (Asia/Ho_Chi_Minh). */
+export function madeToOrderDue(order: MirrorableShopOrder): { dueDay: string } | null {
+  const days = order.items.filter((item) => item.madeToOrder).map((item) => item.leadTimeDays ?? 7);
+  if (days.length === 0) return null;
+  const due = new Date(order.createdAt.getTime() + Math.max(...days) * 86_400_000);
+  return { dueDay: vnDay(due) };
 }
 
 function addressOf(address: MirrorableShopOrder["shipping"]["address"]): Address | null {
